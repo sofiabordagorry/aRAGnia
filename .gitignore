@@ -19,6 +19,7 @@ ENV/
 # Testing
 .pytest_cache/
 .coverage
+.ruff_cache/
 
 # IDEs
 .vscode/
