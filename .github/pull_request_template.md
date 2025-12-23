@@ -1,5 +1,3 @@
-# Pull Request
-
 ## Issue relacionado
 
 Closes #[número]
