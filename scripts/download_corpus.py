@@ -3,7 +3,7 @@ import os
 import urllib3
 from dotenv import load_dotenv
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from urllib.parse import quote, unquote
+from urllib.parse import quote
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent  # si scripts/ está dentro de la raíz
