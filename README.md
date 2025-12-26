@@ -42,13 +42,20 @@ Este comando ejecuta:
 
 ### Descargar corpus de PDFs
 
-El proyecto incluye un script para descargar los PDFs desde una lista de URLs.
+El proyecto incluye un script para descargar los PDFs de la nube institucional desde una lista de URLs.
 
 - La lista de URLs se encuentra en data/downloads_list.txt.
 
 - Los PDFs descargados se guardan en la carpeta data/corpus.
 
-# Ejecutar el script de descarga
+- El acceso a la nube se realiza mediante un enlace público de Nextcloud, cuyo token debe configurarse a través de una variable de entorno.
+
+#### Configuración del token
+
+Antes de ejecutar el script, es necesario crear un archivo `.env` en la raíz del proyecto con una variable de entorno llamada **FING_TOKEN**
+
+
+#### Ejecutar el script de descarga
 ```bash
 python scripts/download_corpus.py
 ```

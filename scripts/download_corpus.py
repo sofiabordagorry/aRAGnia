@@ -1,15 +1,18 @@
 import requests
 import os
 import urllib3
+from dotenv import load_dotenv
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import quote, unquote
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
-BASE_URL = "https://nube.fing.edu.uy/index.php/s/GHix5eNmcn9ZeAT/download"
+BASE_DIR = Path(__file__).parent.parent  # si scripts/ está dentro de la raíz
+load_dotenv(BASE_DIR / ".env")
 
-OUTPUT_DIR = BASE_DIR.parent / "data" / "corpus"
-INPUT_ARCHIVE = BASE_DIR.parent / "data" / "downloads_list.txt"
+TOKEN = os.getenv("FING_TOKEN")
+BASE_URL = f"https://nube.fing.edu.uy/index.php/s/{TOKEN}/download"
+OUTPUT_DIR = BASE_DIR / "data" / "corpus"
+INPUT_ARCHIVE = BASE_DIR / "data" / "downloads_list.txt"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 try:
