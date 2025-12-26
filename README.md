@@ -39,3 +39,16 @@ Este comando ejecuta:
 - Verificación de formato (black)
 - Type checking (mypy)
 - Tests con cobertura (pytest)
+
+### Descargar corpus de PDFs
+
+El proyecto incluye un script para descargar los PDFs desde una lista de URLs.
+
+- La lista de URLs se encuentra en data/downloads_list.txt.
+
+- Los PDFs descargados se guardan en la carpeta data/corpus.
+
+# Ejecutar el script de descarga
+```bash
+python scripts/download_corpus.py
+```
