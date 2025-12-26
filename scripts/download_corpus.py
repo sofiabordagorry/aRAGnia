@@ -6,7 +6,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import quote
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent  # si scripts/ está dentro de la raíz
+BASE_DIR = Path(__file__).parent.parent  
 load_dotenv(BASE_DIR / ".env")
 
 TOKEN = os.getenv("FING_TOKEN")
@@ -49,5 +49,3 @@ try:
     print(f"The number of files downloaded was: {archive_count}")
 except FileNotFoundError:
     print(f" Error: The file '{INPUT_ARCHIVE}' was not found.")
-except KeyboardInterrupt:
-    print(f"Forced termination")
