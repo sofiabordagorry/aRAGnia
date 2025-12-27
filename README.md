@@ -42,8 +42,7 @@ Este comando ejecuta:
 
 ### Descargar corpus de PDFs
 
-El proyecto incluye un script para descargar los PDFs de la nube institucional desde una lista de URLs los cuales estan formados por pares (Informe final, Propuesta Postulación) y addemas se agregaron 3 documentos los cuales son resultados o conclusiones de varios proyectos de un determinado año.
-
+El proyecto incluye un script para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
 - La lista de URLs se encuentra en data/downloads_list.txt.
 
 - Los PDFs descargados se guardan en la carpeta data/corpus.
