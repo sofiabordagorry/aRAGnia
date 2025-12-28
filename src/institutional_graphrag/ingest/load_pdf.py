@@ -6,13 +6,16 @@ from langchain_docling import DoclingLoader
 
 DEFAULT_CORPUS_DIR = Path("data/corpus")
 
+
 class DocumentLoadError(Exception):
     """Error al cargar o convertir un documento."""
+
     pass
 
 
 class LoadedDoc:
     """Representa un documento cargado con su metadata."""
+
     def __init__(self, path: Path, documents: List[Document]):
         self.path = path
         self.documents = documents
@@ -31,12 +34,12 @@ def iter_document_paths(corpus_dir: Path, recursive: bool = False) -> Iterator[P
 
     extensions = ["*.pdf", "*.docx", "*.pptx", "*.xlsx", "*.html", "*.md", "*.txt"]
     pattern_prefix = "**/" if recursive else ""
-    
-    files = []
+
+    files: list[Path] = []
     for ext in extensions:
         pattern = pattern_prefix + ext
         files.extend(p for p in corpus_dir.glob(pattern) if p.is_file())
-    
+
     yield from sorted(files)
 
 
@@ -47,7 +50,7 @@ def load_document(path: Path) -> LoadedDoc:
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Documento no encontrado: {path}")
-    
+
     supported_extensions = {".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"}
     if path.suffix.lower() not in supported_extensions:
         raise DocumentLoadError(
