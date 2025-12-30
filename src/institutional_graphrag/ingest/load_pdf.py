@@ -5,6 +5,8 @@ from langchain_core.documents import Document
 from langchain_docling import DoclingLoader
 
 DEFAULT_CORPUS_DIR = Path("data/corpus")
+SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"]
+GLOB_PATTERNS = [f"*{ext}" for ext in SUPPORTED_EXTENSIONS]
 
 
 class DocumentLoadError(Exception):
@@ -32,12 +34,8 @@ def iter_document_paths(corpus_dir: Path, recursive: bool = False) -> Iterator[P
     if not corpus_dir.is_dir():
         raise NotADirectoryError(f"La ruta del corpus no es un directorio: {corpus_dir}")
 
-    extensions = ["*.pdf", "*.docx", "*.pptx", "*.xlsx", "*.html", "*.md", "*.txt"]
-    pattern_prefix = "**/" if recursive else ""
-
     files: list[Path] = []
-    for ext in extensions:
-        pattern = pattern_prefix + ext
+    for pattern in (f"**/{p}" if recursive else p for p in GLOB_PATTERNS):
         files.extend(p for p in corpus_dir.glob(pattern) if p.is_file())
 
     yield from sorted(files)
@@ -51,11 +49,10 @@ def load_document(path: Path) -> LoadedDoc:
     if not path.exists():
         raise FileNotFoundError(f"Documento no encontrado: {path}")
 
-    supported_extensions = {".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"}
-    if path.suffix.lower() not in supported_extensions:
+    if path.suffix.lower() not in SUPPORTED_EXTENSIONS:
         raise DocumentLoadError(
             f"Formato de archivo no soportado: {path.suffix}. "
-            f"Formatos soportados: {', '.join(sorted(supported_extensions))}"
+            f"Formatos soportados: {', '.join(sorted(SUPPORTED_EXTENSIONS))}"
         )
 
     try:
