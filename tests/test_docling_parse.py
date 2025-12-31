@@ -23,7 +23,6 @@ def test_parse_corpus_sin_archivos(tmp_path):
     output_dir = tmp_path / "output"
     result = parse_corpus(tmp_path, output_dir)
 
-
     assert result == []
 
 
@@ -58,18 +57,18 @@ def test_load_parsed_document_exitoso(tmp_path):
 def test_parse_corpus_real(tmp_path):
     """Test de integración procesando un solo PDF."""
     corpus_dir = Path("data/corpus")
-    
+
     # Buscar un PDF en el corpus
     pdf_files = list(corpus_dir.glob("**/*.pdf"))
     if not pdf_files:
         pytest.skip("No hay PDFs en data/corpus")
-    
+
     # Crear directorio temporal y copiar solo un PDF
     test_corpus = tmp_path / "corpus"
     test_corpus.mkdir()
     test_pdf = test_corpus / pdf_files[0].name
     shutil.copy(pdf_files[0], test_pdf)
-    
+
     # Directorio de output temporal
     output_dir = tmp_path / "output"
 
@@ -79,17 +78,15 @@ def test_parse_corpus_real(tmp_path):
     # Verificar
     assert len(output_files) == 1
     output_path = output_files[0]
-    
+
     assert output_path.exists()
     assert output_path.suffix == ".json"
-    
+
     # Verificar contenido
     data = load_parsed_document(output_path)
     assert "source" in data
     assert "num_documents" in data
     assert "documents" in data
     assert len(data["documents"]) > 0
-    
+
     # tmp_path se limpia automáticamente al finalizar el test
-
-

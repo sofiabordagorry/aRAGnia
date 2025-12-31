@@ -4,10 +4,9 @@ Módulo para procesar PDFs con Docling y persistir el output estructurado.
 
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from .load_pdf import DocumentLoadError
-
 
 DEFAULT_CORPUS_DIR = Path("data/corpus")
 DEFAULT_OUTPUT_DIR = Path("data/docling")
@@ -23,10 +22,10 @@ def parse_corpus(
     Procesa todos los documentos de un directorio con Docling.
     """
     from .load_pdf import load_corpus
-    
+
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     output_files = []
 
     # Usar load_corpus que ya maneja la carga de documentos
@@ -50,7 +49,7 @@ def parse_corpus(
             # Persistir a disco
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(output_data, f, ensure_ascii=False, indent=2)
-            
+
             output_files.append(output_path)
             print(f"✓ Procesado: {loaded_doc.path.name} -> {output_path.name}")
         except Exception as e:
@@ -61,7 +60,7 @@ def parse_corpus(
     return output_files
 
 
-def load_parsed_document(json_path: Path) -> Optional[dict]:
+def load_parsed_document(json_path: Path) -> Optional[dict[Any, Any]]:
     """
     Carga un documento estructurado previamente procesado.
     """
@@ -72,6 +71,7 @@ def load_parsed_document(json_path: Path) -> Optional[dict]:
 
     try:
         with open(json_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            result: dict[Any, Any] = json.load(f)
+            return result
     except Exception as e:
         raise DocumentLoadError(f"Error al cargar documento estructurado: {json_path}") from e
