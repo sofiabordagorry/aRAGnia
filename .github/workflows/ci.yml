@@ -24,23 +24,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
+        working-directory: backend
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov black mypy ruff
           pip install -e . --no-deps
 
       - name: Lint with ruff
+        working-directory: backend
         run: |
           ruff check src tests
 
       - name: Check formatting with black
+        working-directory: backend
         run: |
           black --check src tests
 
       - name: Type check with mypy
+        working-directory: backend
         run: |
           mypy src/institutional_graphrag
 
       - name: Run tests
+        working-directory: backend
         run: |
           pytest -v --ignore=tests/test_load_pdf.py --ignore=tests/test_docling_parse.py
