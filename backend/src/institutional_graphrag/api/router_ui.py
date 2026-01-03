@@ -1,8 +1,9 @@
 # routes_ui.py
+import time
+from typing import Literal, TypedDict
+
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
-import time
-
 
 router = APIRouter()
 
@@ -12,7 +13,15 @@ def now_ms() -> int:
     return int(time.time() * 1000)
 
 
-MOCK_HISTORY = [
+class HistoryItem(TypedDict):
+    id: int
+    q: str
+    answer: str
+    mode: Literal["rag", "graphrag"]
+    ts: int
+
+
+MOCK_HISTORY: list[HistoryItem] = [
     {
         "id": 101,
         "q": "¿Qué es RAG y en qué se diferencia de un buscador clásico?",

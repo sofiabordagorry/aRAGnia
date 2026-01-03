@@ -49,3 +49,13 @@ jobs:
         working-directory: backend
         run: |
           pytest -v --ignore=tests/test_load_pdf.py --ignore=tests/test_docling_parse.py
+
+      - name: Frontend - Install deps
+        working-directory: frontend
+        run: |
+          npm ci
+
+      - name: Frontend - Format check
+        working-directory: frontend
+        run: |
+          npx prettier --check "public/**/*.html" "css/**/*.css" "js/**/*.js"

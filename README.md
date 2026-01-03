@@ -16,19 +16,57 @@ Se recomienda usar un entorno virtual.
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # En Windows: .venv/Scripts/activate
+```
+
+# Backend
+
+```bash
 cd backend
 pip install -e ".[dev]"
+```
+
+# Frontend
+
+```bash
+cd frontend
+npm init -y
+npm config set strict-ssl false
+npm install -D prettier
 ```
 
 ## Ejecución
 
 ### Formatear código
 
+# Backend
+
+ubicacion /backend/
+
+```bash
+./scripts/format.sh
+```
+
+# Frontend
+
+ubicacion /frontend/
+
 ```bash
 ./scripts/format.sh
 ```
 
 ### Ejecutar tests y verificaciones
+
+# Backend
+
+ubicacion /backend/
+
+```bash
+./scripts/check.sh
+```
+
+# Frontend
+
+ubicacion /frontend/
 
 ```bash
 ./scripts/check.sh
@@ -83,28 +121,4 @@ http://localhost:8000
 
 #### Levantar Frontend
 
-Existen dos formas de levantar el frontend:
-
-### Opción 1 - Live Server (VS Code)
-
 Abrí el archivo index.html utilizando Live Server desde VS Code.
-
-### Opción 2 — Servidor estático por línea de comandos
-
-1. ir a la carpeta:
-
-```text
-\\institutional-graphrag\\frontend\\public
-```
-
-2. ejecutar:
-
-```bash
-python -m http.server 5500
-```
-
-3. Luego abrí el navegador en:
-
-```text
-http://localhost:5500
-```

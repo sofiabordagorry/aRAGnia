@@ -127,8 +127,8 @@ function renderChunks(chunks) {
     card.innerHTML = `
       <div class="chunk-head">
         <div class="chunk-title" title="${escapeHtml(title)}">${escapeHtml(
-      title
-    )}</div>
+          title,
+        )}</div>
         <div class="chunk-score">${score ? `score ${score}` : ""}</div>
       </div>
       <div class="chunk-text">${escapeHtml(text)}</div>
@@ -266,7 +266,7 @@ async function ask() {
     if (!res.ok) {
       const t = await res.text().catch(() => "");
       throw new Error(
-        `HTTP ${res.status} ${res.statusText}${t ? ` - ${t}` : ""}`
+        `HTTP ${res.status} ${res.statusText}${t ? ` - ${t}` : ""}`,
       );
     }
 
@@ -281,7 +281,7 @@ async function ask() {
     typingMsg.remove();
     addMessage(
       "assistant",
-      "Error llamando al backend.\n\n" + String(err?.message || err)
+      "Error llamando al backend.\n\n" + String(err?.message || err),
     );
     setStatus("Error.");
   } finally {

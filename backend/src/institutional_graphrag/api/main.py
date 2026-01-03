@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .router_rag import router as rag_router
 from .router_graphrag import router as graphrag_router
+from .router_rag import router as rag_router
 from .router_ui import router as ui_router
-
 
 app = FastAPI(title="Institutional GraphRAG API")
 
