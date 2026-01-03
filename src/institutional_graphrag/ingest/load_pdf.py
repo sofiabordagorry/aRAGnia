@@ -67,8 +67,7 @@ def load_document(path: Path) -> LoadedDoc:
 
     if json_twin.exists():
         print(f"El documento {path.name} ya había sido convertido.")
-        # raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
-        return None
+        raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
 
     try:
         loader = DoclingLoader(file_path=str(path))
@@ -88,9 +87,9 @@ def load_corpus(
     """
     for doc_path in iter_document_paths(corpus_dir, recursive=recursive):
         try:
-            doc = load_document(doc_path)
-            if doc is not None:
-                yield doc
+            yield load_document(doc_path)
+        except DocumentAlreadyProcessed:
+            continue
         except Exception as e:
             print(f"Error al cargar {doc_path}: {e}")
             if not skip_errors:
