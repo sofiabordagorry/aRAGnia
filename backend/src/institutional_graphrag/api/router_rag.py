@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-# Acá importarías tu lógica real, por ejemplo:
-# from institutional_graphrag.ingest.rag import rag_answer
 
 router = APIRouter()
 

@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-# Ej: from institutional_graphrag.ingest.graphrag import graphrag_answer
 
 router = APIRouter()
 

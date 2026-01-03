@@ -3,6 +3,7 @@ from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 import time
 
+
 router = APIRouter()
 
 # Eliminar al tener funcionalidad 
