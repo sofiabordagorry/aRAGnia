@@ -2,17 +2,12 @@
 Tests para el módulo de chunking basado en secciones.
 """
 
-from pathlib import Path
-
-import pytest
 from langchain_core.documents import Document
 
 from institutional_graphrag.ingest.chunker import (
     SectionBasedChunker,
     chunk_documents,
-    chunk_loaded_doc,
 )
-from institutional_graphrag.ingest.load_pdf import load_document
 
 
 class TestSectionBasedChunker:
@@ -104,7 +99,7 @@ class TestSectionBasedChunker:
         assert len(chunks) > 1
         assert all(c.metadata.get("chunk_method") == "section_split" for c in chunks)
         assert all(c.metadata.get("section_heading") == "Sección Grande" for c in chunks)
-        
+
         # Verificar que los chunks tienen índices
         for i, chunk in enumerate(chunks):
             assert chunk.metadata.get("section_chunk_index") == i

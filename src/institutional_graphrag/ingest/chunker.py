@@ -5,20 +5,22 @@ Implementa chunking por sección cuando es posible, con fallback por tamaño
 para prevenir chunks demasiado grandes que excedan límites de tokens.
 """
 
-from typing import Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, cast
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+if TYPE_CHECKING:
+    from institutional_graphrag.ingest.load_pdf import LoadedDoc
 
 DEFAULT_MAX_CHUNK_SIZE = 2000
-DEFAULT_CHUNK_OVERLAP = 200  
+DEFAULT_CHUNK_OVERLAP = 200
 
 
 class SectionBasedChunker:
     """
     Chunker que respeta la estructura de secciones del documento.
-    
+
     Si los chunks por sección son muy grandes (superan max_chunk_size),
     se dividen adicionalmente usando RecursiveCharacterTextSplitter.
     """
@@ -31,7 +33,7 @@ class SectionBasedChunker:
     ):
         """
         Inicializa el chunker con parámetros de tamaño.
-        
+
         Args:
             max_chunk_size:
                 Tamaño máximo de chunk en unidades de `length_function`.
@@ -46,7 +48,7 @@ class SectionBasedChunker:
         self.max_chunk_size = max_chunk_size
         self.chunk_overlap = chunk_overlap
         self.length_function = length_function or len
-        
+
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=max_chunk_size,
             chunk_overlap=chunk_overlap,
@@ -57,23 +59,23 @@ class SectionBasedChunker:
     def chunk_documents(self, documents: List[Document]) -> List[Document]:
         """
         Genera chunks a partir de una lista de documentos.
-        
+
         Args:
             documents: Lista de documentos de LangChain con metadata.
-            
+
         Returns:
             Lista de chunks como documentos de LangChain.
         """
         chunks: List[Document] = []
-        
+
         # Agrupar documentos por sección basándose en headings
         sections = self._group_by_section(documents)
-        
+
         for section_heading, section_docs in sections:
             # Intentar crear uno o más chunks por sección
             section_chunks = self._chunk_section(section_heading, section_docs)
             chunks.extend(section_chunks)
-        
+
         return chunks
 
     def _group_by_section(
@@ -81,17 +83,17 @@ class SectionBasedChunker:
     ) -> List[Tuple[Optional[str], List[Document]]]:
         """
         Agrupa documentos por sección basándose en headings.
-        
+
         - Los documentos con el mismo heading se agrupan juntos.
         - Documentos sin heading se tratan individualmente.
-        
+
         Returns:
             Lista de tuplas (heading, documentos).
         """
         sections: List[Tuple[Optional[str], List[Document]]] = []
         current_heading: Optional[str] = None
         current_docs: List[Document] = []
-        
+
         for doc in documents:
             # Extraer heading de la metadata de Docling
             heading = self._extract_heading(doc)
@@ -117,28 +119,28 @@ class SectionBasedChunker:
             else:
                 # Misma sección, agregar documento
                 current_docs.append(doc)
-        
+
         # Agregar última sección abierta
         if current_docs:
             sections.append((current_heading, current_docs))
-        
+
         return sections
 
     def _extract_heading(self, doc: Document) -> Optional[str]:
         """
         Extrae el heading de la metadata de Docling.
-        
+
         Returns:
             El primer heading encontrado o None.
         """
         try:
             dl_meta = doc.metadata.get("dl_meta", {})
             headings = dl_meta.get("headings", [])
-            if headings:
+            if headings and isinstance(headings[0], str):
                 return headings[0]
-        except (AttributeError, KeyError, TypeError):
+        except (AttributeError, KeyError, TypeError, IndexError):
             pass
-        
+
         return None
 
     def _chunk_section(
@@ -146,14 +148,14 @@ class SectionBasedChunker:
     ) -> List[Document]:
         """
         Genera chunks para una sección.
-        
+
         Si el contenido de la sección cabe en max_chunk_size, se crea un solo chunk.
         Si no, se divide usando el text splitter.
-        
+
         Args:
             heading: Título de la sección (puede ser None).
             section_docs: Documentos que forman la sección.
-            
+
         Returns:
             Lista de chunks para esta sección.
         """
@@ -181,11 +183,11 @@ class SectionBasedChunker:
 
         # Preparar metadata base (del primer documento, sin mutarlo)
         base_metadata = dict(section_docs[0].metadata) if section_docs[0].metadata else {}
-        
+
         # Agregar información de la sección
         if heading:
             base_metadata["section_heading"] = heading
-        
+
         # Si la sección cabe en el límite, retornar como un solo chunk
         if self.length_function(section_content) <= self.max_chunk_size:
             return [
@@ -198,11 +200,11 @@ class SectionBasedChunker:
                     },
                 )
             ]
-        
+
         # Fallback: dividir por tamaño usando text splitter
         temp_doc = Document(page_content=section_content, metadata=base_metadata)
-        split_docs = self.text_splitter.split_documents([temp_doc])
-        
+        split_docs = cast(List[Document], self.text_splitter.split_documents([temp_doc]))
+
         # Agregar metadata adicional a los chunks
         total_chunks = len(split_docs)
         for i, chunk_doc in enumerate(split_docs):
@@ -215,24 +217,25 @@ class SectionBasedChunker:
                     "section_chunk_total": total_chunks,
                 }
             )
-        
+
         return split_docs
 
+
 def chunk_loaded_doc(
-    loaded_doc,
+    loaded_doc: "LoadedDoc",
     max_chunk_size: int = DEFAULT_MAX_CHUNK_SIZE,
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
     length_function: Optional[Callable[[str], int]] = None,
 ) -> List[Document]:
     """
     Función de conveniencia para hacer chunking de un LoadedDoc.
-    
+
     Args:
         loaded_doc: Instancia de LoadedDoc con documentos cargados.
         max_chunk_size: Tamaño máximo de chunk en unidades de length_function.
         chunk_overlap: Solapamiento entre chunks.
         length_function: Función que mide la longitud del texto.
-        
+
     Returns:
         Lista de chunks como documentos.
     """
@@ -241,7 +244,8 @@ def chunk_loaded_doc(
         chunk_overlap=chunk_overlap,
         length_function=length_function,
     )
-    return chunker.chunk_documents(loaded_doc.documents)
+    documents: List[Document] = loaded_doc.documents
+    return chunker.chunk_documents(documents)
 
 
 def chunk_documents(
@@ -252,13 +256,13 @@ def chunk_documents(
 ) -> List[Document]:
     """
     Función de conveniencia para hacer chunking de una lista de documentos.
-    
+
     Args:
         documents: Lista de documentos de LangChain.
         max_chunk_size: Tamaño máximo de chunk en unidades de length_function.
         chunk_overlap: Solapamiento entre chunks.
         length_function: Función que mide la longitud del texto.
-        
+
     Returns:
         Lista de chunks como documentos.
     """
