@@ -15,8 +15,10 @@ class DocumentLoadError(Exception):
 
     pass
 
+
 class DocumentAlreadyProcessed(Exception):
     """El documento ya estaba en cache."""
+
     pass
 
 
@@ -59,12 +61,13 @@ def load_document(path: Path) -> LoadedDoc:
             f"Formato de archivo no soportado: {path.suffix}. "
             f"Formatos soportados: {', '.join(sorted(SUPPORTED_EXTENSIONS))}"
         )
-    
-    #Chequear que no haya sido procesado aún
-    json_twin = DEFAULT_DOCLING_DIR / path.with_suffix('.json').name
+
+    # Chequear que no haya sido procesado aún
+    json_twin = DEFAULT_DOCLING_DIR / path.with_suffix(".json").name
+
     if json_twin.exists():
         print(f"El documento {path.name} ya había sido convertido.")
-        #raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
+        # raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
         return None
 
     try:
