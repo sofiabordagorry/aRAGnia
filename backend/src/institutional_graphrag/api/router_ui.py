@@ -6,9 +6,11 @@ import time
 
 router = APIRouter()
 
-# Eliminar al tener funcionalidad 
+
+# Eliminar al tener funcionalidad
 def now_ms() -> int:
     return int(time.time() * 1000)
+
 
 MOCK_HISTORY = [
     {
@@ -48,6 +50,7 @@ MOCK_HISTORY = [
     },
 ]
 
+
 @router.get("/history")
 def get_history(limit: int = 50):
     # Remplazar lo Hardcodeado por llamada a la funcion
@@ -55,11 +58,13 @@ def get_history(limit: int = 50):
     limit = max(1, min(limit, 200))
     return items[:limit]
 
+
 @router.delete("/history")
 def clear_history():
     # Remplazar lo Hardcodeado por llamada a la funcion
     MOCK_HISTORY.clear()
     return {"ok": True}
+
 
 @router.delete("/history/item")
 def delete_history_item(id: int = Query(...)):

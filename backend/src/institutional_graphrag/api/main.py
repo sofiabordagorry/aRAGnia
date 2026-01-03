@@ -20,6 +20,7 @@ app.include_router(rag_router, prefix="/rag", tags=["rag"])
 app.include_router(graphrag_router, prefix="/graphrag", tags=["graphrag"])
 app.include_router(ui_router, prefix="/ui", tags=["ui"])
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
