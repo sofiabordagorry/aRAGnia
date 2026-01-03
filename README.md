@@ -16,7 +16,7 @@ Se recomienda usar un entorno virtual.
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # En Windows: .venv/Scripts/activate
-cd cd .backend
+cd backend
 pip install -e ".[dev]"
 ```
 
