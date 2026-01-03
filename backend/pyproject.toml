@@ -14,6 +14,8 @@ dependencies = [
     "urllib3>=2.5.0",
     "langchain-docling>=2.0.0",
     "langchain-core>=1.2.5",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0"
 ]
 
 [project.optional-dependencies]
