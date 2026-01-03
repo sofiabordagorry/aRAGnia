@@ -57,14 +57,21 @@ def main():
             
             chunks_data = []
             for i, chunk in enumerate(chunks):
-                chunks_data.append({
+                chunk_data = {
                     "index": i,
                     "section_heading": chunk.metadata.get("section_heading"),
                     "chunk_method": chunk.metadata.get("chunk_method"),
                     "section_doc_count": chunk.metadata.get("section_doc_count", 1),
                     "page_content": chunk.page_content,
                     "tamaño_chars": len(chunk.page_content),
-                })
+                }
+                
+                # Agregar índices solo si el chunk fue dividido
+                if chunk.metadata.get("chunk_method") == "section_split":
+                    chunk_data["section_chunk_index"] = chunk.metadata.get("section_chunk_index")
+                    chunk_data["section_chunk_total"] = chunk.metadata.get("section_chunk_total")
+                
+                chunks_data.append(chunk_data)
             
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump({
