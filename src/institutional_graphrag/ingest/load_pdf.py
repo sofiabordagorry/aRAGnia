@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 from langchain_docling import DoclingLoader
 
 DEFAULT_CORPUS_DIR = Path("data/corpus")
+DEFAULT_DOCLING_DIR = Path("data/docling")
 SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"]
 GLOB_PATTERNS = [f"*{ext}" for ext in SUPPORTED_EXTENSIONS]
 
@@ -12,6 +13,10 @@ GLOB_PATTERNS = [f"*{ext}" for ext in SUPPORTED_EXTENSIONS]
 class DocumentLoadError(Exception):
     """Error al cargar o convertir un documento."""
 
+    pass
+
+class DocumentAlreadyProcessed(Exception):
+    """El documento ya estaba en cache."""
     pass
 
 
@@ -54,6 +59,13 @@ def load_document(path: Path) -> LoadedDoc:
             f"Formato de archivo no soportado: {path.suffix}. "
             f"Formatos soportados: {', '.join(sorted(SUPPORTED_EXTENSIONS))}"
         )
+    
+    #Chequear que no haya sido procesado aún
+    json_twin = DEFAULT_DOCLING_DIR / path.with_suffix('.json').name
+    if json_twin.exists():
+        print(f"El documento {path.name} ya había sido convertido.")
+        #raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
+        return None
 
     try:
         loader = DoclingLoader(file_path=str(path))
@@ -73,7 +85,9 @@ def load_corpus(
     """
     for doc_path in iter_document_paths(corpus_dir, recursive=recursive):
         try:
-            yield load_document(doc_path)
+            doc = load_document(doc_path)
+            if doc is not None:
+                yield doc
         except Exception as e:
             print(f"Error al cargar {doc_path}: {e}")
             if not skip_errors:
