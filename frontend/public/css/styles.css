@@ -444,6 +444,7 @@ body.compact .msg {
   background: color-mix(in srgb, var(--muted) 35%, transparent);
   border: 2px solid color-mix(in srgb, var(--muted) 60%, transparent);
   border-radius: 999px;
+  box-sizing: border-box;
   transition: 0.15s;
 }
 .slider:before {
@@ -451,20 +452,22 @@ body.compact .msg {
   position: absolute;
   width: 20px;
   height: 20px;
-  top: 2px;
   left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
   border-radius: 999px;
   background: var(--panel);
-  border: 2px solid color-mix(in srgb, var(--muted) 60%, transparent);
   transition: 0.15s;
 }
+
 .switch input:checked + .slider {
   background: color-mix(in srgb, var(--blue) 30%, transparent);
   border-color: color-mix(in srgb, var(--blue) 75%, transparent);
 }
 .switch input:checked + .slider:before {
-  transform: translateX(18px);
   border-color: color-mix(in srgb, var(--blue) 75%, transparent);
+  left: calc(100% - 2px - 20px);
+  transform: translateY(-50%);
 }
 
 .modal-footer {
