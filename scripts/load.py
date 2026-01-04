@@ -4,7 +4,7 @@ from pathlib import Path
 from institutional_graphrag.ingest.load_pdf import load_document
 
 pdf = list(Path("data/corpus").glob("*.pdf"))[0]
-print(f"qCargando: {pdf.name}")
+print(f"Cargando: {pdf.name}")
 
 doc = load_document(pdf)
 

@@ -19,13 +19,13 @@ def main():
     
     if not docling_dir.exists():
         print(f"No existe {docling_dir}")
-        print("   Primero ejecutar: python scripts/test_docling_manual.py data/corpus")
+        print("   Primero ejecutar: python scripts/docling_manual.py data/corpus")
         return
     
     json_files = list(docling_dir.glob("*.json"))
     if not json_files:
         print(f"No hay archivos JSON en {docling_dir}")
-        print("   Primero ejecutar: python scripts/test_docling_manual.py data/corpus")
+        print("   Primero ejecutar: python scripts/docling_manual.py data/corpus")
         return
     
     print(f"Leyendo documentos procesados: {docling_dir}")

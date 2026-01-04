@@ -11,7 +11,7 @@ from institutional_graphrag.ingest.docling_parse import parse_corpus, load_parse
 def main():
     """Procesa documentos con Docling."""
     if len(sys.argv) < 2:
-        print("Uso: python test_docling_manual.py <path>")
+        print("Uso: python docling_manual.py <path>")
         return 1
 
     path = Path(sys.argv[1])
