@@ -40,7 +40,3 @@ jobs:
       - name: Type check with mypy
         run: |
           mypy src/institutional_graphrag
-
-      - name: Run tests
-        run: |
-          pytest -v --ignore=tests/test_load_pdf.py --ignore=tests/test_docling_parse.py

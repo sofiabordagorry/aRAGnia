@@ -9,6 +9,7 @@ build/
 .mypy_cache/
 data/corpus/
 data/docling/
+data/chunks/
 # Virtual environments
 venv/
 .venv/
