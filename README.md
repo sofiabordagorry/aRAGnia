@@ -16,13 +16,39 @@ Se recomienda usar un entorno virtual.
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # En Windows: .venv/Scripts/activate
+```
 
+# Backend
+
+```bash
+cd backend
 pip install -e ".[dev]"
+```
+
+# Frontend
+
+```bash
+cd frontend
+npm init -y
+npm config set strict-ssl false
+npm install -D prettier
 ```
 
 ## Ejecución
 
 ### Formatear código
+
+# Backend
+
+ubicacion /backend/
+
+```bash
+./scripts/format.sh
+```
+
+# Frontend
+
+ubicacion /frontend/
 
 ```bash
 ./scripts/format.sh
@@ -30,11 +56,24 @@ pip install -e ".[dev]"
 
 ### Ejecutar tests y verificaciones
 
+# Backend
+
+ubicacion /backend/
+
+```bash
+./scripts/check.sh
+```
+
+# Frontend
+
+ubicacion /frontend/
+
 ```bash
 ./scripts/check.sh
 ```
 
 Este comando ejecuta:
+
 - Linter (ruff)
 - Verificación de formato (black)
 - Type checking (mypy)
@@ -43,6 +82,7 @@ Este comando ejecuta:
 ### Descargar corpus de PDFs
 
 El proyecto incluye un script para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
+
 - La lista de URLs se encuentra en data/downloads_list.txt.
 
 - Los PDFs descargados se guardan en la carpeta data/corpus.
@@ -53,8 +93,33 @@ El proyecto incluye un script para descargar los PDF de la nube institucional a 
 
 Antes de ejecutar el script, es necesario crear un archivo `.env` en la raíz del proyecto con una variable de entorno llamada **FING_TOKEN**
 
-
 #### Ejecutar el script de descarga
+
 ```bash
 python scripts/download_corpus.py
 ```
+
+#### Levantar Servidor backend
+
+1. Ubicarse en carpeta
+
+```text
+   institutional-graphrag/backend/src
+```
+
+2. Una vez realizada la instalación de dependencias mencionada anteriormente, ejecutá:
+
+```bash
+uvicorn institutional_graphrag.api.main:app --reload --port 8000
+```
+
+3. El backend quedará disponible en:
+
+```text
+http://localhost:8000
+```
+
+#### Levantar Frontend
+
+cd institutional-graphrag/frontend/public
+python -m http.server 5500

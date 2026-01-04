@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>RAG / GraphRAG Chat</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Top actions -->
+      <div class="top-actions">
+        <!-- Historial -->
+        <a
+          href="./history.html"
+          class="history-btn"
+          aria-label="Historial"
+          title="Historial"
+        >
+          Historial
+        </a>
+
+        <!-- Settings: icono sliders -->
+        <button
+          id="settingsBtn"
+          class="settings-btn"
+          aria-label="Settings"
+          title="Settings"
+        >
+          <span class="sliders-icon" aria-hidden="true">
+            <span class="line l1"><span class="knob k1"></span></span>
+            <span class="line l2"><span class="knob k2"></span></span>
+            <span class="line l3"><span class="knob k3"></span></span>
+          </span>
+        </button>
+      </div>
+
+      <div class="layout">
+        <section class="left">
+          <div class="field">
+            <label class="label" for="queryInput">Consulta</label>
+            <div class="input-row">
+              <input
+                id="queryInput"
+                class="query-input"
+                placeholder="Escribí tu pregunta..."
+              />
+              <button id="askBtn" class="ask-btn">Preguntar</button>
+            </div>
+            <div class="subhint">Enter para enviar.</div>
+          </div>
+
+          <div id="chat" class="chat" aria-label="Chat"></div>
+
+          <div class="status-row">
+            <span id="status" class="status">Listo.</span>
+            <span id="modeBadge" class="badge">Modo: RAG</span>
+          </div>
+        </section>
+
+        <aside class="right">
+          <div id="chunksPanel" class="chunks-panel hidden">
+            <div class="chunks-title">Chunks Recuperados</div>
+            <div id="chunksList" class="chunks-list"></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalBackdrop" class="backdrop hidden"></div>
+
+    <div
+      id="settingsModal"
+      class="modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsTitle"
+    >
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="settingsTitle">Configuración</div>
+          <div class="modal-subtitle">Los cambios se aplican al guardar</div>
+        </div>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Cerrar">
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Modo -->
+        <div class="card">
+          <div class="card-row">
+            <div>
+              <div class="card-label">GraphRAG</div>
+              <div class="card-desc">On = GraphRAG, Off = RAG</div>
+            </div>
+
+            <label class="switch">
+              <input id="graphToggle" type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tema -->
+        <div class="card">
+          <div class="card-row">
+            <div>
+              <div class="card-label">Tema</div>
+              <div class="card-desc">Claro u Oscuro</div>
+            </div>
+
+            <div class="segmented" role="group" aria-label="Tema">
+              <button id="themeLightBtn" class="seg-btn active" type="button">
+                Claro
+              </button>
+              <button id="themeDarkBtn" class="seg-btn" type="button">
+                Oscuro
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experiencia -->
+        <div class="card">
+          <div class="card-label">Otras Configuraciones</div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="opt-label">Enter para enviar</div>
+              <div class="hint">Como ChatGPT</div>
+            </div>
+            <label class="switch">
+              <input id="enterToSend" type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <div class="opt-label">Modo compacto</div>
+              <div class="hint">Mensajes más chicos</div>
+            </div>
+            <label class="switch">
+              <input id="compactMode" type="checkbox" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="resetBtn" class="secondary" type="button">Resetear</button>
+        <button id="saveBtn" class="primary" type="button">Guardar</button>
+      </div>
+    </div>
+
+    <script src="/js/script.js" defer></script>
+  </body>
+</html>
