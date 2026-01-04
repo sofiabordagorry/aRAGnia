@@ -121,4 +121,5 @@ http://localhost:8000
 
 #### Levantar Frontend
 
-Abrí el archivo index.html utilizando Live Server desde VS Code.
+cd institutional-graphrag/frontend/public
+python -m http.server 5500
