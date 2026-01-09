@@ -104,8 +104,6 @@ python .\scripts\download_corpus.py
 
 Ubicarse en la ruta /institutional-graphrag/backend
 
-Procesar un PDF individual:
-
 #### Procesar un PDF individual:
 
 ```bash
@@ -118,9 +116,9 @@ python .\scripts\docling_manual.py corpus\13.pdf
 python .\scripts\docling_manual.py corpus
 ```
 
-Los archivos JSON se generan en /institutional-graphrag/data/docling.
+Los archivos Json se generan en /institutional-graphrag/data/docling.
 
-### Generar chunks usando los archivos JSON
+### Generar chunks usando los archivos Json
 
 Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicados en
 /institutional-graphrag/data/chunks.
