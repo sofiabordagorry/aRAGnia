@@ -91,12 +91,14 @@ El proyecto incluye un script para descargar los PDF de la nube institucional a 
 
 ### Configuración del token
 
-Antes de ejecutar el script, es necesario crear un archivo `.env` en la raíz del proyecto con una variable de entorno llamada **FING_TOKEN**
+Antes de ejecutar el script, es necesario crear un archivo `.env` en la carpeta backend del proyecto con una variable de entorno llamada **FING_TOKEN**
+
+# Los Scripts se encuentran en la carpeta Backend
 
 ### Ejecutar el script de descarga
 
 ```bash
-python .\scripts\download_corpus.py corpus
+python .\scripts\download_corpus.py
 ```
 
 ## Convertir PDFs en Documentos Estructurados Utilizando Dockling
