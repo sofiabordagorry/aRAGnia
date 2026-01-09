@@ -10,6 +10,7 @@ build/
 data/corpus/
 data/docling/
 data/chunks/
+data/embeddings/
 # Virtual environments
 venv/
 .venv/
