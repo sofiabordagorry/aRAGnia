@@ -79,7 +79,7 @@ Este comando ejecuta:
 - Type checking (mypy)
 - Tests con cobertura (pytest)
 
-### Descargar corpus de PDFs
+## Descargar corpus de PDFs
 
 El proyecto incluye un script para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
 
@@ -89,17 +89,46 @@ El proyecto incluye un script para descargar los PDF de la nube institucional a 
 
 - El acceso a la nube se realiza mediante un enlace público de Nextcloud, cuyo token debe configurarse a través de una variable de entorno.
 
-#### Configuración del token
+### Configuración del token
 
 Antes de ejecutar el script, es necesario crear un archivo `.env` en la raíz del proyecto con una variable de entorno llamada **FING_TOKEN**
 
-#### Ejecutar el script de descarga
+### Ejecutar el script de descarga
 
 ```bash
-python scripts/download_corpus.py
+python .\scripts\download_corpus.py corpus
 ```
 
-#### Levantar Servidor backend
+## Convertir PDFs en Documentos Estructurados Utilizando Dockling
+
+Ubicarse en la ruta /institutional-graphrag/backend
+
+Procesar un PDF individual:
+
+### Procesar un PDF individual:
+
+```bash
+python .\scripts\docling_manual.py corpus\13.pdf
+```
+
+### Procesar todo el corpus:
+
+```bash
+python .\scripts\docling_manual.py corpus
+```
+
+Los archivos JSON se generan en /institutional-graphrag/data/docling.
+
+### Generar chunks usando los archivos JSON
+
+Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicados en
+/institutional-graphrag/data/chunks.
+
+```bash
+python .\scripts\chunk_corpus.py
+```
+
+## Levantar Servidor backend
 
 1. Ubicarse en carpeta
 
@@ -119,7 +148,7 @@ uvicorn institutional_graphrag.api.main:app --reload --port 8000
 http://localhost:8000
 ```
 
-#### Levantar Frontend
+## Levantar Frontend
 
 cd institutional-graphrag/frontend/public
 python -m http.server 5500

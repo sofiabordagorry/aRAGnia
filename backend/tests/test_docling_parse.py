@@ -11,6 +11,8 @@ from institutional_graphrag.ingest.docling_parse import (
     parse_corpus,
 )
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
 
 def test_parse_corpus_directorio_no_existe():
     """Debe fallar si el directorio no existe."""
@@ -51,12 +53,12 @@ def test_load_parsed_document_exitoso(tmp_path):
 
 
 @pytest.mark.skipif(
-    not Path("data/corpus").exists(),
+    not (DATA_DIR / "corpus").exists(),
     reason="Requiere data/corpus",
 )
 def test_parse_corpus_real(tmp_path):
     """Test de integración procesando un solo PDF."""
-    corpus_dir = Path("data/corpus")
+    corpus_dir = DATA_DIR / Path("corpus")
 
     # Buscar un PDF en el corpus
     pdf_files = list(corpus_dir.glob("**/*.pdf"))

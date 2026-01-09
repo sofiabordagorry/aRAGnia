@@ -8,14 +8,16 @@ from pathlib import Path
 from institutional_graphrag.ingest.docling_parse import parse_corpus, load_parsed_document
 
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
 def main():
     """Procesa documentos con Docling."""
     if len(sys.argv) < 2:
         print("Uso: python docling_manual.py <path>")
         return 1
 
-    path = Path(sys.argv[1])
-    output_dir = Path("data/docling")
+    path = DATA_DIR / Path(sys.argv[1])
+    output_dir = DATA_DIR / Path("docling")
 
     if not path.exists():
         print(f"Error: No existe {path}")
@@ -27,7 +29,7 @@ def main():
 
     # Si es un archivo, crear un directorio temporal
     if path.is_file():
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(dir=DATA_DIR) as tmpdir:
             tmp_corpus = Path(tmpdir) / "corpus"
             tmp_corpus.mkdir()
             shutil.copy(path, tmp_corpus / path.name)

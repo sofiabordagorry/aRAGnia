@@ -4,8 +4,9 @@ from typing import Iterator, List
 from langchain_core.documents import Document
 from langchain_docling import DoclingLoader
 
-DEFAULT_CORPUS_DIR = Path("data/corpus")
-DEFAULT_DOCLING_DIR = Path("data/docling")
+DATA_DIR = Path(__file__).resolve().parents[4] / "data"
+DEFAULT_CORPUS_DIR = DATA_DIR / Path("corpus")
+DEFAULT_DOCLING_DIR = DATA_DIR / Path("docling")
 SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"]
 GLOB_PATTERNS = [f"*{ext}" for ext in SUPPORTED_EXTENSIONS]
 
