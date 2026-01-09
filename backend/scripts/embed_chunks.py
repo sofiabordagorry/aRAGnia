@@ -1,0 +1,79 @@
+import json
+import numpy as np
+from pathlib import Path
+from sentence_transformers import SentenceTransformer
+
+# Cargar el modelo
+print("Cargando modelo de embeddings E5-large-v2...")
+model = SentenceTransformer('intfloat/e5-large-v2')
+
+def main():
+    chunks_dir = Path("data/chunks")
+    output_dir = Path("data/embeddings")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    if not chunks_dir.exists():
+        print(f"No existe {chunks_dir}")
+        print("   Primero ejecutar: python scripts/chunk_corpus.py")
+        return
+    
+    json_files = list(chunks_dir.glob("*.json"))
+    if not json_files:
+        print(f"No hay archivos JSON en {chunks_dir}")
+        print("   Primero ejecutar: python scripts/chunk_corpus.py")
+        return
+
+    print(f"Leyendo chunks procesados: {chunks_dir}")
+    print(f"Output: {output_dir}")
+    print(f"Archivos encontrados: {len(json_files)}")
+    print("=" * 60)
+    
+    processed = 0
+    errors = 0
+
+    for json_file in sorted(json_files):
+        file_id = json_file.stem.removesuffix("_chunks")
+        embedding_path = output_dir / f"{file_id}.npy"
+
+        # Fijarse que no hayan sido creados embeddings para ese archivo aún
+        if embedding_path.exists():
+            print(f"{json_file.name} ya había sido procesado.")
+            continue
+
+        print(f"Procesando {json_file.name}...")
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            chunks = data.get("chunks",[])
+            if not chunks:
+                print(f"✗ {json_file.name}: no tiene chunks")
+                continue
+
+            # Para usar E5 los chunks tienen que empezar con "passage: "
+            text_to_embed = [f"passage: {c['page_content']}" for c in chunks]
+
+            # Generar los embeddings
+            embeddings = model.encode(text_to_embed, normalize_embeddings=True)
+            
+            # Guardar embeddings
+            np.save(output_dir / f"{file_id}.npy", embeddings)
+
+            # Se guardan tambien los chunks como metadata de los embeddings
+            # Esto evita referencias erroneas y hace que el retrieval requiera menos parseo
+            with open(output_dir / f"{file_id}_metadata.json", 'w', encoding='utf-8') as f:
+                json.dump(chunks, f, ensure_ascii=False, indent=2)
+            
+            processed += 1
+           
+        except Exception as e:
+            errors += 1
+            print(f"✗ {json_file.name}: {e}")
+    
+    print("=" * 60)
+    print(f"Resumen:")
+    print(f"   Archivos procesados: {processed}")
+    print(f"   Errores: {errors}")
+
+if __name__ == "__main__":
+    main()
