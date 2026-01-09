@@ -9,7 +9,8 @@ embeddings_dir = Path("data/embeddings")
 
 # Cargar modelo embeddings
 print("Cargando modelo de embeddings E5-large-v2...")
-model = SentenceTransformer('intfloat/e5-large-v2')
+model = SentenceTransformer("intfloat/e5-large-v2")
+
 
 def get_top_k_knn(query_text, k=3):
     all_embeddings = []
@@ -19,9 +20,9 @@ def get_top_k_knn(query_text, k=3):
     for npy_file in embeddings_dir.glob("*.npy"):
         embeddings = np.load(npy_file)
         metadata_path = npy_file.with_name(f"{npy_file.stem}_metadata.json")
-        with open(metadata_path, 'r', encoding='utf-8') as f:
+        with open(metadata_path, "r", encoding="utf-8") as f:
             metadata = json.load(f)
-        
+
         all_embeddings.append(embeddings)
         all_metadata.extend(metadata)
 
@@ -30,7 +31,7 @@ def get_top_k_knn(query_text, k=3):
 
     # Busqueda K-nn con similitud coseno
     # 'brute' para conjuntos pequeños; 'ball_tree' si vemos que demora mucho
-    knn = NearestNeighbors(n_neighbors=k, metric='cosine', algorithm='brute')
+    knn = NearestNeighbors(n_neighbors=k, metric="cosine", algorithm="brute")
     knn.fit(search_matrix)
 
     # Generar embedding de la query
@@ -41,12 +42,10 @@ def get_top_k_knn(query_text, k=3):
 
     results = []
     for dist, idx in zip(distances[0], indices[0]):
-        results.append({
-            "score": 1 - dist,
-            "content": all_metadata[idx]['page_content']
-        })
-    
+        results.append({"score": 1 - dist, "content": all_metadata[idx]["page_content"]})
+
     return results
+
 
 if __name__ == "__main__":
     query = input("Ingresar query: ")
