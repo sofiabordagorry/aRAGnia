@@ -11,6 +11,8 @@ from institutional_graphrag.ingest.load_pdf import (
     load_document,
 )
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
 
 def test_iter_document_paths_encuentra_archivos(tmp_path):
     """Debe encontrar archivos de formatos soportados."""
@@ -46,7 +48,7 @@ def test_load_document_formato_invalido(tmp_path):
 
 def test_load_document_pdf_real():
     """Debe cargar un PDF real del corpus."""
-    corpus_dir = Path("data/corpus")
+    corpus_dir = DATA_DIR / Path("corpus")
 
     if not corpus_dir.exists():
         pytest.skip("Directorio data/corpus no existe")

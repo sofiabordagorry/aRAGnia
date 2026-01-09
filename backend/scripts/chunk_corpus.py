@@ -11,10 +11,11 @@ from langchain_core.documents import Document
 from institutional_graphrag.ingest.docling_parse import load_parsed_document
 from institutional_graphrag.ingest.chunker import chunk_documents
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 def main():
-    docling_dir = Path("data/docling")
-    output_dir = Path("data/chunks")
+    docling_dir = DATA_DIR / Path("docling")
+    output_dir = DATA_DIR / Path("chunks")
     output_dir.mkdir(parents=True, exist_ok=True)
     
     if not docling_dir.exists():

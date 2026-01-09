@@ -8,8 +8,9 @@ from typing import Any, Optional
 
 from .load_pdf import DocumentLoadError
 
-DEFAULT_CORPUS_DIR = Path("data/corpus")
-DEFAULT_OUTPUT_DIR = Path("data/docling")
+DATA_DIR = Path(__file__).resolve().parents[4] / "data"
+DEFAULT_CORPUS_DIR = DATA_DIR / Path("corpus")
+DEFAULT_OUTPUT_DIR = DATA_DIR / Path("docling")
 
 
 def parse_corpus(
