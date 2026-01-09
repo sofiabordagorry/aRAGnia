@@ -1,11 +1,21 @@
 import json
 import numpy as np
+import torch
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 
 # Cargar el modelo
+if torch.cuda.is_available():
+    device = "cuda"
+elif torch.backends.mps.is_available():
+    device = "mps"
+else:
+    device = "cpu"
+
+print(f"Corriendo modelo en: {device}")
+
 print("Cargando modelo de embeddings E5-large-v2...")
-model = SentenceTransformer('intfloat/e5-large-v2')
+model = SentenceTransformer('intfloat/e5-large-v2',device=device)
 
 def main():
     chunks_dir = Path("data/chunks")
