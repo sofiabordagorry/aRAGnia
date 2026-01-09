@@ -7,6 +7,7 @@ from institutional_graphrag.ingest.embedder import E5Embedder
 # Paths
 embeddings_dir = Path("data/embeddings")
 
+
 def get_top_k_knn(query_text, k=3):
 
     # Cargar modelo embeddings

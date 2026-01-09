@@ -1,10 +1,11 @@
 import torch
 from sentence_transformers import SentenceTransformer
 
+
 class E5Embedder:
     """Realiza embeddings usando el sentence transformer E5 Large v2."""
 
-    def __init__(self, model_name: str = 'intfloat/e5-large-v2'):
+    def __init__(self, model_name: str = "intfloat/e5-large-v2"):
         # Usar el mejor hardware posible
         if torch.cuda.is_available():
             self.device = "cuda"
@@ -12,7 +13,7 @@ class E5Embedder:
             self.device = "mps"
         else:
             self.device = "cpu"
-            
+
         print(f"Cargando modelo de embeddings E5-large-v2 usando:  {self.device}")
         self.model = SentenceTransformer(model_name, device=self.device)
 
@@ -21,16 +22,13 @@ class E5Embedder:
         # Para usar E5 los chunks tienen que empezar con "passage: "
         formatted_texts = [f"passage: {t}" for t in texts]
         return self.model.encode(
-            formatted_texts, 
-            normalize_embeddings=True, 
+            formatted_texts,
+            normalize_embeddings=True,
             batch_size=batch_size,
-            show_progress_bar=True
+            show_progress_bar=True,
         )
 
     def embed_query(self, query: str):
         """Hace embedding de la query para poder hacer retrieval por similitud."""
         # La query se pasa como lista para que el formato de salida sea el adecuado
-        return self.model.encode(
-            [f"query: {query}"], 
-            normalize_embeddings=True
-        )
+        return self.model.encode([f"query: {query}"], normalize_embeddings=True)
