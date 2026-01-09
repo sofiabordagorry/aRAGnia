@@ -18,14 +18,14 @@ python -m venv .venv
 source .venv/bin/activate  # En Windows: .venv/Scripts/activate
 ```
 
-# Backend
+### Backend
 
 ```bash
 cd backend
 pip install -e ".[dev]"
 ```
 
-# Frontend
+### Frontend
 
 ```bash
 cd frontend
@@ -38,7 +38,7 @@ npm install -D prettier
 
 ### Formatear código
 
-# Backend
+#### Backend
 
 ubicacion /backend/
 
@@ -46,7 +46,7 @@ ubicacion /backend/
 ./scripts/format.sh
 ```
 
-# Frontend
+#### Frontend
 
 ubicacion /frontend/
 
@@ -56,7 +56,7 @@ ubicacion /frontend/
 
 ### Ejecutar tests y verificaciones
 
-# Backend
+#### Backend
 
 ubicacion /backend/
 
@@ -64,7 +64,7 @@ ubicacion /backend/
 ./scripts/check.sh
 ```
 
-# Frontend
+#### Frontend
 
 ubicacion /frontend/
 
@@ -79,9 +79,9 @@ Este comando ejecuta:
 - Type checking (mypy)
 - Tests con cobertura (pytest)
 
-## Descargar corpus de PDFs
+### Descargar corpus de PDFs
 
-El proyecto incluye un script para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
+El proyecto incluye un script (en la carpeta backend)  para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
 
 - La lista de URLs se encuentra en data/downloads_list.txt.
 
@@ -89,31 +89,30 @@ El proyecto incluye un script para descargar los PDF de la nube institucional a 
 
 - El acceso a la nube se realiza mediante un enlace público de Nextcloud, cuyo token debe configurarse a través de una variable de entorno.
 
-### Configuración del token
+#### Configuración del token
 
 Antes de ejecutar el script, es necesario crear un archivo `.env` en la carpeta backend del proyecto con una variable de entorno llamada **FING_TOKEN**
 
-# Los Scripts se encuentran en la carpeta Backend
 
-### Ejecutar el script de descarga
+#### Ejecutar el script de descarga
 
 ```bash
 python .\scripts\download_corpus.py
 ```
 
-## Convertir PDFs en Documentos Estructurados Utilizando Dockling
+### Convertir PDFs en Documentos Estructurados Utilizando Dockling
 
 Ubicarse en la ruta /institutional-graphrag/backend
 
 Procesar un PDF individual:
 
-### Procesar un PDF individual:
+#### Procesar un PDF individual:
 
 ```bash
 python .\scripts\docling_manual.py corpus\13.pdf
 ```
 
-### Procesar todo el corpus:
+#### Procesar todo el corpus:
 
 ```bash
 python .\scripts\docling_manual.py corpus
@@ -130,7 +129,7 @@ Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicad
 python .\scripts\chunk_corpus.py
 ```
 
-## Levantar Servidor backend
+### Levantar Servidor backend
 
 1. Ubicarse en carpeta
 
@@ -150,7 +149,7 @@ uvicorn institutional_graphrag.api.main:app --reload --port 8000
 http://localhost:8000
 ```
 
-## Levantar Frontend
+### Levantar Frontend
 
 cd institutional-graphrag/frontend/public
 python -m http.server 5500
