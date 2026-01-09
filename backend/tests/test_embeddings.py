@@ -2,17 +2,16 @@ import json
 import numpy as np
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors
-from sentence_transformers import SentenceTransformer
+from institutional_graphrag.ingest.embedder import E5Embedder
 
 # Paths
 embeddings_dir = Path("data/embeddings")
 
-# Cargar modelo embeddings
-print("Cargando modelo de embeddings E5-large-v2...")
-model = SentenceTransformer("intfloat/e5-large-v2")
-
-
 def get_top_k_knn(query_text, k=3):
+
+    # Cargar modelo embeddings
+    embedder = E5Embedder()
+
     all_embeddings = []
     all_metadata = []
 
@@ -35,7 +34,7 @@ def get_top_k_knn(query_text, k=3):
     knn.fit(search_matrix)
 
     # Generar embedding de la query
-    query_embedding = model.encode([f"query: {query_text}"], normalize_embeddings=True)
+    query_embedding = embedder.embed_query(query_text)
 
     # distances = 1 - similitud coseno
     distances, indices = knn.kneighbors(query_embedding)

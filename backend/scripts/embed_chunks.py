@@ -1,21 +1,8 @@
 import json
 import numpy as np
-import torch
 from pathlib import Path
-from sentence_transformers import SentenceTransformer
+from institutional_graphrag.ingest.embedder import E5Embedder
 
-# Cargar el modelo
-if torch.cuda.is_available():
-    device = "cuda"
-elif torch.backends.mps.is_available():
-    device = "mps"
-else:
-    device = "cpu"
-
-print(f"Corriendo modelo en: {device}")
-
-print("Cargando modelo de embeddings E5-large-v2...")
-model = SentenceTransformer('intfloat/e5-large-v2',device=device)
 
 def main():
     chunks_dir = Path("data/chunks")
@@ -41,6 +28,8 @@ def main():
     processed = 0
     errors = 0
 
+    embedder = E5Embedder()
+
     for json_file in sorted(json_files):
         file_id = json_file.stem.removesuffix("_chunks")
         embedding_path = output_dir / f"{file_id}.npy"
@@ -60,11 +49,9 @@ def main():
                 print(f"✗ {json_file.name}: no tiene chunks")
                 continue
 
-            # Para usar E5 los chunks tienen que empezar con "passage: "
-            text_to_embed = [f"passage: {c['page_content']}" for c in chunks]
+            chunk_content = [c['page_content'] for c in chunks]
 
-            # Generar los embeddings
-            embeddings = model.encode(text_to_embed, normalize_embeddings=True)
+            embeddings = embedder.embed_passages(chunk_content)
             
             # Guardar embeddings
             np.save(output_dir / f"{file_id}.npy", embeddings)
