@@ -4,7 +4,7 @@ Script de demostración del flujo completo:
 2. Generar chunks
 3. Generar embeddings
 4. Almacenar en vector store
-5. Buscar documentos similares
+5. Buscar chunks similares
 """
 
 import json
