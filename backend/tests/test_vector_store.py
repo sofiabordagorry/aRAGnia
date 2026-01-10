@@ -1,6 +1,7 @@
 """Tests para la VectorStore."""
 
 import pytest
+
 from institutional_graphrag.retrieval import VectorStore
 
 
@@ -49,24 +50,25 @@ def test_vector_store_initialization(vector_store):
 def test_add_documents(vector_store, sample_data):
     """Agregar documentos al vector store."""
     texts, embeddings, metadata = sample_data
-    
+
     ids = vector_store.add_documents(embeddings, metadata)
-    
+
     assert len(ids) == len(embeddings)
     assert vector_store.count_documents() == len(embeddings)
+
 
 def test_search(vector_store, sample_data):
     """Buscar documentos similares."""
     texts, embeddings, metadata = sample_data
     vector_store.add_documents(embeddings, metadata)
-    
+
     # Buscar con una consulta similar al primer documento
     query_embedding = [0.1] * 128
     results = vector_store.search(query_embedding, top_k=2)
-    
+
     assert len(results) <= 2
     assert all(len(result) == 3 for result in results)  # (id, score, metadata)
-    
+
     # Verificar estructura de resultados
     doc_id, score, meta = results[0]
     assert isinstance(doc_id, str)
@@ -78,10 +80,10 @@ def test_search_with_score_threshold(vector_store, sample_data):
     """Buscar documentos con score."""
     texts, embeddings, metadata = sample_data
     vector_store.add_documents(embeddings, metadata)
-    
+
     query_embedding = [0.1] * 128
     results = vector_store.search(query_embedding, top_k=10, score_threshold=0.99)
-    
+
     # Con un umbral alto, deberíamos obtener menos resultados
     assert all(score >= 0.99 for _, score, _ in results)
 
@@ -89,11 +91,11 @@ def test_search_with_score_threshold(vector_store, sample_data):
 def test_count_documents(vector_store, sample_data):
     """Test contar documentos en la colección."""
     texts, embeddings, metadata = sample_data
-    
+
     assert vector_store.count_documents() == 0
-    
+
     vector_store.add_documents(embeddings[:2], metadata[:2])
     assert vector_store.count_documents() == 2
-    
+
     vector_store.add_documents(embeddings[2:], metadata[2:])
     assert vector_store.count_documents() == 3
