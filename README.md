@@ -127,6 +127,20 @@ Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicad
 python .\scripts\chunk_corpus.py
 ```
 
+### Generar embeddings 
+
+Generar embeddings de los chunks:
+
+```bash
+python .\scripts\embed_chunks.py
+```
+
+### Levantar Qdrant local (Vector Store):
+
+```bash
+docker run -p 6333:6333 qdrant/qdrant
+```
+
 ### Levantar Servidor backend
 
 1. Ubicarse en carpeta
