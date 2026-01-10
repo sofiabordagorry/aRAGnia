@@ -85,7 +85,7 @@ def main():
         meta['semantic_id'] = semantic_id
         metadata_list.append(meta)
     
-    # 6. Crear vector store y agregar documentos
+    # 6. Crear vector store y agregar chunks
     print(f"\nAlmacenando en Qdrant...")
     store = VectorStore(
         collection_name="demo_collection",
@@ -95,16 +95,16 @@ def main():
     # Limpiar colección si existe
     store.clear_collection()
     
-    # Agregar documentos
+    # Agregar chunks
     stored_ids = store.add_documents(embeddings, metadata_list, ids)
-    print(f"Almacenados {len(stored_ids)} documentos")
+    print(f"Almacenados {len(stored_ids)} chunks")
     print(f"  Primeros IDs: {stored_ids[:3]}")
     
     # Verificar conteo
     count = store.count_documents()
-    print(f"Documentos en colección: {count}")
+    print(f"Chunks en colección: {count}")
     
-    # 7. Buscar documentos similares
+    # 7. Buscar chunks similares
     print(f"\nProbando búsqueda...")
     query = "¿Cuáles son los objetivos del proyecto?"
     print(f"  Query: '{query}'")
