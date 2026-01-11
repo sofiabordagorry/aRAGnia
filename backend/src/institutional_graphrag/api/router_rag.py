@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+from institutional_graphrag.rag.generate import Rag
+from institutional_graphrag.rag.generate import RAGResult
+
 
 router = APIRouter()
-
 
 class QueryRequest(BaseModel):
     query: str
@@ -15,7 +17,15 @@ class QueryResponse(BaseModel):
 
 @router.post("/query", response_model=QueryResponse)
 def rag_query(payload: QueryRequest):
-    # Remplazar lo Hardcodeado por llamada a la funcion
-    fake_chunks = [{"id": 1, "text": "chunk ejemplo", "score": 0.92}]
-    fake_answer = f"Respuesta RAG para: {payload.query}"
-    return QueryResponse(answer=fake_answer, chunks=fake_chunks)
+    # llm provider = [groq, ollama, local]
+    rag = Rag(top_k=3, llm_provider="ollama")
+    result = rag.generate(payload.query)
+    chunks=[
+            {
+                "id": ch.semantic_id,   
+                "text": ch.text,
+                "score": ch.score,
+            }
+            for ch in result.contexts
+        ]
+    return QueryResponse(answer=result.answer, chunks=chunks)
