@@ -261,7 +261,9 @@ class HFLocalLLM:
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
-def get_llm_client(provider=cast(Literal["groq", "ollama", "local"]), *, model: Optional[str] = None):
+def get_llm_client(
+    provider=cast(Literal["groq", "ollama", "local"]), *, model: Optional[str] = None
+):
     if provider not in ["groq", "ollama", "local"]:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
