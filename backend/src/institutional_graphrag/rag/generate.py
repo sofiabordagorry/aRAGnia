@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Protocol, Optional
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
 from groq import Groq
@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parents[4]
 DEFAULT_EMBEDDINGS_DIR = BASE_DIR / Path("data/embeddings")
 
-_llm_instances: dict[str, object] = {}
+_llm_instances: dict[str, LLMClient] = {}
 
 
 @dataclass
@@ -147,6 +147,16 @@ class RAG:
 # LLMS Provider
 
 
+class LLMClient(Protocol):
+    def generate(
+        self,
+        *,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> str: ...
+
+
 _embedder = None
 
 
@@ -187,7 +197,13 @@ class OllamaClient:
         self.url = f"{base_url}/api/chat"
         self.model = model
 
-    def generate(self, messages, temperature=0.2, max_tokens=512):
+    def generate(
+        self,
+        *,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
         payload = {
             "model": self.model,
             "messages": messages,
@@ -237,11 +253,12 @@ class HFLocalLLM:
 
     def generate(
         self,
-        messages,
-        max_tokens=192,
-        temperature=0.2,
-        top_p=0.9,
-    ):
+        *,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        top_p = (0.9,)
 
         input_ids = self.tokenizer.apply_chat_template(
             messages,
@@ -269,18 +286,18 @@ class HFLocalLLM:
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
-def get_llm_client(provider: str, *, model: Optional[str] = None) -> object:
+def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
     if provider not in {"groq", "ollama", "local"}:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
-    if provider in _llm_instances:
-        return _llm_instances[provider]
+    cached = _llm_instances.get(provider)
+    if cached is not None:
+        return cached
 
-    client: object
     if provider == "groq":
-        client = GroqClient(model=model or "llama-3.1-8b-instant")
+        client: LLMClient = GroqClient(model=model or "llama-3.1-8b-instant")
     elif provider == "ollama":
-        client = OllamaClient("llama3.2:3b")
+        client = OllamaClient(model or "llama3.2:3b")
     else:  # provider == "local"
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
