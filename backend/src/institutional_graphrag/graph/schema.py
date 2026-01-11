@@ -3,27 +3,29 @@ Esquema de Grafo para Institutional GraphRAG.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
+
 
 @dataclass
 class Entity:
     """Clase base para entidades del grafo (nodos)."""
-    
+
     id: str
     """Identificador único de la entidad."""
-    
+
     value: Any
     """Valor de la entidad."""
-    
+
     def __post_init__(self):
         if not self.id:
             raise ValueError(f"{self.__class__.__name__} debe tener un id no vacío")
-    
+
     @property
     def label(self) -> str:
         return self.__class__.__name__
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
@@ -35,23 +37,23 @@ class Entity:
 @dataclass
 class Relationship:
     """Clase base para relaciones del grafo (aristas)."""
-    
+
     type: str
     """Tipo de la relación."""
-    
+
     source_id: str
     """ID de la entidad origen."""
-    
+
     target_id: str
     """ID de la entidad destino."""
-    
+
     properties: Dict[str, Any] = field(default_factory=dict)
     """Propiedades adicionales asociadas a la relación."""
-    
+
     def __post_init__(self):
         if not self.source_id or not self.target_id:
             raise ValueError("La relación debe tener source_id y target_id no vacíos")
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "type": self.type,
@@ -59,6 +61,7 @@ class Relationship:
             "target_id": self.target_id,
             "properties": self.properties,
         }
+
 
 @dataclass
 class Proyecto(Entity):
@@ -89,14 +92,13 @@ class Documento(Entity):
 class Chunk(Entity):
     pass
 
+
 def PARTICIPO_EN(
-    investigador_id: str, 
-    proyecto_id: str, 
-    properties: Optional[Dict[str, Any]] = None
+    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación PARTICIPO_EN.
-    
+
     (Investigador)-[PARTICIPO_EN]->(Proyecto)
     """
     return Relationship(
@@ -108,13 +110,11 @@ def PARTICIPO_EN(
 
 
 def TIENE_TOPICO(
-    proyecto_id: str,
-    topico_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    proyecto_id: str, topico_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación TIENE_TOPICO.
-    
+
     (Proyecto)-[TIENE_TOPICO]->(Topico)
     """
     return Relationship(
@@ -126,13 +126,11 @@ def TIENE_TOPICO(
 
 
 def ES_DESCRITO_POR(
-    proyecto_id: str,
-    documento_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    proyecto_id: str, documento_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación ES_DESCRITO_POR.
-    
+
     (Proyecto)-[ES_DESCRITO_POR]->(Documento)
     """
     return Relationship(
@@ -144,13 +142,11 @@ def ES_DESCRITO_POR(
 
 
 def INICIO_EN(
-    proyecto_id: str,
-    anio_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    proyecto_id: str, anio_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación INICIO_EN.
-    
+
     (Proyecto)-[INICIO_EN]->(Anio)
     """
     return Relationship(
@@ -162,13 +158,11 @@ def INICIO_EN(
 
 
 def PRIMER_CHUNK(
-    documento_id: str,
-    chunk_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    documento_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación PRIMER_CHUNK.
-    
+
     (Documento)-[PRIMER_CHUNK]->(Chunk)
     """
     return Relationship(
@@ -180,13 +174,11 @@ def PRIMER_CHUNK(
 
 
 def SIGUIENTE_CHUNK(
-    chunk_id_from: str,
-    chunk_id_to: str,
-    properties: Optional[Dict[str, Any]] = None
+    chunk_id_from: str, chunk_id_to: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación SIGUIENTE_CHUNK.
-    
+
     (Chunk)-[SIGUIENTE_CHUNK]->(Chunk)
     """
     return Relationship(
@@ -198,13 +190,11 @@ def SIGUIENTE_CHUNK(
 
 
 def DE_DOCUMENTO(
-    chunk_id: str,
-    documento_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    chunk_id: str, documento_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación DE_DOCUMENTO.
-    
+
     (Chunk)-[DE_DOCUMENTO]->(Documento)
     """
     return Relationship(
@@ -216,13 +206,11 @@ def DE_DOCUMENTO(
 
 
 def EVIDENCIA_DE(
-    chunk_id: str,
-    entity_id: str,
-    properties: Optional[Dict[str, Any]] = None
+    chunk_id: str, entity_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
     Crear una relación EVIDENCIA_DE.
-    
+
     (Chunk)-[EVIDENCIA_DE]->(Proyecto|Topico|Investigador)
     """
     return Relationship(
@@ -231,6 +219,7 @@ def EVIDENCIA_DE(
         target_id=entity_id,
         properties=properties or {},
     )
+
 
 class GraphSchema:
     # Tipos de entidades
@@ -242,7 +231,7 @@ class GraphSchema:
         "Documento": Documento,
         "Chunk": Chunk,
     }
-    
+
     # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
@@ -254,7 +243,7 @@ class GraphSchema:
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EVIDENCIA_DE": EVIDENCIA_DE,
     }
-    
+
     @classmethod
     def get_entity_class(cls, entity_type: str) -> type[Entity]:
         """
@@ -263,7 +252,7 @@ class GraphSchema:
         if entity_type not in cls.ENTITIES:
             raise ValueError(f"Tipo de entidad desconocido: {entity_type}")
         return cls.ENTITIES[entity_type]
-    
+
     @classmethod
     def get_relationship_factory(cls, rel_type: str):
         """
@@ -272,21 +261,20 @@ class GraphSchema:
         if rel_type not in cls.RELATIONSHIPS:
             raise ValueError(f"Tipo de relación desconocido: {rel_type}")
         return cls.RELATIONSHIPS[rel_type]
-    
+
     @classmethod
     def list_entities(cls) -> List[str]:
         """Listar todos los tipos de entidades disponibles."""
         return list(cls.ENTITIES.keys())
-    
+
     @classmethod
     def list_relationships(cls) -> List[str]:
         """Listar todos los tipos de relaciones disponibles."""
         return list(cls.RELATIONSHIPS.keys())
 
+
 def validate_relationship_endpoints(
-    relationship: Relationship,
-    source_entity: Entity,
-    target_entity: Entity
+    relationship: Relationship, source_entity: Entity, target_entity: Entity
 ) -> bool:
     """
     Validar que una relación tiene los tipos de entidad origen y destino correctos.
@@ -302,15 +290,15 @@ def validate_relationship_endpoints(
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EVIDENCIA_DE": ("Chunk", ["Proyecto", "Topico", "Investigador"]),
     }
-    
+
     expected = valid_combinations.get(relationship.type)
     if not expected:
         return False
-    
+
     source_label = source_entity.label
     target_label = target_entity.label
-    
+
     if relationship.type == "EVIDENCIA_DE":
         return source_label == expected[0] and target_label in expected[1]
-    
+
     return source_label == expected[0] and target_label == expected[1]
