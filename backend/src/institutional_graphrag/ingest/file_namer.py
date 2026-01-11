@@ -1,5 +1,6 @@
 import re
 
+
 def generate_new_filename(path_str):
     """
     Parsea el path para definir el nuevo nombre del archivo.
@@ -10,7 +11,7 @@ def generate_new_filename(path_str):
         parts = path_str.strip("/").split("/")
         folders = parts[:-1]
         filename = parts[-1]
-        
+
         # Identificar si es un grupo de investigación o un proyecto
         prefix = ""
         root_folder = folders[0].upper() if folders else ""
@@ -21,7 +22,7 @@ def generate_new_filename(path_str):
 
         # Identificar el año correspondiente
         year = "unknown"
-        for folder in reversed(folders): # Iterate backwards from the folders
+        for folder in reversed(folders):  # Iterate backwards from the folders
             year_match = re.search(r"(\d{4})", folder)
             if year_match and not folder.strip().isdigit():
                 year = year_match.group(0)
@@ -29,7 +30,7 @@ def generate_new_filename(path_str):
 
         # Itera del final del path al comienzo para buscar la ID y si es informe o propuesta
         type_suffix = ""
-        
+
         for i in range(len(folders) - 1, -1, -1):
             folder_lower = folders[i].lower()
             if "informe" in folder_lower:
@@ -46,9 +47,9 @@ def generate_new_filename(path_str):
 
         # Rule for 'admin' (Fallback for paths not following the above structure)
         # Logic: admin_year_filename
-        
+
         return f"admin_{year}_{filename}"
-    
+
     except Exception as e:
         print(f"No se pudo generar el nombre de archivo: {e}")
         return "invalid_path_structure.pdf"

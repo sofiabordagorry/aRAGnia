@@ -10,6 +10,7 @@ from institutional_graphrag.ingest.docling_parse import parse_corpus, load_parse
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
+
 def main():
     """Procesa documentos con Docling."""
     if len(sys.argv) < 2:

@@ -2,6 +2,7 @@ import requests
 import os
 import urllib3
 from dotenv import load_dotenv
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import quote
 from pathlib import Path
@@ -10,6 +11,7 @@ from institutional_graphrag.ingest.file_namer import generate_new_filename
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
+
 def main():
     backend_dir = BASE_DIR / "backend"
     load_dotenv(backend_dir / ".env")
@@ -17,7 +19,7 @@ def main():
     base_url = f"https://nube.fing.edu.uy/index.php/s/{token}/download"
     output_dir = BASE_DIR / "data" / "corpus"
     input_dir = BASE_DIR / "data" / "downloads_list.txt"
-    
+
     if token is None:
         print("Token Invalido")
         return
@@ -26,7 +28,7 @@ def main():
     try:
         with open(input_dir, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        
+
         archive_count = 0
         for line in lines:
             line = line.strip()
@@ -51,7 +53,7 @@ def main():
             if response.status_code == 200:
                 with open(os.path.join(output_dir, new_filename), "wb") as out:
                     out.write(response.content)
-                archive_count +=1
+                archive_count += 1
             else:
                 print()
                 print(f" Error downloading {original_filename} (status {response.status_code})")
@@ -60,6 +62,7 @@ def main():
         print(f"The number of files downloaded was: {archive_count}")
     except FileNotFoundError:
         print(f" Error: The file '{input_dir}' was not found.")
+
 
 if __name__ == "__main__":
     main()
