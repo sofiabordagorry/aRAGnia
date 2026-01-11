@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Optional
 import uuid
 from institutional_graphrag.retrieval.vector_store import VectorStore
 

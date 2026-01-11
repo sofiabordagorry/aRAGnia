@@ -43,25 +43,6 @@ class Rag:
         self.llm_model = llm_model
         self.llm_provider =llm_provider
         pass
-
-    def build_context(self, chunks: List[RAGChunk], max_chars: int = 12000) -> str:
-        """Concatena chunks con headers; corta por tamaño."""
-        parts: List[str] = []
-        total = 0
-
-        for ch in chunks:
-            header = f"[[{ch.source or 'unknown'}|{ch.semantic_id}]] "
-            block = header + ch.text.strip()
-            if not block.endswith("\n"):
-                block += "\n"
-
-            if total + len(block) > max_chars:
-                break
-
-            parts.append(block)
-            total += len(block)
-
-        return "\n".join(parts).strip()
     
     def build_context(self, chunks: List[RAGChunk], max_chars: int = 12000) -> str:
         parts: List[str] = []
