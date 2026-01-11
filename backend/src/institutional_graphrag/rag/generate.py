@@ -188,7 +188,7 @@ class OllamaClient:
         print(self.model)
         r = requests.post(self.url, json=payload, timeout=120)
         r.raise_for_status()
-        return r.json()["message"]["content"]
+        return str(r.json()["message"]["content"])
 
 
 class HFLocalLLM:
