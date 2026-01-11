@@ -4,14 +4,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Literal
+from typing import cast, Dict, List, Optional, Literal
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
 from groq import Groq
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-import requests
+import requests  # type: ignore
 from dotenv import load_dotenv
 
 
@@ -261,7 +261,7 @@ class HFLocalLLM:
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
-def get_llm_client(provider: LLMProvider, *, model: Optional[str] = None):
+def get_llm_client(provider=cast(Literal["groq", "ollama", "local"]), *, model: Optional[str] = None):
     if provider not in ["groq", "ollama", "local"]:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
