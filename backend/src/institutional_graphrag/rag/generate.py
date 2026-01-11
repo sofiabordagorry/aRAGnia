@@ -140,7 +140,6 @@ class RAG:
         answer = llm.generate(
             messages=messages, temperature=self.temperature, max_tokens=self.max_tokens
         )
-        print(answer)
         # 4) Return
         return RAGResult(answer=answer, contexts=chunks)
 
@@ -154,7 +153,6 @@ _embedder = None
 def get_embedder():
     global _embedder
     if _embedder is None:
-        print("entro")
         _embedder = E5Embedder()
     return _embedder
 
