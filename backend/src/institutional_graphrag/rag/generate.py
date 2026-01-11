@@ -4,14 +4,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from dataclasses import dataclass
-from typing import cast, Dict, List, Optional, Literal
+from typing import Dict, List, Optional
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
 from groq import Groq
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-import requests  # type: ignore
+import requests
 from dotenv import load_dotenv
 
 
