@@ -276,4 +276,3 @@ def get_llm_client(provider: LLMProvider, *, model: Optional[str] = None):
 
     if provider == "local":
         return HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-
