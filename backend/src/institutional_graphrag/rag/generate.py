@@ -283,7 +283,7 @@ class HFLocalLLM:
             )
 
         new_tokens = output[0, input_ids.shape[1] :]
-        return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+        return str(self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip())
 
 
 def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
