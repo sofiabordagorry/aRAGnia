@@ -13,7 +13,7 @@ def main():
         print(f"No existe {chunks_dir}")
         print("   Primero ejecutar: python scripts/chunk_corpus.py")
         return
-    
+
     json_files = list(chunks_dir.glob("*.json"))
     if not json_files:
         print(f"No hay archivos JSON en {chunks_dir}")
@@ -24,7 +24,7 @@ def main():
     print(f"Output: {output_dir}")
     print(f"Archivos encontrados: {len(json_files)}")
     print("=" * 60)
-    
+
     processed = 0
     errors = 0
 
@@ -41,36 +41,37 @@ def main():
 
         print(f"Procesando {json_file.name}...")
         try:
-            with open(json_file, 'r', encoding='utf-8') as f:
+            with open(json_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            chunks = data.get("chunks",[])
+            chunks = data.get("chunks", [])
             if not chunks:
                 print(f"✗ {json_file.name}: no tiene chunks")
                 continue
 
-            chunk_content = [c['page_content'] for c in chunks]
+            chunk_content = [c["page_content"] for c in chunks]
 
             embeddings = embedder.embed_passages(chunk_content)
-            
+
             # Guardar embeddings
             np.save(output_dir / f"{file_id}.npy", embeddings)
 
             # Se guardan tambien los chunks como metadata de los embeddings
             # Esto evita referencias erroneas y hace que el retrieval requiera menos parseo
-            with open(output_dir / f"{file_id}_metadata.json", 'w', encoding='utf-8') as f:
+            with open(output_dir / f"{file_id}_metadata.json", "w", encoding="utf-8") as f:
                 json.dump(chunks, f, ensure_ascii=False, indent=2)
-            
+
             processed += 1
-           
+
         except Exception as e:
             errors += 1
             print(f"✗ {json_file.name}: {e}")
-    
+
     print("=" * 60)
     print(f"Resumen:")
     print(f"   Archivos procesados: {processed}")
     print(f"   Errores: {errors}")
+
 
 if __name__ == "__main__":
     main()
