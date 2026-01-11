@@ -118,7 +118,7 @@ function renderChunks(chunks) {
   els.chunksList.innerHTML = "";
 
   chunks.forEach((c, idx) => {
-    const title = c.title ?? `Chunk ${idx + 1}`;
+    const title = c.id ?? `Chunk ${idx + 1}`;
     const score = typeof c.score === "number" ? c.score.toFixed(3) : "";
     const text = c.text ?? c.content ?? "";
 

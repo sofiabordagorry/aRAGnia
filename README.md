@@ -93,7 +93,6 @@ El proyecto incluye un script (en la carpeta backend) para descargar los PDF de 
 
 Antes de ejecutar el script, es necesario crear un archivo `.env` en la carpeta backend del proyecto con una variable de entorno llamada **FING_TOKEN**
 
-
 #### Ejecutar el script de descarga
 
 ```bash
@@ -126,20 +125,26 @@ Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicad
 ```bash
 python .\scripts\chunk_corpus.py
 ```
+
 ### Crear embeddings de los chunks
 
 Se transforman los Json de /institutional-graphrag/data/chunks en chunks ubicados en
 /institutional-graphrag/data/embeddings.
 
 Para Windows: antes correr en consola el siguiente comando para poder usar cuda (en GPUs NVIDIA):
+
 ```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
+
 Para MAC: antes correr el siguiente comando para prevenir fallos en caso de funcionalidades aún no implementadas para MPS
+
 ```bash
 export PYTORCH_ENABLE_MPS_FALLBACK=1
 ```
+
 Luego:
+
 ```bash
 python .\scripts\embed_chunks.py
 ```
@@ -149,6 +154,28 @@ python .\scripts\embed_chunks.py
 ```bash
 docker run -p 6333:6333 qdrant/qdrant
 ```
+
+### Elegir provedor del modelo (llm)
+
+Se configura el api/router_rag.py
+
+#### Ollama
+
+- Descargar e instalar Ollama desde ollama.com.
+- desde una terminal descargar el modelo a utilizar:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+#### Groq
+
+Para pruebas, no es gratis pero va rapido.
+obtener una key en la aplicacion https://console.groq.com/keys y guardarla en el .env "GROQ_API_KEY"
+
+#### Local
+
+- Es la mas lenta
 
 ### Levantar Servidor backend
 
@@ -172,5 +199,13 @@ http://localhost:8000
 
 ### Levantar Frontend
 
+```bash
 cd institutional-graphrag/frontend/public
 python -m http.server 5500
+```
+
+El Frontend quedará disponible en:
+
+```text
+http://localhost:5500
+```
