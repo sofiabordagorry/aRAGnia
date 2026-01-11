@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parents[4]
 DEFAULT_EMBEDDINGS_DIR = BASE_DIR / Path("data/embeddings")
 
-LLMProvider = Literal["groq", "ollama", "local"]
 _llm_instances: dict[str, object] = {}
 
 
@@ -261,9 +260,7 @@ class HFLocalLLM:
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
-def get_llm_client(
-    provider=cast(Literal["groq", "ollama", "local"]), *, model: Optional[str] = None
-):
+def get_llm_client(provider: str, *, model: Optional[str] = None):
     if provider not in ["groq", "ollama", "local"]:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
