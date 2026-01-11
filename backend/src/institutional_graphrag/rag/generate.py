@@ -262,6 +262,8 @@ class HFLocalLLM:
 
 
 def get_llm_client(provider: LLMProvider, *, model: Optional[str] = None):
+    if provider not in ["groq", "ollama", "local"]:
+        raise ValueError(f"LLM provider no soportado: {provider}")
 
     if provider in _llm_instances:
         return _llm_instances[provider]
@@ -275,4 +277,3 @@ def get_llm_client(provider: LLMProvider, *, model: Optional[str] = None):
     if provider == "local":
         return HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
-    raise ValueError(f"LLM provider no soportado: {provider}")
