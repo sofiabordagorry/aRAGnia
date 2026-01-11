@@ -11,7 +11,7 @@ from groq import Groq
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-import requests
+import requests  # type: ignore
 from dotenv import load_dotenv
 
 
@@ -44,7 +44,7 @@ class Rag:
         temperature: float = 0.2,
         max_tokens: int = 512,
         llm_model: Optional[str] = None,
-        llm_provider: Optional[str] = None,
+        llm_provider: str,
     ):
 
         self.top_k = top_k
@@ -169,7 +169,8 @@ class GroqClient:
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        return resp.choices[0].message.content
+
+        return str(resp.choices[0].message.content)
 
 
 class OllamaClient:
