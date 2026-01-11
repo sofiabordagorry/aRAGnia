@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from institutional_graphrag.rag.generate import Rag
+from institutional_graphrag.rag.generate import RAG
 
 
 router = APIRouter()
@@ -18,7 +18,7 @@ class QueryResponse(BaseModel):
 @router.post("/query", response_model=QueryResponse)
 def rag_query(payload: QueryRequest):
     # llm provider = [groq, ollama, local]
-    rag = Rag(top_k=3, llm_provider="ollama")
+    rag = RAG(top_k=3, llm_provider="ollama")
     result = rag.generate(payload.query)
     chunks = [
         {

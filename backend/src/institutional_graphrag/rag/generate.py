@@ -36,7 +36,7 @@ class RAGResult:
     contexts: List[RAGChunk]
 
 
-class Rag:
+class RAG:
     def __init__(
         self,
         *,
@@ -112,7 +112,7 @@ class Rag:
         if not query or not query.strip():
             raise ValueError("question is empty")
         # Generar embedding de la query
-        embedder = E5Embedder()
+        embedder = get_embedder()
         query_embedding_array = embedder.embed_query(query)
         query_embedding = query_embedding_array[0].tolist()
         # 1) Retrieve
@@ -147,6 +147,14 @@ class Rag:
 
 # LLMS Provider
 
+
+_embedder = None
+
+def get_embedder():
+    global _embedder
+    if _embedder is None:
+        _embedder = E5Embedder()
+    return _embedder
 
 class GroqClient:
     def __init__(self, model):
@@ -269,10 +277,13 @@ def get_llm_client(provider: str, *, model: Optional[str] = None):
         return _llm_instances[provider]
 
     if provider == "groq":
-        return GroqClient(model=model or "llama-3.1-8b-instant")
+        client = GroqClient(model=model or "llama-3.1-8b-instant")
 
     if provider == "ollama":
-        return OllamaClient("llama3.2:3b")
+        client = OllamaClient("llama3.2:3b")
 
     if provider == "local":
-        return HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+        client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+    
+    _llm_instances[provider] = client
+    return client
