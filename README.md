@@ -126,9 +126,24 @@ Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicad
 python .\scripts\chunk_corpus.py
 ```
 
-### Generar embeddings
+### Crear embeddings de los chunks
 
-Generar embeddings de los chunks:
+Se transforman los Json de /institutional-graphrag/data/chunks en chunks ubicados en
+/institutional-graphrag/data/embeddings.
+
+Para Windows: antes correr en consola el siguiente comando para poder usar cuda (en GPUs NVIDIA):
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+Para MAC: antes correr el siguiente comando para prevenir fallos en caso de funcionalidades aún no implementadas para MPS
+
+```bash
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+```
+
+Luego:
 
 ```bash
 python .\scripts\embed_chunks.py
