@@ -22,7 +22,7 @@ dependencies = [
     "torch>=2.0.0",
     "hf-xet>=1.0.0",
     "scikit-learn>=1.3.0",
-    "qdrant-client>=1.7.0"
+    "qdrant-client>=1.7.0",
     "groq",
     "transformers",
     "huggingface_hub>=0.34,<1.0"
