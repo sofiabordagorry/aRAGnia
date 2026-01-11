@@ -150,11 +150,14 @@ class RAG:
 
 _embedder = None
 
+
 def get_embedder():
     global _embedder
     if _embedder is None:
+        print("entro")
         _embedder = E5Embedder()
     return _embedder
+
 
 class GroqClient:
     def __init__(self, model):
@@ -284,6 +287,6 @@ def get_llm_client(provider: str, *, model: Optional[str] = None):
 
     if provider == "local":
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-    
+
     _llm_instances[provider] = client
     return client
