@@ -13,7 +13,7 @@ EMBEDDINGS_DIR = Path(__file__).resolve().parents[4] / "data" / "embeddings"
 
 def persist_all_embeddings_and_metadata(database: VectorStore):
     # Guarda en la base de datos todos los embeddings junto con su metadata
-    
+
     if not EMBEDDINGS_DIR.exists():
         raise FileNotFoundError(f"No existe: {EMBEDDINGS_DIR}")
 
@@ -21,14 +21,19 @@ def persist_all_embeddings_and_metadata(database: VectorStore):
     if not npy_files:
         raise ValueError(f"No hay .npy en {EMBEDDINGS_DIR}")
 
-
     expected_dim: Optional[int] = None
     for npy_path in npy_files:
-        expected_dim = persist_embedding_and_metadata(npy_path=npy_path, database=database, expected_dim=expected_dim,)
+        expected_dim = persist_embedding_and_metadata(
+            npy_path=npy_path,
+            database=database,
+            expected_dim=expected_dim,
+        )
     pass
 
 
-def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expected_dim: Optional[int]) -> int:
+def persist_embedding_and_metadata(
+    npy_path: Path, database: VectorStore, expected_dim: Optional[int]
+) -> int:
     # Guarda en la base de datos el par (embeddings, metadata) dado el Path del archivo .npy
     print("\n" + "=" * 100)
     print(f" Procesando archivo: {npy_path.name}")
@@ -37,7 +42,7 @@ def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expect
     if not meta_path.exists():
         raise ValueError(f"Falta metadata para {npy_path.name}: {meta_path.name}")
 
-    embeddings = np.load(npy_path)  
+    embeddings = np.load(npy_path)
     if embeddings.ndim != 2:
         raise ValueError(f"{npy_path.name} no es 2D (N,D). Shape={embeddings.shape}")
 
@@ -49,7 +54,7 @@ def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expect
         raise ValueError(
             f"Dimensión inconsistente: {npy_path.name} tiene Dimension={Dim}, pero se esperaba Dimension={expected_dim}"
         )
-    
+
     with open(meta_path, "r", encoding="utf-8") as f:
         metadata_list = json.load(f)
 
@@ -57,7 +62,9 @@ def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expect
         raise ValueError(f"{meta_path.name} debería ser una lista de dicts (uno por embedding)")
 
     if len(metadata_list) != embeddings.shape[0]:
-        raise ValueError(f"Cantidad inconsistente en {stem}: embeddings N={embeddings.shape[0]} vs metadata len={len(metadata_list)}")
+        raise ValueError(
+            f"Cantidad inconsistente en {stem}: embeddings N={embeddings.shape[0]} vs metadata len={len(metadata_list)}"
+        )
 
     # Preparar IDs y metadata
     # Crear mapeo: UUID -> índice para recuperar chunks después
@@ -65,7 +72,7 @@ def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expect
     for i, m in enumerate(metadata_list):
         if not isinstance(m, dict):
             raise ValueError(f"{meta_path.name} contiene un item que no es dict")
-        
+
         # Usar UUID válido para Qdrant
         uuid_id = str(uuid.uuid4())
         ids.append(uuid_id)
@@ -86,6 +93,3 @@ def persist_embedding_and_metadata(npy_path: Path, database: VectorStore, expect
     print("\n" + "=" * 100)
 
     return expected_dim
-
-
-

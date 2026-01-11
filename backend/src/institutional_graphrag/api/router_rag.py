@@ -5,6 +5,7 @@ from institutional_graphrag.rag.generate import Rag
 
 router = APIRouter()
 
+
 class QueryRequest(BaseModel):
     query: str
 
@@ -19,12 +20,12 @@ def rag_query(payload: QueryRequest):
     # llm provider = [groq, ollama, local]
     rag = Rag(top_k=3, llm_provider="ollama")
     result = rag.generate(payload.query)
-    chunks=[
-            {
-                "id": ch.semantic_id,   
-                "text": ch.text,
-                "score": ch.score,
-            }
-            for ch in result.contexts
-        ]
+    chunks = [
+        {
+            "id": ch.semantic_id,
+            "text": ch.text,
+            "score": ch.score,
+        }
+        for ch in result.contexts
+    ]
     return QueryResponse(answer=result.answer, chunks=chunks)

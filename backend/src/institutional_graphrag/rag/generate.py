@@ -21,6 +21,7 @@ DEFAULT_EMBEDDINGS_DIR = BASE_DIR / Path("data/embeddings")
 LLMProvider = Literal["groq", "ollama", "local"]
 _llm_instances: dict[str, object] = {}
 
+
 @dataclass
 class RAGChunk:
     id: str
@@ -29,21 +30,31 @@ class RAGChunk:
     score: float
     source: str
 
+
 @dataclass
 class RAGResult:
     answer: str
     contexts: List[RAGChunk]
 
+
 class Rag:
-    def __init__(self, *, top_k: int = 3, temperature: float = 0.2, max_tokens: int = 512, llm_model: Optional[str] = None, llm_provider: Optional[str] = None):
+    def __init__(
+        self,
+        *,
+        top_k: int = 3,
+        temperature: float = 0.2,
+        max_tokens: int = 512,
+        llm_model: Optional[str] = None,
+        llm_provider: Optional[str] = None,
+    ):
 
         self.top_k = top_k
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.llm_model = llm_model
-        self.llm_provider =llm_provider
+        self.llm_provider = llm_provider
         pass
-    
+
     def build_context(self, chunks: List[RAGChunk], max_chars: int = 12000) -> str:
         parts: List[str] = []
         total = 0
@@ -65,7 +76,6 @@ class Rag:
             total += len(block)
 
         return "\n...\n\n".join(parts).strip()
-
 
     def build_messages(self, question: str, context: str) -> List[Dict[str, str]]:
         system = (
@@ -91,12 +101,7 @@ class Rag:
             "**Referencias:**\n"
         )
 
-        user = (
-            f"Pregunta: {question}\n\n"
-            f"CONTEXTO:\n{context}\n\n"
-            "===\n"
-            "Respuesta:"
-        )
+        user = f"Pregunta: {question}\n\n" f"CONTEXTO:\n{context}\n\n" "===\n" "Respuesta:"
 
         return [
             {"role": "system", "content": system},
@@ -112,31 +117,37 @@ class Rag:
         query_embedding_array = embedder.embed_query(query)
         query_embedding = query_embedding_array[0].tolist()
         # 1) Retrieve
-        store = VectorStore(
-        collection_name="demo_collection",
-        embedding_dim=1024  # E5-large-v2
-        )
+        store = VectorStore(collection_name="demo_collection", embedding_dim=1024)  # E5-large-v2
         raw = store.search(query_embedding, top_k=self.top_k)
         chunks = []
-        for (doc_id, score, meta) in raw:
-            rag_chunk =RAGChunk(id=doc_id, semantic_id=meta.get('semantic_id', 'N/A'), text=meta.get('page_content','N/A'), score=float(score), source=meta.get('__npy__','N/A'))
+        for doc_id, score, meta in raw:
+            rag_chunk = RAGChunk(
+                id=doc_id,
+                semantic_id=meta.get("semantic_id", "N/A"),
+                text=meta.get("page_content", "N/A"),
+                score=float(score),
+                source=meta.get("__npy__", "N/A"),
+            )
             chunks.append(rag_chunk)
-        
+
         # 2) Build context
         context = self.build_context(chunks)
 
         # 3) Generate
         messages = self.build_messages(query, context)
 
-        
         llm = get_llm_client(provider=self.llm_provider, model=self.llm_model)
-        
-        answer = llm.generate(messages=messages, temperature=self.temperature, max_tokens=self.max_tokens)        
+
+        answer = llm.generate(
+            messages=messages, temperature=self.temperature, max_tokens=self.max_tokens
+        )
         print(answer)
         # 4) Return
         return RAGResult(answer=answer, contexts=chunks)
 
+
 # LLMS Provider
+
 
 class GroqClient:
     def __init__(self, model):
@@ -145,6 +156,7 @@ class GroqClient:
         key = os.getenv("GROQ_API_KEY")
         self.client = Groq(api_key=key)
         self.model = model
+
     def generate(
         self,
         *,
@@ -159,7 +171,8 @@ class GroqClient:
             max_tokens=max_tokens,
         )
         return resp.choices[0].message.content
-    
+
+
 class OllamaClient:
     def __init__(self, model, base_url="http://localhost:11434"):
         self.url = f"{base_url}/api/chat"
@@ -170,16 +183,13 @@ class OllamaClient:
             "model": self.model,
             "messages": messages,
             "stream": False,
-            "options": {
-                "temperature": temperature,
-                "num_predict": max_tokens
-            }
+            "options": {"temperature": temperature, "num_predict": max_tokens},
         }
         print(self.model)
         r = requests.post(self.url, json=payload, timeout=120)
         r.raise_for_status()
         return r.json()["message"]["content"]
-    
+
 
 class HFLocalLLM:
     def __init__(self, model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0"):
@@ -206,16 +216,30 @@ class HFLocalLLM:
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=self.dtype, device_map=self.device_map,)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=self.dtype,
+            device_map=self.device_map,
+        )
 
         if self.device_map is None:
             self.model.to(self.device)
 
         self.model.eval()
 
-    def generate(self, messages, max_tokens=192, temperature=0.2, top_p=0.9,):
+    def generate(
+        self,
+        messages,
+        max_tokens=192,
+        temperature=0.2,
+        top_p=0.9,
+    ):
 
-        input_ids = self.tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt",)
+        input_ids = self.tokenizer.apply_chat_template(
+            messages,
+            add_generation_prompt=True,
+            return_tensors="pt",
+        )
 
         if self.device_map is None:
             input_ids = input_ids.to(self.device)
@@ -233,12 +257,12 @@ class HFLocalLLM:
                 pad_token_id=self.tokenizer.eos_token_id,
             )
 
-        new_tokens = output[0, input_ids.shape[1]:]
+        new_tokens = output[0, input_ids.shape[1] :]
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
 def get_llm_client(provider: LLMProvider, *, model: Optional[str] = None):
-    
+
     if provider in _llm_instances:
         return _llm_instances[provider]
 
