@@ -194,7 +194,6 @@ class OllamaClient:
             "stream": False,
             "options": {"temperature": temperature, "num_predict": max_tokens},
         }
-        print(self.model)
         r = requests.post(self.url, json=payload, timeout=120)
         r.raise_for_status()
         return str(r.json()["message"]["content"])
@@ -270,20 +269,19 @@ class HFLocalLLM:
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
-def get_llm_client(provider: str, *, model: Optional[str] = None):
-    if provider not in ["groq", "ollama", "local"]:
+def get_llm_client(provider: str, *, model: Optional[str] = None) -> object:
+    if provider not in {"groq", "ollama", "local"}:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
     if provider in _llm_instances:
         return _llm_instances[provider]
 
+    client: object
     if provider == "groq":
         client = GroqClient(model=model or "llama-3.1-8b-instant")
-
-    if provider == "ollama":
+    elif provider == "ollama":
         client = OllamaClient("llama3.2:3b")
-
-    if provider == "local":
+    else:  # provider == "local"
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
     _llm_instances[provider] = client
