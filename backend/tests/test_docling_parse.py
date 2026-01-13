@@ -1,6 +1,5 @@
 """Tests para docling_parse.py"""
 
-import json
 import shutil
 from pathlib import Path
 
