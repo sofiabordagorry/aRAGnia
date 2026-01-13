@@ -1,3 +1,8 @@
+"""
+Nueva implementacion de parseo con docling.
+Utiliza docling puro
+Incorpora lo que antes hacían docling_parse.py y pdf_load.py
+"""
 from pathlib import Path
 
 from docling.document_converter import DocumentConverter
@@ -40,15 +45,13 @@ def exists_docling(path: Path) -> bool:
 def parse_single_document(source: Path) -> dict:
     """Para pruebas: intenta parsear un único documento sin importar su formato."""
     if not exists_docling(path=source):
-        try:
-            # Inicializar el conversor
-            converter = DocumentConverter()
-            # Convertir el archivo y devolverlo
-            result = converter.convert(source)
-            doc_dict = result.document.export_to_dict()
-            return doc_dict
-        except Exception as e:
-            print(f"✗ Error al convertir {source.name}: {e}")
+        # Inicializar el conversor
+        converter = DocumentConverter()
+        # Convertir el archivo y devolverlo
+        result = converter.convert(source)
+        doc_dict = result.document.export_to_dict()
+        return doc_dict
+
 
 def parse_corpus(
     corpus_dir: Path = DEFAULT_CORPUS_DIR,
@@ -56,25 +59,23 @@ def parse_corpus(
     skip_errors: bool = True,
 ) -> list[dict]:
     
-    try:
-        # Obtener todos los archivos válidos
-        input_paths = get_input_paths(corpus_dir=corpus_dir, recursive=recursive)
-        # Filtrar archivos ya procesados
-        filtered_paths = []
-        for p in input_paths:
-            try:
-                if not exists_docling(p):
-                    filtered_paths.append(p)
-            except DocumentAlreadyProcessed:
-                continue
+    # Obtener todos los archivos válidos
+    input_paths = get_input_paths(corpus_dir=corpus_dir, recursive=recursive)
+    # Filtrar archivos ya procesados
+    filtered_paths = []
+    for p in input_paths:
+        try:
+            if not exists_docling(p):
+                filtered_paths.append(p)
+        except DocumentAlreadyProcessed as e:
+            print(e)
+            continue
 
-        input_paths = filtered_paths
+    input_paths = filtered_paths
 
-        # Inicializar el conversor
-        doc_converter = DocumentConverter()
+    # Inicializar el conversor
+    doc_converter = DocumentConverter()
 
-        # Convertir los archivos y devolverlos
-        conv_results = doc_converter.convert_all(source = input_paths, raises_on_error = not skip_errors)
-        return [res.document.export_to_dict() for res in conv_results]
-    except Exception as e:
-            print(f"✗ Error al convertir el directiorio {corpus_dir.name}: {e}")
+    # Convertir los archivos y devolverlos
+    conv_results = doc_converter.convert_all(source = input_paths, raises_on_error = not skip_errors)
+    return [res.document.export_to_dict() for res in conv_results]
