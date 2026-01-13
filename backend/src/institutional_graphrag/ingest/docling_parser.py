@@ -1,9 +1,3 @@
-"""
-Nueva implementacion de parseo con docling.
-Utiliza docling puro
-Incorpora lo que antes hacían docling_parse.py y pdf_load.py
-"""
-
 from pathlib import Path
 from typing import cast, Any
 
