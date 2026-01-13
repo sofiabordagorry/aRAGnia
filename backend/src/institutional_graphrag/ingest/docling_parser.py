@@ -3,6 +3,7 @@ Nueva implementacion de parseo con docling.
 Utiliza docling puro
 Incorpora lo que antes hacían docling_parse.py y pdf_load.py
 """
+
 from pathlib import Path
 
 from docling.document_converter import DocumentConverter
@@ -13,26 +14,29 @@ DEFAULT_DOCLING_DIR = DATA_DIR / Path("docling")
 SUPPORTED_EXTENSIONS = [".pdf", ".docx", ".pptx", ".xlsx", ".html", ".md", ".txt"]
 GLOB_PATTERNS = [f"*{ext}" for ext in SUPPORTED_EXTENSIONS]
 
+
 class DocumentAlreadyProcessed(Exception):
     """El documento ya estaba en cache."""
 
     pass
 
+
 def get_input_paths(corpus_dir: Path, recursive: bool = False) -> list[Path]:
     """Devuelve la lista de archivos de documentos soportados en un directorio."""
     corpus_path = Path(corpus_dir)
-    
+
     if not corpus_path.exists():
         raise FileNotFoundError(f"Directorio de corpus no encontrado: {corpus_path}")
     if not corpus_path.is_dir():
         raise NotADirectoryError(f"La ruta del corpus no es un directorio: {corpus_path}")
 
     files: list[Path] = []
-    
+
     for pattern in (f"**/{p}" if recursive else p for p in GLOB_PATTERNS):
         files.extend(p for p in corpus_path.glob(pattern) if p.is_file())
 
     return sorted(files)
+
 
 def exists_docling(path: Path) -> bool:
     """Devuelve True si la version JSON del documento ya existe en el directiorio data/docling."""
@@ -41,7 +45,8 @@ def exists_docling(path: Path) -> bool:
         raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
     else:
         return False
-    
+
+
 def parse_single_document(source: Path) -> dict:
     """Para pruebas: intenta parsear un único documento sin importar su formato."""
     if not exists_docling(path=source):
@@ -58,7 +63,7 @@ def parse_corpus(
     recursive: bool = False,
     skip_errors: bool = True,
 ) -> list[dict]:
-    
+
     # Obtener todos los archivos válidos
     input_paths = get_input_paths(corpus_dir=corpus_dir, recursive=recursive)
     # Filtrar archivos ya procesados
@@ -77,5 +82,5 @@ def parse_corpus(
     doc_converter = DocumentConverter()
 
     # Convertir los archivos y devolverlos
-    conv_results = doc_converter.convert_all(source = input_paths, raises_on_error = not skip_errors)
+    conv_results = doc_converter.convert_all(source=input_paths, raises_on_error=not skip_errors)
     return [res.document.export_to_dict() for res in conv_results]
