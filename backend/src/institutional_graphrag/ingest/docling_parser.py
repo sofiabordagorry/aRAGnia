@@ -5,6 +5,7 @@ Incorpora lo que antes hacían docling_parse.py y pdf_load.py
 """
 
 from pathlib import Path
+from typing import cast, Any
 
 from docling.document_converter import DocumentConverter
 
@@ -47,15 +48,19 @@ def exists_docling(path: Path) -> bool:
         return False
 
 
-def parse_single_document(source: Path) -> dict:
+def parse_single_document(source: Path) -> dict | None:
     """Para pruebas: intenta parsear un único documento sin importar su formato."""
-    if not exists_docling(path=source):
-        # Inicializar el conversor
-        converter = DocumentConverter()
-        # Convertir el archivo y devolverlo
-        result = converter.convert(source)
-        doc_dict = result.document.export_to_dict()
-        return doc_dict
+    try:
+        if not exists_docling(path=source):
+            # Inicializar el conversor
+            converter = DocumentConverter()
+            # Convertir el archivo y devolverlo
+            result = converter.convert(source)
+            doc_dict = cast(dict[str, Any], result.document.export_to_dict())
+            return doc_dict
+    except DocumentAlreadyProcessed as e:
+        print(e)
+    return None
 
 
 def parse_corpus(
