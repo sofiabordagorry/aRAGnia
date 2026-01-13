@@ -9,9 +9,7 @@ from .ingest.chunker import (
     chunk_documents,
     chunk_loaded_doc,
 )
-from .ingest.docling_parser import (
-    parse_corpus, parse_single_document
-) 
+from .ingest.docling_parser import parse_corpus, parse_single_document
 
 __all__ = [
     "SectionBasedChunker",
