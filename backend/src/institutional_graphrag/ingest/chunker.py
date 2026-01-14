@@ -22,18 +22,17 @@ from ..config import EMBED_MODEL_ID
 # DEFAULT_MAX_CHUNK_SIZE = 2000
 # DEFAULT_CHUNK_OVERLAP = 200
 
-def get_native_chunker(tokenizer: str = EMBED_MODEL_ID, max_tokens: int = 512, merge_peers: bool = True) -> HybridChunker:
+
+def get_native_chunker(
+    tokenizer: str = EMBED_MODEL_ID, max_tokens: int = 512, merge_peers: bool = True
+) -> HybridChunker:
     # Inicializar el chunker con el mismo tokenizer que se use en los embeddings
-    return HybridChunker(
-        tokenizer=tokenizer,
-        max_tokens=max_tokens,
-        merge_peers=merge_peers
-    )
+    return HybridChunker(tokenizer=tokenizer, max_tokens=max_tokens, merge_peers=merge_peers)
 
 
 def chunk_document(
-        doc: DoclingDocument,
-        chunker: HybridChunker,
+    doc: DoclingDocument,
+    chunker: HybridChunker,
 ) -> list[dict]:
     """
     Parte en chunks un DoclingDocument usando su HybridChunker nativo.
@@ -47,10 +46,16 @@ def chunk_document(
         # Útil para que el embedding capture el contexto de la sección
         text_with_context = chunker.contextualize(chunk)
 
-        page_numbers = sorted(set(
-            prov.page_no for item in chunk.meta.doc_items # obtiene el numero de pagina resultante de: iterar por cada elemento del chunk
-            for prov in item.prov if hasattr(prov, "page_no") # iterar por la source data de cada elemento y me lo quedo solo si la source data contiene un page number
-        ))
+        page_numbers = sorted(
+            set(
+                prov.page_no # obtiene el número de pagina resultante de los siguientes pasos:
+                for item in chunk.meta.doc_items  # itera por cada elemento del chunk
+                for prov in item.prov # itera por la source data de cada elemento
+                if hasattr(
+                    prov, "page_no" # se queda solo con aquellos que tengan page number
+                )
+            )
+        )
 
         element_type = chunk.meta.doc_items[0].label if chunk.meta.doc_items else "text"
 
@@ -58,17 +63,19 @@ def chunk_document(
 
         token_count = chunker._count_chunk_tokens(doc_chunk=chunk)
 
-        processed_chunks.append({
-            "chunk_id": f"{doc_name}#chunk{i}", # ID Único para el Nodo en el Grafo
-            "text": text_with_context,
-            "metadata": {
-                "headings": chunk.meta.headings,
-                "page_numbers": page_numbers,
-                "element_type": element_type,
-                "parent_doc": doc_name,
-                "token_count": token_count
+        processed_chunks.append(
+            {
+                "chunk_id": f"{doc_name}#chunk{i}",  # ID Único para el Nodo en el Grafo
+                "text": text_with_context,
+                "metadata": {
+                    "headings": chunk.meta.headings,
+                    "page_numbers": page_numbers,
+                    "element_type": element_type,
+                    "parent_doc": doc_name,
+                    "token_count": token_count,
+                },
             }
-        })
+        )
 
     return processed_chunks
 

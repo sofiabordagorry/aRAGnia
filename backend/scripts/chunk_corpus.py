@@ -64,7 +64,7 @@ def main():
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(
                     {
-                        "source":doc.name,
+                        "source": doc.name,
                         "total_chunks": len(chunks),
                         "tokenizer": tokenizer,
                         "chunks": chunks,

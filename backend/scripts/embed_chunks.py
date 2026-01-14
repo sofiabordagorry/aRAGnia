@@ -5,7 +5,8 @@ from institutional_graphrag.ingest.embedder import E5Embedder
 
 # Todavía no se usa, pero va a ser necesaria si despues tenemos varios modelos
 # Para cohesividad con el chunker
-from institutional_graphrag.config import EMBED_MODEL_ID 
+from institutional_graphrag.config import EMBED_MODEL_ID
+
 
 def main():
     chunks_dir = Path("data/chunks")
