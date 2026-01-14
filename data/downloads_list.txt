@@ -1,18 +1,24 @@
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\152\Informe final\371-Zinola-InformeFinal2015.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\152\Propuesta_Postulación_2010\Propuesta_Zinola_2010.pdf
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\152\Resumen_publicable_Zinola\Zinola.pdf
 
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\391-Tort-Castillo-InformeFinal2015\Informe final\391-Tort-Castillo-InformeFinal2015.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\391-Tort-Castillo-InformeFinal2015\Propuesta_Postulación_2010\Propuesta_Tort_2010.pdf
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\391-Tort-Castillo-InformeFinal2015\Resumen_publicable_Tort_Castillo\Tort-Castillo.pdf
 
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\679\Informe final\399-Denicola-InformeFinal2015.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\679\Propuesta_Postulación_2010\Propuesta_Denicola_2010.pdf
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\679\Resumen_publicable_Denicola\Denicola.pdf
 
-\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\696\401-Pucci-InformeFinal2015-poster.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\696\Informe final\401-Pucci-InformeFinal2015.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\696\Propuesta_Postulación_2010\Propuesta_Pucci_2010.pdf
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\696\Resumen_publicable_Pucci\Pucci.pdf
 
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\1445\Informe final\416-Negreira-InformeFinal2015.pdf
 \1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\1445\Propuesta_Postulación_2010\Propuesta_Negreira_2010.pdf
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\1445\Resumen_publicable_Negreira\Negreira.pdf
+
+\1_GRUPOS I+D_2010_2014_2018\2010_Informes finales Grupos I+D\Nómina financiados Grupos I+D 2010.ods
 
 
 \1_GRUPOS I+D_2010_2014_2018\2014_Informes finales Grupos I+D\23\Informe final\Informe Final CSIC Grupos Díaz Ferreira.pdf
@@ -27,6 +33,8 @@
 \1_GRUPOS I+D_2010_2014_2018\2014_Informes finales Grupos I+D\140\Informe final\INFORME FINAL GRUPOS 2019 versión final.pdf
 \1_GRUPOS I+D_2010_2014_2018\2014_Informes finales Grupos I+D\140\Propuesta postulación_2014\Propuesta.pdf
 
+\1_GRUPOS I+D_2010_2014_2018\2014_Informes finales Grupos I+D\id2014gi_Nómina financiados.ods
+
 
 \1_GRUPOS I+D_2010_2014_2018\2018_Informes finales Grupos I+D\informes_propuestas\13\Informe final\13.pdf
 \1_GRUPOS I+D_2010_2014_2018\2018_Informes finales Grupos I+D\informes_propuestas\13\Propuesta postulación\377_documento_avales.pdf
@@ -40,6 +48,8 @@
 \1_GRUPOS I+D_2010_2014_2018\2018_Informes finales Grupos I+D\informes_propuestas\59\Informe final\59.pdf
 \1_GRUPOS I+D_2010_2014_2018\2018_Informes finales Grupos I+D\informes_propuestas\59\Propuesta postulación\371_documento_avales.pdf
 
+\1_GRUPOS I+D_2010_2014_2018\2018_Informes finales Grupos I+D\2_Listado Grupos I+D 2018_CSIC_22_11.pdf
+
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\informes_propuestas_2012\28\Informe publicable\362_documentoarchivo.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\informes_propuestas_2012\28\Propuesta_postulación\1305_avales.pdf
@@ -49,6 +59,8 @@
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\informes_propuestas_2012\266\Informe publicable\17_documentoarchivo.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\informes_propuestas_2012\266\Propuesta_postulación\497_avales.pdf
+
+\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\id2012_Postulaciones proyectos+D.ods
 
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\informes_propuestas_2014\36\Informe publicable\597__documentoarchivo_documentosrequeridos.pdf
@@ -60,7 +72,7 @@
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\informes_propuestas_2014\411\Informe publicable\259__documentoarchivo_documentosrequeridos.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\informes_propuestas_2014\411\Propuesta_postulación\950_documentosrequeridos__documentoarchivo.pdf
 
-\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\Resultado llamado_Informe CSIC_gruposI+D_2014.pdf
+\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\id2014_Postulaciones proyectos+D.ods
 
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2016_informes_vs_propuestas\informes_propuestas_2016\75\Informe publicable\288_documento_documentosrequeridos.pdf
@@ -72,6 +84,8 @@
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2016_informes_vs_propuestas\informes_propuestas_2016\367\Informe publicable\1140_documento_documentosrequeridos.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2016_informes_vs_propuestas\informes_propuestas_2016\367\Propuesta_postulación\1008__documento_documentosrequeridos.pdf
 
+\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2016_informes_vs_propuestas\Financiados_imasd2016_paraCSIC.ods
+
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\25\Informe publicable\542_documento_documentosrequeridos.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\25\Propuesta_postulación\884_documento_avales.pdf
@@ -79,10 +93,13 @@
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\202\Informe publicable\62_documento_documentosrequeridos.odt
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\202\Propuesta_postulación\482_documento_avales.pdf
 
+\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\planilla financiados_proyectosI+D.pdf
+
+
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\informe_propusetas_2020\134\Informe publicable\797_documento_documentosrequeridos.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\informe_propusetas_2020\134\Propuesta_postulación\47_documento_avales.pdf
 
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\informe_propusetas_2020\558\Informe publicable\240_documento_documentosrequeridos.pdf
 \2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\informe_propusetas_2020\558\Propuesta_postulación\1132_documento_avales.pdf
 
-\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\planilla financiados_proyectosI+D.pdf
+\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2020_Postulaciones.ods
