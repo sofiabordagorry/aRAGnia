@@ -1,14 +1,14 @@
 """Tests para docling_parse.py"""
 
-import json
 import shutil
 from pathlib import Path
 
 import pytest
 
-from institutional_graphrag.ingest.docling_parse import (
-    load_parsed_document,
+from institutional_graphrag.ingest.docling_parser import (
     parse_corpus,
+    parse_single_document,
+    DocumentAlreadyProcessed,
 )
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -17,7 +17,7 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 def test_parse_corpus_directorio_no_existe():
     """Debe fallar si el directorio no existe."""
     with pytest.raises(FileNotFoundError, match="Directorio de corpus no encontrado"):
-        parse_corpus(Path("/directorio_inexistente"))
+        parse_corpus(corpus_dir=Path("/directorio_inexistente"))
 
 
 def test_parse_corpus_sin_archivos(tmp_path):
@@ -28,67 +28,99 @@ def test_parse_corpus_sin_archivos(tmp_path):
     assert result == []
 
 
-def test_load_parsed_document_no_existe():
-    """Debe fallar si el archivo JSON no existe."""
-    with pytest.raises(FileNotFoundError, match="Archivo JSON no encontrado"):
-        load_parsed_document(Path("/archivo_inexistente.json"))
+@pytest.mark.skipif(
+    not (DATA_DIR / "corpus").exists(),
+    reason="Requiere data/corpus",
+)
+def test_parse_single_document_real_pdf(tmp_path, monkeypatch):
+    """
+    Prueba el parseo de un solo documento copiado a un directorio temporal.
+    """
 
+    # Redirigir el directorio de salida a uno temporal
+    # Esto asegura que exists_docling() siempre devuelva False durante el test
+    test_output_dir = tmp_path / "test_output"
+    test_output_dir.mkdir()
+    monkeypatch.setattr(
+        "institutional_graphrag.ingest.docling_parser.DEFAULT_DOCLING_DIR", test_output_dir
+    )
 
-def test_load_parsed_document_exitoso(tmp_path):
-    """Debe cargar un documento JSON válido."""
-    data = {
-        "source": "test.pdf",
-        "num_documents": 1,
-        "documents": [{"page_content": "test", "metadata": {}}],
-    }
+    corpus_dir = DATA_DIR / "corpus"
+    pdf_files = sorted(list(corpus_dir.glob("*.pdf")))
 
-    archivo = tmp_path / "test.json"
-    with open(archivo, "w", encoding="utf-8") as f:
-        json.dump(data, f)
+    if not pdf_files:
+        pytest.skip("No se encontraron archivos PDF en data/corpus para realizar el test.")
 
-    result = load_parsed_document(archivo)
+    pdf_path = pdf_files[0]
+    test_pdf_path = tmp_path / pdf_path.name
+    shutil.copy(pdf_path, test_pdf_path)
 
-    assert result == data
-    assert result["num_documents"] == 1
+    doc_dict = parse_single_document(test_pdf_path)
+
+    # Validaciones de estructura basadas en el schema de Docling
+    assert isinstance(doc_dict, dict)
+    assert doc_dict["schema_name"] == "DoclingDocument"
+    assert doc_dict["name"] == test_pdf_path.stem
+
+    # Verificar metadatos de origen
+    assert "origin" in doc_dict
+    assert doc_dict["origin"]["filename"] == test_pdf_path.name
 
 
 @pytest.mark.skipif(
     not (DATA_DIR / "corpus").exists(),
     reason="Requiere data/corpus",
 )
-def test_parse_corpus_real(tmp_path):
-    """Test de integración procesando un solo PDF."""
-    corpus_dir = DATA_DIR / Path("corpus")
+def test_parse_corpus_subset_integration(tmp_path, monkeypatch):
+    """
+    Test de integración procesando solo los primeros 2 documentos.
+    Usa monkeypatch para evitar conflictos con archivos ya procesados.
+    """
+    corpus_dir = DATA_DIR / "corpus"
+    pdf_files = sorted(list(corpus_dir.glob("*.pdf")))
 
-    # Buscar un PDF en el corpus
-    pdf_files = list(corpus_dir.glob("**/*.pdf"))
     if not pdf_files:
         pytest.skip("No hay PDFs en data/corpus")
 
-    # Crear directorio temporal y copiar solo un PDF
-    test_corpus = tmp_path / "corpus"
-    test_corpus.mkdir()
-    test_pdf = test_corpus / pdf_files[0].name
-    shutil.copy(pdf_files[0], test_pdf)
+    # Redirigir el directorio de salida a uno temporal
+    # Esto asegura que exists_docling() siempre devuelva False durante el test
+    test_output_dir = tmp_path / "test_docling_output"
+    test_output_dir.mkdir()
+    monkeypatch.setattr(
+        "institutional_graphrag.ingest.docling_parser.DEFAULT_DOCLING_DIR", test_output_dir
+    )
 
-    # Directorio de output temporal
-    output_dir = tmp_path / "output"
+    # Crear el corpus temporal para el test
+    test_subset_dir = tmp_path / "subset_corpus"
+    test_subset_dir.mkdir()
 
-    # Procesar solo ese PDF
-    output_files = parse_corpus(test_corpus, output_dir, skip_errors=True)
+    # Tomamos los primeros 2 archivos
+    files_to_test = pdf_files[:2]
+    for pdf in files_to_test:
+        shutil.copy(pdf, test_subset_dir / pdf.name)
 
-    # Verificar
-    assert len(output_files) == 1
-    output_path = output_files[0]
+    results = parse_corpus(test_subset_dir, recursive=False, skip_errors=True)
 
-    assert output_path.exists()
-    assert output_path.suffix == ".json"
+    assert len(results) == len(files_to_test)
+    assert results[0]["name"] == files_to_test[0].stem
 
-    # Verificar contenido
-    data = load_parsed_document(output_path)
-    assert "source" in data
-    assert "num_documents" in data
-    assert "documents" in data
-    assert len(data["documents"]) > 0
 
-    # tmp_path se limpia automáticamente al finalizar el test
+def test_exists_docling_exception(tmp_path, monkeypatch):
+    """Verifica que salte la excepción si el JSON ya existe."""
+    from institutional_graphrag.ingest.docling_parser import exists_docling
+
+    test_file = Path("test_doc.pdf")
+    # Mockear el directorio de salida para que apunte a un temporal
+    monkeypatch.setattr(
+        "institutional_graphrag.ingest.docling_parser.DEFAULT_DOCLING_DIR", tmp_path
+    )
+
+    # Crear el "json_twin"
+    json_twin = tmp_path / "test_doc.json"
+    json_twin.touch()
+
+    with pytest.raises(DocumentAlreadyProcessed) as excinfo:
+        exists_docling(test_file)
+
+    # Verificamos que el mensaje del error sea el esperado (sin los decoradores de la clase)
+    assert "ya había sido convertido" in str(excinfo.value)
