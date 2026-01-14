@@ -48,12 +48,10 @@ def chunk_document(
 
         page_numbers = sorted(
             set(
-                prov.page_no # obtiene el número de pagina resultante de los siguientes pasos:
+                prov.page_no  # obtiene el número de pagina resultante de los siguientes pasos:
                 for item in chunk.meta.doc_items  # itera por cada elemento del chunk
-                for prov in item.prov # itera por la source data de cada elemento
-                if hasattr(
-                    prov, "page_no" # se queda solo con aquellos que tengan page number
-                )
+                for prov in item.prov  # itera por la source data de cada elemento
+                if hasattr(prov, "page_no")  # se queda solo con aquellos que tengan page number
             )
         )
 
