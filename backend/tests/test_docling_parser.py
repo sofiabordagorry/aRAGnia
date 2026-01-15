@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 
 from institutional_graphrag.ingest.docling_parser import (
+    DocumentAlreadyProcessed,
     parse_corpus,
     parse_single_document,
-    DocumentAlreadyProcessed,
 )
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -107,7 +107,7 @@ def test_parse_corpus_subset_integration(tmp_path, monkeypatch):
 
 def test_exists_docling_exception(tmp_path, monkeypatch):
     """Verifica que salte la excepción si el JSON ya existe."""
-    from institutional_graphrag.ingest.docling_parser import exists_docling
+    from institutional_graphrag.ingest.docling_parser import is_already_processed
 
     test_file = Path("test_doc.pdf")
     # Mockear el directorio de salida para que apunte a un temporal
@@ -120,7 +120,7 @@ def test_exists_docling_exception(tmp_path, monkeypatch):
     json_twin.touch()
 
     with pytest.raises(DocumentAlreadyProcessed) as excinfo:
-        exists_docling(test_file)
+        is_already_processed(test_file)
 
     # Verificamos que el mensaje del error sea el esperado (sin los decoradores de la clase)
     assert "ya había sido convertido" in str(excinfo.value)
