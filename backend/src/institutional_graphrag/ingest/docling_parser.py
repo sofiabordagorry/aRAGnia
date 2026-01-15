@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 from typing import Any, Optional, cast
 
@@ -16,22 +15,6 @@ class DocumentAlreadyProcessed(Exception):
     """El documento ya estaba en cache."""
 
 
-"""
-def extract_furniture_lines(doc) -> list[str]:
-    from docling_core.types.doc import ContentLayer  # type: ignore
-
-    lines: list[str] = []
-    for item, _level in doc.iterate_items(included_content_layers={ContentLayer.FURNITURE}):
-        text = getattr(item, "text", None)
-        if not text:
-            continue
-        s = re.sub(r"\s+", " ", str(text)).strip()
-        if s:
-            lines.append(s)
-    return lines
-"""
-
-
 def is_already_processed(path: Path) -> bool:
     json_path = DEFAULT_DOCLING_DIR / path.with_suffix(".json").name
     if json_path.exists():
@@ -40,10 +23,10 @@ def is_already_processed(path: Path) -> bool:
 
 
 def _ref_to_index(ref: dict[str, Any]) -> Optional[tuple[str, int]]:
-    r = ref.get("$ref") if isinstance(ref, dict) else None
-    if not isinstance(r, str) or not r.startswith("#/"):
+    ref_str = ref.get("$ref") if isinstance(ref, dict) else None
+    if not isinstance(ref_str, str) or not ref_str.startswith("#/"):
         return None
-    parts = r[2:].split("/")
+    parts = ref_str[2:].split("/")
     if len(parts) != 2:
         return None
     name, idx_str = parts
@@ -69,15 +52,15 @@ def _best_prov_key_from_item(item: dict[str, Any]) -> Optional[tuple[int, float,
             continue
 
         page_no = prov.get("page_no")
-        t = bbox.get("t")
-        l = bbox.get("l")
-        if page_no is None or t is None or l is None:
+        top = bbox.get("t")
+        left = bbox.get("l")
+        if page_no is None or top is None or left is None:
             continue
 
-        t = float(t)
-        if best is None or best_t is None or t > best_t:
-            best = (int(page_no), t, float(l))
-            best_t = t
+        top = float(top)
+        if best is None or best_t is None or top > best_t:
+            best = (int(page_no), top, float(left))
+            best_t = top
 
     return best
 
@@ -100,8 +83,8 @@ def _get_item_bbox_key(
 
     direct = _best_prov_key_from_item(item)
     if direct is not None:
-        page_no, t, l = direct
-        return (page_no, -t, l)
+        page_no, top, left = direct
+        return (page_no, -top, left)
 
     if arr_name == "groups":
         children = item.get("children")
