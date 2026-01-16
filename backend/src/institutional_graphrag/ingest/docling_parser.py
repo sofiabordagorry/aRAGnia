@@ -34,8 +34,6 @@ def promote_consecutive_section_headers(doc_dict: dict[str, Any]) -> None:
         return
 
     in_streak = False
-    base_level: int | None = None
-    bump = 0
 
     for ref in children:
         parsed = _ref_to_index(ref)
