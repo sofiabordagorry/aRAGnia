@@ -33,7 +33,7 @@ def promote_consecutive_section_headers(doc_dict: dict[str, Any]) -> None:
     if not isinstance(texts, list):
         return
 
-    prev_was_header = False
+    in_streak = False
     base_level: int | None = None
     bump = 0
 
