@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import pandas as pd
 import re
-from institutional_graphrag.graph.schema import Entity, Relationship, Documento, Chunk, PRIMER_CHUNK, SIGUIENTE_CHUNK, DE_DOCUMENTO
+from institutional_graphrag.graph.schema import Entity, Relationship, Documento, Chunk, Proyecto, Anio, PRIMER_CHUNK, SIGUIENTE_CHUNK, DE_DOCUMENTO, ES_DESCRITO_POR, EVIDENCIA_DE, INICIO_EN
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 DOCUMENTS_DIR = DATA_DIR / "corpus"
@@ -140,7 +140,7 @@ def extract_chunks(res:ExtractionResult) -> Dict[str, Any]:
                 continue
             
             chunk_anterior = chunk_id
-            chunk_id = f"{source_stem}_{idx}_{uuid.uuid4()}"
+            chunk_id = f"{source_stem}_{idx}"
             
             if idx == 0: 
                 document = [e for e in res.entities if (e.label == "Documento" and source_stem == e.value["base_name"])]
@@ -160,6 +160,7 @@ def extract_chunks(res:ExtractionResult) -> Dict[str, Any]:
             res.relationships.append(relation_document)
 
             # value con tus campos reales
+
             value = {
                 "section_heading": c.get("section_heading"),
                 "chunk_method": c.get("chunk_method"),
@@ -182,8 +183,8 @@ def extract_proyect(res:ExtractionResult) -> Dict[str, Any]:
     datasets, res = associate_tables_with_documents(res)
 
     doc_by_id = {str(e.id): e for e in res.entities if e.label == "Documento"}
-    print(datasets)
     for df in datasets:
+        diccionario_proyectos = {}
         cols = df.columns
         id_col = df.columns[0]
         title_cols = [
@@ -198,7 +199,7 @@ def extract_proyect(res:ExtractionResult) -> Dict[str, Any]:
 
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
-            title = str(row[title_col]).strip()
+            frac_title = str(row[title_col]).strip()
             
             doc = doc_by_id.get(doc_id)
             if doc is None:
@@ -207,13 +208,132 @@ def extract_proyect(res:ExtractionResult) -> Dict[str, Any]:
                     "message": f"No se encontró Documento con id={doc_id}",
                 })
                 continue
+            id_proyecto = doc.value["is_group"] + "_" + doc.value["year_publisher"] + "_" + doc.value["sub_id"]
             
-            # ACA YA SE OBTUVO EL TITULO , O PARTE DE EL, ENTONCES AHORA FALTA IR POR LOS CHUNKS Y ENCONTRAR EL TITULO COMPLETO AYUDANDOME DE LA FRACCION DEL TITULO OBTENIDA
+            res.relationships.append(ES_DESCRITO_POR(id_proyecto, doc_id))
+            
+            if id_proyecto not in diccionario_proyectos:
+                diccionario_proyectos[id_proyecto] = []  
 
-        # 1) guardar el título en el documento (simple)
-        #doc.value["title"] = title
+            chunk_name = doc.value["base_name"] + "_chunks.json"
+           
+            title = encontrar_titulos((CHUNKS_DIR / chunk_name), frac_title)
+            title["year"] = doc.value["year_publisher"]
+            diccionario_proyectos[id_proyecto].append(title)
+
+            # ACA YA SE OBTUVO EL TITULO , O PARTE DE EL, ENTONCES AHORA FALTA IR POR
+            # LOS CHUNKS Y ENCONTRAR EL TITULO COMPLETO AYUDANDOME DE LA FRACCION DEL TITULO OBTENIDA
+        for id_proyecto, titulos in diccionario_proyectos.items():
+            mejor_puntaje = 5 
+            for titulo_info in titulos:
+                titulo = titulo_info['titulo_candidato']
+                grado_optimo = titulo_info['grado_optimo']
+                chunk_id = titulo_info['chunk_id']
+                year = titulo_info["year"]
+                # Aquí puedes aplicar tu lógica de puntaje. Por ejemplo, puedes usar el grado_optimo
+                puntaje = grado_optimo  # En este caso, simplemente usamos el grado_optimo como puntaje
+                # Verificar si este título tiene un puntaje mejor
+                if puntaje < mejor_puntaje:
+                    mejor_puntaje = puntaje
+                    mejor_titulo = titulo
+                    mejor_chunk_id = chunk_id
+            
+
+            res.entities.append(
+                Proyecto(
+                    id=id_proyecto,
+                    value=mejor_titulo,
+                )
+            )
+            if not year:
+                res.errors.append({
+                    "type": "MissingYear",
+                    "message": f"El proyecto {id_proyecto} no tiene anio de publicacion",
+                })
+            else:
+                year_id = uuid.uuid4()
+                res.entities.append(
+                    Anio(
+                        id= year_id,
+                        value=year,
+                    )
+                )
+                res.relationships.append(INICIO_EN(id_proyecto, year_id)
+                
+                )
+            
+            res.relationships.append(EVIDENCIA_DE(mejor_chunk_id, id_proyecto))
     return res
 
+
+def encontrar_titulos(path, title):
+    payload = json.loads(path.read_text(encoding="utf-8"))
+   # Inicializar una lista para almacenar los resultados
+    resultados = []
+
+    # Definir el patrón para buscar "Titulo" o "Título"
+    titulo_regex = re.compile(r'(Titulo|Título)[\s:]*([^\n.,]*)[.,\n]')
+
+    # Recorrer los chunks en el payload
+
+
+    for i, chunk in enumerate(payload['chunks']):
+        if i == 0:
+            headings = chunk['metadata'].get('headings', [])
+            if headings:
+                resultados.append({
+                'chunk_id': chunk['chunk_id'],
+                'titulo_candidato': headings[0],
+                'grado_optimo': 4
+                })
+                
+        # Buscar el patrón en el texto del chunk
+        match = titulo_regex.search(chunk['text'])
+        if match:
+            # El primer grupo es "Titulo" o "Título" y el segundo grupo es el texto que sigue
+            titulo_candidato = match.group(2).strip()  
+            if title in titulo_candidato:
+                resultados.append({
+                'chunk_id': chunk['chunk_id'],
+                'titulo_candidato': titulo_candidato,
+                'grado_optimo': 1
+                })
+                
+        if title in chunk['metadata'].get('headings', []):
+            resultados.append({
+                'chunk_id': chunk['chunk_id'],
+                'titulo_candidato': titulo_candidato,
+                'grado_optimo': 2
+            })
+            
+        if title in chunk['text']:
+            # Si title está en el texto, capturar hasta la siguiente coma, punto o salto de línea
+            text_match = re.search(rf'{re.escape(title)}[^\n.,]*[.,\n]', chunk['text'])
+            if text_match:
+                titulo_candidato = text_match.group(0).strip()  # Capturar el texto completo
+                resultados.append({
+                    'chunk_id': chunk['chunk_id'],
+                    'titulo_candidato': titulo_candidato,
+                    'grado_optimo': 3
+                })
+        
+    # Verificar si se encontraron títulos
+    mejor_candidato = None
+    if resultados:
+        mejor_candidato = min(resultados, key=lambda x: x['grado_optimo'])  # Selecciona el con menor 
+        
+    return mejor_candidato
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 def associate_tables_with_documents(res:ExtractionResult)->Tuple[List[pd.DataFrame], ExtractionResult]:
 
