@@ -15,6 +15,69 @@ class DocumentAlreadyProcessed(Exception):
     """El documento ya estaba en cache."""
 
 
+def promote_consecutive_section_headers(doc_dict: dict[str, Any]) -> None:
+    """
+    Si hay section_header consecutivos con el mismo level (típico portada + primera sección),
+    sube el level de los siguientes para que no se pisen:
+      level 1, level 1, level 2  ->  level 1, level 2, level 3
+    Resetea cuando aparece un item que no sea section_header.
+    """
+    body = doc_dict.get("body")
+    if not isinstance(body, dict):
+        return
+    children = body.get("children")
+    if not isinstance(children, list):
+        return
+
+    texts = doc_dict.get("texts")
+    if not isinstance(texts, list):
+        return
+
+    prev_was_header = False
+    base_level: int | None = None
+    bump = 0
+
+    for ref in children:
+        parsed = _ref_to_index(ref)
+        if not parsed:
+            in_streak = False
+            prev_level = None
+            continue
+
+        arr_name, idx = parsed
+        if arr_name != "texts" or not (0 <= idx < len(texts)):
+            in_streak = False
+            prev_level = None
+            continue
+
+        item = texts[idx]
+        if not isinstance(item, dict):
+            in_streak = False
+            prev_level = None
+            continue
+
+        if item.get("label") != "section_header":
+            in_streak = False
+            prev_level = None
+            continue
+
+        lvl = item.get("level")
+        if not isinstance(lvl, int):
+            in_streak = False
+            prev_level = None
+            continue
+
+        if not in_streak:
+            # arranca racha
+            in_streak = True
+            prev_level = lvl
+        else:
+            # header consecutivo: forzar lvl = prev_level + 1
+            new_lvl = (prev_level or lvl) + 1
+            item["level"] = new_lvl
+            prev_level = new_lvl
+
+
 def is_already_processed(path: Path) -> bool:
     json_path = DEFAULT_DOCLING_DIR / path.with_suffix(".json").name
     if json_path.exists():
@@ -119,6 +182,8 @@ def _postprocess_doc_dict(doc_dict: dict[str, Any]) -> dict[str, Any]:
         for g in groups:
             if isinstance(g, dict) and isinstance(g.get("children"), list):
                 g["children"] = reorder_refs_by_bbox(doc_dict, g["children"])
+
+    promote_consecutive_section_headers(doc_dict)
     return doc_dict
 
 
