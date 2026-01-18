@@ -176,7 +176,10 @@ def ods_table(path: Path) -> pd.DataFrame:
 
 # ---------- pdf ----------
 def pdf_table(path: Path) -> pd.DataFrame:
-    dfs = tabula.read_pdf(str(path), pages="all", lattice=True, multiple_tables=True)
+    dfs = tabula.read_pdf(
+        str(path), pages="all", lattice=True, multiple_tables=True, encoding="latin-1"
+    )
+
     if not dfs:
         raise ValueError(f"No se detectaron tablas en {path}")
 
