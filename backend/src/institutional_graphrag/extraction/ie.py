@@ -115,7 +115,7 @@ class EntityExtractor:
                 )
                 continue
 
-            doc_id = f"{base_name}_{uuid.uuid4()}"
+            doc_id = f"{base_name}"
             value = {
                 "base_name": base_name,
                 "is_group": m.group("group"),
@@ -276,14 +276,13 @@ class EntityExtractor:
                         }
                     )
                 else:
-                    year_id = str(uuid.uuid4())
                     self.res.entities.append(
                         Anio(
-                            id=year_id,
+                            id=year,
                             value=year,
                         )
                     )
-                    self.res.relationships.append(INICIO_EN(project_id, year_id))
+                    self.res.relationships.append(INICIO_EN(project_id, year))
 
                 self.res.relationships.append(EVIDENCIA_DE(best["chunk_id"], project_id))
 
@@ -336,9 +335,8 @@ class EntityExtractor:
             self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
 
             if year:
-                year_id = str(uuid.uuid4())
-                self.res.entities.append(Anio(id=year_id, value=best["year"]))
-                self.res.relationships.append(INICIO_EN(project_id, year_id))
+                self.res.entities.append(Anio(id=best["year"], value=best["year"]))
+                self.res.relationships.append(INICIO_EN(project_id, best["year"]))
             else:
                 self.res.errors.append(
                     {
@@ -482,8 +480,8 @@ class EntityExtractor:
                 project_id = (
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
-                # candidatos (hasta 2)
-                people = self._extract_up_to_two_people(row, cols, id_col)
+
+                people = self._extract_up_to_people(row, cols, id_col)
 
                 for full_name, fallback in people:
                     # buscar en chunks (primero full, luego fallback)
@@ -498,15 +496,48 @@ class EntityExtractor:
                         continue
 
                     candidate_id = str(uuid.uuid4())
+
                     if (
                         fallback
-                        and fallback in inv_ids_by_project[project_id]
+                        and any(fallback == value for value, _ in inv_ids_by_project[project_id])
                         and candidate_in_text == fallback
-                    ) or (full_name and full_name in inv_ids_by_project[project_id]):
+                    ) or (
+                        full_name
+                        and any(full_name == value for value, _ in inv_ids_by_project[project_id])
+                    ):
                         continue
+
+                    if (fallback and candidate_in_text == fallback) or (
+                        full_name
+                        and any(value == full_name for _, value in inv_ids_by_project[project_id])
+                    ):
+                        continue
+
+                    # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
+                    if fallback:
+                        to_remove = {
+                            item for item in inv_ids_by_project[project_id] if item[1] == fallback
+                        }
+                        if to_remove:
+                            inv_ids_by_project[project_id] -= to_remove
+                            candidate_to_remove = next(iter(to_remove), None)
+                            self.res.entities = [
+                                e
+                                for e in self.res.entities
+                                if not (
+                                    e.label == "Investigador" and e.id == candidate_to_remove[0]
+                                )
+                            ]
+                            self.res.relationships = [
+                                r
+                                for r in self.res.relationships
+                                if r.source_id != candidate_to_remove[0]
+                                and r.target_id != project_id
+                            ]
+
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                    inv_ids_by_project[project_id].add(candidate_in_text)
+                    inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
     def _build_indexes(self):
         inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
@@ -535,13 +566,13 @@ class EntityExtractor:
                 fallback = None
         return full, fallback
 
-    def _extract_up_to_two_people(
+    def _extract_up_to_people(
         self, row, cols: list[str], id_col: str
     ) -> list[tuple[Optional[str], Optional[str]]]:
         out: list[tuple[Optional[str], Optional[str]]] = []
         i = 0
 
-        while i < len(cols) and len(out) < 2:
+        while i < len(cols):
             c1 = cols[i]
             if c1 == id_col:
                 i += 1
