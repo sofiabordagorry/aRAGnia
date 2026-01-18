@@ -258,10 +258,12 @@ class EntityExtractor:
             for project_id, candidates in projects.items():
                 best = self._pick_best_candidate(candidates)
                 if best is None:
-                    self.res.errors.append({
-                        "type": "MissingCandidate",
-                        "message": f"No candidates for project_id={project_id}",
-                    })
+                    self.res.errors.append(
+                        {
+                            "type": "MissingCandidate",
+                            "message": f"No candidates for project_id={project_id}",
+                        }
+                    )
                     continue
                 self.res.entities.append(Proyecto(id=project_id, value=best["candidate_title"]))
                 year = best.get("year")
@@ -711,7 +713,9 @@ class EntityExtractor:
             return None
 
         if not isinstance(data, dict):
-            self.res.errors.append({"type": "InvalidJson", "message": f"{path.name}: JSON root is not an object"})
+            self.res.errors.append(
+                {"type": "InvalidJson", "message": f"{path.name}: JSON root is not an object"}
+            )
             return None
 
         return cast(dict[str, Any], data)
