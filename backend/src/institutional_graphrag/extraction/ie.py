@@ -8,7 +8,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
 
@@ -66,7 +66,7 @@ class EntityExtractor:
         self.chunks_dir = DATA_DIR / "chunks"
         self.table_dir = DATA_DIR / "tables"
         self.input_dir = DATA_DIR / "entities_relations"
-        self.res = ExtractionResult([], [], [])
+        self.res: ExtractionResult = ExtractionResult([], [], [])
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -257,7 +257,12 @@ class EntityExtractor:
 
             for project_id, candidates in projects.items():
                 best = self._pick_best_candidate(candidates)
-
+                if best is None:
+                    self.res.errors.append({
+                        "type": "MissingCandidate",
+                        "message": f"No candidates for project_id={project_id}",
+                    })
+                    continue
                 self.res.entities.append(Proyecto(id=project_id, value=best["candidate_title"]))
                 year = best.get("year")
 
@@ -286,7 +291,7 @@ class EntityExtractor:
 
         unrelated_docs = [doc_id for doc_id in self.doc_by_id.keys() if doc_id not in related_docs]
 
-        candidates_for_proyects: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        candidates_for_projects: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for doc_id in unrelated_docs:
             doc = self.doc_by_id.get(doc_id)
             if doc is None:
@@ -307,7 +312,7 @@ class EntityExtractor:
             )
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
-            candidates_for_proyects[project_id].append(
+            candidates_for_projects[project_id].append(
                 {
                     **fallback_result,
                     "type": doc.value.get("type"),
@@ -315,18 +320,18 @@ class EntityExtractor:
                 }
             )
 
-        for project_id, candidates in candidates_for_proyects.items():
+        for project_id, candidates in candidates_for_projects.items():
             best = self._pick_best_candidate(candidates)
-            if not best:
+            if best is None:
                 continue
-            titulo = best.get("candidate_title")
+            title = best.get("candidate_title")
             chunk_id = best.get("chunk_id")
             year = best.get("year")
-            if not isinstance(titulo, str) or not titulo.strip():
+            if not isinstance(title, str) or not title.strip():
                 continue
             if not isinstance(chunk_id, str) or not chunk_id.strip():
                 continue
-            self.res.entities.append(Proyecto(id=project_id, value=titulo.strip()))
+            self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
 
             if year:
                 year_id = str(uuid.uuid4())
@@ -700,12 +705,18 @@ class EntityExtractor:
 
     def _read_json(self, path: Path) -> Optional[dict[str, Any]]:
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
         except Exception as e:
             self.res.errors.append({"type": "InvalidJson", "message": f"{path.name}: {e}"})
             return None
 
-    def save_in_file(self, filename: str) -> Dict[str, Any]:
+        if not isinstance(data, dict):
+            self.res.errors.append({"type": "InvalidJson", "message": f"{path.name}: JSON root is not an object"})
+            return None
+
+        return cast(dict[str, Any], data)
+
+    def save_in_file(self, filename: str) -> None:
 
         self.input_dir.mkdir(parents=True, exist_ok=True)
 
@@ -727,11 +738,11 @@ class EntityExtractor:
 
         entities_data = data.get("entities", [])
         relationships_data = data.get("relationships", [])
-        errors = data.get("errors", [])
+        errors_data = data.get("errors", [])
 
         entities = []
         relationships = []
-        errors: list[dict[str, Any]] = errors if isinstance(errors, list) else []
+        errors: list[dict[str, Any]] = errors_data if isinstance(errors_data, list) else []
 
         if not isinstance(entities_data, list):
             errors.append({"type": "InvalidFormat", "message": "'entities' no es lista"})
