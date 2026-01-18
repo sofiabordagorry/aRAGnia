@@ -1,5 +1,5 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
 import pandas as pd
 import tabula
@@ -7,7 +7,6 @@ from odf import teletype
 from odf.opendocument import load
 from odf.table import Table, TableRow
 from odf.text import P
-
 
 CUSTOM_HEADER_ODT = [
     "Id",
@@ -131,14 +130,20 @@ def fix_merged_header_columns(df: pd.DataFrame) -> pd.DataFrame:
         if _is_auto_col(curr) and prev in {"Primer Responsable", "Segundo Responsable"}:
             left = df[prev].fillna("").astype(str)
             right = df[curr].fillna("").astype(str)
-            df[prev] = (left + " " + right).str.replace(r"\s+", " ", regex=True).str.strip().replace({"": pd.NA})
+            df[prev] = (
+                (left + " " + right)
+                .str.replace(r"\s+", " ", regex=True)
+                .str.strip()
+                .replace({"": pd.NA})
+            )
             df = df.drop(columns=[curr])
             cols.pop(i)
             continue
         i += 1
 
     drop_cols = [
-        c for c in df.columns
+        c
+        for c in df.columns
         if _is_auto_col(c) and (df[c].isna().all() or (df[c].astype(str).str.strip() == "").all())
     ]
     return df.drop(columns=drop_cols) if drop_cols else df
