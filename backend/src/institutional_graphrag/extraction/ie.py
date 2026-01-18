@@ -521,19 +521,18 @@ class EntityExtractor:
                         if to_remove:
                             inv_ids_by_project[project_id] -= to_remove
                             candidate_to_remove = next(iter(to_remove), None)
-                            self.res.entities = [
-                                e
-                                for e in self.res.entities
-                                if not (
-                                    e.label == "Investigador" and e.id == candidate_to_remove[0]
-                                )
-                            ]
-                            self.res.relationships = [
-                                r
-                                for r in self.res.relationships
-                                if r.source_id != candidate_to_remove[0]
-                                and r.target_id != project_id
-                            ]
+                            if candidate_to_remove is not None:
+                                inv_id = candidate_to_remove[0]
+                                self.res.entities = [
+                                    e
+                                    for e in self.res.entities
+                                    if not (e.label == "Investigador" and e.id == inv_id)
+                                ]
+                                self.res.relationships = [
+                                    r
+                                    for r in self.res.relationships
+                                    if r.source_id != inv_id and r.target_id != project_id
+                                ]
 
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
