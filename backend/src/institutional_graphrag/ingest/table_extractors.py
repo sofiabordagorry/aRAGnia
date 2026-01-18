@@ -54,12 +54,15 @@ def clean_x000d_df(df: pd.DataFrame) -> pd.DataFrame:
 
 # ---------- headers ----------
 def make_unique_columns(cols: list[str]) -> list[str]:
-    seen, out = {}, []
+    seen: dict[str, int] = {}
+    out: list[str] = []
+
     for c in cols:
         c = c or ""
         k = seen.get(c, 0)
         out.append(c if k == 0 else f"{c}_{k}")
         seen[c] = k + 1
+
     return out
 
 
