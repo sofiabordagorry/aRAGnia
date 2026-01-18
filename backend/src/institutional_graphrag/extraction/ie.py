@@ -81,7 +81,7 @@ class EntityExtractor:
         return self.res
 
     def _build_doc_indexes(self) -> None:
-        docs = [e for e in self.res.entities if e.label == "Documento"]
+        docs = [cast(Documento, e) for e in self.res.entities if e.label == "Documento"]
         self.doc_by_id = {str(d.id): d for d in docs}
 
         self.doc_by_basename = {}
@@ -357,6 +357,8 @@ class EntityExtractor:
             return None
 
         payload = self._read_json(path)
+        if payload is None:
+            return None
         chunks = payload.get("chunks")
         if not isinstance(chunks, list):
             return None
@@ -744,8 +746,8 @@ class EntityExtractor:
         relationships_data = data.get("relationships", [])
         errors_data = data.get("errors", [])
 
-        entities = []
-        relationships = []
+        entities: list[Entity] = []
+        relationships: list[Relationship] = []
         errors: list[dict[str, Any]] = errors_data if isinstance(errors_data, list) else []
 
         if not isinstance(entities_data, list):
