@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from institutional_graphrag.rag.generate import RAG
 
+from institutional_graphrag.rag.generate import RAG
 
 router = APIRouter()
 
