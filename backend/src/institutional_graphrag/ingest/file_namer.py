@@ -43,7 +43,7 @@ def generate_new_filename(path_str):
             if type_suffix != "":
                 potential_id = folders[i - 1].strip()
                 match = re.match(r"(\d+)", potential_id)
-                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id or match == None:
+                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id or match is None:
                     return f"{prefix}_{year}_{filename}"
                 potential_id = match.group(1)
                 if potential_id.isdigit():
