@@ -1,19 +1,20 @@
 # src/rag/generate.py
 
 from __future__ import annotations
-from pathlib import Path
 
+import os
 from dataclasses import dataclass
-from typing import Dict, List, Protocol, Optional
+from pathlib import Path
+from typing import Dict, List, Optional, Protocol
+
+import requests  # type: ignore
+import torch
+from dotenv import load_dotenv
+from groq import Groq
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
-from groq import Groq
-import os
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
-import requests  # type: ignore
-from dotenv import load_dotenv
-
 
 BASE_DIR = Path(__file__).resolve().parents[4]
 DEFAULT_EMBEDDINGS_DIR = BASE_DIR / Path("data/embeddings")

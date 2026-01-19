@@ -23,7 +23,7 @@ def generate_new_filename(path_str):
         # Identificar el año correspondiente
         year = "unknown"
         for folder in reversed(folders):  # Iterate backwards from the folders
-            year_match = re.search(r"(\d{4})", folder)
+            year_match = re.search(r"(?<!\d)(2010|2012|2014|2016|2018|2020)(?!\d)", folder)
             if year_match and not folder.strip().isdigit():
                 year = year_match.group(0)
                 break
@@ -37,9 +37,15 @@ def generate_new_filename(path_str):
                 type_suffix = "informe"
             elif "propuesta" in folder_lower:
                 type_suffix = "propuesta"
+            elif "resumen" in folder_lower:
+                type_suffix = "resumen"
 
             if type_suffix != "":
                 potential_id = folders[i - 1].strip()
+                match = re.match(r"(\d+)", potential_id)
+                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id or match is None:
+                    return f"{prefix}_{year}_{filename}"
+                potential_id = match.group(1)
                 if potential_id.isdigit():
                     file_id = potential_id
                     return f"{prefix}_{year}_{file_id}_{type_suffix}.pdf"

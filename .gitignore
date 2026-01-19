@@ -11,6 +11,8 @@ data/corpus/
 data/docling/
 data/chunks/
 data/embeddings/
+data/tables/
+data/entities_relations
 # Virtual environments
 venv/
 .venv/
