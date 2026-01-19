@@ -360,10 +360,12 @@ class EntityExtractor:
 
         key_re = re.compile(r"((?:gi|proy)_\d{4})_\d+")
 
-        projects = [cast(Proyecto, e) for e in self.res.entities if e.label == "Proyecto"]
+        projects_table: list[Proyecto] = [
+            cast(Proyecto, e) for e in self.res.entities if e.label == "Proyecto"
+        ]
 
-        projects_by_key = defaultdict(list)
-        for p in projects:
+        projects_by_key: defaultdict[str, list[Proyecto]] = defaultdict(list)
+        for p in projects_table:
             m = key_re.search(p.id)
             if m:
                 projects_by_key[m.group(1)].append(p)

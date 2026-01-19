@@ -217,6 +217,9 @@ def save_table(df: pd.DataFrame, output_dir: Path, base_name: str) -> None:
     df = df.astype("string")
     pattern_table = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
     match = pattern_table.match(base_name)
+    if match is None:
+        raise ValueError(f"Nombre de tabla inválido: {base_name}")
+
     name_safe = f"{match.group('group')}_{match.group('year')}_table"
     print(f"-> Guardando como: {name_safe}.parquet y {name_safe}.xlsx")
     df.to_parquet(output_dir / f"{name_safe}.parquet")
@@ -246,12 +249,11 @@ def convert_table_to_chunks() -> None:
     if not folder.exists() or not folder.is_dir():
         raise FileNotFoundError(f"No existe la carpeta: {folder}")
 
+    parquet_files = sorted(folder.rglob("*.parquet"))
     out_chunks: list[dict[str, Any]] = []
 
-    parquet_files = sorted(folder.rglob("*.parquet"))
-
     for pq_path in parquet_files:
-        out_chunks: list[dict[str, Any]] = []
+        out_chunks.clear()
         df = pd.read_parquet(pq_path)
         parent_doc = _parent_doc_from_filename(pq_path.stem)
 
