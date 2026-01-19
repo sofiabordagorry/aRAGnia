@@ -1,14 +1,9 @@
-<<<<<<< HEAD
 from __future__ import annotations
 
 import json
 import re
 from pathlib import Path
 from typing import Any
-=======
-import re
-from pathlib import Path
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
 import pandas as pd
 import tabula
@@ -17,12 +12,9 @@ from odf.opendocument import load
 from odf.table import Table, TableRow
 from odf.text import P
 
-<<<<<<< HEAD
 TABLE_DIR = Path(__file__).resolve().parents[4] / "data" / "tables"
 CHUNK_DIR = Path(__file__).resolve().parents[4] / "data" / "chunks"
 
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 CUSTOM_HEADER_ODT = [
     "Id",
     "Fragmento de título",
@@ -223,18 +215,12 @@ def pdf_table(path: Path) -> pd.DataFrame:
 def save_table(df: pd.DataFrame, output_dir: Path, base_name: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     df = df.astype("string")
-<<<<<<< HEAD
     pattern_table = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
     match = pattern_table.match(base_name)
     name_safe = f"{match.group('group')}_{match.group('year')}_table"
     print(f"-> Guardando como: {name_safe}.parquet y {name_safe}.xlsx")
     df.to_parquet(output_dir / f"{name_safe}.parquet")
     df.to_excel(output_dir / f"{name_safe}.xlsx", index=False)
-=======
-    print(f"-> Guardando como: {base_name}.parquet y {base_name}.xlsx")
-    df.to_parquet(output_dir / f"{base_name}.parquet")
-    df.to_excel(output_dir / f"{base_name}.xlsx", index=False)
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
 
 def extract_table(path: Path, output_dir: Path) -> None:
@@ -249,7 +235,6 @@ def extract_table(path: Path, output_dir: Path) -> None:
         raise ValueError(f"Extensión no soportada para extracción tabular: {ext}")
 
     save_table(clean_x000d_df(df), output_dir, base_name)
-<<<<<<< HEAD
 
 
 ############# Converti la tabla a chunks ###############
@@ -356,5 +341,3 @@ def _parent_doc_from_filename(stem: str) -> str:
     if len(parts) >= 2:
         return f"{parts[0]}_{parts[1]}"
     return stem  # fallback
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b

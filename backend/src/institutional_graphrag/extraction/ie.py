@@ -93,7 +93,6 @@ class EntityExtractor:
             self.docs_by_group_year[key].append(d)
 
     def extract_documents(self) -> None:
-<<<<<<< HEAD
         def ensure_dir(d: Path) -> bool:
             if d.exists():
                 return True
@@ -130,38 +129,10 @@ class EntityExtractor:
             PATTERN_DOCUMENT,
             lambda base, m: {
                 "base_name": base,
-=======
-        if not self.documents_dir.exists():
-            self.res.errors.append(
-                {"type": "MissingFolder", "message": f"No existe la carpeta: {self.documents_dir}"}
-            )
-            return
-
-        for path in sorted(self.documents_dir.iterdir()):
-            if not path.is_file():
-                continue
-
-            base_name = path.stem
-            m = PATTERN_DOCUMENT.match(base_name)
-
-            if not m:
-                self.res.errors.append(
-                    {
-                        "type": "Document Invalid",
-                        "message": f"El formato del documento es invalido: {base_name}",
-                    }
-                )
-                continue
-
-            doc_id = f"{base_name}"
-            value = {
-                "base_name": base_name,
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                 "is_group": m.group("group"),
                 "year_publisher": m.group("year"),
                 "sub_id": m.group("doc_id"),
                 "type": m.group("kind"),
-<<<<<<< HEAD
             },
         )
 
@@ -174,16 +145,6 @@ class EntityExtractor:
                 "year_publisher": m.group("year"),
             },
         )
-=======
-            }
-
-            self.res.entities.append(
-                Documento(
-                    id=doc_id,
-                    value=value,
-                )
-            )
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
     def extract_chunks(self) -> None:
         if not self.chunks_dir.exists():
@@ -257,19 +218,7 @@ class EntityExtractor:
 
                 meta = c.get("metadata", {})
 
-<<<<<<< HEAD
                 self.res.entities.append(Chunk(id=chunk_id, value=meta))
-=======
-                value = {
-                    "section_heading": meta.get("headings"),
-                    "parent_doc": meta.get("parent_doc"),
-                    "element_type": meta.get("element_type"),
-                    "size_chars": meta.get("token_count"),
-                    "page_content": meta.get("page_numbers"),
-                }
-
-                self.res.entities.append(Chunk(id=chunk_id, value=value))
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
     def extract_projects(self) -> None:
         datasets = self._associate_tables_with_documents()
@@ -290,10 +239,6 @@ class EntityExtractor:
             for _, row in small.iterrows():
                 doc_id = str(row[id_col]).strip()
                 frac_title = str(row[title_col]).strip()
-<<<<<<< HEAD
-=======
-
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     self.res.errors.append(
@@ -307,10 +252,7 @@ class EntityExtractor:
                 project_id = (
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
-<<<<<<< HEAD
                 table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                 self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
                 chunk_file = self.chunks_dir / f"{doc.value['base_name']}_chunks.json"
@@ -318,10 +260,7 @@ class EntityExtractor:
                 if candidate:
                     candidate["type"] = doc.value["type"]
                     candidate["year"] = doc.value["year_publisher"]
-<<<<<<< HEAD
                     candidate["table_chunk_id"] = table_chunk_id
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                     projects[project_id].append(candidate)
 
             for project_id, candidates in projects.items():
@@ -352,13 +291,8 @@ class EntityExtractor:
                         )
                     )
                     self.res.relationships.append(INICIO_EN(project_id, year))
-<<<<<<< HEAD
                 self.res.relationships.append(EVIDENCIA_DE(best["chunk_id"], project_id))
                 self.res.relationships.append(EVIDENCIA_DE(best["table_chunk_id"], project_id))
-=======
-
-                self.res.relationships.append(EVIDENCIA_DE(best["chunk_id"], project_id))
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
         related_docs = {
             rel.target_id for rel in self.res.relationships if rel.type == "ES_DESCRITO_POR"
@@ -385,10 +319,7 @@ class EntityExtractor:
             project_id = (
                 f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
             )
-<<<<<<< HEAD
 
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
             candidates_for_projects[project_id].append(
@@ -425,7 +356,6 @@ class EntityExtractor:
 
             self.res.relationships.append(EVIDENCIA_DE(chunk_id, project_id))
 
-<<<<<<< HEAD
         # Agregar documento tipo tabla a la relacion del proyecto
 
         key_re = re.compile(r"((?:gi|proy)_\d{4})_\d+")
@@ -446,8 +376,6 @@ class EntityExtractor:
             for p in projects_by_key.get(base_id, []):
                 self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
 
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
         if not path.exists():
             self.res.errors.append(
@@ -582,14 +510,9 @@ class EntityExtractor:
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
 
-<<<<<<< HEAD
                 table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
 
                 people = self._extract_up_to_people(row, cols, id_col)
-=======
-                people = self._extract_up_to_people(row, cols, id_col)
-
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                 for full_name, fallback in people:
                     # buscar en chunks (primero full, luego fallback)
                     candidate_in_text = None
@@ -603,7 +526,6 @@ class EntityExtractor:
                         continue
 
                     candidate_id = str(uuid.uuid4())
-<<<<<<< HEAD
                     if (
                         fallback
                         and any(fallback == value for _, value in inv_ids_by_project[project_id])
@@ -611,22 +533,6 @@ class EntityExtractor:
                     ) or (
                         full_name
                         and any(full_name == value for _, value in inv_ids_by_project[project_id])
-=======
-
-                    if (
-                        fallback
-                        and any(fallback == value for value, _ in inv_ids_by_project[project_id])
-                        and candidate_in_text == fallback
-                    ) or (
-                        full_name
-                        and any(full_name == value for value, _ in inv_ids_by_project[project_id])
-                    ):
-                        continue
-
-                    if (fallback and candidate_in_text == fallback) or (
-                        full_name
-                        and any(value == full_name for _, value in inv_ids_by_project[project_id])
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                     ):
                         continue
 
@@ -635,10 +541,7 @@ class EntityExtractor:
                         to_remove = {
                             item for item in inv_ids_by_project[project_id] if item[1] == fallback
                         }
-<<<<<<< HEAD
 
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                         if to_remove:
                             inv_ids_by_project[project_id] -= to_remove
                             candidate_to_remove = next(iter(to_remove), None)
@@ -654,7 +557,6 @@ class EntityExtractor:
                                     for r in self.res.relationships
                                     if r.source_id != inv_id and r.target_id != project_id
                                 ]
-<<<<<<< HEAD
                                 self.res.relationships = [
                                     r
                                     for r in self.res.relationships
@@ -664,11 +566,6 @@ class EntityExtractor:
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
                     self.res.relationships.append(EVIDENCIA_DE(table_chunk_id, candidate_id))
-=======
-
-                    self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
-                    self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
                     inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
     def _build_indexes(self):
@@ -741,10 +638,7 @@ class EntityExtractor:
 
         # eliminar pares vacíos y duplicados básicos
         out = [(a, b) for (a, b) in out if a or b]
-<<<<<<< HEAD
 
-=======
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
         return out
 
     def _normalize_col(self, name: str) -> str:
@@ -829,11 +723,7 @@ class EntityExtractor:
                 )
                 continue
 
-<<<<<<< HEAD
             id_to_doc = [(str(d.value["sub_id"]), str(d.id)) for d in docs if "sub_id" in d.value]
-=======
-            id_to_doc = [(str(d.value["sub_id"]), str(d.id)) for d in docs]
->>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
             datasets.append(self._expand_rows_by_id_mapping(df, id_to_doc))
 
         return datasets
