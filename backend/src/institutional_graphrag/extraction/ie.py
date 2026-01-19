@@ -29,6 +29,10 @@ from institutional_graphrag.graph.schema import (
     Proyecto,
     Relationship,
 )
+from institutional_graphrag.extraction.llm_extractor import (
+    LLMEntityExtractor,
+    create_entities_and_relationships_from_llm_extraction,
+)
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 
@@ -60,7 +64,7 @@ class ExtractionResult:
 
 
 class EntityExtractor:
-    def __init__(self):
+    def __init__(self, llm_provider: str = "ollama", llm_model: Optional[str] = None):
         self.data_dir = DATA_DIR
         self.documents_dir = DATA_DIR / "corpus"
         self.chunks_dir = DATA_DIR / "chunks"
@@ -71,6 +75,10 @@ class EntityExtractor:
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
         self.docs_by_group_year: dict[tuple[str, str], list[Documento]] = defaultdict(list)
+        
+        # Configuración LLM
+        self.llm_provider = llm_provider
+        self.llm_model = llm_model
 
     def run(self) -> ExtractionResult:
         self.extract_documents()
@@ -78,6 +86,8 @@ class EntityExtractor:
         self.extract_chunks()
         self.extract_projects()
         self.extract_responsible()
+        self.extract_researchers_llm()
+        
         return self.res
 
     def _build_doc_indexes(self) -> None:
@@ -915,3 +925,89 @@ class EntityExtractor:
                 )
 
         return ExtractionResult(entities=entities, relationships=relationships, errors=errors)
+
+    def extract_researchers_llm(self) -> None:
+        # Obtener IDs de investigadores ya extraídos estáticamente
+        existing_researcher_ids = {
+            e.id for e in self.res.entities if e.label == "Investigador"
+        }
+
+        llm_extractor = LLMEntityExtractor(
+            llm_provider=self.llm_provider,
+            llm_model=self.llm_model,
+            temperature=0.1,
+            max_tokens=1024,
+        )
+
+        # Procesar cada proyecto
+        projects = [e for e in self.res.entities if e.label == "Proyecto"]
+
+        for project in projects:
+            project_id = project.id
+
+            # Obtener documentos del proyecto
+            project_docs = [
+                r.target_id
+                for r in self.res.relationships
+                if r.type == "ES_DESCRITO_POR" and r.source_id == project_id
+            ]
+
+            if not project_docs:
+                continue
+
+            # Procesar chunks de cada documento
+            for doc_id in project_docs:
+                doc = self.doc_by_id.get(doc_id)
+                if doc is None:
+                    continue
+
+                # Cargar chunks del documento
+                base_name = doc.value.get("base_name", "")
+                if not base_name:
+                    continue
+
+                chunks_file = self.chunks_dir / f"{base_name}_chunks.json"
+                if not chunks_file.exists():
+                    continue
+
+                try:
+                    # Cargar chunks del archivo
+                    payload = self._read_json(chunks_file)
+                    if payload is None:
+                        continue
+                    
+                    chunks = payload.get("chunks", [])
+                    if not isinstance(chunks, list):
+                        continue
+
+                    # Extraer investigadores usando LLM de todos los chunks
+                    llm_result = llm_extractor.extract_researchers_from_chunks(
+                        chunks, max_chunks=None
+                    )
+
+                    # Agregar errores
+                    self.res.errors.extend(llm_result.errors)
+
+                    # Crear entidades y relaciones
+                    new_entities, new_relationships = (
+                        create_entities_and_relationships_from_llm_extraction(
+                            llm_result, project_id, existing_researcher_ids
+                        )
+                    )
+
+                    # Agregar al resultado
+                    self.res.entities.extend(new_entities)
+                    self.res.relationships.extend(new_relationships)
+
+                    # Actualizar el set de IDs existentes
+                    existing_researcher_ids.update(e.id for e in new_entities)
+
+                except Exception as e:
+                    self.res.errors.append(
+                        {
+                            "type": "LLMExtractionError",
+                            "document": base_name,
+                            "message": f"Error procesando documento con LLM: {str(e)}",
+                        }
+                    )
+

@@ -5,6 +5,9 @@ from pathlib import Path
 
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 
+LLM_PROVIDER = "ollama"  # "ollama", "groq", o "local"
+LLM_MODEL = None  # None usa el default del provider
+
 def normalize_result(res: ExtractionResult) -> dict:
     return {
         "entities": sorted(
@@ -21,8 +24,12 @@ def normalize_result(res: ExtractionResult) -> dict:
         ),
     }
 
+
 def main() -> int:
-    extractor = EntityExtractor()
+    extractor = EntityExtractor(
+        llm_provider=LLM_PROVIDER,
+        llm_model=LLM_MODEL,
+    )
 
     # 1) Ejecutar extracción
     res = extractor.run()
