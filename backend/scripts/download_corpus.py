@@ -7,7 +7,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import quote
 from pathlib import Path
 from institutional_graphrag.ingest.file_namer import generate_new_filename
-from institutional_graphrag.ingest.table_extractors import extract_table
+from institutional_graphrag.ingest.table_extractors import extract_table, convert_table_to_chunks
 import tempfile
 from enum import Enum
 
@@ -96,7 +96,7 @@ def main():
                 print(f" Error downloading {original_filename} (status {response.status_code})")
                 print()
          
-
+        convert_table_to_chunks()
         print(f"The number of files downloaded was: {archive_count}")
     except FileNotFoundError:
         print(f" Error: The file '{input_dir}' was not found.")
