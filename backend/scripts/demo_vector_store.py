@@ -47,7 +47,7 @@ def main():
     shared_chunker = get_native_chunker(tokenizer=tokenizer)
 
     with open(json_path, "r", encoding="utf-8") as f:
-                doc_dict = json.load(f)
+        doc_dict = json.load(f)
 
     # Reconstruir DoclingDocument
     doc = DoclingDocument.model_validate(doc_dict)
@@ -70,7 +70,7 @@ def main():
     # 3. Generar embeddings
     print(f"\nGenerando embeddings con E5-large-v2...")
     embedder = E5Embedder()
-    texts = [chunk['text'] for chunk in chunks]
+    texts = [chunk["text"] for chunk in chunks]
     embeddings_array = embedder.embed_passages(texts, batch_size=8)
     embeddings = embeddings_array.tolist()
     print(f"Generados {len(embeddings)} embeddings de dimensión {len(embeddings[0])}")
@@ -93,7 +93,7 @@ def main():
         semantic_id = f"{json_path.stem}_chunk_{i}"
 
         # Metadata (incluir el ID semántico)
-        meta = {k: v for k, v in chunk['metadata'].items() if k != "text"}
+        meta = {k: v for k, v in chunk["metadata"].items() if k != "text"}
         meta["semantic_id"] = semantic_id
         metadata_list.append(meta)
 
