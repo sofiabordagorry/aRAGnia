@@ -7,7 +7,7 @@ from institutional_graphrag.ingest.embedder import E5Embedder
 # Para cohesividad con el chunker
 from institutional_graphrag.config import EMBED_MODEL_ID
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[2] / "data"
 
 def main():
     chunks_dir = DATA_DIR / Path("chunks")
