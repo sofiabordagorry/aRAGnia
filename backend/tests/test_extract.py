@@ -69,8 +69,12 @@ def test_extract_documents_missing_folder(extractor: EntityExtractor):
 
 
 def test_extract_documents_invalid_filename_is_error(extractor: EntityExtractor):
+<<<<<<< HEAD
     extractor.documents_dir.mkdir(parents=True)
     extractor.table_dir.mkdir(parents=True)  # ✅ requerido
+=======
+    extractor.documents_dir.mkdir()
+>>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
     # nombre inválido (no matchea patrón)
     (extractor.documents_dir / "cualquiercosa.pdf").write_text("x", encoding="utf-8")
@@ -82,8 +86,12 @@ def test_extract_documents_invalid_filename_is_error(extractor: EntityExtractor)
 
 
 def test_extract_documents_valid_creates_documento(extractor: EntityExtractor):
+<<<<<<< HEAD
     extractor.documents_dir.mkdir(parents=True)
     extractor.table_dir.mkdir(parents=True)  # ✅ requerido
+=======
+    extractor.documents_dir.mkdir()
+>>>>>>> 30e8761c85f0aa8c95c5744f9354df1a9154213b
 
     # nombre válido según tu regex: group_year_docid_kind
     (extractor.documents_dir / "gi_2010_152_informe.pdf").write_text("x", encoding="utf-8")

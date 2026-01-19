@@ -1,24 +1,43 @@
 """Script para testear manualmente el procesamiento con Docling."""
 
-import shutil
 import sys
-import tempfile
+import json
 from pathlib import Path
 
-from institutional_graphrag.ingest.docling_parse import parse_corpus, load_parsed_document
-
+from institutional_graphrag.ingest.docling_parser import (
+    parse_corpus,
+    parse_single_document,
+    DEFAULT_DOCLING_DIR,
+    DocumentAlreadyProcessed,
+)
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 
+def save_docling_dict(doc_dict: dict, output_dir: Path) -> Path:
+    """
+    Guarda un diccionario docling como JSON.
+    """
+    filename = doc_dict.get("name", "sin_nombre")
+    output_path = output_dir / f"{filename}.json"
+
+    json_output = json.dumps(doc_dict, indent=2, ensure_ascii=False)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(json_output)
+
+    return output_path
+
+
 def main():
-    """Procesa documentos con Docling."""
+    """Procesa documentos con Docling y persiste el output estructurado."""
     if len(sys.argv) < 2:
-        print("Uso: python docling_manual.py <path>")
+        print("Modo de uso: python docling_manual.py <path>")
         return 1
 
     path = DATA_DIR / Path(sys.argv[1])
-    output_dir = DATA_DIR / Path("docling")
+    output_dir = DEFAULT_DOCLING_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     if not path.exists():
         print(f"Error: No existe {path}")
@@ -28,28 +47,31 @@ def main():
     print(f"Output: {output_dir}")
     print("-" * 60)
 
+    saved_files = []
+
     # Si es un archivo, crear un directorio temporal
     if path.is_file():
-        with tempfile.TemporaryDirectory(dir=DATA_DIR) as tmpdir:
-            tmp_corpus = Path(tmpdir) / "corpus"
-            tmp_corpus.mkdir()
-            shutil.copy(path, tmp_corpus / path.name)
-            output_files = parse_corpus(tmp_corpus, output_dir)
+        # Para un archivo individual.
+        # Usar para testeo ya que no tiene restricciones sobre formato (solo las propias de Docling)
+        try:
+            doc_dict = parse_single_document(path)
+            saved_path = save_docling_dict(doc_dict=doc_dict, output_dir=output_dir)
+            print(f"✓ Guardado: {saved_path.name}")
+            saved_files.append(saved_path)
+        except DocumentAlreadyProcessed as e:
+            print(e)
     else:
-        output_files = parse_corpus(path, output_dir)
+        # Directorio
+        # Para todos los archivos soportados de un directorio
+        results = parse_corpus(path)
+        for doc_dict in results:
+            saved_path = save_docling_dict(doc_dict=doc_dict, output_dir=output_dir)
+            print(f"✓ Guardado: {saved_path.name}")
+            saved_files.append(saved_path)
 
     # Resumen
     print("-" * 60)
-    print(f"Procesados: {len(output_files)} archivos\n")
-
-    # Mostrar detalles
-    for output_path in output_files:
-        data = load_parsed_document(output_path)
-        print(f"{output_path.name}")
-        print(f"  Source: {Path(data['source']).name}")
-        print(f"  Chunks: {data['num_documents']}")
-        print(f"  Size: {output_path.stat().st_size / 1024:.1f} KB")
-        print()
+    print(f"Procesados exitosamente: {len(saved_files)} archivos\n")
 
 
 if __name__ == "__main__":
