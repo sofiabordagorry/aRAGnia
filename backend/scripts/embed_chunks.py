@@ -53,7 +53,7 @@ def main():
                 print(f"✗ {json_file.name}: no tiene chunks")
                 continue
 
-            chunk_content = [c["page_content"] for c in chunks]
+            chunk_content = [c["text"] for c in chunks]
 
             embeddings = embedder.embed_passages(chunk_content)
 
