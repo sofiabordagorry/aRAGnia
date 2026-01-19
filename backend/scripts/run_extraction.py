@@ -8,6 +8,9 @@ from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResu
 LLM_PROVIDER = "ollama"  # "ollama", "groq", o "local"
 LLM_MODEL = None  # None usa el default del provider
 
+# Los tópicos disponibles están definidos en llm_extractor.py (DEFAULT_TOPICS)
+# Para modificarlos, editá: backend/src/institutional_graphrag/extraction/llm_extractor.py
+
 def normalize_result(res: ExtractionResult) -> dict:
     return {
         "entities": sorted(
