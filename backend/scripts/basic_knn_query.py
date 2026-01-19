@@ -5,7 +5,8 @@ from sklearn.neighbors import NearestNeighbors
 from institutional_graphrag.ingest.embedder import E5Embedder
 
 # Paths
-embeddings_dir = Path("data/embeddings")
+BASE_DIR = Path(__file__).resolve().parents[2]
+embeddings_dir = DATA_DIR / Path("embeddings")
 
 
 def get_top_k_knn(query_text, k=3):
