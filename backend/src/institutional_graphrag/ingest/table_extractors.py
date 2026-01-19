@@ -1,5 +1,9 @@
+from __future__ import annotations
+
+import json
 import re
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import tabula
@@ -7,6 +11,9 @@ from odf import teletype
 from odf.opendocument import load
 from odf.table import Table, TableRow
 from odf.text import P
+
+TABLE_DIR = Path(__file__).resolve().parents[4] / "data" / "tables"
+CHUNK_DIR = Path(__file__).resolve().parents[4] / "data" / "chunks"
 
 CUSTOM_HEADER_ODT = [
     "Id",
@@ -208,9 +215,12 @@ def pdf_table(path: Path) -> pd.DataFrame:
 def save_table(df: pd.DataFrame, output_dir: Path, base_name: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     df = df.astype("string")
-    print(f"-> Guardando como: {base_name}.parquet y {base_name}.xlsx")
-    df.to_parquet(output_dir / f"{base_name}.parquet")
-    df.to_excel(output_dir / f"{base_name}.xlsx", index=False)
+    pattern_table = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
+    match = pattern_table.match(base_name)
+    name_safe = f"{match.group('group')}_{match.group('year')}_table"
+    print(f"-> Guardando como: {name_safe}.parquet y {name_safe}.xlsx")
+    df.to_parquet(output_dir / f"{name_safe}.parquet")
+    df.to_excel(output_dir / f"{name_safe}.xlsx", index=False)
 
 
 def extract_table(path: Path, output_dir: Path) -> None:
@@ -225,3 +235,109 @@ def extract_table(path: Path, output_dir: Path) -> None:
         raise ValueError(f"Extensión no soportada para extracción tabular: {ext}")
 
     save_table(clean_x000d_df(df), output_dir, base_name)
+
+
+############# Converti la tabla a chunks ###############
+
+
+def convert_table_to_chunks() -> None:
+
+    folder = Path(TABLE_DIR)
+    if not folder.exists() or not folder.is_dir():
+        raise FileNotFoundError(f"No existe la carpeta: {folder}")
+
+    out_chunks: list[dict[str, Any]] = []
+
+    parquet_files = sorted(folder.rglob("*.parquet"))
+
+    for pq_path in parquet_files:
+        out_chunks: list[dict[str, Any]] = []
+        df = pd.read_parquet(pq_path)
+        parent_doc = _parent_doc_from_filename(pq_path.stem)
+
+        # Si viene vacío, saltear
+        if df is None or df.empty:
+            continue
+
+        # Convertir cada fila a texto
+        first_col = df.columns[0]
+        for _, row in enumerate(df.itertuples(index=False), start=0):
+            row_series = pd.Series(row, index=df.columns)
+
+            text, meta = _row_to_chunk(row_series)
+            if not text.strip():
+                continue
+
+            first_value = row_series.get(first_col)
+            first_value_str = _normalize_ws("" if pd.isna(first_value) else str(first_value))
+            chunk_id = f"{parent_doc}_table_{first_value_str}"
+
+            out_chunks.append(
+                {
+                    "chunk_id": chunk_id,
+                    "text": text,
+                    "metadata": {
+                        **meta,
+                        "element_type": "table_row",
+                        "parent_doc": parent_doc,
+                        "token_count": len(text.split()),
+                    },
+                }
+            )
+        payload = {
+            "source": pq_path.stem,
+            "total_chunks": len(out_chunks),
+            "chunks": out_chunks,
+        }
+
+        out_dir = Path(CHUNK_DIR)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = CHUNK_DIR / f"{pq_path.stem}_chunks.json"
+        out_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+
+def _normalize_ws(s: str) -> str:
+    return " ".join(s.split()).strip()
+
+
+def _row_to_chunk(row: pd.Series) -> tuple[str, dict[str, str]]:
+    parts: list[str] = []
+    meta: dict[str, str] = {}
+    first_val = row.iloc[0]
+
+    try:
+        float(str(first_val).strip())
+    except ValueError:
+        return "", {}
+
+    for col, value in row.items():
+        col_str = str(col)
+
+        if pd.isna(value):
+            continue
+
+        # Normalizar a string
+        if isinstance(value, (dict, list, tuple)):
+            value_str = json.dumps(value, ensure_ascii=False)
+        else:
+            value_str = str(value)
+
+        value_str = " ".join(value_str.split())
+        if not value_str or value_str == "--":
+            continue
+
+        parts.append(f"{col_str}: {value_str}")
+        meta[str(col)] = value_str
+
+    return "; ".join(parts), meta
+
+
+def _parent_doc_from_filename(stem: str) -> str:
+    # "gi_124_texto" -> "gi_124"
+    parts = stem.split("_")
+    if len(parts) >= 2:
+        return f"{parts[0]}_{parts[1]}"
+    return stem  # fallback

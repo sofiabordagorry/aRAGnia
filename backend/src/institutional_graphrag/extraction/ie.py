@@ -93,43 +93,58 @@ class EntityExtractor:
             self.docs_by_group_year[key].append(d)
 
     def extract_documents(self) -> None:
-        if not self.documents_dir.exists():
+        def ensure_dir(d: Path) -> bool:
+            if d.exists():
+                return True
             self.res.errors.append(
-                {"type": "MissingFolder", "message": f"No existe la carpeta: {self.documents_dir}"}
+                {"type": "MissingFolder", "message": f"No existe la carpeta: {d}"}
             )
+            return False
+
+        def add_docs_from_dir(d: Path, pattern, value_builder) -> None:
+            for path in sorted(p for p in d.iterdir() if p.is_file()):
+                base_name = path.stem
+                m = pattern.match(base_name)
+                if not m:
+                    self.res.errors.append(
+                        {
+                            "type": "Document Invalid",
+                            "message": f"El formato del documento es invalido: {base_name}",
+                        }
+                    )
+                    continue
+
+                self.res.entities.append(
+                    Documento(
+                        id=base_name,
+                        value=value_builder(base_name, m),
+                    )
+                )
+
+        if not ensure_dir(self.documents_dir) or not ensure_dir(self.table_dir):
             return
 
-        for path in sorted(self.documents_dir.iterdir()):
-            if not path.is_file():
-                continue
-
-            base_name = path.stem
-            m = PATTERN_DOCUMENT.match(base_name)
-
-            if not m:
-                self.res.errors.append(
-                    {
-                        "type": "Document Invalid",
-                        "message": f"El formato del documento es invalido: {base_name}",
-                    }
-                )
-                continue
-
-            doc_id = f"{base_name}"
-            value = {
-                "base_name": base_name,
+        add_docs_from_dir(
+            self.documents_dir,
+            PATTERN_DOCUMENT,
+            lambda base, m: {
+                "base_name": base,
                 "is_group": m.group("group"),
                 "year_publisher": m.group("year"),
                 "sub_id": m.group("doc_id"),
                 "type": m.group("kind"),
-            }
+            },
+        )
 
-            self.res.entities.append(
-                Documento(
-                    id=doc_id,
-                    value=value,
-                )
-            )
+        add_docs_from_dir(
+            self.table_dir,
+            PATTERN_TABLE,
+            lambda base, m: {
+                "base_name": base,
+                "is_group": m.group("group"),
+                "year_publisher": m.group("year"),
+            },
+        )
 
     def extract_chunks(self) -> None:
         if not self.chunks_dir.exists():
@@ -203,15 +218,7 @@ class EntityExtractor:
 
                 meta = c.get("metadata", {})
 
-                value = {
-                    "section_heading": meta.get("headings"),
-                    "parent_doc": meta.get("parent_doc"),
-                    "element_type": meta.get("element_type"),
-                    "size_chars": meta.get("token_count"),
-                    "page_content": meta.get("page_numbers"),
-                }
-
-                self.res.entities.append(Chunk(id=chunk_id, value=value))
+                self.res.entities.append(Chunk(id=chunk_id, value=meta))
 
     def extract_projects(self) -> None:
         datasets = self._associate_tables_with_documents()
@@ -232,7 +239,6 @@ class EntityExtractor:
             for _, row in small.iterrows():
                 doc_id = str(row[id_col]).strip()
                 frac_title = str(row[title_col]).strip()
-
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     self.res.errors.append(
@@ -246,6 +252,7 @@ class EntityExtractor:
                 project_id = (
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
+                table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
                 self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
                 chunk_file = self.chunks_dir / f"{doc.value['base_name']}_chunks.json"
@@ -253,6 +260,7 @@ class EntityExtractor:
                 if candidate:
                     candidate["type"] = doc.value["type"]
                     candidate["year"] = doc.value["year_publisher"]
+                    candidate["table_chunk_id"] = table_chunk_id
                     projects[project_id].append(candidate)
 
             for project_id, candidates in projects.items():
@@ -283,8 +291,8 @@ class EntityExtractor:
                         )
                     )
                     self.res.relationships.append(INICIO_EN(project_id, year))
-
                 self.res.relationships.append(EVIDENCIA_DE(best["chunk_id"], project_id))
+                self.res.relationships.append(EVIDENCIA_DE(best["table_chunk_id"], project_id))
 
         related_docs = {
             rel.target_id for rel in self.res.relationships if rel.type == "ES_DESCRITO_POR"
@@ -311,6 +319,7 @@ class EntityExtractor:
             project_id = (
                 f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
             )
+
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
             candidates_for_projects[project_id].append(
@@ -346,6 +355,26 @@ class EntityExtractor:
                 )
 
             self.res.relationships.append(EVIDENCIA_DE(chunk_id, project_id))
+
+        # Agregar documento tipo tabla a la relacion del proyecto
+
+        key_re = re.compile(r"((?:gi|proy)_\d{4})_\d+")
+
+        projects = [cast(Proyecto, e) for e in self.res.entities if e.label == "Proyecto"]
+
+        projects_by_key = defaultdict(list)
+        for p in projects:
+            m = key_re.search(p.id)
+            if m:
+                projects_by_key[m.group(1)].append(p)
+
+        for doc_id in unrelated_docs:
+            if not doc_id.endswith("_table"):
+                continue
+
+            base_id = doc_id.removesuffix("_table")
+            for p in projects_by_key.get(base_id, []):
+                self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
 
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
         if not path.exists():
@@ -481,8 +510,9 @@ class EntityExtractor:
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
 
-                people = self._extract_up_to_people(row, cols, id_col)
+                table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
 
+                people = self._extract_up_to_people(row, cols, id_col)
                 for full_name, fallback in people:
                     # buscar en chunks (primero full, luego fallback)
                     candidate_in_text = None
@@ -496,20 +526,13 @@ class EntityExtractor:
                         continue
 
                     candidate_id = str(uuid.uuid4())
-
                     if (
                         fallback
-                        and any(fallback == value for value, _ in inv_ids_by_project[project_id])
+                        and any(fallback == value for _, value in inv_ids_by_project[project_id])
                         and candidate_in_text == fallback
                     ) or (
                         full_name
-                        and any(full_name == value for value, _ in inv_ids_by_project[project_id])
-                    ):
-                        continue
-
-                    if (fallback and candidate_in_text == fallback) or (
-                        full_name
-                        and any(value == full_name for _, value in inv_ids_by_project[project_id])
+                        and any(full_name == value for _, value in inv_ids_by_project[project_id])
                     ):
                         continue
 
@@ -518,6 +541,7 @@ class EntityExtractor:
                         to_remove = {
                             item for item in inv_ids_by_project[project_id] if item[1] == fallback
                         }
+
                         if to_remove:
                             inv_ids_by_project[project_id] -= to_remove
                             candidate_to_remove = next(iter(to_remove), None)
@@ -533,9 +557,15 @@ class EntityExtractor:
                                     for r in self.res.relationships
                                     if r.source_id != inv_id and r.target_id != project_id
                                 ]
+                                self.res.relationships = [
+                                    r
+                                    for r in self.res.relationships
+                                    if r.source_id != table_chunk_id and r.target_id != inv_id
+                                ]
 
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
+                    self.res.relationships.append(EVIDENCIA_DE(table_chunk_id, candidate_id))
                     inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
     def _build_indexes(self):
@@ -608,6 +638,7 @@ class EntityExtractor:
 
         # eliminar pares vacíos y duplicados básicos
         out = [(a, b) for (a, b) in out if a or b]
+
         return out
 
     def _normalize_col(self, name: str) -> str:
@@ -692,7 +723,7 @@ class EntityExtractor:
                 )
                 continue
 
-            id_to_doc = [(str(d.value["sub_id"]), str(d.id)) for d in docs]
+            id_to_doc = [(str(d.value["sub_id"]), str(d.id)) for d in docs if "sub_id" in d.value]
             datasets.append(self._expand_rows_by_id_mapping(df, id_to_doc))
 
         return datasets
