@@ -46,7 +46,6 @@ def main():
 
     # Instanciar el chunker una sola vez
     shared_chunker = get_native_chunker(tokenizer=tokenizer)
-    
 
     for json_file in sorted(json_files):
         try:
@@ -82,7 +81,7 @@ def main():
         except Exception as e:
             errors += 1
             print(f"✗ {json_file.name}: {e}")
-            
+
     convert_table_to_chunks()
     print("=" * 60)
     print(f"Resumen:")
