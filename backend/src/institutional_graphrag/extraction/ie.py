@@ -5,7 +5,7 @@ import json
 import re
 import unicodedata
 import uuid
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
@@ -933,11 +933,7 @@ class EntityExtractor:
         return ExtractionResult(entities=entities, relationships=relationships, errors=errors)
 
     def extract_researchers_llm(self) -> None:
-        # Obtener IDs de investigadores ya extraídos estáticamente
-        existing_researcher_ids = {
-            e.id for e in self.res.entities if e.label == "Investigador"
-        }
-
+        """Extraer investigadores usando LLM con deduplicación por proyecto."""
         llm_extractor = LLMEntityExtractor(
             llm_provider=self.llm_provider,
             llm_model=self.llm_model,
@@ -951,6 +947,9 @@ class EntityExtractor:
         for project in projects:
             project_id = project.id
 
+            # Inicializar set vacío para este proyecto
+            existing_researcher_ids = set()
+
             # Obtener documentos del proyecto
             project_docs = [
                 r.target_id
@@ -961,7 +960,7 @@ class EntityExtractor:
             if not project_docs:
                 continue
 
-            # Procesar chunks de cada documento
+            # Procesar chunks de cada documento del proyecto
             for doc_id in project_docs:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
@@ -995,6 +994,9 @@ class EntityExtractor:
                     self.res.errors.extend(llm_result.errors)
 
                     # Crear entidades y relaciones
+                    # NOTA: existing_researcher_ids resetea por proyecto
+                    # Mismo investigador en docs del mismo proyecto = misma entidad
+                    # Mismo investigador en diferentes proyectos = entidades distintas
                     new_entities, new_relationships = (
                         create_entities_and_relationships_from_llm_extraction(
                             llm_result, project_id, existing_researcher_ids
@@ -1005,7 +1007,7 @@ class EntityExtractor:
                     self.res.entities.extend(new_entities)
                     self.res.relationships.extend(new_relationships)
 
-                    # Actualizar el set de IDs existentes
+                    # Actualizar el set de IDs existentes para este proyecto
                     existing_researcher_ids.update(e.id for e in new_entities)
 
                 except Exception as e:
@@ -1018,8 +1020,12 @@ class EntityExtractor:
                     )
 
     def extract_topics_llm(self) -> None:
-        """Extraer tópicos usando LLM."""
-        # Obtener IDs de tópicos ya existentes
+        """Extraer tópicos usando LLM.
+        
+        Los tópicos se extraen a nivel de chunk (Chunk TIENE_TOPICO Topico).
+        Después se agregan a nivel de proyecto según frecuencia en chunks.
+        """
+        # Obtener IDs de tópicos ya existentes globalmente
         existing_topic_ids = {
             e.id for e in self.res.entities if e.label == "Topico"
         }
@@ -1080,16 +1086,16 @@ class EntityExtractor:
                     # Agregar errores
                     self.res.errors.extend(llm_result.errors)
 
-                    # Crear entidades y relaciones
+                    # Crear entidades y relaciones chunk->topico
                     new_entities, new_relationships = create_topics_from_llm_extraction(
-                        llm_result, project_id, existing_topic_ids
+                        llm_result, existing_topic_ids
                     )
 
                     # Agregar al resultado
                     self.res.entities.extend(new_entities)
                     self.res.relationships.extend(new_relationships)
 
-                    # Actualizar el set de IDs existentes
+                    # Actualizar el set de IDs globales
                     existing_topic_ids.update(e.id for e in new_entities)
 
                 except Exception as e:
@@ -1100,3 +1106,54 @@ class EntityExtractor:
                             "message": f"Error procesando tópicos con LLM: {str(e)}",
                         }
                     )
+            
+            # Agregar relaciones proyecto->topico basadas en los chunks del proyecto
+            self._aggregate_topics_for_project(project_id)
+    
+    def _aggregate_topics_for_project(self, project_id: str) -> None:
+        """Agregar tópicos a nivel de proyecto basándose en los chunks.
+        
+        Cuenta los tópicos de todos los chunks del proyecto y crea
+        relaciones Proyecto TIENE_TOPICO Topico para todos los tópicos mencionados.
+        """
+        # Obtener todos los chunks del proyecto (a través de documentos)
+        project_docs = [
+            r.target_id
+            for r in self.res.relationships
+            if r.type == "ES_DESCRITO_POR" and r.source_id == project_id
+        ]
+        
+        project_chunks = set()
+        for doc_id in project_docs:
+            doc_chunks = [
+                r.source_id  # chunk_id es el source, doc_id es el target
+                for r in self.res.relationships
+                if r.type == "DE_DOCUMENTO" and r.target_id == doc_id
+            ]
+            project_chunks.update(doc_chunks)
+        
+        # Contar tópicos de los chunks del proyecto
+        topic_counts = Counter()
+        for chunk_id in project_chunks:
+            chunk_topics = [
+                r.target_id
+                for r in self.res.relationships
+                if r.type == "EVIDENCIA_DE" and r.source_id == chunk_id
+            ]
+
+            topic_ids = [
+                tid for tid in chunk_topics 
+                if any(e.id == tid and e.label == "Topico" for e in self.res.entities)
+            ]
+            topic_counts.update(topic_ids)
+        
+        # Crear relaciones proyecto->topico para todos los tópicos encontrados
+        for topic_id in topic_counts:
+            self.res.relationships.append(
+                Relationship(
+                    type="TIENE_TOPICO",
+                    source_id=project_id,
+                    target_id=topic_id,
+                    properties={"mention_count": topic_counts[topic_id]}
+                )
+            )

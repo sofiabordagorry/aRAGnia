@@ -10,7 +10,6 @@ from typing import Any, Dict, List, Optional
 from institutional_graphrag.graph.schema import (
     EVIDENCIA_DE,
     PARTICIPO_EN,
-    TIENE_TOPICO,
     Entity,
     Investigador,
     Relationship,
@@ -575,10 +574,13 @@ def create_entities_and_relationships_from_llm_extraction(
 
 def create_topics_from_llm_extraction(
     llm_result: LLMExtractionResult,
-    project_id: str,
     existing_topic_ids: Optional[set[str]] = None,
 ) -> tuple[List[Entity], List[Relationship]]:
-    """Crear entidades y relaciones de tópicos con deduplicación."""
+    """Crear entidades y relaciones de tópicos con deduplicación global.
+    
+    Solo crea entidades Topico y relaciones EVIDENCIA_DE desde chunks.
+    Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
+    """
     entities = []
     relationships = []
     existing_ids = existing_topic_ids or set()
@@ -588,16 +590,18 @@ def create_topics_from_llm_extraction(
         topic_normalized = mention.topic.lower().strip()
         topic_id = f"topic_{topic_normalized.replace(' ', '_')}"
 
+        # El tópico ya existe globalmente
         if topic_id in existing_ids:
-            relationships.append(EVIDENCIA_DE(mention.chunk_id, topic_id))
+            relationships.append(EVIDENCIA_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}))
             continue
 
+        # El tópico ya fue creado en esta misma llamada
         if topic_normalized in topics_by_name:
-            relationships.append(EVIDENCIA_DE(mention.chunk_id, topics_by_name[topic_normalized]))
+            existing_topic_id = topics_by_name[topic_normalized]
+            relationships.append(EVIDENCIA_DE(mention.chunk_id, existing_topic_id, properties={"evidence_text": mention.evidence}))
             continue
 
         entities.append(Topico(id=topic_id, value=mention.topic))
-        relationships.append(TIENE_TOPICO(project_id, topic_id))
         relationships.append(
             EVIDENCIA_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
         )
