@@ -7,10 +7,11 @@ from institutional_graphrag.ingest.embedder import E5Embedder
 # Para cohesividad con el chunker
 from institutional_graphrag.config import EMBED_MODEL_ID
 
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 def main():
-    chunks_dir = Path("data/chunks")
-    output_dir = Path("data/embeddings")
+    chunks_dir = DATA_DIR / Path("chunks")
+    output_dir = DATA_DIR / Path("embeddings")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if not chunks_dir.exists():
@@ -53,7 +54,7 @@ def main():
                 print(f"✗ {json_file.name}: no tiene chunks")
                 continue
 
-            chunk_content = [c["page_content"] for c in chunks]
+            chunk_content = [c["text"] for c in chunks]
 
             embeddings = embedder.embed_passages(chunk_content)
 

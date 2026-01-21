@@ -15,19 +15,21 @@ from enum import Enum
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 
-
 class PdfKind(Enum):
     TABULAR = "tabular"
     NARRATIVE = "narrative"
+
 
 def looks_tabular(fileName: str) -> bool:
     if any(k in fileName for k in ("informe", "propuesta", "resumen")):
         return False
     return True
 
+
 def classify_pdf(fileName: str) -> PdfKind:
     return PdfKind.TABULAR if looks_tabular(fileName) else PdfKind.NARRATIVE
-    
+
+
 def save_temp_file(content: bytes, filename: str) -> Path:
     tmp_dir = Path(tempfile.gettempdir()) / "institutional_graphrag"
     tmp_dir.mkdir(parents=True, exist_ok=True)
@@ -36,7 +38,7 @@ def save_temp_file(content: bytes, filename: str) -> Path:
     path.write_bytes(content)
     return path
 
-    
+
 def main():
     backend_dir = BASE_DIR / "backend"
     load_dotenv(backend_dir / ".env")
@@ -82,7 +84,7 @@ def main():
 
                     if kind == PdfKind.TABULAR:
                         print(f"Descargando: {original_filename}")
-                        extract_table(tmp_path,output_dir_tables)
+                        extract_table(tmp_path, output_dir_tables)
                     else:
                         print(f"Descargando: {original_filename} -> Guardando como: {new_filename}")
                         with open(os.path.join(output_dir, new_filename), "wb") as out:
@@ -95,10 +97,11 @@ def main():
                 print()
                 print(f" Error downloading {original_filename} (status {response.status_code})")
                 print()
-         
+
         print(f"The number of files downloaded was: {archive_count}")
     except FileNotFoundError:
         print(f" Error: The file '{input_dir}' was not found.")
+
 
 if __name__ == "__main__":
     main()

@@ -9,13 +9,13 @@ Script de demostración del flujo completo:
 
 import json
 from pathlib import Path
-from langchain_core.documents import Document
+from docling_core.types.doc import DoclingDocument
 import uuid
 
-from institutional_graphrag.ingest.docling_parse import load_parsed_document
-from institutional_graphrag.ingest.chunker import SectionBasedChunker
+from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
+from institutional_graphrag.config import EMBED_MODEL_ID
 
 
 def main():
@@ -30,40 +30,45 @@ def main():
         print(f"No hay archivos JSON en {docling_dir}")
         return
 
-    json_path = json_files[0]
+    json_path = json_files[1]
     print(f"Usando JSON: {json_path.name}")
 
-    # 2. Cargar documento parseado
-    print(f"Cargando documento parseado...")
-    parsed_data = load_parsed_document(json_path)
-    documents = [
-        Document(page_content=doc["page_content"], metadata=doc["metadata"])
-        for doc in parsed_data["documents"]
-    ]
-    print(f"Cargados {len(documents)} documentos")
-
-    # 3. Generar chunks
+    # 2. Generar chunks
     print(f"\nGenerando chunks...")
-    chunker = SectionBasedChunker()
-    chunks = chunker.chunk_documents(documents)
+
+    # Definir tokenizer a utilizar
+    tokenizer = EMBED_MODEL_ID
+
+    # Instanciar el chunker una sola vez
+    shared_chunker = get_native_chunker(tokenizer=tokenizer)
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        doc_dict = json.load(f)
+
+    # Reconstruir DoclingDocument
+    doc = DoclingDocument.model_validate(doc_dict)
+
+    # Aplicar chunking
+    chunks = chunk_document(doc=doc, chunker=shared_chunker)
+
     print(f"Generados {len(chunks)} chunks")
 
     # Mostrar ejemplo
     if chunks:
         print(f"\nEjemplo de chunk:")
-        print(f"  ID: {chunks[0].metadata.get('chunk_id', 'N/A')}")
-        print(f"  Texto (primeros 100 chars): {chunks[0].page_content[:100]}...")
-        print(f"  Metadata: {chunks[0].metadata}")
+        print(f"  ID: {chunks[0]['chunk_id']}")
+        print(f"  Texto (primeros 100 chars): {chunks[0]['text'][:100]}...")
+        print(f"  Metadata: {chunks[0]['metadata']}")
 
-    # 4. Generar embeddings
+    # 3. Generar embeddings
     print(f"\nGenerando embeddings con E5-large-v2...")
     embedder = E5Embedder()
-    texts = [chunk.page_content for chunk in chunks]
+    texts = [chunk["text"] for chunk in chunks]
     embeddings_array = embedder.embed_passages(texts, batch_size=8)
     embeddings = embeddings_array.tolist()
     print(f"Generados {len(embeddings)} embeddings de dimensión {len(embeddings[0])}")
 
-    # 5. Preparar IDs y metadata
+    # 4. Preparar IDs y metadata
     # Crear mapeo: UUID -> índice para recuperar chunks después
     id_to_chunk_index = {}
     ids = []
@@ -81,11 +86,11 @@ def main():
         semantic_id = f"{json_path.stem}_chunk_{i}"
 
         # Metadata (incluir el ID semántico)
-        meta = {k: v for k, v in chunk.metadata.items() if k != "text"}
+        meta = {k: v for k, v in chunk["metadata"].items() if k != "text"}
         meta["semantic_id"] = semantic_id
         metadata_list.append(meta)
 
-    # 6. Crear vector store y agregar chunks
+    # 5. Crear vector store y agregar chunks
     print(f"\nAlmacenando en Qdrant...")
     store = VectorStore(collection_name="demo_collection", embedding_dim=1024)  # E5-large-v2
 
@@ -101,7 +106,7 @@ def main():
     count = store.count_documents()
     print(f"Chunks en colección: {count}")
 
-    # 7. Buscar chunks similares
+    # 6. Buscar chunks similares
     print(f"\nProbando búsqueda...")
     query = "¿Cuáles son los objetivos del proyecto?"
     print(f"  Query: '{query}'")
@@ -124,11 +129,11 @@ def main():
         chunk_index = id_to_chunk_index.get(doc_id, -1)
         if chunk_index >= 0 and chunk_index < len(chunks):
             chunk = chunks[chunk_index]
-            print(f"     Texto (primeros 150 chars): {chunk.page_content[:150]}...")
+            print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
         else:
             print(f"     Texto: (no encontrado)")
 
-    # 8. Buscar con filtros
+    # 7. Buscar con filtros
     if metadata_list and metadata_list[0]:
         print(f"\n Probando búsqueda con filtros...")
         # Usar el primer valor de metadata como filtro
@@ -141,7 +146,7 @@ def main():
         print(f"  Filtro: {filter_key} = {filter_value}")
         print(f"  Resultados: {len(results_filtered)}")
 
-    # 9. Cerrar conexión
+    # 8. Cerrar conexión
     store.close()
     print(f"\n Demo completada!")
 
