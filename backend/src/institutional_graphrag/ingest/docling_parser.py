@@ -76,11 +76,10 @@ def promote_consecutive_section_headers(doc_dict: dict[str, Any]) -> None:
             prev_level = new_lvl
 
 
-def is_already_processed(path: Path) -> bool:
+def is_already_processed(path: Path) -> None:
     json_path = DEFAULT_DOCLING_DIR / path.with_suffix(".json").name
     if json_path.exists():
         raise DocumentAlreadyProcessed(f"El documento {path.name} ya había sido convertido.")
-    return False
 
 
 def _ref_to_index(ref: dict[str, Any]) -> Optional[tuple[str, int]]:
@@ -189,13 +188,15 @@ def _postprocess_doc_dict(doc_dict: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_single_document(source: Path) -> dict[str, Any] | None:
-    if is_already_processed(source):
-        print(f"El documento {source.name} ya había sido convertido.")
-        return None
-    converter = DocumentConverter()
-    res = converter.convert(source)
-    doc_dict = cast(dict[str, Any], res.document.export_to_dict())
-    return _postprocess_doc_dict(doc_dict)
+    try:
+        is_already_processed(source)
+        converter = DocumentConverter()
+        res = converter.convert(source)
+        doc_dict = cast(dict[str, Any], res.document.export_to_dict())
+        return _postprocess_doc_dict(doc_dict)
+    except Exception as e:
+        print(f"Info:{e}")
+        return None  
 
 
 #### Parsear Carpeta
@@ -216,10 +217,11 @@ def get_input_paths(corpus_dir: Path, recursive: bool = False) -> list[Path]:
 def filter_unprocessed(paths: list[Path]) -> list[Path]:
     out: list[Path] = []
     for p in paths:
-        if is_already_processed(p):
-            print(f"El documento {p.name} ya había sido convertido.")
-            continue
-        out.append(p)
+        try:
+            is_already_processed(p)
+            out.append(p)
+        except Exception as e:
+            print(f"Info:{e}")
     return out
 
 
