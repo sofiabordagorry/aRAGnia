@@ -13,8 +13,6 @@ from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
 
-logger = logging.getLogger(__name__)
-
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
@@ -37,6 +35,8 @@ from institutional_graphrag.graph.schema import (
     Proyecto,
     Relationship,
 )
+
+logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 
@@ -995,7 +995,7 @@ class EntityExtractor:
             project_id = project.id
 
             # Inicializar set vacío para este proyecto
-            existing_researcher_ids = set()
+            existing_researcher_ids: set[str] = set()
 
             # Obtener documentos del proyecto
             project_docs = [
@@ -1208,7 +1208,7 @@ class EntityExtractor:
             project_chunks.update(doc_chunks)
 
         # Contar tópicos de los chunks del proyecto
-        topic_counts = Counter()
+        topic_counts: Counter[str] = Counter()
         for chunk_id in project_chunks:
             chunk_topics = [
                 r.target_id
@@ -1225,7 +1225,7 @@ class EntityExtractor:
 
         # Crear relaciones proyecto->topico para los top 3 tópicos más mencionados
         top_topics = topic_counts.most_common(3)
-        
+
         for topic_id, count in top_topics:
             self.res.relationships.append(
                 Relationship(

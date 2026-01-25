@@ -839,10 +839,10 @@ def create_entities_and_relationships_from_llm_extraction(
     existing_researcher_ids: Optional[set[str]] = None,
 ) -> tuple[List[Entity], List[Relationship]]:
     """Crear entidades y relaciones con deduplicación."""
-    entities = []
-    relationships = []
+    entities: list[Entity] = []
+    relationships: list[Relationship] = []
     existing_ids = existing_researcher_ids or set()
-    researchers_by_name = {}
+    researchers_by_name: dict[str, str] = {}
 
     for mention in llm_result.researchers:
         name_normalized = mention.name.lower().strip()
@@ -881,10 +881,10 @@ def create_topics_from_llm_extraction(
     Solo crea entidades Topico y relaciones EVIDENCIA_DE desde chunks.
     Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
     """
-    entities = []
-    relationships = []
+    entities: list[Entity] = []
+    relationships: list[Relationship] = []
     existing_ids = existing_topic_ids or set()
-    topics_by_name = {}
+    topics_by_name: dict[str, str] = {}
 
     for mention in llm_result.topics:
         topic_normalized = mention.topic.lower().strip()

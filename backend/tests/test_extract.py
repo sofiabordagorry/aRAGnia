@@ -12,21 +12,16 @@ import pytest
 
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
     LLMExtractionResult,
     ResearcherMention,
     TopicMention,
-    create_entities_and_relationships_from_llm_extraction,
-    create_topics_from_llm_extraction,
 )
 from institutional_graphrag.graph.schema import (
     Anio,
     Chunk,
     Documento,
-    Investigador,
     Proyecto,
     Relationship,
-    Topico,
 )
 
 # -------------------------
