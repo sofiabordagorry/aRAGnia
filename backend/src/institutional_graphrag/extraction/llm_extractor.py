@@ -399,7 +399,14 @@ Examples of INVALID extractions (DO NOT EXTRACT):
 - "Referencias: Jones K.; Brown M." → Bibliography, NOT participants
 - "Basado en trabajos de Wilson" → External reference, NOT participant
 
-JSON format:
+⚠️ OUTPUT FORMAT - CRITICAL:
+- Your response MUST be ONLY valid JSON
+- Do NOT include any text before or after the JSON object
+- Do NOT add explanations, comments, or markdown formatting
+- Do NOT wrap JSON in ```json``` code blocks
+- Start directly with {{ and end with }}
+
+JSON format (copy exactly):
 {{
   "researchers": [
     {{
@@ -409,10 +416,10 @@ JSON format:
   ]
 }}
 
-If NO project participants found: {{"researchers": []}}
+If NO project participants found, respond with:
+{{"researchers": []}}
 
-    If no researchers are identified:
-    {{"researchers": []}}
+Remember: ONLY output the JSON object, nothing else.
     """
 
     def _build_topic_prompt(self, chunk_text: str) -> str:
@@ -456,16 +463,24 @@ Examples:
 - Spanish text about specific peptides → DO NOT invent "Peptide Synthesis", use broader topic like "Biochemistry"
 - Spanish text about water flow → DO NOT use "Fluid Dynamics" or "Hydrology", check ALLOWED list only
 
-Output format (STRICT JSON):
+OUTPUT FORMAT - CRITICAL:
+- Your response MUST be ONLY valid JSON
+- Do NOT include any text before or after the JSON object
+- Do NOT add explanations, comments, or markdown formatting
+- Do NOT wrap JSON in ```json``` code blocks
+- Start directly with {{ and end with }}
+
+Output format (copy exactly):
 {{
   "topics": [
     {{"topic": "Exact English name from list", "evidence": "Spanish text fragment"}}
   ]
 }}
 
-If NO topics from the list match: {{"topics": []}}
+If NO topics from the list match, respond with:
+{{"topics": []}}
 
-Your output MUST be valid JSON. Do NOT include explanations."""
+Remember: ONLY output the JSON object, nothing else."""
         else:
             return f"""You are an information extraction system.
 
@@ -477,10 +492,17 @@ Your output MUST be valid JSON. Do NOT include explanations."""
 
     Rules:
     - Be concise and specific
-    - Output MUST be valid JSON
-    - Do NOT include any text outside the JSON object
+    - Use simple, clear topic names
+    - Extract only topics that are clearly mentioned in the text
 
-    JSON format:
+    OUTPUT FORMAT - CRITICAL:
+    - Your response MUST be ONLY valid JSON
+    - Do NOT include any text before or after the JSON object
+    - Do NOT add explanations, comments, or markdown formatting
+    - Do NOT wrap JSON in ```json``` code blocks
+    - Start directly with {{ and end with }}
+
+    JSON format (copy exactly):
     {{
     "topics": [
         {{
@@ -490,8 +512,10 @@ Your output MUST be valid JSON. Do NOT include explanations."""
     ]
     }}
 
-    If no topics are identified:
+    If no topics are identified, respond with:
     {{"topics": []}}
+    
+    Remember: ONLY output the JSON object, nothing else.
     """
 
 

@@ -157,14 +157,14 @@ def postprocess_extraction(json_path: Path) -> None:
     print(f"[OK] Resumen legible guardado en: {summary_path}")
 
 
-def main() -> int:
+def main(max_docs: int | None = None) -> int:
     extractor = EntityExtractor(
         llm_provider=LLM_PROVIDER,
         llm_model=LLM_MODEL,
     )
 
     # 1) Ejecutar extracción
-    res = extractor.run()
+    res = extractor.run(max_docs=max_docs)
 
     # 2) Guardar resultado
     filename = "Entity_documents.json"
@@ -200,4 +200,21 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Ejecutar extracción de entidades y relaciones")
+    parser.add_argument(
+        "--max-docs",
+        type=int,
+        default=None,
+        help="Límite de documentos a procesar (None = todos)"
+    )
+    
+    args = parser.parse_args()
+    
+    if args.max_docs is not None:
+        print(f"[CONFIG] Límite de documentos: {args.max_docs}")
+    else:
+        print("[CONFIG] Procesando todos los documentos")
+    
+    raise SystemExit(main(max_docs=args.max_docs))

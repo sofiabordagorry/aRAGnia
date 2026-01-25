@@ -88,14 +88,14 @@ class EntityExtractor:
         self.llm_provider = llm_provider
         self.llm_model = llm_model
 
-    def run(self) -> ExtractionResult:
+    def run(self, max_docs: int | None = None) -> ExtractionResult:
         self.extract_documents()
         self._build_doc_indexes()
         self.extract_chunks()
         self.extract_projects()
         self.extract_responsible()
-        self.extract_researchers_llm()
-        self.extract_topics_llm()
+        self.extract_researchers_llm(max_docs=max_docs)
+        self.extract_topics_llm(max_docs=max_docs)
         
         return self.res
 
@@ -951,8 +951,12 @@ class EntityExtractor:
 
         return ExtractionResult(entities=entities, relationships=relationships, errors=errors)
 
-    def extract_researchers_llm(self) -> None:
-        """Extraer investigadores usando LLM con deduplicación por proyecto."""
+    def extract_researchers_llm(self, max_docs: int | None = None) -> None:
+        """Extraer investigadores usando LLM con deduplicación por proyecto.
+        
+        Args:
+            max_docs: Límite opcional de documentos a procesar.
+        """
         llm_extractor = LLMEntityExtractor(
             llm_provider=self.llm_provider,
             llm_model=self.llm_model,
@@ -962,6 +966,8 @@ class EntityExtractor:
 
         # Procesar cada proyecto
         projects = [e for e in self.res.entities if e.label == "Proyecto"]
+        
+        docs_processed = 0
 
         for project in projects:
             project_id = project.id
@@ -981,6 +987,10 @@ class EntityExtractor:
 
             # Procesar chunks de cada documento del proyecto
             for doc_id in project_docs:
+                # Verificar límite de documentos
+                if max_docs is not None and docs_processed >= max_docs:
+                    logger.info(f"[LLM Researchers] Límite de {max_docs} documentos alcanzado")
+                    return
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
@@ -1030,6 +1040,9 @@ class EntityExtractor:
 
                     # Actualizar el set de IDs existentes para este proyecto
                     existing_researcher_ids.update(e.id for e in new_entities)
+                    
+                    # Incrementar contador de documentos procesados
+                    docs_processed += 1
 
                 except Exception as e:
                     self.res.errors.append(
@@ -1039,12 +1052,16 @@ class EntityExtractor:
                             "message": f"Error procesando documento con LLM: {str(e)}",
                         }
                     )
+                    docs_processed += 1
 
-    def extract_topics_llm(self) -> None:
+    def extract_topics_llm(self, max_docs: int | None = None) -> None:
         """Extraer tópicos usando LLM.
         
         Los tópicos se extraen a nivel de chunk (Chunk TIENE_TOPICO Topico).
         Después se agregan a nivel de proyecto según frecuencia en chunks.
+        
+        Args:
+            max_docs: Límite opcional de documentos a procesar.
         """
         # Obtener IDs de tópicos ya existentes globalmente
         existing_topic_ids = {
@@ -1060,6 +1077,8 @@ class EntityExtractor:
 
         # Procesar cada proyecto
         projects = [e for e in self.res.entities if e.label == "Proyecto"]
+        
+        docs_processed = 0
 
         for project in projects:
             project_id = project.id
@@ -1076,6 +1095,11 @@ class EntityExtractor:
 
             # Procesar chunks de cada documento
             for doc_id in project_docs:
+                # Verificar límite de documentos
+                if max_docs is not None and docs_processed >= max_docs:
+                    logger.info(f"[LLM Topics] Límite de {max_docs} documentos alcanzado")
+                    return
+                
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
@@ -1120,6 +1144,9 @@ class EntityExtractor:
 
                     # Actualizar el set de IDs globales
                     existing_topic_ids.update(e.id for e in new_entities)
+                    
+                    # Incrementar contador de documentos procesados
+                    docs_processed += 1
 
                 except Exception as e:
                     self.res.errors.append(
@@ -1129,6 +1156,7 @@ class EntityExtractor:
                             "message": f"Error procesando tópicos con LLM: {str(e)}",
                         }
                     )
+                    docs_processed += 1
             
             # Agregar relaciones proyecto->topico basadas en los chunks del proyecto
             self._aggregate_topics_for_project(project_id)
