@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -399,14 +400,15 @@ Examples of INVALID extractions (DO NOT EXTRACT):
 - "Referencias: Jones K.; Brown M." → Bibliography, NOT participants
 - "Basado en trabajos de Wilson" → External reference, NOT participant
 
-⚠️ OUTPUT FORMAT - CRITICAL:
-- Your response MUST be ONLY valid JSON
-- Do NOT include any text before or after the JSON object
-- Do NOT add explanations, comments, or markdown formatting
-- Do NOT wrap JSON in ```json``` code blocks
-- Start directly with {{ and end with }}
+OUTPUT FORMAT - CRITICAL:
+- Wrap your JSON response in <JSON> tags
+- Format: <JSON>{{...}}</JSON>
+- Do NOT add any text before <JSON> or after </JSON>
+- Do NOT add explanations or comments
+- The JSON inside must be valid
 
-JSON format (copy exactly):
+Exact format to follow:
+<JSON>
 {{
   "researchers": [
     {{
@@ -415,11 +417,12 @@ JSON format (copy exactly):
     }}
   ]
 }}
+</JSON>
 
-If NO project participants found, respond with:
-{{"researchers": []}}
+If NO project participants found:
+<JSON>{{"researchers": []}}</JSON>
 
-Remember: ONLY output the JSON object, nothing else.
+Remember: Always use <JSON> tags around your response.
     """
 
     def _build_topic_prompt(self, chunk_text: str) -> str:
@@ -464,23 +467,25 @@ Examples:
 - Spanish text about water flow → DO NOT use "Fluid Dynamics" or "Hydrology", check ALLOWED list only
 
 OUTPUT FORMAT - CRITICAL:
-- Your response MUST be ONLY valid JSON
-- Do NOT include any text before or after the JSON object
-- Do NOT add explanations, comments, or markdown formatting
-- Do NOT wrap JSON in ```json``` code blocks
-- Start directly with {{ and end with }}
+- Wrap your JSON response in <JSON> tags
+- Format: <JSON>{{...}}</JSON>
+- Do NOT add any text before <JSON> or after </JSON>
+- Do NOT add explanations or comments
+- The JSON inside must be valid
 
-Output format (copy exactly):
+Exact format to follow:
+<JSON>
 {{
   "topics": [
     {{"topic": "Exact English name from list", "evidence": "Spanish text fragment"}}
   ]
 }}
+</JSON>
 
-If NO topics from the list match, respond with:
-{{"topics": []}}
+If NO topics from the list match:
+<JSON>{{"topics": []}}</JSON>
 
-Remember: ONLY output the JSON object, nothing else."""
+Remember: Always use <JSON> tags around your response."""
         else:
             return f"""You are an information extraction system.
 
@@ -496,13 +501,14 @@ Remember: ONLY output the JSON object, nothing else."""
     - Extract only topics that are clearly mentioned in the text
 
     OUTPUT FORMAT - CRITICAL:
-    - Your response MUST be ONLY valid JSON
-    - Do NOT include any text before or after the JSON object
-    - Do NOT add explanations, comments, or markdown formatting
-    - Do NOT wrap JSON in ```json``` code blocks
-    - Start directly with {{ and end with }}
+    - Wrap your JSON response in <JSON> tags
+    - Format: <JSON>{{...}}</JSON>
+    - Do NOT add any text before <JSON> or after </JSON>
+    - Do NOT add explanations or comments
+    - The JSON inside must be valid
 
-    JSON format (copy exactly):
+    Exact format to follow:
+    <JSON>
     {{
     "topics": [
         {{
@@ -511,11 +517,12 @@ Remember: ONLY output the JSON object, nothing else."""
         }}
     ]
     }}
+    </JSON>
 
-    If no topics are identified, respond with:
-    {{"topics": []}}
+    If no topics are identified:
+    <JSON>{{"topics": []}}</JSON>
     
-    Remember: ONLY output the JSON object, nothing else.
+    Remember: Always use <JSON> tags around your response.
     """
 
 
@@ -524,27 +531,38 @@ Remember: ONLY output the JSON object, nothing else."""
         errors = []
         researchers = []
 
-        # Buscar JSON, intentando primero encontrar objeto completo
-        json_start = response.find("{")
+        # Intentar extraer JSON de tags <JSON>...</JSON>
+        json_match = re.search(r'<JSON>\s*(\{.*?\})\s*</JSON>', response, re.DOTALL)
         
-        if json_start == -1:
-            errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta"})
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-        
-        # Intentar encontrar el primer objeto JSON válido
-        data = None
-        for json_end in range(len(response), json_start, -1):
-            candidate = response[json_start:json_end]
-            if candidate.rstrip().endswith("}"):
-                try:
-                    data = json.loads(candidate)
-                    break
-                except json.JSONDecodeError:
-                    continue
-        
-        if data is None:
-            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        if json_match:
+            json_str = json_match.group(1)
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError as e:
+                errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": f"JSON dentro de tags inválido: {str(e)}"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        else:
+            # Fallback: buscar JSON sin tags (comportamiento anterior)
+            json_start = response.find("{")
+            
+            if json_start == -1:
+                errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta (falta <JSON> tags)"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+            
+            # Intentar encontrar el primer objeto JSON válido
+            data = None
+            for json_end in range(len(response), json_start, -1):
+                candidate = response[json_start:json_end]
+                if candidate.rstrip().endswith("}"):
+                    try:
+                        data = json.loads(candidate)
+                        break
+                    except json.JSONDecodeError:
+                        continue
+            
+            if data is None:
+                errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
 
         try:
             researchers_data = data.get("researchers", [])
@@ -597,7 +615,6 @@ Remember: ONLY output the JSON object, nothing else."""
                     r'\d{4}\)',    # año entre paréntesis como (2020)
                     r'[A-Z]\.\s*[A-Z]\.',  # iniciales como J. K.
                 ]
-                import re
                 if any(re.search(pattern, name) for pattern in bibliographic_patterns):
                     errors.append({
                         "type": "BibliographicReference",
@@ -619,27 +636,38 @@ Remember: ONLY output the JSON object, nothing else."""
         errors = []
         topics = []
 
-        # Buscar JSON, intentando primero encontrar objeto completo
-        json_start = response.find("{")
+        # Intentar extraer JSON de tags <JSON>...</JSON>
+        json_match = re.search(r'<JSON>\s*(\{.*?\})\s*</JSON>', response, re.DOTALL)
         
-        if json_start == -1:
-            errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta"})
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-        
-        # Intentar encontrar el primer objeto JSON válido
-        data = None
-        for json_end in range(len(response), json_start, -1):
-            candidate = response[json_start:json_end]
-            if candidate.rstrip().endswith("}"):
-                try:
-                    data = json.loads(candidate)
-                    break
-                except json.JSONDecodeError:
-                    continue
-        
-        if data is None:
-            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        if json_match:
+            json_str = json_match.group(1)
+            try:
+                data = json.loads(json_str)
+            except json.JSONDecodeError as e:
+                errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": f"JSON dentro de tags inválido: {str(e)}"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        else:
+            # Fallback: buscar JSON sin tags (comportamiento anterior)
+            json_start = response.find("{")
+            
+            if json_start == -1:
+                errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta (falta <JSON> tags)"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+            
+            # Intentar encontrar el primer objeto JSON válido
+            data = None
+            for json_end in range(len(response), json_start, -1):
+                candidate = response[json_start:json_end]
+                if candidate.rstrip().endswith("}"):
+                    try:
+                        data = json.loads(candidate)
+                        break
+                    except json.JSONDecodeError:
+                        continue
+            
+            if data is None:
+                errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
+                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
 
         try:
             topics_data = data.get("topics", [])
