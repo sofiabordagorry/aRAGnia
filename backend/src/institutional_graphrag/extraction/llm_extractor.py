@@ -368,70 +368,161 @@ class LLMEntityExtractor:
             )
 
     def _build_prompt(self, chunk_text: str) -> str:
-        """Construir prompt para extracción."""
-        return f"""Analiza este texto e identifica investigadores mencionados.
+        """Construir prompt para extracción de investigadores."""
+        return f"""You are an information extraction system for research project documentation.
 
-TEXTO:
+Task:
+Extract ONLY researchers who PARTICIPATED in THIS research project. Do NOT extract authors from bibliographic references.
+
+TEXT:
 {chunk_text}
 
-Responde SOLO con JSON válido:
+CRITICAL RULES (MUST FOLLOW):
+1. Extract ONLY project participants/team members, NOT cited authors
+2. DO NOT extract names from reference lists, citations, or bibliography sections
+3. DO NOT extract lists of co-authors from papers (e.g., "Smith J.; Jones K.; et al.")
+4. DO NOT extract "et al.", "and collaborators", or similar phrases
+5. Each person must be ONE separate entry (not multiple names in one)
+6. Must have clear evidence that the person WORKED ON or PARTICIPATED IN this project
+7. Look for context like: "investigador", "responsable", "equipo", "colaborador", "participa"
+8. Ignore names that only appear in: references, citations, acknowledgments to other papers
+
+Examples of VALID extractions:
+- "El Dr. Juan Pérez es el investigador responsable" → Extract "Juan Pérez"
+  Evidence: "El Dr. Juan Pérez es el investigador responsable"
+- "El equipo incluye a María García y Carlos López" → Extract both separately
+  María García evidence: "El equipo incluye a María García"
+  Carlos López evidence: "El equipo incluye a Carlos López"
+
+Examples of INVALID extractions (DO NOT EXTRACT):
+- "Según Smith et al. (2020)..." → Citation, NOT a participant
+- "Referencias: Jones K.; Brown M." → Bibliography, NOT participants
+- "Basado en trabajos de Wilson" → External reference, NOT participant
+
+JSON format:
 {{
   "researchers": [
-    {{"name": "Nombre Completo", "evidence": "fragmento donde se menciona"}}
+    {{
+      "name": "Full name of ONE person",
+      "evidence": "Text fragment that MENTIONS THIS PERSON and shows their participation (must include the person's name or clear reference to them)"
+    }}
   ]
 }}
 
-Si no hay investigadores: {{"researchers": []}}"""
+If NO project participants found: {{"researchers": []}}
+
+    If no researchers are identified:
+    {{"researchers": []}}
+    """
 
     def _build_topic_prompt(self, chunk_text: str) -> str:
         """Construir prompt para extracción de tópicos."""
         if self.available_topics:
             topics_list = "\n".join(f"- {topic}" for topic in self.available_topics)
-            return f"""Analiza este texto e identifica los temas o tópicos de investigación que aparecen.
+            
+            # Lista de topics comúnmente inventados por el LLM
+            forbidden_topics = [
+                "Fluid Dynamics", "Hydrology", "Environmental Science",
+                "Sociology", "Materials Science", "Paleoecology",
+                "Biological Sciences", "Human Resource Management",
+                "Management and Organization"
+            ]
+            forbidden_list = "\n".join(f"- {topic}" for topic in forbidden_topics)
+            
+            return f"""You are a STRICT topic classifier. Your task is to match research topics in Spanish text to a predefined English topic list.
 
-TEXTO:
+TEXT (Spanish):
 {chunk_text}
 
-Elige SOLO de estos tópicos (no inventes otros):
+ALLOWED TOPICS LIST (English - USE ONLY THESE):
 {topics_list}
 
-Responde SOLO con JSON válido:
+FORBIDDEN TOPICS (NEVER USE, even if they seem relevant):
+{forbidden_list}
+
+CRITICAL RULES (VIOLATION = DISCARD):
+1. ONLY use exact topic names from the ALLOWED list above
+2. DO NOT translate Spanish terms to English yourself
+3. DO NOT invent, create, or generalize new topics
+4. DO NOT use journal names, author names, or specific techniques as topics
+5. DO NOT combine or modify topic names
+6. DO NOT use any topic from the FORBIDDEN list
+7. Match by semantic field/discipline, not word-by-word translation
+8. If no topic from the ALLOWED list matches, return empty array
+
+Examples:
+- Spanish text about "síntesis orgánica" → Match to "Organic Chemistry" (if in list)
+- Spanish text about "nanopartículas" → Match to "Nanotechnology" (if in list)
+- Spanish text about specific peptides → DO NOT invent "Peptide Synthesis", use broader topic like "Biochemistry"
+- Spanish text about water flow → DO NOT use "Fluid Dynamics" or "Hydrology", check ALLOWED list only
+
+Output format (STRICT JSON):
 {{
   "topics": [
-    {{"topic": "Nombre exacto del tópico de la lista", "evidence": "fragmento donde se menciona"}}
+    {{"topic": "Exact English name from list", "evidence": "Spanish text fragment"}}
   ]
 }}
 
-Si no identificas ningún tópico de la lista: {{"topics": []}}"""
+If NO topics from the list match: {{"topics": []}}
+
+Your output MUST be valid JSON. Do NOT include explanations."""
         else:
-            return f"""Analiza este texto e identifica los temas o tópicos principales de investigación.
+            return f"""You are an information extraction system.
 
-TEXTO:
-{chunk_text}
+    Task:
+    Identify the main research topics mentioned in the text.
 
-Responde SOLO con JSON válido:
-{{
-  "topics": [
-    {{"topic": "Nombre del Tópico", "evidence": "fragmento donde se menciona"}}
-  ]
-}}
+    TEXT:
+    {chunk_text}
 
-Si no hay tópicos: {{"topics": []}}"""
+    Rules:
+    - Be concise and specific
+    - Output MUST be valid JSON
+    - Do NOT include any text outside the JSON object
+
+    JSON format:
+    {{
+    "topics": [
+        {{
+        "topic": "Topic name",
+        "evidence": "Exact text fragment mentioning it"
+        }}
+    ]
+    }}
+
+    If no topics are identified:
+    {{"topics": []}}
+    """
+
 
     def _parse_response(self, response: str, chunk_id: str) -> LLMExtractionResult:
         """Parsear respuesta del LLM."""
         errors = []
         researchers = []
 
+        # Buscar JSON, intentando primero encontrar objeto completo
         json_start = response.find("{")
-        json_end = response.rfind("}") + 1
-
-        if json_start == -1 or json_end == 0:
+        
+        if json_start == -1:
             errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta"})
+            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        
+        # Intentar encontrar el primer objeto JSON válido
+        data = None
+        for json_end in range(len(response), json_start, -1):
+            candidate = response[json_start:json_end]
+            if candidate.rstrip().endswith("}"):
+                try:
+                    data = json.loads(candidate)
+                    break
+                except json.JSONDecodeError:
+                    continue
+        
+        if data is None:
+            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
             return LLMExtractionResult(researchers=[], topics=[], errors=errors)
 
         try:
-            data = json.loads(response[json_start:json_end])
             researchers_data = data.get("researchers", [])
 
             if not isinstance(researchers_data, list):
@@ -442,10 +533,56 @@ Si no hay tópicos: {{"topics": []}}"""
                 if not isinstance(item, dict):
                     continue
 
-                name = item.get("name", "").strip()
-                evidence = item.get("evidence", "").strip() or f"Mencionado en {chunk_id}"
+                # Manejar casos donde name puede ser lista, None, u otro tipo
+                raw_name = item.get("name", "")
+                if isinstance(raw_name, list):
+                    raw_name = raw_name[0] if raw_name else ""
+                name = str(raw_name).strip() if raw_name else ""
+                
+                raw_evidence = item.get("evidence", "")
+                if isinstance(raw_evidence, list):
+                    raw_evidence = raw_evidence[0] if raw_evidence else ""
+                evidence = str(raw_evidence).strip() if raw_evidence else f"Mencionado en {chunk_id}"
 
-                if name:
+                # Filtrar nombres genéricos sin sentido
+                invalid_patterns = [
+                    "nombre completo",
+                    "nombre del investigador",
+                    "no se mencionan",
+                    "no se menciona",
+                    "investigador",
+                    "researcher",
+                    "name",
+                    "et al",
+                    "and collaborators",
+                    "y colaboradores",
+                ]
+                
+                # Validar que no sea una lista de múltiples nombres
+                if ";" in name or " and " in name.lower():
+                    errors.append({
+                        "type": "MultipleNamesInOne",
+                        "chunk_id": chunk_id,
+                        "message": f"Múltiples nombres en una entidad: '{name}' (debe ser un nombre por entrada)"
+                    })
+                    continue
+                
+                # Validar que no sea una referencia bibliográfica (patrones comunes)
+                bibliographic_patterns = [
+                    r'\bet al\b',  # et al.
+                    r'\d{4}\)',    # año entre paréntesis como (2020)
+                    r'[A-Z]\.\s*[A-Z]\.',  # iniciales como J. K.
+                ]
+                import re
+                if any(re.search(pattern, name) for pattern in bibliographic_patterns):
+                    errors.append({
+                        "type": "BibliographicReference",
+                        "chunk_id": chunk_id,
+                        "message": f"Posible referencia bibliográfica, no participante: '{name}'"
+                    })
+                    continue
+                
+                if name and not any(pattern in name.lower() for pattern in invalid_patterns):
                     researchers.append(ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id))
 
         except json.JSONDecodeError as e:
@@ -458,15 +595,29 @@ Si no hay tópicos: {{"topics": []}}"""
         errors = []
         topics = []
 
+        # Buscar JSON, intentando primero encontrar objeto completo
         json_start = response.find("{")
-        json_end = response.rfind("}") + 1
-
-        if json_start == -1 or json_end == 0:
+        
+        if json_start == -1:
             errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "No hay JSON en respuesta"})
+            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        
+        # Intentar encontrar el primer objeto JSON válido
+        data = None
+        for json_end in range(len(response), json_start, -1):
+            candidate = response[json_start:json_end]
+            if candidate.rstrip().endswith("}"):
+                try:
+                    data = json.loads(candidate)
+                    break
+                except json.JSONDecodeError:
+                    continue
+        
+        if data is None:
+            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": "No se pudo parsear JSON válido"})
             return LLMExtractionResult(researchers=[], topics=[], errors=errors)
 
         try:
-            data = json.loads(response[json_start:json_end])
             topics_data = data.get("topics", [])
 
             if not isinstance(topics_data, list):
@@ -477,10 +628,32 @@ Si no hay tópicos: {{"topics": []}}"""
                 if not isinstance(item, dict):
                     continue
 
-                topic = item.get("topic", "").strip()
-                evidence = item.get("evidence", "").strip() or f"Mencionado en {chunk_id}"
+                # Manejar casos donde topic puede ser lista, None, u otro tipo
+                raw_topic = item.get("topic", "")
+                if isinstance(raw_topic, list):
+                    raw_topic = raw_topic[0] if raw_topic else ""
+                topic = str(raw_topic).strip() if raw_topic else ""
+                
+                raw_evidence = item.get("evidence", "")
+                if isinstance(raw_evidence, list):
+                    raw_evidence = raw_evidence[0] if raw_evidence else ""
+                evidence = str(raw_evidence).strip() if raw_evidence else f"Mencionado en {chunk_id}"
 
                 if topic:
+                    # Validar que el tópico esté en la lista permitida
+                    if self.available_topics:
+                        # Comparación case-insensitive
+                        topic_lower = topic.lower()
+                        available_lower = [t.lower() for t in self.available_topics]
+                        
+                        if topic_lower not in available_lower:
+                            errors.append({
+                                "type": "InvalidTopic",
+                                "chunk_id": chunk_id,
+                                "message": f"Tópico '{topic}' no está en la lista permitida (inventado por LLM)"
+                            })
+                            continue
+                    
                     topics.append(TopicMention(topic=topic, evidence=evidence, chunk_id=chunk_id))
 
         except json.JSONDecodeError as e:
@@ -504,11 +677,12 @@ Si no hay tópicos: {{"topics": []}}"""
             if not chunk_text.strip():
                 continue
 
-            logger.info(f"Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
-
+            logger.debug(f"  Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
             result = self.extract_researchers_from_chunk(chunk_text, chunk_id)
             all_researchers.extend(result.researchers)
             all_errors.extend(result.errors)
+            if result.researchers:
+                logger.debug(f"    → Encontrados: {', '.join([r.name for r in result.researchers])}")
 
         return LLMExtractionResult(researchers=all_researchers, topics=[], errors=all_errors)
 
@@ -528,11 +702,12 @@ Si no hay tópicos: {{"topics": []}}"""
             if not chunk_text.strip():
                 continue
 
-            logger.info(f"Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
-
+            logger.debug(f"  Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
             result = self.extract_topics_from_chunk(chunk_text, chunk_id)
             all_topics.extend(result.topics)
             all_errors.extend(result.errors)
+            if result.topics:
+                logger.debug(f"    → Encontrados: {', '.join([t.topic for t in result.topics])}")
 
         return LLMExtractionResult(researchers=[], topics=all_topics, errors=all_errors)
 
@@ -550,7 +725,7 @@ def create_entities_and_relationships_from_llm_extraction(
 
     for mention in llm_result.researchers:
         name_normalized = mention.name.lower().strip()
-        researcher_id = f"inv_{name_normalized.replace(' ', '_')}"
+        researcher_id = name_normalized.replace(' ', '_').replace('.', '').replace(',', '')
 
         if researcher_id in existing_ids:
             relationships.append(EVIDENCIA_DE(mention.chunk_id, researcher_id))
@@ -588,7 +763,7 @@ def create_topics_from_llm_extraction(
 
     for mention in llm_result.topics:
         topic_normalized = mention.topic.lower().strip()
-        topic_id = f"topic_{topic_normalized.replace(' ', '_')}"
+        topic_id = topic_normalized.replace(' ', '_').replace(',', '').replace('/', '_')
 
         # El tópico ya existe globalmente
         if topic_id in existing_ids:

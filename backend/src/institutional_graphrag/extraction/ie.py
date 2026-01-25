@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 import unicodedata
 import uuid
@@ -11,6 +12,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
@@ -171,7 +174,10 @@ class EntityExtractor:
                 }
             )
             return
-        for path in sorted(self.chunks_dir.iterdir()):
+        
+        all_paths = sorted([p for p in self.chunks_dir.iterdir() if p.is_file() and p.suffix.lower() == ".json"])
+        
+        for path in all_paths:
             if not path.is_file() or path.suffix.lower() != ".json":
                 continue
 
@@ -307,8 +313,12 @@ class EntityExtractor:
                         )
                     )
                     self.res.relationships.append(INICIO_EN(project_id, year))
-                self.res.relationships.append(EVIDENCIA_DE(best["chunk_id"], project_id))
-                self.res.relationships.append(EVIDENCIA_DE(best["table_chunk_id"], project_id))
+                self.res.relationships.append(
+                    EVIDENCIA_DE(best["chunk_id"], project_id, properties={"evidence_text": f"Proyecto identificado en chunk {best['chunk_id']}"})
+                )
+                self.res.relationships.append(
+                    EVIDENCIA_DE(best["table_chunk_id"], project_id, properties={"evidence_text": "Proyecto identificado en tabla"})
+                )
 
         related_docs = {
             rel.target_id for rel in self.res.relationships if rel.type == "ES_DESCRITO_POR"
@@ -370,7 +380,9 @@ class EntityExtractor:
                     }
                 )
 
-            self.res.relationships.append(EVIDENCIA_DE(chunk_id, project_id))
+            self.res.relationships.append(
+                EVIDENCIA_DE(chunk_id, project_id, properties={"evidence_text": f"Proyecto mencionado en {chunk_id}"})
+            )
 
         # Agregar documento tipo tabla a la relacion del proyecto
 
@@ -542,6 +554,11 @@ class EntityExtractor:
 
                     if not candidate_in_text:
                         continue
+                    
+                    # Validar que no sea un valor inválido
+                    invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
+                    if any(inv in candidate_in_text.lower() for inv in invalid_values):
+                        continue
 
                     candidate_id = str(uuid.uuid4())
                     if (
@@ -583,7 +600,9 @@ class EntityExtractor:
 
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                    self.res.relationships.append(EVIDENCIA_DE(table_chunk_id, candidate_id))
+                    self.res.relationships.append(
+                        EVIDENCIA_DE(table_chunk_id, candidate_id, properties={"evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"})
+                    )
                     inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
     def _build_indexes(self):
@@ -986,9 +1005,11 @@ class EntityExtractor:
                         continue
 
                     # Extraer investigadores usando LLM de todos los chunks
+                    logger.info(f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}...")
                     llm_result = llm_extractor.extract_researchers_from_chunks(
                         chunks, max_chunks=None
                     )
+                    logger.info(f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores")
 
                     # Agregar errores
                     self.res.errors.extend(llm_result.errors)
@@ -1079,9 +1100,11 @@ class EntityExtractor:
                         continue
 
                     # Extraer tópicos usando LLM de todos los chunks
+                    logger.info(f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}...")
                     llm_result = llm_extractor.extract_topics_from_chunks(
                         chunks, max_chunks=None
                     )
+                    logger.info(f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores")
 
                     # Agregar errores
                     self.res.errors.extend(llm_result.errors)
