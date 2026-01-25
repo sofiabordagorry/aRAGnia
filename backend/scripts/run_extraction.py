@@ -167,7 +167,7 @@ def main(max_docs: int | None = None) -> int:
     res = extractor.run(max_docs=max_docs)
 
     # 2) Guardar resultado
-    filename = "Entity_documents.json"
+    filename = "entity_documents.json"
     extractor.save_in_file(filename)
 
     out_path = extractor.input_dir / filename

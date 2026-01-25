@@ -311,7 +311,7 @@ def test_save_and_load_roundtrip_semantic_equal(extractor: EntityExtractor):
         Relationship(type="INICIO_EN", source_id="p1", target_id="y1", properties={})
     )
 
-    filename = "Entity_documents.json"
+    filename = "entity_documents.json"
     extractor.save_in_file(filename)
 
     loaded = extractor.load_from_json(filename)

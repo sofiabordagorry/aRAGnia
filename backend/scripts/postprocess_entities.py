@@ -207,7 +207,7 @@ def add_missing_evidence_text(relationships: List[dict]) -> tuple[List[dict], Li
 def postprocess_entities():
     """Ejecutar post-procesamiento completo."""
     
-    json_path = Path(__file__).parent.parent.parent / "data" / "entities_relations" / "Entity_documents.json"
+    json_path = Path(__file__).parent.parent.parent / "data" / "entities_relations" / "entity_documents.json"
     
     print(f"[Postprocess] Cargando {json_path}...")
     
@@ -240,7 +240,7 @@ def postprocess_entities():
     print(f"[Postprocess] Reducción: {original_entities - len(entities)} entidades eliminadas")
     
     # Guardar
-    output_path = json_path.parent / "Entity_documents_postprocessed.json"
+    output_path = json_path.parent / "entity_documents_postprocessed.json"
     
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
