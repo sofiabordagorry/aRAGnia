@@ -2,12 +2,12 @@
 Tests para el módulo de chunking basado en secciones.
 """
 
-import pytest
 import json
-
 from pathlib import Path
 
+import pytest
 from docling_core.types.doc import DoclingDocument
+
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 
 # Definir la ruta a los datos procesados por Docling

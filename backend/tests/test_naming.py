@@ -1,5 +1,5 @@
-import unittest
 import sys
+import unittest
 from pathlib import Path
 
 from institutional_graphrag.ingest.file_namer import generate_new_filename

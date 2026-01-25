@@ -366,7 +366,9 @@ def test_run_integration_minimal(tmp_path: Path):
 # -------------------------
 
 
-def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtractor, tmp_path: Path, monkeypatch):
+def test_extract_researchers_and_topics_llm_integration(
+    extractor: EntityExtractor, tmp_path: Path, monkeypatch
+):
     """Test deduplicación: mismo investigador en mismo proyecto = 1 entidad, en proyectos diferentes = 2 entidades."""
     extractor.chunks_dir.mkdir(parents=True)
     extractor.documents_dir.mkdir(parents=True)
@@ -410,11 +412,19 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
     proyecto1 = Proyecto(id="gi_2010_152", value="Proyecto 152")
     proyecto2 = Proyecto(id="gi_2010_391", value="Proyecto 391")
     extractor.res.entities.extend([proyecto1, proyecto2])
-    extractor.res.relationships.extend([
-        Relationship(type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc1", properties={}),
-        Relationship(type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc2", properties={}),
-        Relationship(type="ES_DESCRITO_POR", source_id="gi_2010_391", target_id="doc3", properties={}),
-    ])
+    extractor.res.relationships.extend(
+        [
+            Relationship(
+                type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc1", properties={}
+            ),
+            Relationship(
+                type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc2", properties={}
+            ),
+            Relationship(
+                type="ES_DESCRITO_POR", source_id="gi_2010_391", target_id="doc3", properties={}
+            ),
+        ]
+    )
 
     # Los 3 documentos mencionan "Juan Pérez"
     for base_name in ["gi_2010_152_informe", "gi_2010_152_propuesta", "gi_2010_391_informe"]:
@@ -430,9 +440,13 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
             source=f"C:/tmp/{base_name}.pdf",
             chunks=chunks,
         )
-        
+
         # Crear entidades Chunk y relaciones DE_DOCUMENTO necesarias para agregación
-        doc_id = {"gi_2010_152_informe": "doc1", "gi_2010_152_propuesta": "doc2", "gi_2010_391_informe": "doc3"}[base_name]
+        doc_id = {
+            "gi_2010_152_informe": "doc1",
+            "gi_2010_152_propuesta": "doc2",
+            "gi_2010_391_informe": "doc3",
+        }[base_name]
         chunk_id = f"{base_name}_chunk0"
         extractor.res.entities.append(Chunk(id=chunk_id, value={}))
         extractor.res.relationships.append(
@@ -444,7 +458,9 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
             researchers=[
-                ResearcherMention(name="Juan Pérez", evidence="Juan Pérez investiga", chunk_id=chunk_id)
+                ResearcherMention(
+                    name="Juan Pérez", evidence="Juan Pérez investiga", chunk_id=chunk_id
+                )
             ],
             topics=[],
             errors=[],
@@ -456,7 +472,9 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
         return LLMExtractionResult(
             researchers=[],
             topics=[
-                TopicMention(topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id)
+                TopicMention(
+                    topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id
+                )
             ],
             errors=[],
         )
@@ -481,7 +499,7 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
     # Total: 2 investigadores
     investigadores = [e for e in extractor.res.entities if e.label == "Investigador"]
     assert len(investigadores) == 2, "Debe haber 2 investigadores (uno por proyecto)"
-    
+
     # - Tópicos: mismo tópico en diferentes proyectos = misma entidad
     # "Machine Learning" es siempre el mismo concepto
     # Total: 1 tópico compartido entre ambos proyectos
@@ -493,23 +511,37 @@ def test_extract_researchers_and_topics_llm_integration(extractor: EntityExtract
     assert len(participo_rels) == 2
     project_ids_from_rels = {r.target_id for r in participo_rels}
     assert project_ids_from_rels == {"gi_2010_152", "gi_2010_391"}
-    
+
     # Verificar relaciones TIENE_TOPICO:
     # Solo proyecto->topico (basado en agregación de chunks)
     tiene_topico_rels = [r for r in extractor.res.relationships if r.type == "TIENE_TOPICO"]
-    assert len(tiene_topico_rels) == 2, f"Debe haber 2 relaciones TIENE_TOPICO (proyecto->topico), encontradas: {len(tiene_topico_rels)}"
+    assert (
+        len(tiene_topico_rels) == 2
+    ), f"Debe haber 2 relaciones TIENE_TOPICO (proyecto->topico), encontradas: {len(tiene_topico_rels)}"
     assert all(r.source_id in {"gi_2010_152", "gi_2010_391"} for r in tiene_topico_rels)
-    
+
     # Verificar mention_count en propiedades
     proj1_rel = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_152")
     proj2_rel = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_391")
-    assert proj1_rel.properties.get("mention_count") == 2, "Proyecto 1 tiene 2 menciones del tópico (2 chunks)"
-    assert proj2_rel.properties.get("mention_count") == 1, "Proyecto 2 tiene 1 mención del tópico (1 chunk)"
-    
+    assert (
+        proj1_rel.properties.get("mention_count") == 2
+    ), "Proyecto 1 tiene 2 menciones del tópico (2 chunks)"
+    assert (
+        proj2_rel.properties.get("mention_count") == 1
+    ), "Proyecto 2 tiene 1 mención del tópico (1 chunk)"
+
     # Verificar evidencias: 3 chunks mencionan investigadores (2 en proyecto1, 1 en proyecto2)
-    evidencia_inv = [r for r in extractor.res.relationships if r.type == "EVIDENCIA_DE" and r.target_id in {inv.id for inv in investigadores}]
+    evidencia_inv = [
+        r
+        for r in extractor.res.relationships
+        if r.type == "EVIDENCIA_DE" and r.target_id in {inv.id for inv in investigadores}
+    ]
     assert len(evidencia_inv) == 3
-    
+
     # Verificar evidencias de tópicos: 3 chunks mencionan el mismo tópico
-    evidencia_top = [r for r in extractor.res.relationships if r.type == "EVIDENCIA_DE" and r.target_id in {top.id for top in topicos}]
+    evidencia_top = [
+        r
+        for r in extractor.res.relationships
+        if r.type == "EVIDENCIA_DE" and r.target_id in {top.id for top in topicos}
+    ]
     assert len(evidencia_top) == 3

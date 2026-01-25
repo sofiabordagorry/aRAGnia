@@ -15,6 +15,11 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
+from institutional_graphrag.extraction.llm_extractor import (
+    LLMEntityExtractor,
+    create_entities_and_relationships_from_llm_extraction,
+    create_topics_from_llm_extraction,
+)
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
@@ -31,11 +36,6 @@ from institutional_graphrag.graph.schema import (
     Investigador,
     Proyecto,
     Relationship,
-)
-from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
-    create_entities_and_relationships_from_llm_extraction,
-    create_topics_from_llm_extraction,
 )
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
@@ -83,7 +83,7 @@ class EntityExtractor:
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
         self.docs_by_group_year: dict[tuple[str, str], list[Documento]] = defaultdict(list)
-        
+
         # Configuración LLM
         self.llm_provider = llm_provider
         self.llm_model = llm_model
@@ -96,7 +96,7 @@ class EntityExtractor:
         self.extract_responsible()
         self.extract_researchers_llm(max_docs=max_docs)
         self.extract_topics_llm(max_docs=max_docs)
-        
+
         return self.res
 
     def _build_doc_indexes(self) -> None:
@@ -174,9 +174,11 @@ class EntityExtractor:
                 }
             )
             return
-        
-        all_paths = sorted([p for p in self.chunks_dir.iterdir() if p.is_file() and p.suffix.lower() == ".json"])
-        
+
+        all_paths = sorted(
+            [p for p in self.chunks_dir.iterdir() if p.is_file() and p.suffix.lower() == ".json"]
+        )
+
         for path in all_paths:
             if not path.is_file() or path.suffix.lower() != ".json":
                 continue
@@ -314,10 +316,20 @@ class EntityExtractor:
                     )
                     self.res.relationships.append(INICIO_EN(project_id, year))
                 self.res.relationships.append(
-                    EVIDENCIA_DE(best["chunk_id"], project_id, properties={"evidence_text": f"Proyecto identificado en chunk {best['chunk_id']}"})
+                    EVIDENCIA_DE(
+                        best["chunk_id"],
+                        project_id,
+                        properties={
+                            "evidence_text": f"Proyecto identificado en chunk {best['chunk_id']}"
+                        },
+                    )
                 )
                 self.res.relationships.append(
-                    EVIDENCIA_DE(best["table_chunk_id"], project_id, properties={"evidence_text": "Proyecto identificado en tabla"})
+                    EVIDENCIA_DE(
+                        best["table_chunk_id"],
+                        project_id,
+                        properties={"evidence_text": "Proyecto identificado en tabla"},
+                    )
                 )
 
         related_docs = {
@@ -381,7 +393,11 @@ class EntityExtractor:
                 )
 
             self.res.relationships.append(
-                EVIDENCIA_DE(chunk_id, project_id, properties={"evidence_text": f"Proyecto mencionado en {chunk_id}"})
+                EVIDENCIA_DE(
+                    chunk_id,
+                    project_id,
+                    properties={"evidence_text": f"Proyecto mencionado en {chunk_id}"},
+                )
             )
 
         # Agregar documento tipo tabla a la relacion del proyecto
@@ -554,7 +570,7 @@ class EntityExtractor:
 
                     if not candidate_in_text:
                         continue
-                    
+
                     # Validar que no sea un valor inválido
                     invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
                     if any(inv in candidate_in_text.lower() for inv in invalid_values):
@@ -601,7 +617,13 @@ class EntityExtractor:
                     self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                     self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
                     self.res.relationships.append(
-                        EVIDENCIA_DE(table_chunk_id, candidate_id, properties={"evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"})
+                        EVIDENCIA_DE(
+                            table_chunk_id,
+                            candidate_id,
+                            properties={
+                                "evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"
+                            },
+                        )
                     )
                     inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
@@ -953,7 +975,7 @@ class EntityExtractor:
 
     def extract_researchers_llm(self, max_docs: int | None = None) -> None:
         """Extraer investigadores usando LLM con deduplicación por proyecto.
-        
+
         Args:
             max_docs: Límite opcional de documentos a procesar.
         """
@@ -966,7 +988,7 @@ class EntityExtractor:
 
         # Procesar cada proyecto
         projects = [e for e in self.res.entities if e.label == "Proyecto"]
-        
+
         docs_processed = 0
 
         for project in projects:
@@ -1009,17 +1031,21 @@ class EntityExtractor:
                     payload = self._read_json(chunks_file)
                     if payload is None:
                         continue
-                    
+
                     chunks = payload.get("chunks", [])
                     if not isinstance(chunks, list):
                         continue
 
                     # Extraer investigadores usando LLM de todos los chunks
-                    logger.info(f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}...")
+                    logger.info(
+                        f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
+                    )
                     llm_result = llm_extractor.extract_researchers_from_chunks(
                         chunks, max_chunks=None
                     )
-                    logger.info(f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores")
+                    logger.info(
+                        f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores"
+                    )
 
                     # Agregar errores
                     self.res.errors.extend(llm_result.errors)
@@ -1040,7 +1066,7 @@ class EntityExtractor:
 
                     # Actualizar el set de IDs existentes para este proyecto
                     existing_researcher_ids.update(e.id for e in new_entities)
-                    
+
                     # Incrementar contador de documentos procesados
                     docs_processed += 1
 
@@ -1056,17 +1082,15 @@ class EntityExtractor:
 
     def extract_topics_llm(self, max_docs: int | None = None) -> None:
         """Extraer tópicos usando LLM.
-        
+
         Los tópicos se extraen a nivel de chunk (Chunk TIENE_TOPICO Topico).
         Después se agregan a nivel de proyecto según frecuencia en chunks.
-        
+
         Args:
             max_docs: Límite opcional de documentos a procesar.
         """
         # Obtener IDs de tópicos ya existentes globalmente
-        existing_topic_ids = {
-            e.id for e in self.res.entities if e.label == "Topico"
-        }
+        existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
         llm_extractor = LLMEntityExtractor(
             llm_provider=self.llm_provider,
@@ -1077,7 +1101,7 @@ class EntityExtractor:
 
         # Procesar cada proyecto
         projects = [e for e in self.res.entities if e.label == "Proyecto"]
-        
+
         docs_processed = 0
 
         for project in projects:
@@ -1099,7 +1123,7 @@ class EntityExtractor:
                 if max_docs is not None and docs_processed >= max_docs:
                     logger.info(f"[LLM Topics] Límite de {max_docs} documentos alcanzado")
                     return
-                
+
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
@@ -1118,17 +1142,17 @@ class EntityExtractor:
                     payload = self._read_json(chunks_file)
                     if payload is None:
                         continue
-                    
+
                     chunks = payload.get("chunks", [])
                     if not isinstance(chunks, list):
                         continue
 
                     # Extraer tópicos usando LLM de todos los chunks
                     logger.info(f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}...")
-                    llm_result = llm_extractor.extract_topics_from_chunks(
-                        chunks, max_chunks=None
+                    llm_result = llm_extractor.extract_topics_from_chunks(chunks, max_chunks=None)
+                    logger.info(
+                        f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores"
                     )
-                    logger.info(f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores")
 
                     # Agregar errores
                     self.res.errors.extend(llm_result.errors)
@@ -1144,7 +1168,7 @@ class EntityExtractor:
 
                     # Actualizar el set de IDs globales
                     existing_topic_ids.update(e.id for e in new_entities)
-                    
+
                     # Incrementar contador de documentos procesados
                     docs_processed += 1
 
@@ -1157,13 +1181,13 @@ class EntityExtractor:
                         }
                     )
                     docs_processed += 1
-            
+
             # Agregar relaciones proyecto->topico basadas en los chunks del proyecto
             self._aggregate_topics_for_project(project_id)
-    
+
     def _aggregate_topics_for_project(self, project_id: str) -> None:
         """Agregar tópicos a nivel de proyecto basándose en los chunks.
-        
+
         Cuenta los tópicos de todos los chunks del proyecto y crea
         relaciones Proyecto TIENE_TOPICO Topico para todos los tópicos mencionados.
         """
@@ -1173,7 +1197,7 @@ class EntityExtractor:
             for r in self.res.relationships
             if r.type == "ES_DESCRITO_POR" and r.source_id == project_id
         ]
-        
+
         project_chunks = set()
         for doc_id in project_docs:
             doc_chunks = [
@@ -1182,7 +1206,7 @@ class EntityExtractor:
                 if r.type == "DE_DOCUMENTO" and r.target_id == doc_id
             ]
             project_chunks.update(doc_chunks)
-        
+
         # Contar tópicos de los chunks del proyecto
         topic_counts = Counter()
         for chunk_id in project_chunks:
@@ -1193,11 +1217,12 @@ class EntityExtractor:
             ]
 
             topic_ids = [
-                tid for tid in chunk_topics 
+                tid
+                for tid in chunk_topics
                 if any(e.id == tid and e.label == "Topico" for e in self.res.entities)
             ]
             topic_counts.update(topic_ids)
-        
+
         # Crear relaciones proyecto->topico para todos los tópicos encontrados
         for topic_id in topic_counts:
             self.res.relationships.append(
@@ -1205,6 +1230,6 @@ class EntityExtractor:
                     type="TIENE_TOPICO",
                     source_id=project_id,
                     target_id=topic_id,
-                    properties={"mention_count": topic_counts[topic_id]}
+                    properties={"mention_count": topic_counts[topic_id]},
                 )
             )
