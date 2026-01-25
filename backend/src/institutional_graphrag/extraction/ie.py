@@ -1223,13 +1223,15 @@ class EntityExtractor:
             ]
             topic_counts.update(topic_ids)
 
-        # Crear relaciones proyecto->topico para todos los tópicos encontrados
-        for topic_id in topic_counts:
+        # Crear relaciones proyecto->topico para los top 3 tópicos más mencionados
+        top_topics = topic_counts.most_common(3)
+        
+        for topic_id, count in top_topics:
             self.res.relationships.append(
                 Relationship(
                     type="TIENE_TOPICO",
                     source_id=project_id,
                     target_id=topic_id,
-                    properties={"mention_count": topic_counts[topic_id]},
+                    properties={"mention_count": count},
                 )
             )
