@@ -59,6 +59,7 @@ PATTERN_DOCUMENT = re.compile(
 
 PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
 
+ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
 @dataclass
 class ExtractionResult:
@@ -112,6 +113,8 @@ class EntityExtractor:
             self.docs_by_group_year[key].append(d)
 
     def extract_documents(self) -> None:
+        seen_entities: set[tuple[str, str]] = set()
+
         def ensure_dir(d: Path) -> bool:
             if d.exists():
                 return True
@@ -119,26 +122,47 @@ class EntityExtractor:
                 {"type": "MissingFolder", "message": f"No existe la carpeta: {d}"}
             )
             return False
+        def add_entity_if_new(entity: Entity) -> None:
+            key = (entity.label, entity.id)
+            if key in seen_entities:
+                return
+            seen_entities.add(key)
+            self.res.entities.append(entity)
 
-        def add_docs_from_dir(d: Path, pattern, value_builder) -> None:
+        def add_docs_from_dir(d: Path, pattern, value_builder ,create_year_entity: bool = False) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                base_name = path.stem
-                m = pattern.match(base_name)
-                if not m:
+                if path.suffix.lower() in ALLOWED_SUFFIXES:
+                    base_name = path.stem
+                    m = pattern.match(base_name)
+                    if not m:
+                        self.res.errors.append(
+                            {
+                                "type": "Document Invalid",
+                                "message": f"El formato del documento es invalido: {base_name}",
+                            }
+                        )
+                        continue
+
+                    self.res.entities.append(
+                        Documento(
+                            id=base_name,
+                            value=value_builder(base_name, m),
+                        )
+                    )
+                else:
                     self.res.errors.append(
                         {
                             "type": "Document Invalid",
-                            "message": f"El formato del documento es invalido: {base_name}",
+                            "message": f"La extension del documento es invalido: {path.name}",
                         }
                     )
-                    continue
-
-                self.res.entities.append(
-                    Documento(
-                        id=base_name,
-                        value=value_builder(base_name, m),
+                if create_year_entity:
+                    year = m.group("year")
+                    anio = Anio(
+                        id=year,
+                        value={"year": year},
                     )
-                )
+                    add_entity_if_new(anio)
 
         if not ensure_dir(self.documents_dir) or not ensure_dir(self.table_dir):
             return
@@ -163,6 +187,7 @@ class EntityExtractor:
                 "is_group": m.group("group"),
                 "year_publisher": m.group("year"),
             },
+            create_year_entity=True,
         )
 
     def extract_chunks(self) -> None:
@@ -308,12 +333,6 @@ class EntityExtractor:
                         }
                     )
                 else:
-                    self.res.entities.append(
-                        Anio(
-                            id=year,
-                            value=year,
-                        )
-                    )
                     self.res.relationships.append(INICIO_EN(project_id, year))
                 self.res.relationships.append(
                     EVIDENCIA_DE(
@@ -382,7 +401,6 @@ class EntityExtractor:
             self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
 
             if year:
-                self.res.entities.append(Anio(id=best["year"], value=best["year"]))
                 self.res.relationships.append(INICIO_EN(project_id, best["year"]))
             else:
                 self.res.errors.append(
