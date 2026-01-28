@@ -407,20 +407,6 @@ If no researchers found:
         if self.available_topics:
             topics_list = "\n".join(f"- {topic}" for topic in self.available_topics)
 
-            # Lista de topics comúnmente inventados por el LLM
-            forbidden_topics = [
-                "Fluid Dynamics",
-                "Hydrology",
-                "Environmental Science",
-                "Sociology",
-                "Materials Science",
-                "Paleoecology",
-                "Biological Sciences",
-                "Human Resource Management",
-                "Management and Organization",
-            ]
-            forbidden_list = "\n".join(f"- {topic}" for topic in forbidden_topics)
-
             return f"""Match research topics from Spanish text to this English topic list.
 
 ALLOWED TOPICS:
@@ -486,7 +472,9 @@ If no match:
     Remember: Always use <JSON> tags around your response.
     """
 
-    def _parse_response(self, response: str, chunk_id: str, chunk_text: str = "") -> LLMExtractionResult:
+    def _parse_response(
+        self, response: str, chunk_id: str, chunk_text: str = ""
+    ) -> LLMExtractionResult:
         """Parsear respuesta del LLM."""
         errors = []
         researchers = []
@@ -614,15 +602,21 @@ If no match:
                     (r"[A-Z]\.\s*[A-Z]\.", re.IGNORECASE),  # iniciales como J. K.
                     (r"^[A-Z]+,\s*[A-Z]\.$", re.IGNORECASE),  # MAHLER, G. o SUESCUN, L.
                     (r"^[A-Z]\s+[A-Z]+$", re.IGNORECASE),  # J BREM (inicial + apellido sin puntos)
-                    (r"^[A-Z]\.\s+[A-Z]+", re.IGNORECASE),  # G. SERRA / C. FAGUNDEZ (inicial + apellido)
-                    (r"^[A-Z]\.\s+[A-Z]\.\s+[A-Z]+", re.IGNORECASE),  # J. M. SMITH (dos iniciales + apellido)
+                    (
+                        r"^[A-Z]\.\s+[A-Z]+",
+                        re.IGNORECASE,
+                    ),  # G. SERRA / C. FAGUNDEZ (inicial + apellido)
+                    (
+                        r"^[A-Z]\.\s+[A-Z]\.\s+[A-Z]+",
+                        re.IGNORECASE,
+                    ),  # J. M. SMITH (dos iniciales + apellido)
                 ]
                 is_bibliographic = False
                 for pattern, flags in bibliographic_patterns:
                     if re.search(pattern, name, flags):
                         is_bibliographic = True
                         break
-                
+
                 if is_bibliographic:
                     errors.append(
                         {
@@ -632,16 +626,28 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea solo apellido(s) sin nombre
                 # Detectar: "DEL PUERTO GARCÍA", "NOBOA ALDECOA", etc.
                 name_parts = name.split()
                 if len(name_parts) >= 2 and all(part.isupper() for part in name_parts):
                     # Si todos son mayúsculas y son 2-3 palabras, podría ser solo apellidos
                     # Verificar que al menos una parte no sea preposición común
-                    prepositions = {"DE", "DEL", "LA", "LAS", "LOS", "Y", "E", "DA", "DI", "VON", "VAN"}
+                    prepositions = {
+                        "DE",
+                        "DEL",
+                        "LA",
+                        "LAS",
+                        "LOS",
+                        "Y",
+                        "E",
+                        "DA",
+                        "DI",
+                        "VON",
+                        "VAN",
+                    }
                     non_prep_parts = [p for p in name_parts if p not in prepositions]
-                    
+
                     # Si solo hay 2 partes no-preposición, probablemente son solo apellidos
                     if len(non_prep_parts) == 2 and len(name_parts) <= 3:
                         errors.append(
@@ -652,9 +658,9 @@ If no match:
                             }
                         )
                         continue
-                
+
                 # Validar que no contenga caracteres corruptos
-                if re.search(r'[\{\}\[\]\u51fd\u9601\ufffd]', name):
+                if re.search(r"[\{\}\[\]\u51fd\u9601\ufffd]", name):
                     errors.append(
                         {
                             "type": "CorruptedCharacters",
@@ -663,10 +669,10 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea especie biológica
                 # Patrón: letra mayúscula + punto + palabra (C. elegans, E. granulosus)
-                if re.match(r'^[A-Z]\.[\s]?[a-z]+', name):
+                if re.match(r"^[A-Z]\.[\s]?[a-z]+", name):
                     errors.append(
                         {
                             "type": "BiologicalSpecies",
@@ -675,13 +681,13 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea compuesto químico
                 # Patrones: termina con letra mayúscula sola, contiene números/símbolos químicos
                 chemical_patterns = [
-                    r'\b[A-Z]$',  # termina con letra sola como "Aeruciclamida B"
-                    r'^[A-Z]{2,}$',  # siglas como "DAST"
-                    r'DIELS.*ALDER',  # reacciones químicas
+                    r"\b[A-Z]$",  # termina con letra sola como "Aeruciclamida B"
+                    r"^[A-Z]{2,}$",  # siglas como "DAST"
+                    r"DIELS.*ALDER",  # reacciones químicas
                 ]
                 if any(re.search(pattern, name, re.IGNORECASE) for pattern in chemical_patterns):
                     # Excepción: si contiene espacios y palabras normales, podría ser nombre real
@@ -694,12 +700,21 @@ If no match:
                             }
                         )
                         continue
-                
+
                 # Validar que no sea institución/organización
                 institution_keywords = [
-                    "CSIC", "ANII", "DICYT", "LABORATORIO", "FACULTAD", 
-                    "UNIVERSIDAD", "INSTITUTO", "CENTRO", "DEPARTAMENTO",
-                    "ACCELERATOR", "PROGRAMA", "POLO TECNOLÓGICO"
+                    "CSIC",
+                    "ANII",
+                    "DICYT",
+                    "LABORATORIO",
+                    "FACULTAD",
+                    "UNIVERSIDAD",
+                    "INSTITUTO",
+                    "CENTRO",
+                    "DEPARTAMENTO",
+                    "ACCELERATOR",
+                    "PROGRAMA",
+                    "POLO TECNOLÓGICO",
                 ]
                 if any(keyword in name.upper() for keyword in institution_keywords):
                     errors.append(
@@ -710,7 +725,7 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea técnica/método
                 if len(name) > 30 or ("DE " in name.upper() and name.count(" ") > 5):
                     # Frases largas o con muchas preposiciones son títulos/técnicas
@@ -722,9 +737,9 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea dato/estadística
-                if re.search(r'\d+\s*%|^[A-Z]\.\s*\d+', name):
+                if re.search(r"\d+\s*%|^[A-Z]\.\s*\d+", name):
                     errors.append(
                         {
                             "type": "DataOrStatistic",
@@ -733,10 +748,22 @@ If no match:
                         }
                     )
                     continue
-                
+
                 # Validar que no sea mes/fecha
-                months = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", 
-                         "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"}
+                months = {
+                    "ENERO",
+                    "FEBRERO",
+                    "MARZO",
+                    "ABRIL",
+                    "MAYO",
+                    "JUNIO",
+                    "JULIO",
+                    "AGOSTO",
+                    "SEPTIEMBRE",
+                    "OCTUBRE",
+                    "NOVIEMBRE",
+                    "DICIEMBRE",
+                }
                 if name.upper() in months:
                     errors.append(
                         {
@@ -748,26 +775,27 @@ If no match:
                     continue
 
                 # VALIDACIÓN: Verificar que evidencia y nombre estén en el chunk
-                if evidence and f"Mencionado en" not in evidence and chunk_text:
+                if evidence and "Mencionado en" not in evidence and chunk_text:
                     # Normalizar texto: minúsculas y limpiar caracteres de control
-                    chunk_normalized = re.sub(r'[\t\r\n]+', ' ', chunk_text.lower())
-                    chunk_normalized = re.sub(r'\s+', ' ', chunk_normalized)
-                    
-                    evidence_normalized = re.sub(r'[\t\r\n]+', ' ', evidence.lower())
-                    evidence_normalized = re.sub(r'\s+', ' ', evidence_normalized)
-                    
+                    chunk_normalized = re.sub(r"[\t\r\n]+", " ", chunk_text.lower())
+                    chunk_normalized = re.sub(r"\s+", " ", chunk_normalized)
+
+                    evidence_normalized = re.sub(r"[\t\r\n]+", " ", evidence.lower())
+                    evidence_normalized = re.sub(r"\s+", " ", evidence_normalized)
+
                     name_normalized = name.lower()
-                    
+
                     # 1. Verificar que la evidencia esté en el chunk
                     evidence_words = [
-                        w for w in re.findall(r'\b\w+\b', evidence_normalized) 
+                        w
+                        for w in re.findall(r"\b\w+\b", evidence_normalized)
                         if len(w) > 3 and not w.isdigit()
                     ]
-                    
+
                     if len(evidence_words) >= 3:
                         words_in_chunk = sum(1 for w in evidence_words if w in chunk_normalized)
                         match_ratio = words_in_chunk / len(evidence_words)
-                        
+
                         if match_ratio < 0.7:
                             errors.append(
                                 {
@@ -777,10 +805,10 @@ If no match:
                                 }
                             )
                             continue
-                    
+
                     # 2. Verificar que el nombre esté en el chunk
                     name_parts = [p.strip() for p in name_normalized.split() if len(p.strip()) > 2]
-                    
+
                     if name_parts and not any(part in chunk_normalized for part in name_parts):
                         errors.append(
                             {
@@ -802,7 +830,9 @@ If no match:
 
         return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
 
-    def _parse_topic_response(self, response: str, chunk_id: str, chunk_text: str = "") -> LLMExtractionResult:
+    def _parse_topic_response(
+        self, response: str, chunk_id: str, chunk_text: str = ""
+    ) -> LLMExtractionResult:
         """Parsear respuesta del LLM para tópicos."""
         errors = []
         topics = []
@@ -902,25 +932,31 @@ If no match:
                             continue
 
                     # VALIDACIÓN: La evidencia debe estar en el chunk original
-                    if chunk_text and evidence and f"Mencionado en" not in evidence and len(evidence) > 15:
+                    if (
+                        chunk_text
+                        and evidence
+                        and "Mencionado en" not in evidence
+                        and len(evidence) > 15
+                    ):
                         # Normalizar texto: minúsculas y limpiar caracteres de control
-                        chunk_normalized = re.sub(r'[\t\r\n]+', ' ', chunk_text.lower())
-                        chunk_normalized = re.sub(r'\s+', ' ', chunk_normalized)
-                        
-                        evidence_normalized = re.sub(r'[\t\r\n]+', ' ', evidence.lower())
-                        evidence_normalized = re.sub(r'\s+', ' ', evidence_normalized)
-                        
+                        chunk_normalized = re.sub(r"[\t\r\n]+", " ", chunk_text.lower())
+                        chunk_normalized = re.sub(r"\s+", " ", chunk_normalized)
+
+                        evidence_normalized = re.sub(r"[\t\r\n]+", " ", evidence.lower())
+                        evidence_normalized = re.sub(r"\s+", " ", evidence_normalized)
+
                         # Extraer palabras significativas de la evidencia
                         evidence_words = [
-                            w for w in re.findall(r'\b\w+\b', evidence_normalized) 
+                            w
+                            for w in re.findall(r"\b\w+\b", evidence_normalized)
                             if len(w) > 3 and not w.isdigit()
                         ]
-                        
+
                         # Verificar que al menos el 70% de palabras estén en el chunk
                         if evidence_words:
                             words_in_chunk = sum(1 for w in evidence_words if w in chunk_normalized)
                             match_ratio = words_in_chunk / len(evidence_words)
-                            
+
                             if match_ratio < 0.7:
                                 errors.append(
                                     {
