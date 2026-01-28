@@ -339,7 +339,7 @@ class LLMEntityExtractor:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
             )
-            return self._parse_response(response, chunk_id)
+            return self._parse_response(response, chunk_id, chunk_text)
 
         except Exception as e:
             logger.error(f"Error en chunk {chunk_id}: {e}")
@@ -365,7 +365,7 @@ class LLMEntityExtractor:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
             )
-            return self._parse_topic_response(response, chunk_id)
+            return self._parse_topic_response(response, chunk_id, chunk_text)
 
         except Exception as e:
             logger.error(f"Error en chunk {chunk_id}: {e}")
@@ -377,60 +377,30 @@ class LLMEntityExtractor:
 
     def _build_prompt(self, chunk_text: str) -> str:
         """Construir prompt para extracción de investigadores."""
-        return f"""You are an information extraction system for research project documentation.
+        return f"""Extract researchers who PARTICIPATED in this research project from the text below.
 
-Task:
-Extract ONLY researchers who PARTICIPATED in THIS research project. Do NOT extract authors from bibliographic references.
+RULES:
+- Extract ONLY project team members (NOT cited authors from references)
+- One person per entry
+- Evidence must be actual text containing the person's name
 
 TEXT:
 {chunk_text}
 
-CRITICAL RULES (MUST FOLLOW):
-1. Extract ONLY project participants/team members, NOT cited authors
-2. DO NOT extract names from reference lists, citations, or bibliography sections
-3. DO NOT extract lists of co-authors from papers (e.g., "Smith J.; Jones K.; et al.")
-4. DO NOT extract "et al.", "and collaborators", or similar phrases
-5. Each person must be ONE separate entry (not multiple names in one)
-6. Must have clear evidence that the person WORKED ON or PARTICIPATED IN this project
-7. Look for context like: "investigador", "responsable", "equipo", "colaborador", "participa"
-8. Ignore names that only appear in: references, citations, acknowledgments to other papers
+IMPORTANT: You MUST wrap your response with <JSON> and </JSON> tags.
 
-Examples of VALID extractions:
-- "El Dr. Juan Pérez es el investigador responsable" → Extract "Juan Pérez"
-  Evidence: "El Dr. Juan Pérez es el investigador responsable"
-- "El equipo incluye a María García y Carlos López" → Extract both separately
-  María García evidence: "El equipo incluye a María García"
-  Carlos López evidence: "El equipo incluye a Carlos López"
-
-Examples of INVALID extractions (DO NOT EXTRACT):
-- "Según Smith et al. (2020)..." → Citation, NOT a participant
-- "Referencias: Jones K.; Brown M." → Bibliography, NOT participants
-- "Basado en trabajos de Wilson" → External reference, NOT participant
-
-OUTPUT FORMAT - CRITICAL:
-- Wrap your JSON response in <JSON> tags
-- Format: <JSON>{{...}}</JSON>
-- Do NOT add any text before <JSON> or after </JSON>
-- Do NOT add explanations or comments
-- The JSON inside must be valid
-
-Exact format to follow:
+OUTPUT FORMAT:
 <JSON>
 {{
   "researchers": [
-    {{
-      "name": "Full name of ONE person",
-      "evidence": "Text fragment that MENTIONS THIS PERSON and shows their participation (must include the person's name or clear reference to them)"
-    }}
+    {{"name": "Person Name", "evidence": "actual text mentioning Person Name"}}
   ]
 }}
 </JSON>
 
-If NO project participants found:
+If no researchers found:
 <JSON>{{"researchers": []}}</JSON>
-
-Remember: Always use <JSON> tags around your response.
-    """
+"""
 
     def _build_topic_prompt(self, chunk_text: str) -> str:
         """Construir prompt para extracción de tópicos."""
@@ -451,53 +421,32 @@ Remember: Always use <JSON> tags around your response.
             ]
             forbidden_list = "\n".join(f"- {topic}" for topic in forbidden_topics)
 
-            return f"""You are a STRICT topic classifier. Your task is to match research topics in Spanish text to a predefined English topic list.
+            return f"""Match research topics from Spanish text to this English topic list.
+
+ALLOWED TOPICS:
+{topics_list}
 
 TEXT (Spanish):
 {chunk_text}
 
-ALLOWED TOPICS LIST (English - USE ONLY THESE):
-{topics_list}
+RULES:
+- ONLY use topics from the list above
+- DO NOT invent new topics
+- Match by research field, not literal translation
 
-FORBIDDEN TOPICS (NEVER USE, even if they seem relevant):
-{forbidden_list}
+IMPORTANT: You MUST wrap your response with <JSON> and </JSON> tags.
 
-CRITICAL RULES (VIOLATION = DISCARD):
-1. ONLY use exact topic names from the ALLOWED list above
-2. DO NOT translate Spanish terms to English yourself
-3. DO NOT invent, create, or generalize new topics
-4. DO NOT use journal names, author names, or specific techniques as topics
-5. DO NOT combine or modify topic names
-6. DO NOT use any topic from the FORBIDDEN list
-7. Match by semantic field/discipline, not word-by-word translation
-8. If no topic from the ALLOWED list matches, return empty array
-
-Examples:
-- Spanish text about "síntesis orgánica" → Match to "Organic Chemistry" (if in list)
-- Spanish text about "nanopartículas" → Match to "Nanotechnology" (if in list)
-- Spanish text about specific peptides → DO NOT invent "Peptide Synthesis", use broader topic like "Biochemistry"
-- Spanish text about water flow → DO NOT use "Fluid Dynamics" or "Hydrology", check ALLOWED list only
-
-OUTPUT FORMAT - CRITICAL:
-- Wrap your JSON response in <JSON> tags
-- Format: <JSON>{{...}}</JSON>
-- Do NOT add any text before <JSON> or after </JSON>
-- Do NOT add explanations or comments
-- The JSON inside must be valid
-
-Exact format to follow:
+OUTPUT FORMAT:
 <JSON>
 {{
   "topics": [
-    {{"topic": "Exact English name from list", "evidence": "Spanish text fragment"}}
+    {{"topic": "Topic from list", "evidence": "Spanish text fragment"}}
   ]
 }}
 </JSON>
 
-If NO topics from the list match:
-<JSON>{{"topics": []}}</JSON>
-
-Remember: Always use <JSON> tags around your response."""
+If no match:
+<JSON>{{"topics": []}}</JSON>"""
         else:
             return f"""You are an information extraction system.
 
@@ -537,7 +486,7 @@ Remember: Always use <JSON> tags around your response."""
     Remember: Always use <JSON> tags around your response.
     """
 
-    def _parse_response(self, response: str, chunk_id: str) -> LLMExtractionResult:
+    def _parse_response(self, response: str, chunk_id: str, chunk_text: str = "") -> LLMExtractionResult:
         """Parsear respuesta del LLM."""
         errors = []
         researchers = []
@@ -635,6 +584,16 @@ Remember: Always use <JSON> tags around your response."""
                     "et al",
                     "and collaborators",
                     "y colaboradores",
+                    "responsables del grupo",
+                    "miembros del equipo",
+                    "equipo de investigación",
+                    "grupo de investigación",
+                    "el equipo",
+                    "los investigadores",
+                    "el grupo",
+                    "nuestro grupo",
+                    "grupo del proyecto",
+                    "casos similares",
                 ]
 
                 # Validar que no sea una lista de múltiples nombres
@@ -650,11 +609,21 @@ Remember: Always use <JSON> tags around your response."""
 
                 # Validar que no sea una referencia bibliográfica (patrones comunes)
                 bibliographic_patterns = [
-                    r"\bet al\b",  # et al.
-                    r"\d{4}\)",  # año entre paréntesis como (2020)
-                    r"[A-Z]\.\s*[A-Z]\.",  # iniciales como J. K.
+                    (r"\bet al\b", 0),  # et al.
+                    (r"\d{4}\)", 0),  # año entre paréntesis como (2020)
+                    (r"[A-Z]\.\s*[A-Z]\.", re.IGNORECASE),  # iniciales como J. K.
+                    (r"^[A-Z]+,\s*[A-Z]\.$", re.IGNORECASE),  # MAHLER, G. o SUESCUN, L.
+                    (r"^[A-Z]\s+[A-Z]+$", re.IGNORECASE),  # J BREM (inicial + apellido sin puntos)
+                    (r"^[A-Z]\.\s+[A-Z]+", re.IGNORECASE),  # G. SERRA / C. FAGUNDEZ (inicial + apellido)
+                    (r"^[A-Z]\.\s+[A-Z]\.\s+[A-Z]+", re.IGNORECASE),  # J. M. SMITH (dos iniciales + apellido)
                 ]
-                if any(re.search(pattern, name) for pattern in bibliographic_patterns):
+                is_bibliographic = False
+                for pattern, flags in bibliographic_patterns:
+                    if re.search(pattern, name, flags):
+                        is_bibliographic = True
+                        break
+                
+                if is_bibliographic:
                     errors.append(
                         {
                             "type": "BibliographicReference",
@@ -663,7 +632,166 @@ Remember: Always use <JSON> tags around your response."""
                         }
                     )
                     continue
+                
+                # Validar que no sea solo apellido(s) sin nombre
+                # Detectar: "DEL PUERTO GARCÍA", "NOBOA ALDECOA", etc.
+                name_parts = name.split()
+                if len(name_parts) >= 2 and all(part.isupper() for part in name_parts):
+                    # Si todos son mayúsculas y son 2-3 palabras, podría ser solo apellidos
+                    # Verificar que al menos una parte no sea preposición común
+                    prepositions = {"DE", "DEL", "LA", "LAS", "LOS", "Y", "E", "DA", "DI", "VON", "VAN"}
+                    non_prep_parts = [p for p in name_parts if p not in prepositions]
+                    
+                    # Si solo hay 2 partes no-preposición, probablemente son solo apellidos
+                    if len(non_prep_parts) == 2 and len(name_parts) <= 3:
+                        errors.append(
+                            {
+                                "type": "IncompleteNameSurnameOnly",
+                                "chunk_id": chunk_id,
+                                "message": f"Nombre incompleto (solo apellidos): '{name}'",
+                            }
+                        )
+                        continue
+                
+                # Validar que no contenga caracteres corruptos
+                if re.search(r'[\{\}\[\]\u51fd\u9601\ufffd]', name):
+                    errors.append(
+                        {
+                            "type": "CorruptedCharacters",
+                            "chunk_id": chunk_id,
+                            "message": f"Nombre con caracteres corruptos: '{name}'",
+                        }
+                    )
+                    continue
+                
+                # Validar que no sea especie biológica
+                # Patrón: letra mayúscula + punto + palabra (C. elegans, E. granulosus)
+                if re.match(r'^[A-Z]\.[\s]?[a-z]+', name):
+                    errors.append(
+                        {
+                            "type": "BiologicalSpecies",
+                            "chunk_id": chunk_id,
+                            "message": f"Especie biológica, no investigador: '{name}'",
+                        }
+                    )
+                    continue
+                
+                # Validar que no sea compuesto químico
+                # Patrones: termina con letra mayúscula sola, contiene números/símbolos químicos
+                chemical_patterns = [
+                    r'\b[A-Z]$',  # termina con letra sola como "Aeruciclamida B"
+                    r'^[A-Z]{2,}$',  # siglas como "DAST"
+                    r'DIELS.*ALDER',  # reacciones químicas
+                ]
+                if any(re.search(pattern, name, re.IGNORECASE) for pattern in chemical_patterns):
+                    # Excepción: si contiene espacios y palabras normales, podría ser nombre real
+                    if not (len(name_parts) >= 2 and any(len(p) > 3 for p in name_parts)):
+                        errors.append(
+                            {
+                                "type": "Invalid Name",
+                                "chunk_id": chunk_id,
+                                "message": f"Nombre inválido: '{name}'",
+                            }
+                        )
+                        continue
+                
+                # Validar que no sea institución/organización
+                institution_keywords = [
+                    "CSIC", "ANII", "DICYT", "LABORATORIO", "FACULTAD", 
+                    "UNIVERSIDAD", "INSTITUTO", "CENTRO", "DEPARTAMENTO",
+                    "ACCELERATOR", "PROGRAMA", "POLO TECNOLÓGICO"
+                ]
+                if any(keyword in name.upper() for keyword in institution_keywords):
+                    errors.append(
+                        {
+                            "type": "InstitutionOrOrganization",
+                            "chunk_id": chunk_id,
+                            "message": f"Institución u organización, no investigador: '{name}'",
+                        }
+                    )
+                    continue
+                
+                # Validar que no sea técnica/método
+                if len(name) > 30 or ("DE " in name.upper() and name.count(" ") > 5):
+                    # Frases largas o con muchas preposiciones son títulos/técnicas
+                    errors.append(
+                        {
+                            "type": "TechniqueOrSection",
+                            "chunk_id": chunk_id,
+                            "message": f"Título de sección o técnica, no investigador: '{name[:60]}...'",
+                        }
+                    )
+                    continue
+                
+                # Validar que no sea dato/estadística
+                if re.search(r'\d+\s*%|^[A-Z]\.\s*\d+', name):
+                    errors.append(
+                        {
+                            "type": "DataOrStatistic",
+                            "chunk_id": chunk_id,
+                            "message": f"Dato estadístico, no investigador: '{name}'",
+                        }
+                    )
+                    continue
+                
+                # Validar que no sea mes/fecha
+                months = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", 
+                         "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"}
+                if name.upper() in months:
+                    errors.append(
+                        {
+                            "type": "MonthOrDate",
+                            "chunk_id": chunk_id,
+                            "message": f"Mes/fecha, no investigador: '{name}'",
+                        }
+                    )
+                    continue
 
+                # VALIDACIÓN: Verificar que evidencia y nombre estén en el chunk
+                if evidence and f"Mencionado en" not in evidence and chunk_text:
+                    # Normalizar texto: minúsculas y limpiar caracteres de control
+                    chunk_normalized = re.sub(r'[\t\r\n]+', ' ', chunk_text.lower())
+                    chunk_normalized = re.sub(r'\s+', ' ', chunk_normalized)
+                    
+                    evidence_normalized = re.sub(r'[\t\r\n]+', ' ', evidence.lower())
+                    evidence_normalized = re.sub(r'\s+', ' ', evidence_normalized)
+                    
+                    name_normalized = name.lower()
+                    
+                    # 1. Verificar que la evidencia esté en el chunk
+                    evidence_words = [
+                        w for w in re.findall(r'\b\w+\b', evidence_normalized) 
+                        if len(w) > 3 and not w.isdigit()
+                    ]
+                    
+                    if len(evidence_words) >= 3:
+                        words_in_chunk = sum(1 for w in evidence_words if w in chunk_normalized)
+                        match_ratio = words_in_chunk / len(evidence_words)
+                        
+                        if match_ratio < 0.7:
+                            errors.append(
+                                {
+                                    "type": "EvidenceNotInChunk",
+                                    "chunk_id": chunk_id,
+                                    "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
+                                }
+                            )
+                            continue
+                    
+                    # 2. Verificar que el nombre esté en el chunk
+                    name_parts = [p.strip() for p in name_normalized.split() if len(p.strip()) > 2]
+                    
+                    if name_parts and not any(part in chunk_normalized for part in name_parts):
+                        errors.append(
+                            {
+                                "type": "NameNotInChunk",
+                                "chunk_id": chunk_id,
+                                "message": f"El nombre '{name}' no aparece en el chunk",
+                            }
+                        )
+                        continue
+
+                # Si llegamos hasta acá, pasó todas las validaciones
                 if name and not any(pattern in name.lower() for pattern in invalid_patterns):
                     researchers.append(
                         ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id)
@@ -674,7 +802,7 @@ Remember: Always use <JSON> tags around your response."""
 
         return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
 
-    def _parse_topic_response(self, response: str, chunk_id: str) -> LLMExtractionResult:
+    def _parse_topic_response(self, response: str, chunk_id: str, chunk_text: str = "") -> LLMExtractionResult:
         """Parsear respuesta del LLM para tópicos."""
         errors = []
         topics = []
@@ -772,6 +900,36 @@ Remember: Always use <JSON> tags around your response."""
                                 }
                             )
                             continue
+
+                    # VALIDACIÓN: La evidencia debe estar en el chunk original
+                    if chunk_text and evidence and f"Mencionado en" not in evidence and len(evidence) > 15:
+                        # Normalizar texto: minúsculas y limpiar caracteres de control
+                        chunk_normalized = re.sub(r'[\t\r\n]+', ' ', chunk_text.lower())
+                        chunk_normalized = re.sub(r'\s+', ' ', chunk_normalized)
+                        
+                        evidence_normalized = re.sub(r'[\t\r\n]+', ' ', evidence.lower())
+                        evidence_normalized = re.sub(r'\s+', ' ', evidence_normalized)
+                        
+                        # Extraer palabras significativas de la evidencia
+                        evidence_words = [
+                            w for w in re.findall(r'\b\w+\b', evidence_normalized) 
+                            if len(w) > 3 and not w.isdigit()
+                        ]
+                        
+                        # Verificar que al menos el 70% de palabras estén en el chunk
+                        if evidence_words:
+                            words_in_chunk = sum(1 for w in evidence_words if w in chunk_normalized)
+                            match_ratio = words_in_chunk / len(evidence_words)
+                            
+                            if match_ratio < 0.7:
+                                errors.append(
+                                    {
+                                        "type": "EvidenceNotInChunk",
+                                        "chunk_id": chunk_id,
+                                        "message": f"La evidencia del tópico '{topic}': '{evidence[:80]}...' tiene solo {match_ratio:.0%} de palabras en el chunk",
+                                    }
+                                )
+                                continue
 
                     topics.append(TopicMention(topic=topic, evidence=evidence, chunk_id=chunk_id))
 

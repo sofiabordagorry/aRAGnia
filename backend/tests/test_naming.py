@@ -31,14 +31,14 @@ class TestNamingConvention(unittest.TestCase):
         path = r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2014_informes_vs_propuestas\Resultado llamado_Informe CSIC_gruposI+D_2014.pdf"
         self.assertEqual(
             generate_new_filename(path),
-            "admin_2014_Resultado llamado_Informe CSIC_gruposI+D_2014.pdf",
+            "proy_2014_Resultado llamado_Informe CSIC_gruposI+D_2014.pdf",
         )
 
     def test_admin_closest_year(self):
         # Checks that 2018 is picked over 2020
         path = r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\planilla financiados_proyectosI+D.pdf"
         self.assertEqual(
-            generate_new_filename(path), "admin_2018_planilla financiados_proyectosI+D.pdf"
+            generate_new_filename(path), "proy_2018_planilla financiados_proyectosI+D.pdf"
         )
 
 

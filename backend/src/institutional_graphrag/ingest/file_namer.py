@@ -43,13 +43,8 @@ def generate_new_filename(path_str):
             if type_suffix != "":
                 potential_id = folders[i - 1].strip()
                 match = re.match(r"(\d+)", potential_id)
-                # Si la carpeta padre es la raíz de proyectos/grupos, es un archivo admin
-                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id:
-                    return f"admin_{year}_{filename}"
-                # Si no hay número válido, es admin
-                if match is None:
-                    return f"admin_{year}_{filename}"
-                # Si hay número válido, es un proyecto/grupo específico
+                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id or match is None:
+                    return f"{prefix}_{year}_{filename}"
                 potential_id = match.group(1)
                 if potential_id.isdigit():
                     file_id = potential_id

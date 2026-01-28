@@ -11,8 +11,6 @@ from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResu
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
 from postprocess_entities import (
-    normalize_name,
-    is_partial_name,
     consolidate_researchers,
     add_missing_evidence_text
 )
