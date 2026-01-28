@@ -1013,6 +1013,11 @@ class EntityExtractor:
                 if max_docs is not None and docs_processed >= max_docs:
                     logger.info(f"[LLM Researchers] Límite de {max_docs} documentos alcanzado")
                     return
+                
+                # Skipear documentos de tabla
+                if doc_id.endswith("_table"):
+                    continue
+                
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
@@ -1123,6 +1128,10 @@ class EntityExtractor:
                 if max_docs is not None and docs_processed >= max_docs:
                     logger.info(f"[LLM Topics] Límite de {max_docs} documentos alcanzado")
                     return
+                
+                # Skipear documentos de tabla
+                if doc_id.endswith("_table"):
+                    continue
 
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
