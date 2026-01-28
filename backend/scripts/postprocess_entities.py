@@ -5,11 +5,21 @@ from collections import defaultdict
 from typing import Dict, List, Set
 import re
 from difflib import SequenceMatcher
+import unicodedata
 
 
 def normalize_name(name: str) -> str:
-    """Normalizar nombre a mayúsculas y limpiar espacios."""
-    normalized = re.sub(r'\s+', ' ', name.strip().upper())
+    """Normalizar nombre a mayúsculas, eliminar tildes y limpiar espacios."""
+    normalized = name.strip().upper()
+    
+    # Eliminar tildes/acentos usando unicodedata
+    normalized = "".join(
+        c for c in unicodedata.normalize("NFD", normalized) 
+        if unicodedata.category(c) != "Mn"
+    )
+    
+    # Limpiar espacios múltiples
+    normalized = re.sub(r'\s+', ' ', normalized)
     
     # Eliminar títulos académicos/profesionales
     titles = [
@@ -55,6 +65,35 @@ def is_garbage_researcher(name: str) -> bool:
 def name_similarity(name1: str, name2: str) -> float:
     """Calcular similitud entre dos nombres (0-1)."""
     return SequenceMatcher(None, name1, name2).ratio()
+
+
+def is_inverted_name(name1: str, name2: str) -> bool:
+    """Detectar si dos nombres son iguales pero con orden invertido.
+    
+    Ejemplos:
+    - "ABRAHAM BENECH" vs "BENECH, ABRAHAM"
+    - "MARIA GARCIA" vs "GARCIA, MARIA"
+    """
+    n1 = normalize_name(name1)
+    n2 = normalize_name(name2)
+    
+    # Remover comas y limpiar
+    n1_clean = n1.replace(',', ' ')
+    n2_clean = n2.replace(',', ' ')
+    
+    # Separar en tokens
+    tokens1 = n1_clean.split()
+    tokens2 = n2_clean.split()
+    
+    # Deben tener los mismos tokens (mismo conjunto)
+    if set(tokens1) != set(tokens2):
+        return False
+    
+    # Si tienen los mismos tokens pero diferente orden, es invertido
+    if len(tokens1) == len(tokens2) and tokens1 != tokens2:
+        return True
+    
+    return False
 
 
 def is_partial_name(name1: str, name2: str) -> bool:
@@ -123,6 +162,9 @@ def find_researcher_duplicates(researchers: List[dict], similarity_threshold: fl
             
             if norm1 == norm2:
                 # Duplicado exacto
+                duplicates.append(other_id)
+                processed.add(other_id)
+            elif is_inverted_name(researcher_name, other_name):
                 duplicates.append(other_id)
                 processed.add(other_id)
             elif name_similarity(norm1, norm2) >= similarity_threshold:
