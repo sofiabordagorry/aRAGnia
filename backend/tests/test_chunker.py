@@ -2,12 +2,12 @@
 Tests para el módulo de chunking basado en secciones.
 """
 
-import pytest
 import json
-
 from pathlib import Path
 
+import pytest
 from docling_core.types.doc import DoclingDocument
+
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 
 # Definir la ruta a los datos procesados por Docling
@@ -22,12 +22,12 @@ class TestNativeDoclingChunker:
         """Extrae un documento real de data/docling para los tests."""
         docling_dir = DATA_DIR / "docling"
 
-        # Buscar archivos JSON en el directorio de docling
-        json_files = sorted(list(docling_dir.glob("*.json")))
+        # Buscar archivos JSON que no sean dummy.json (que está vacío)
+        json_files = sorted([f for f in docling_dir.glob("*.json") if f.stem != "dummy"])
 
         if not json_files:
             pytest.skip(
-                f"No se encontraron archivos JSON en {docling_dir}. Ejecuta el parsing primero."
+                f"No se encontraron archivos JSON con contenido en {docling_dir}. Ejecuta el parsing primero."
             )
 
         # Tomar el primer documento disponible para el test

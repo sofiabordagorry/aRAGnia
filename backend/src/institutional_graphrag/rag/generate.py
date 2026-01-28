@@ -298,7 +298,7 @@ def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
     if provider == "groq":
         client: LLMClient = GroqClient(model=model or "llama-3.1-8b-instant")
     elif provider == "ollama":
-        client = OllamaClient(model or "llama3.2:3b")
+        client = OllamaClient(model or "qwen2.5:3b-instruct")
     else:  # provider == "local"
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
