@@ -1,8 +1,4 @@
-import os
 import re
-
-os.environ["JAVA_HOME"] = r"C:\Users\Matias Marin\Desktop\jdk-21.0.7"
-os.environ["PATH"] += os.pathsep + os.path.join(os.environ["JAVA_HOME"], "bin")
 
 
 def extract_relevant_year(path):
