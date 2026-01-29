@@ -13,7 +13,7 @@ def extract_relevant_year(path):
     for i, folder in enumerate(reversed(folders)):
         if numeric_folder_pattern.match("/" + folder + "/"):
             i_original = len(folders) - 1 - i
-            for j in range(i_original, -1, -1):
+            for j in range(i_original - 1, -1, -1):
                 years = year_pattern.findall(folders[j])
                 if len(years) == 1:
                     return years[0]
