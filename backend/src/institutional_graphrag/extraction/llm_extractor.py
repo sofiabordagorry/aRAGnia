@@ -716,6 +716,7 @@ If no match:
                     "PROGRAMA",
                     "POLO TECNOLÓGICO",
                     "ESTUDIANTE",
+                    "GRUPO I+D"
                 ]
                 if any(keyword in name.upper() for keyword in institution_keywords):
                     errors.append(
