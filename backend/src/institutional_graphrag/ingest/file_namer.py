@@ -1,5 +1,38 @@
 import re
+import os 
+os.environ["JAVA_HOME"] = r"C:\Users\Matias Marin\Desktop\jdk-21.0.7"
+os.environ["PATH"] += os.pathsep + os.path.join(os.environ["JAVA_HOME"], "bin")
 
+def extract_relevant_year(path):
+    path = path.replace("\\", "/")
+    
+    folders = path.split("/")[:-1]  
+    
+    year_pattern = re.compile(r"20\d{2}")
+    
+    numeric_folder_pattern = re.compile(r"/\d+/")
+    
+    for i, folder in enumerate(reversed(folders)):
+        if numeric_folder_pattern.match("/" + folder + "/"):
+            i_original = len(folders) - 1 - i
+            for j in range(i_original, -1, -1):  
+                years = year_pattern.findall(folders[j])
+                if len(years) == 1:
+                    return years[0]
+            break
+
+    year = None
+    alternative_year = "unknown"
+    for folder in reversed(folders):
+        years_in_folder = year_pattern.findall(folder)
+        if len(years_in_folder) == 1:
+            pos_year = folder.find(years_in_folder[0])
+            pos_informe = folder.lower().find("informe")
+            if pos_informe > pos_year:  
+                year = years_in_folder[0]
+                break
+            alternative_year = years_in_folder[0]
+    return year if year else alternative_year
 
 def generate_new_filename(path_str):
     """
@@ -22,11 +55,8 @@ def generate_new_filename(path_str):
 
         # Identificar el año correspondiente
         year = "unknown"
-        for folder in reversed(folders):  # Iterate backwards from the folders
-            year_match = re.search(r"(?<!\d)(2010|2012|2014|2016|2018|2020)(?!\d)", folder)
-            if year_match and not folder.strip().isdigit():
-                year = year_match.group(0)
-                break
+        
+        year = extract_relevant_year(path_str)
 
         # Itera del final del path al comienzo para buscar la ID y si es informe o propuesta
         type_suffix = ""
