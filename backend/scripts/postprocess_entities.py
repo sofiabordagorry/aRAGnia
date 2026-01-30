@@ -99,29 +99,56 @@ def is_inverted_name(name1: str, name2: str) -> bool:
 def is_partial_name(name1: str, name2: str) -> bool:
     """Verificar si name1 es una versión parcial de name2.
     
-    Ejemplos:
-    - "SERRA" es parcial de "GLORIA SERRA" 
-    - "MAHLER" es parcial de "GRACIELA MAHLER"
+    Ejemplos VÁLIDOS:
+    - "GARCIA" es parcial de "RODRIGO GARCIA" (apellido solo)
+    - "MARIA" es parcial de "ANA MARIA FERREIRA" (nombre corto)
+    - "GLORIA SERRA" es parcial de "GLORIA LOURDES SERRA LEMES" (mismo primer nombre)
+    - "G. SERRA" es parcial de "GLORIA SERRA" (inicial coincide)
+    
+    Ejemplos NO VÁLIDOS:
+    - "MARIANA SILVA" NO es parcial de "LUCAS SILVA" (diferentes primeros nombres)
+    - "VALERIA SILVA" NO es parcial de "BEATRIZ ALVAREZ" (diferentes personas)
     """
     # Normalizar ambos (eliminar títulos)
     n1_normalized = normalize_name(name1)
     n2_normalized = normalize_name(name2)
     
-    n1_parts = set(n1_normalized.split())
-    n2_parts = set(n2_normalized.split())
+    n1_parts = n1_normalized.split()
+    n2_parts = n2_normalized.split()
     
-    # Si name1 es subconjunto de name2, es parcial
-    if n1_parts.issubset(n2_parts) and len(n1_parts) < len(n2_parts):
-        return True
-    
-    # También verificar si comparten apellido (última palabra)
-    if n1_normalized.split() and n2_normalized.split():
-        last1 = n1_normalized.split()[-1]
-        last2 = n2_normalized.split()[-1]
-        
-        # Si el apellido es igual y uno es más corto, es parcial
-        if last1 == last2 and len(n1_parts) < len(n2_parts):
+    # CASO 1: Nombre/apellido único (una sola palabra)
+    # Permite: "GARCIA" -> "RODRIGO GARCIA", "MARIA" -> "ANA MARIA"
+    if len(n1_parts) == 1:
+        # Verificar que la palabra está en name2
+        if n1_normalized in n2_parts:
             return True
+        return False
+    
+    # CASO 2: Múltiples palabras - DEBE coincidir el primer token
+    # Esto previene consolidar personas diferentes
+    # Permite: "GLORIA SERRA" -> "GLORIA LOURDES SERRA LEMES"
+    # Evita: "MARIANA SILVA" -> "LUCAS SILVA"
+    if n1_parts[0] == n2_parts[0]:  # Mismo primer nombre/inicial
+        n1_set = set(n1_parts)
+        n2_set = set(n2_parts)
+        
+        # name1 debe ser subconjunto estricto de name2
+        if n1_set.issubset(n2_set) and len(n1_parts) < len(n2_parts):
+            return True
+    
+    # CASO 3: Iniciales con punto
+    # Permite: "G. SERRA" -> "GLORIA SERRA"
+    if '.' in n1_normalized and len(n1_parts) >= 2:
+        # Extraer inicial
+        initial = n1_parts[0].replace('.', '')
+        if len(initial) == 1 and len(n2_parts) >= len(n1_parts):
+            # La inicial debe coincidir con el primer nombre de n2
+            if n2_parts[0].startswith(initial):
+                # Verificar que el resto coincide
+                n1_rest = set(n1_parts[1:])
+                n2_rest = set(n2_parts[1:])
+                if n1_rest.issubset(n2_rest):
+                    return True
     
     return False
 
@@ -169,12 +196,16 @@ def find_researcher_duplicates(researchers: List[dict], similarity_threshold: fl
                 processed.add(other_id)
             elif name_similarity(norm1, norm2) >= similarity_threshold:
                 # Variante fuzzy (similar)
-                tokens1 = set(norm1.split())
-                tokens2 = set(norm2.split())
-                common = tokens1 & tokens2
+                tokens1 = norm1.split()
+                tokens2 = norm2.split()
+                tokens1_set = set(tokens1)
+                tokens2_set = set(tokens2)
+                common = tokens1_set & tokens2_set
                 
-                # Debe compartir al menos 2 tokens
-                if len(common) >= 2:
+                # Restricciones más estrictas para evitar falsos positivos:
+                # 1. Debe compartir al menos 2 tokens
+                # 2. El primer token (nombre/inicial) debe coincidir
+                if len(common) >= 2 and tokens1[0] == tokens2[0]:
                     duplicates.append(other_id)
                     processed.add(other_id)
             elif is_partial_name(other_name, researcher_name):
