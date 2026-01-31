@@ -531,7 +531,7 @@ class EntityExtractor:
             return (grado, tipo)
 
         return min(candidatos, key=_score)
-
+    
     def extract_responsible(self) -> None:
         datasets = self._associate_tables_with_documents()
         if not datasets:
@@ -631,10 +631,11 @@ class EntityExtractor:
                                     for r in self.res.relationships
                                     if r.source_id != table_chunk_id and r.target_id != inv_id
                                 ]
-
-                    self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
-                    self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                    self.res.relationships.append(
+                    candidate_id = self.make_candidate_id(candidate_in_text)
+                    if(candidate_id):
+                        self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
+                        self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
+                        self.res.relationships.append(
                         EVIDENCIA_DE(
                             table_chunk_id,
                             candidate_id,
@@ -643,8 +644,25 @@ class EntityExtractor:
                             },
                         )
                     )
-                    inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
+                        inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
 
+
+    def make_candidate_id(self, name: str) -> str:
+        # 1) pasar a minúsculas
+        s = name.lower()
+
+        # 2) quitar acentos
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+
+        # 3) reemplazar cualquier cosa que no sea letra o número por _
+        s = re.sub(r"[^a-z0-9]+", "_", s)
+
+        # 4) limpiar _ al inicio/final
+        s = s.strip("_")
+
+        return s
+    
     def _build_indexes(self):
         inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
         for r in self.res.relationships:
