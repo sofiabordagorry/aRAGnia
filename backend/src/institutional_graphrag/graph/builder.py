@@ -1,26 +1,26 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, List, Optional, Tuple
-from neo4j import GraphDatabase
 import json
-from pathlib import Path
 import logging
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Tuple
 
+from neo4j import GraphDatabase
 
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 from institutional_graphrag.graph.schema import (
     Entity,
-    Relationship,
     GraphSchema,
+    Relationship,
     validate_relationship_endpoints,
 )
-
 
 # ============================================================
 # Neo4j backend
 # ============================================================
+
 
 class Neo4jGraphBuilder:
     """
@@ -119,8 +119,7 @@ class Neo4jGraphBuilder:
             # Regla A: no permitir relaciones de un nodo consigo mismo
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s",
-                    rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
                 )
                 continue
 
@@ -128,8 +127,7 @@ class Neo4jGraphBuilder:
             key = (rel.type, src.id, tgt.id)
             if key in seen:
                 logger.warning(
-                    "Relación repetida (se omite): %s %s -> %s",
-                    rel.type, src.id, tgt.id
+                    "Relación repetida (se omite): %s %s -> %s", rel.type, src.id, tgt.id
                 )
                 continue
 
@@ -137,7 +135,9 @@ class Neo4jGraphBuilder:
             if not validate_relationship_endpoints(rel, src, tgt):
                 logger.error(
                     "Relación inválida por schema (se omite): %s (%s -> %s)",
-                    rel.type, src.label, tgt.label
+                    rel.type,
+                    src.label,
+                    tgt.label,
                 )
                 continue
 
@@ -150,11 +150,13 @@ class Neo4jGraphBuilder:
 
             for rel, src, tgt in batch:
                 key = (rel.type, src.label, tgt.label)
-                groups.setdefault(key, []).append({
-                    "source_id": src.id,
-                    "target_id": tgt.id,
-                    "properties": rel.properties or {},
-                })
+                groups.setdefault(key, []).append(
+                    {
+                        "source_id": src.id,
+                        "target_id": tgt.id,
+                        "properties": rel.properties or {},
+                    }
+                )
 
             with self.driver.session() as session:
                 for (rel_type, src_label, tgt_label), rows in groups.items():
@@ -166,7 +168,7 @@ class Neo4jGraphBuilder:
                     SET r += row.properties
                     """
                     session.run(query, rows=rows)
-    
+
     def clear_graph(self):
         """
         Borra **todos los nodos y relaciones** del grafo.
@@ -176,12 +178,20 @@ class Neo4jGraphBuilder:
         with self.driver.session() as session:
             session.run(query)
         print("Grafo borrado completamente.")
+
+
 # ============================================================
 # Fachada unificada
 # ============================================================
 
+
 class GraphBuilder:
-    def __init__(self, neo4j_uri: Optional[str] = None, neo4j_user: Optional[str] = None, neo4j_password: Optional[str] = None):
+    def __init__(
+        self,
+        neo4j_uri: Optional[str] = None,
+        neo4j_user: Optional[str] = None,
+        neo4j_password: Optional[str] = None,
+    ):
         if not all([neo4j_uri, neo4j_user, neo4j_password]):
             raise ValueError("Faltan credenciales de Neo4j (uri/user/password)")
 
@@ -204,6 +214,7 @@ class GraphBuilder:
 # ============================================================
 # Funciones auxiliares
 # ============================================================
+
 
 def load_graph_json(
     json_path: str | Path,
@@ -233,12 +244,15 @@ def load_graph_json(
             if prev.label != entity_label:
                 logger.error(
                     "ID duplicado con distinto label: id=%s (keep=%s, drop=%s)",
-                    entity_id, prev.label, entity_label
+                    entity_id,
+                    prev.label,
+                    entity_label,
                 )
             else:
                 logger.warning(
                     "Entidad duplicada: id=%s label=%s (se ignora la repetida)",
-                    entity_id, entity_label
+                    entity_id,
+                    entity_label,
                 )
             continue
 
@@ -250,10 +264,9 @@ def load_graph_json(
     if dup_diff:
         logger.error(
             "Se detectaron %d IDs con múltiples labels. Se guardó solo 1 entidad por id.",
-            len(dup_diff)
+            len(dup_diff),
         )
 
-    
     inv_remap = build_containment_remap(entities_by_id)
 
     if inv_remap:
@@ -265,10 +278,8 @@ def load_graph_json(
                 del entities_by_id[drop_id]
 
         logger.warning(
-            "Investigador containment: eliminados=%d (se redirigen relaciones)",
-            len(inv_remap)
+            "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
         )
-
 
     # Relationships (igual que antes)
     relationships: list[Tuple[Relationship, Entity, Entity]] = []
@@ -299,10 +310,7 @@ def load_graph_json(
 
 def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]:
 
-    inv_ids = [
-        eid for eid, e in entities_by_id.items()
-        if e.label == "Investigador"
-    ]
+    inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
 
     # Ordenamos por largo DESC: primero los más largos (candidatos a quedar)
     inv_ids_sorted = sorted(inv_ids, key=len, reverse=True)
@@ -316,12 +324,9 @@ def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]
         if container:
             remap[cand] = container
             logger.warning(
-                "Investigador id contenido (se elimina): drop=%s keep=%s",
-                cand, container
+                "Investigador id contenido (se elimina): drop=%s keep=%s", cand, container
             )
         else:
             kept.append(cand)
-    
+
     return remap
-
-

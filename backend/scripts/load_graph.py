@@ -1,5 +1,5 @@
-from institutional_graphrag.graph.graph import load_graph_json
-from institutional_graphrag.graph.graph import GraphBuilder
+from institutional_graphrag.graph.builder import load_graph_json
+from institutional_graphrag.graph.builder import GraphBuilder
 from pathlib import Path
 import os
 from dotenv import load_dotenv
