@@ -130,7 +130,6 @@ def main():
         if chunk_index >= 0 and chunk_index < len(chunks):
             chunk = chunks[chunk_index]
             print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
-            print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
         else:
             print(f"     Texto: (no encontrado)")
 
