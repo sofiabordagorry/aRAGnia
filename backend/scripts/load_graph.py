@@ -20,7 +20,6 @@ def main():
         os.getenv("NEO4J_USER"),
         os.getenv("NEO4J_PASSWORD"),
     )
-    grafo.backend.clear_graph()
     grafo.ingest(entities=entities, relationships=relationships)
 
 

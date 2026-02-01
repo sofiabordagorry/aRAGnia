@@ -10,6 +10,8 @@ import numpy as np
 
 from institutional_graphrag.retrieval.vector_store import VectorStore
 
+from institutional_graphrag.retrieval.vector_store import VectorStore
+
 EMBEDDINGS_DIR = Path(__file__).resolve().parents[4] / "data" / "embeddings"
 
 

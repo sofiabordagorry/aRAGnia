@@ -3,10 +3,9 @@
 __version__ = "0.2.0"
 
 from .config import EMBED_MODEL_ID
-
 from .ingest.chunker import (
-    get_native_chunker,
     chunk_document,
+    get_native_chunker,
 )
 from .ingest.docling_parser import parse_corpus, parse_single_document
 
