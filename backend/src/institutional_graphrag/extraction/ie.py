@@ -637,9 +637,7 @@ class EntityExtractor:
                                 ]
                     candidate_id = self.make_candidate_id(candidate_in_text)
                     if candidate_id:
-                        self.res.entities.append(
-                            Investigador(id=candidate_id, value=candidate_in_text)
-                        )
+                        self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
                         self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
                         self.res.relationships.append(
                             EVIDENCIA_DE(
