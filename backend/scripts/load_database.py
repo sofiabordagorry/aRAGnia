@@ -7,7 +7,6 @@ from institutional_graphrag.ingest.persist_embeddings import persist_all_embeddi
 
 def main():
     store = VectorStore(collection_name="demo_collection", embedding_dim=1024)  # E5-large-v2
-    store.clear_collection()
     persist_all_embeddings_and_metadata(store)
 
 

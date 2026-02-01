@@ -164,6 +164,41 @@ class VectorStore:
         result = self.client.count(collection_name=self.collection_name, exact=True)
         return int(result.count)
 
+    def existing_payload_values(self, key: str, values: List[str]) -> set[str]:
+        """
+        Devuelve el subset de `values` que ya existe en la colección,
+        buscando por payload field `key` (ej: key="semantic_id").
+        """
+        if not values:
+            return set()
+
+        existing: set[str] = set()
+        chunk_size = 512
+
+        for i in range(0, len(values), chunk_size):
+            chunk = values[i : i + chunk_size]
+
+            qfilter = Filter(
+                must=[FieldCondition(key=key, match=MatchAny(any=chunk))]
+            )
+
+            # scroll devuelve puntos que matchean el filtro
+            points, _next = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=qfilter,
+                with_payload=True,
+                with_vectors=False,
+                limit=len(chunk),
+            )
+
+            for p in points:
+                payload = dict(p.payload or {})
+                v = payload.get(key)
+                if isinstance(v, str):
+                    existing.add(v)
+
+        return existing
+
     def clear_collection(self) -> None:
         """Elimina todos los documentos de la colección."""
         self.client.delete_collection(collection_name=self.collection_name)
@@ -172,3 +207,5 @@ class VectorStore:
     def close(self) -> None:
         """Cierra la conexión con Qdrant."""
         self.client.close()
+
+    
