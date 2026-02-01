@@ -189,9 +189,9 @@ class Neo4jGraphBuilder:
 class GraphBuilder:
     def __init__(
         self,
-        neo4j_uri: Optional[str] = None,
-        neo4j_user: Optional[str] = None,
-        neo4j_password: Optional[str] = None,
+        neo4j_uri: str,
+        neo4j_user: str,
+        neo4j_password: str,
     ):
         if not all([neo4j_uri, neo4j_user, neo4j_password]):
             raise ValueError("Faltan credenciales de Neo4j (uri/user/password)")
