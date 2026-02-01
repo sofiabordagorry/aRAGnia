@@ -10,11 +10,14 @@ Script de demostración del flujo completo:
 import json
 from pathlib import Path
 from docling_core.types.doc import DoclingDocument
+from docling_core.types.doc import DoclingDocument
 import uuid
 
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
+from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
+from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.config import EMBED_MODEL_ID
 
 
@@ -33,6 +36,7 @@ def main():
     json_path = json_files[1]
     print(f"Usando JSON: {json_path.name}")
 
+    # 2. Generar chunks
     # 2. Generar chunks
     print(f"\nGenerando chunks...")
 
@@ -56,6 +60,9 @@ def main():
     # Mostrar ejemplo
     if chunks:
         print(f"\nEjemplo de chunk:")
+        print(f"  ID: {chunks[0]['chunk_id']}")
+        print(f"  Texto (primeros 100 chars): {chunks[0]['text'][:100]}...")
+        print(f"  Metadata: {chunks[0]['metadata']}")
         print(f"  ID: {chunks[0]['chunk_id']}")
         print(f"  Texto (primeros 100 chars): {chunks[0]['text'][:100]}...")
         print(f"  Metadata: {chunks[0]['metadata']}")
@@ -91,6 +98,7 @@ def main():
         metadata_list.append(meta)
 
     # 5. Crear vector store y agregar chunks
+    # 5. Crear vector store y agregar chunks
     print(f"\nAlmacenando en Qdrant...")
     store = VectorStore(collection_name="demo_collection", embedding_dim=1024)  # E5-large-v2
 
@@ -106,6 +114,7 @@ def main():
     count = store.count_documents()
     print(f"Chunks en colección: {count}")
 
+    # 6. Buscar chunks similares
     # 6. Buscar chunks similares
     print(f"\nProbando búsqueda...")
     query = "¿Cuáles son los objetivos del proyecto?"
@@ -130,9 +139,11 @@ def main():
         if chunk_index >= 0 and chunk_index < len(chunks):
             chunk = chunks[chunk_index]
             print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
+            print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
         else:
             print(f"     Texto: (no encontrado)")
 
+    # 7. Buscar con filtros
     # 7. Buscar con filtros
     if metadata_list and metadata_list[0]:
         print(f"\n Probando búsqueda con filtros...")
@@ -146,6 +157,7 @@ def main():
         print(f"  Filtro: {filter_key} = {filter_value}")
         print(f"  Resultados: {len(results_filtered)}")
 
+    # 8. Cerrar conexión
     # 8. Cerrar conexión
     store.close()
     print(f"\n Demo completada!")

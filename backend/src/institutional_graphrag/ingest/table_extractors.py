@@ -251,6 +251,7 @@ def convert_table_to_chunks() -> None:
 
     parquet_files = sorted(folder.rglob("*.parquet"))
     out_chunks: list[dict[str, Any]] = []
+    seen_chunk_ids: set[str] = set()
 
     for pq_path in parquet_files:
         out_chunks.clear()
@@ -273,7 +274,9 @@ def convert_table_to_chunks() -> None:
             first_value = row_series.get(first_col)
             first_value_str = _normalize_ws("" if pd.isna(first_value) else str(first_value))
             chunk_id = f"{parent_doc}_table_{first_value_str}"
-
+            if chunk_id in seen_chunk_ids:
+                continue
+            seen_chunk_ids.add(chunk_id)
             out_chunks.append(
                 {
                     "chunk_id": chunk_id,

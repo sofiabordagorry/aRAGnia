@@ -59,6 +59,8 @@ PATTERN_DOCUMENT = re.compile(
 
 PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
 
+ALLOWED_SUFFIXES = {".parquet", ".pdf"}
+
 
 @dataclass
 class ExtractionResult:
@@ -112,6 +114,8 @@ class EntityExtractor:
             self.docs_by_group_year[key].append(d)
 
     def extract_documents(self) -> None:
+        seen_entities: set[tuple[str, str]] = set()
+
         def ensure_dir(d: Path) -> bool:
             if d.exists():
                 return True
@@ -120,25 +124,49 @@ class EntityExtractor:
             )
             return False
 
-        def add_docs_from_dir(d: Path, pattern, value_builder) -> None:
+        def add_entity_if_new(entity: Entity) -> None:
+            key = (entity.label, entity.id)
+            if key in seen_entities:
+                return
+            seen_entities.add(key)
+            self.res.entities.append(entity)
+
+        def add_docs_from_dir(
+            d: Path, pattern, value_builder, create_year_entity: bool = False
+        ) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                base_name = path.stem
-                m = pattern.match(base_name)
-                if not m:
+                if path.suffix.lower() in ALLOWED_SUFFIXES:
+                    base_name = path.stem
+                    m = pattern.match(base_name)
+                    if not m:
+                        self.res.errors.append(
+                            {
+                                "type": "Document Invalid",
+                                "message": f"El formato del documento es invalido: {base_name}",
+                            }
+                        )
+                        continue
+
+                    self.res.entities.append(
+                        Documento(
+                            id=base_name,
+                            value=value_builder(base_name, m),
+                        )
+                    )
+                else:
                     self.res.errors.append(
                         {
                             "type": "Document Invalid",
-                            "message": f"El formato del documento es invalido: {base_name}",
+                            "message": f"La extension del documento es invalido: {path.name}",
                         }
                     )
-                    continue
-
-                self.res.entities.append(
-                    Documento(
-                        id=base_name,
-                        value=value_builder(base_name, m),
+                if create_year_entity:
+                    year = m.group("year")
+                    anio = Anio(
+                        id=year,
+                        value={"year": year},
                     )
-                )
+                    add_entity_if_new(anio)
 
         if not ensure_dir(self.documents_dir) or not ensure_dir(self.table_dir):
             return
@@ -163,6 +191,7 @@ class EntityExtractor:
                 "is_group": m.group("group"),
                 "year_publisher": m.group("year"),
             },
+            create_year_entity=True,
         )
 
     def extract_chunks(self) -> None:
@@ -308,12 +337,6 @@ class EntityExtractor:
                         }
                     )
                 else:
-                    self.res.entities.append(
-                        Anio(
-                            id=year,
-                            value=year,
-                        )
-                    )
                     self.res.relationships.append(INICIO_EN(project_id, year))
                 self.res.relationships.append(
                     EVIDENCIA_DE(
@@ -382,7 +405,6 @@ class EntityExtractor:
             self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
 
             if year:
-                self.res.entities.append(Anio(id=best["year"], value=best["year"]))
                 self.res.relationships.append(INICIO_EN(project_id, best["year"]))
             else:
                 self.res.errors.append(
@@ -613,19 +635,38 @@ class EntityExtractor:
                                     for r in self.res.relationships
                                     if r.source_id != table_chunk_id and r.target_id != inv_id
                                 ]
-
-                    self.res.entities.append(Investigador(id=candidate_id, value=candidate_in_text))
-                    self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                    self.res.relationships.append(
-                        EVIDENCIA_DE(
-                            table_chunk_id,
-                            candidate_id,
-                            properties={
-                                "evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"
-                            },
+                    candidate_id = self.make_candidate_id(candidate_in_text)
+                    if candidate_id:
+                        self.res.entities.append(
+                            Investigador(id=candidate_id, value=candidate_in_text)
                         )
-                    )
-                    inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
+                        self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
+                        self.res.relationships.append(
+                            EVIDENCIA_DE(
+                                table_chunk_id,
+                                candidate_id,
+                                properties={
+                                    "evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"
+                                },
+                            )
+                        )
+                        inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
+
+    def make_candidate_id(self, name: str) -> str:
+        # 1) pasar a minúsculas
+        s = name.lower()
+
+        # 2) quitar acentos
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+
+        # 3) reemplazar cualquier cosa que no sea letra o número por _
+        s = re.sub(r"[^a-z0-9]+", "_", s)
+
+        # 4) limpiar _ al inicio/final
+        s = s.strip("_")
+
+        return s
 
     def _build_indexes(self):
         inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
