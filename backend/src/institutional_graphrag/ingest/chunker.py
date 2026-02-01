@@ -5,8 +5,8 @@ Implementa chunking por sección cuando es posible, con fallback por tamaño
 para prevenir chunks demasiado grandes que excedan límites de tokens.
 """
 
-from docling_core.types.doc import DoclingDocument
 from docling.chunking import HybridChunker
+from docling_core.types.doc import DoclingDocument
 
 # Se usa el mismo tokenizer que para realizar los embeddings
 from ..config import EMBED_MODEL_ID
