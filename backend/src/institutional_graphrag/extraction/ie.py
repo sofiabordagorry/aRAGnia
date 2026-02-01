@@ -5,14 +5,13 @@ import json
 import logging
 import re
 import unicodedata
-import uuid
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
-
+from institutional_graphrag.graph.builder import load_graph_json
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
@@ -61,7 +60,6 @@ PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECA
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
-
 @dataclass
 class ExtractionResult:
     entities: List[Entity]
@@ -90,16 +88,142 @@ class EntityExtractor:
         self.llm_provider = llm_provider
         self.llm_model = llm_model
 
-    def run(self, max_docs: int | None = None) -> ExtractionResult:
+        self._seen_entities: set[tuple[str, str]] = set()
+        self._seen_rels: set[tuple[str, str, str, str]] = set()
+        self._rel_index: dict[tuple[str, str, str], int] = {}
+
+    def run(
+        self,
+        max_docs: int | None = None,
+        *,
+        do_llm_researchers: bool = True,
+        do_llm_topics: bool = True,
+    ) -> ExtractionResult:
+        entities_json = DATA_DIR / "entities_relations" / "entity_documents.json" 
+        if entities_json.exists():
+            if not do_llm_researchers:
+                self.load_subset_from_graph_json(
+                    entities_json,
+                    label="Investigador",
+                    value_filter={"source": "llm"},
+                )
+            if not do_llm_topics:
+                self.load_subset_from_graph_json(
+                    entities_json,
+                    label="Topico"
+                )
+               
         self.extract_documents()
         self._build_doc_indexes()
         self.extract_chunks()
         self.extract_projects()
         self.extract_responsible()
-        self.extract_researchers_llm(max_docs=max_docs)
-        self.extract_topics_llm(max_docs=max_docs)
+
+        if do_llm_researchers:
+            self.extract_researchers_llm(max_docs=max_docs)
+        else:
+            logger.info("[RUN] Saltando extracción LLM de investigadores")
+        if do_llm_topics:
+            self.extract_topics_llm(max_docs=max_docs)
+        else:
+            logger.info("[RUN] Saltando extracción LLM de tópicos")
 
         return self.res
+
+    def load_subset_from_graph_json(
+        self,
+        json_path: str | Path,
+        *,
+        label: str,
+        value_filter: Optional[dict[str, Any]] = None,
+    ) -> None:
+        """
+        Carga al self un subgrafo del JSON:
+        - Entidades con `label` y (opcional) filtros exactos dentro de `value`
+        - Todas las relaciones donde aparezcan esas entidades (como source o target)
+
+        Ejemplos:
+        label="Investigador", value_filter={"source": "llm"}
+        label="Topico"  (sin value_filter)
+        """
+        json_path = Path(json_path).resolve()
+        if not json_path.is_file():
+            self.res.errors.append({"type": "MissingFile", "message": f"No existe el archivo: {json_path}"})
+            return
+
+        with json_path.open(encoding="utf-8") as f:
+            payload = json.load(f)
+
+        entities_raw = payload.get("entities", [])
+        rels_raw = payload.get("relationships", [])
+        errors_raw = payload.get("errors", [])
+
+        if isinstance(errors_raw, list):
+            self.res.errors.extend([e for e in errors_raw if isinstance(e, dict)])
+
+        if not isinstance(entities_raw, list) or not isinstance(rels_raw, list):
+            self.res.errors.append({"type": "InvalidJson", "message": "Formato inválido: entities/relationships no son listas"})
+            return
+
+        # ---- 1) Filtrar entidades target ----
+        matched_entities: list[Entity] = []
+        matched_ids: set[str] = set()
+
+        for raw in entities_raw:
+            if not isinstance(raw, dict):
+                continue
+            if raw.get("label") != label:
+                continue
+
+            v = raw.get("value")
+            if value_filter is not None:
+                if not isinstance(v, dict):
+                    continue
+                ok = all(v.get(k) == expected for k, expected in value_filter.items())
+                if not ok:
+                    continue
+
+            entity_id = raw.get("id")
+            if not isinstance(entity_id, str) or not entity_id:
+                continue
+
+            cls = GraphSchema.ENTITIES.get(label)
+            if cls is None:
+                self.res.errors.append({"type": "UnknownEntityType", "message": f"Label desconocido: {label}"})
+                return
+
+            try:
+                ent = cls(id=entity_id, value=v)
+            except Exception as exc:
+                self.res.errors.append({"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"})
+                continue
+
+            matched_entities.append(ent)
+            matched_ids.add(entity_id)
+
+        for e in matched_entities:
+            self.add_entity(e)
+
+
+        for raw in rels_raw:
+            if not isinstance(raw, dict):
+                continue
+            rel_type = raw.get("type")
+            source_id = raw.get("source_id")
+            target_id = raw.get("target_id")
+            props = raw.get("properties") or {}
+
+            if not isinstance(rel_type, str) or not isinstance(source_id, str) or not isinstance(target_id, str):
+                continue
+            if source_id not in matched_ids and target_id not in matched_ids:
+                continue
+            if not isinstance(props, dict):
+                props = {}
+
+            try:
+                self.add_relationship(Relationship(type=rel_type, source_id=source_id, target_id=target_id, properties=props))
+            except Exception as exc:
+                self.res.errors.append({"type": "InvalidRelationship", "message": f"{rel_type}({source_id}->{target_id}): {exc}"})
 
     def _build_doc_indexes(self) -> None:
         docs = [cast(Documento, e) for e in self.res.entities if e.label == "Documento"]
@@ -113,8 +237,36 @@ class EntityExtractor:
             key = (d.value["is_group"], d.value["year_publisher"])
             self.docs_by_group_year[key].append(d)
 
+    def add_entity(self, e: Entity) -> bool:
+        key = (e.label, str(e.id))
+
+        if key in self._seen_entities:
+            # reemplazar la entidad existente
+            for i, existing in enumerate(self.res.entities):
+                if existing.label == e.label and str(existing.id) == str(e.id):
+                    self.res.entities[i] = e
+                    return True
+
+            # fallback raro (no debería pasar)
+            return False
+
+        self._seen_entities.add(key)
+        self.res.entities.append(e)
+        return True
+
+    def add_relationship(self, r: Relationship) -> bool:
+        key = (r.type, str(r.source_id), str(r.target_id))
+
+        if key in self._rel_index:
+            idx = self._rel_index[key]
+            self.res.relationships[idx] = r
+            return True
+
+        self._rel_index[key] = len(self.res.relationships)
+        self.res.relationships.append(r)
+        return True
+    
     def extract_documents(self) -> None:
-        seen_entities: set[tuple[str, str]] = set()
 
         def ensure_dir(d: Path) -> bool:
             if d.exists():
@@ -123,13 +275,6 @@ class EntityExtractor:
                 {"type": "MissingFolder", "message": f"No existe la carpeta: {d}"}
             )
             return False
-
-        def add_entity_if_new(entity: Entity) -> None:
-            key = (entity.label, entity.id)
-            if key in seen_entities:
-                return
-            seen_entities.add(key)
-            self.res.entities.append(entity)
 
         def add_docs_from_dir(
             d: Path, pattern, value_builder, create_year_entity: bool = False
@@ -146,13 +291,7 @@ class EntityExtractor:
                             }
                         )
                         continue
-
-                    self.res.entities.append(
-                        Documento(
-                            id=base_name,
-                            value=value_builder(base_name, m),
-                        )
-                    )
+                    self.add_entity(Documento(id=base_name, value=value_builder(base_name, m)))
                 else:
                     self.res.errors.append(
                         {
@@ -166,7 +305,7 @@ class EntityExtractor:
                         id=year,
                         value={"year": year},
                     )
-                    add_entity_if_new(anio)
+                    self.add_entity(anio)
 
         if not ensure_dir(self.documents_dir) or not ensure_dir(self.table_dir):
             return
@@ -261,17 +400,17 @@ class EntityExtractor:
                     continue
 
                 if prev_chunk_id is None:
-                    self.res.relationships.append(PRIMER_CHUNK(doc.id, chunk_id))
+                    self.add_relationship(PRIMER_CHUNK(doc.id, chunk_id))
                 else:
-                    self.res.relationships.append(SIGUIENTE_CHUNK(prev_chunk_id, chunk_id))
+                    self.add_relationship(SIGUIENTE_CHUNK(prev_chunk_id, chunk_id))
 
                 prev_chunk_id = chunk_id
 
-                self.res.relationships.append(DE_DOCUMENTO(chunk_id, doc.id))
+                self.add_relationship(DE_DOCUMENTO(chunk_id, doc.id))
 
                 meta = c.get("metadata", {})
 
-                self.res.entities.append(Chunk(id=chunk_id, value=meta))
+                self.add_entity(Chunk(id=chunk_id, value=meta))
 
     def extract_projects(self) -> None:
         datasets = self._associate_tables_with_documents()
@@ -306,7 +445,7 @@ class EntityExtractor:
                     f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
                 )
                 table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
-                self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
+                self.add_relationship(ES_DESCRITO_POR(project_id, doc_id))
 
                 chunk_file = self.chunks_dir / f"{doc.value['base_name']}_chunks.json"
                 candidate = self._search_title(chunk_file, frac_title)
@@ -326,7 +465,7 @@ class EntityExtractor:
                         }
                     )
                     continue
-                self.res.entities.append(Proyecto(id=project_id, value=best["candidate_title"]))
+                self.add_entity(Proyecto(id=project_id, value=best["candidate_title"]))
                 year = best.get("year")
 
                 if not year:
@@ -337,8 +476,8 @@ class EntityExtractor:
                         }
                     )
                 else:
-                    self.res.relationships.append(INICIO_EN(project_id, year))
-                self.res.relationships.append(
+                    self.add_relationship(INICIO_EN(project_id, year))
+                self.add_relationship(
                     EVIDENCIA_DE(
                         best["chunk_id"],
                         project_id,
@@ -347,7 +486,7 @@ class EntityExtractor:
                         },
                     )
                 )
-                self.res.relationships.append(
+                self.add_relationship(
                     EVIDENCIA_DE(
                         best["table_chunk_id"],
                         project_id,
@@ -381,7 +520,7 @@ class EntityExtractor:
                 f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
             )
 
-            self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
+            self.add_relationship(ES_DESCRITO_POR(project_id, doc_id))
 
             candidates_for_projects[project_id].append(
                 {
@@ -402,10 +541,10 @@ class EntityExtractor:
                 continue
             if not isinstance(chunk_id, str) or not chunk_id.strip():
                 continue
-            self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
+            self.add_entity(Proyecto(id=project_id, value=title.strip()))
 
             if year:
-                self.res.relationships.append(INICIO_EN(project_id, best["year"]))
+                self.add_relationship(INICIO_EN(project_id, best["year"]))
             else:
                 self.res.errors.append(
                     {
@@ -414,7 +553,7 @@ class EntityExtractor:
                     }
                 )
 
-            self.res.relationships.append(
+            self.add_relationship(
                 EVIDENCIA_DE(
                     chunk_id,
                     project_id,
@@ -442,7 +581,7 @@ class EntityExtractor:
 
             base_id = doc_id.removesuffix("_table")
             for p in projects_by_key.get(base_id, []):
-                self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
+                self.add_relationship(ES_DESCRITO_POR(p.id, doc_id))
 
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
         if not path.exists():
@@ -598,7 +737,6 @@ class EntityExtractor:
                     if any(inv in candidate_in_text.lower() for inv in invalid_values):
                         continue
 
-                    candidate_id = str(uuid.uuid4())
                     if (
                         fallback
                         and any(fallback == value for _, value in inv_ids_by_project[project_id])
@@ -637,11 +775,9 @@ class EntityExtractor:
                                 ]
                     candidate_id = self.make_candidate_id(candidate_in_text)
                     if candidate_id:
-                        self.res.entities.append(
-                            Investigador(id=candidate_id, value=candidate_in_text)
-                        )
-                        self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                        self.res.relationships.append(
+                        self.add_entity(Investigador(id=candidate_id, value={"name": candidate_in_text,"source": "static",}))
+                        self.add_relationship(PARTICIPO_EN(candidate_id, project_id))
+                        self.add_relationship(
                             EVIDENCIA_DE(
                                 table_chunk_id,
                                 candidate_id,
@@ -1107,8 +1243,11 @@ class EntityExtractor:
                     )
 
                     # Agregar al resultado
-                    self.res.entities.extend(new_entities)
-                    self.res.relationships.extend(new_relationships)
+                    for e in new_entities:
+                        self.add_entity(e)
+                        
+                    for r in new_relationships:
+                        self.add_relationship(r)
 
                     # Actualizar el set de IDs existentes para este proyecto
                     existing_researcher_ids.update(e.id for e in new_entities)
@@ -1213,8 +1352,11 @@ class EntityExtractor:
                     )
 
                     # Agregar al resultado
-                    self.res.entities.extend(new_entities)
-                    self.res.relationships.extend(new_relationships)
+                    for e in new_entities:
+                        self.add_entity(e)
+
+                    for r in new_relationships:
+                        self.add_relationship(r)
 
                     # Actualizar el set de IDs globales
                     existing_topic_ids.update(e.id for e in new_entities)
@@ -1277,7 +1419,7 @@ class EntityExtractor:
         top_topics = topic_counts.most_common(3)
 
         for topic_id, count in top_topics:
-            self.res.relationships.append(
+            self.add_relationship(
                 Relationship(
                     type="TIENE_TOPICO",
                     source_id=project_id,

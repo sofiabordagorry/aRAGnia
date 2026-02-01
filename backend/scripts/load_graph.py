@@ -9,7 +9,7 @@ load_dotenv()
 JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
 
 def main():
-    entities, relationships = load_graph_json(JSON_PATH)
+    entities, relationships, _ = load_graph_json(JSON_PATH)
     neo4j_host = os.getenv("NEO4J_HOST", "localhost")
     neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
 

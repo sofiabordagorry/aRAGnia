@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List, Tuple, Any
 
 from neo4j import GraphDatabase
 
@@ -75,17 +75,15 @@ class Neo4jGraphBuilder:
     # Nodos
     # -------------------------
 
-    def upsert_entities(self, entities: Iterable[Entity]):
+    def upsert_entities(self, entities: Iterable[Entity]) -> None:
         """Upsert entities usando batching correcto, por label."""
-        # Agrupar por label
         entities_by_label: dict[str, list[Entity]] = {}
         for e in entities:
             entities_by_label.setdefault(e.label, []).append(e)
 
-        # Ahora sí hacemos batching por label
         for label, entities_label in entities_by_label.items():
             for batch in self._chunks(entities_label, self.batch_size):
-                rows = []
+                rows: list[dict] = []
                 for e in batch:
                     props = {"id": e.id}
                     if isinstance(e.value, dict):
@@ -100,10 +98,33 @@ class Neo4jGraphBuilder:
                 query = f"""
                 UNWIND $rows AS row
                 MERGE (e:{label} {{id: row.id}})
+                ON CREATE SET e.__created__ = true
                 SET e += row
+                RETURN
+                sum(CASE WHEN e.__created__ = true THEN 1 ELSE 0 END) AS created,
+                count(*) AS total
                 """
+
                 with self.driver.session() as session:
-                    session.run(query, rows=rows)
+                    result = session.run(query, rows=rows).single()
+                    created = int(result["created"])
+                    total = int(result["total"])
+                    matched = total - created
+
+                    # limpiar flag (solo para los que se crearon en este batch)
+                    session.run(
+                        f"""
+                        MATCH (e:{label})
+                        WHERE e.__created__ = true
+                        REMOVE e.__created__
+                        """
+                    )
+
+                logger.info(
+                    "Neo4j ENTIDADES label=%s total=%d creadas=%d ya_existian=%d",
+                    label, total, created, matched
+                )
+
 
     # -------------------------
     # Relaciones
@@ -111,47 +132,44 @@ class Neo4jGraphBuilder:
     def upsert_relationships(
         self,
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
-    ):
-        # 1) Filtrado + Dedupe global
+    ) -> None:
+        # 1) Filtrado + dedupe global
         seen: set[tuple[str, str, str]] = set()
         deduped: list[Tuple[Relationship, Entity, Entity]] = []
 
         for rel, src, tgt in relationships:
-            # Regla A: no permitir relaciones de un nodo consigo mismo
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s",
+                    rel.type, src.id, tgt.id
                 )
                 continue
 
-            # Regla B: no aceptar repetidas (type + source + target)
             key = (rel.type, src.id, tgt.id)
             if key in seen:
                 logger.warning(
-                    "Relación repetida (se omite): %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación repetida (se omite): %s %s -> %s",
+                    rel.type, src.id, tgt.id
                 )
                 continue
 
-            # Regla C: validar endpoints
             if not validate_relationship_endpoints(rel, src, tgt):
                 logger.error(
                     "Relación inválida por schema (se omite): %s (%s -> %s)",
-                    rel.type,
-                    src.label,
-                    tgt.label,
+                    rel.type, src.label, tgt.label
                 )
                 continue
 
             seen.add(key)
             deduped.append((rel, src, tgt))
 
-        # 2) Batching + agrupación por (rel_type, src_label, tgt_label)
+        # 2) batching + agrupación por (rel_type, src_label, tgt_label)
         for batch in self._chunks(deduped, self.batch_size):
             groups: Dict[Tuple[str, str, str], List[Dict]] = {}
 
             for rel, src, tgt in batch:
-                key = (rel.type, src.label, tgt.label)
-                groups.setdefault(key, []).append(
+                gkey = (rel.type, src.label, tgt.label)
+                groups.setdefault(gkey, []).append(
                     {
                         "source_id": src.id,
                         "target_id": tgt.id,
@@ -166,10 +184,33 @@ class Neo4jGraphBuilder:
                     MATCH (s:{src_label} {{id: row.source_id}})
                     MATCH (t:{tgt_label} {{id: row.target_id}})
                     MERGE (s)-[r:{rel_type}]->(t)
+                    ON CREATE SET r.__created__ = true
                     SET r += row.properties
+                    RETURN
+                    sum(CASE WHEN r.__created__ = true THEN 1 ELSE 0 END) AS created,
+                    count(*) AS total
                     """
-                    session.run(query, rows=rows)
 
+                    result = session.run(query, rows=rows).single()
+                    created = int(result["created"])
+                    total = int(result["total"])
+                    matched = total - created
+
+                    # limpiar flag (opcional)
+                    session.run(
+                        f"""
+                        MATCH ()-[r:{rel_type}]->()
+                        WHERE r.__created__ = true
+                        REMOVE r.__created__
+                        """
+                    )
+
+                    logger.info(
+                        "Neo4j RELACIONES type=%s (%s->%s) total=%d creadas=%d ya_existian=%d",
+                        rel_type, src_label, tgt_label, total, created, matched
+                    )
+
+    
     def clear_graph(self):
         """
         Borra **todos los nodos y relaciones** del grafo.
@@ -207,10 +248,12 @@ class GraphBuilder:
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
     ):
-        """Inserta entidades y relaciones usando batching genérico."""
+        logger.info("INGEST inicio: entidades=%d relaciones=%d",
+                len(entities), len(relationships))
         self.backend.upsert_entities(entities)
         self.backend.upsert_relationships(relationships)
 
+        logger.info("INGEST fin")
 
 # ============================================================
 # Funciones auxiliares
@@ -306,7 +349,22 @@ def load_graph_json(
 
         relationships.append((rel, src, tgt))
 
-    return list(entities_by_id.values()), relationships
+    raw_errors = payload.get("errors", [])
+    errors: list[dict[str, Any]] = raw_errors if isinstance(raw_errors, list) else []
+    errors = [e for e in errors if isinstance(e, dict)]
+
+
+    # Logs de conteos
+    raw_entities_n = len(payload.get("entities", []))
+    raw_rels_n = len(payload.get("relationships", []))
+
+    logger.info("JSON: entidades leídas=%d", raw_entities_n)
+    logger.info("JSON: relaciones leídas=%d", raw_rels_n)
+    logger.info("JSON: errores leídos=%d", len(errors))
+
+    logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
+    logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
+    return list(entities_by_id.values()), relationships, errors
 
 
 def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]:

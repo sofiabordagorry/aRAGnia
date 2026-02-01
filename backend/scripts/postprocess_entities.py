@@ -163,11 +163,11 @@ def find_researcher_duplicates(researchers: List[dict], similarity_threshold: fl
     duplicate_groups = {}
     
     # Ordenar por longitud (más largo primero)
-    sorted_researchers = sorted(researchers, key=lambda x: len(x["value"]), reverse=True)
+    sorted_researchers = sorted(researchers, key=lambda x: len(x["value"].get("name")), reverse=True)
     
     for i, researcher in enumerate(sorted_researchers):
         researcher_id = researcher["id"]
-        researcher_name = researcher["value"]
+        researcher_name = researcher["value"].get("name")
         
         if researcher_id in processed:
             continue
@@ -178,7 +178,7 @@ def find_researcher_duplicates(researchers: List[dict], similarity_threshold: fl
         # Buscar duplicados/variantes en los restantes
         for other in sorted_researchers[i+1:]:
             other_id = other["id"]
-            other_name = other["value"]
+            other_name = other["value"].get("name")
             
             if other_id in processed:
                 continue
@@ -274,7 +274,7 @@ def consolidate_researchers(entities: List[dict], relationships: List[dict]) -> 
     garbage_changes = []
     
     for researcher in researchers:
-        name = researcher["value"]
+        name = researcher["value"].get("name")
         if is_garbage_researcher(name):
             garbage_ids.add(researcher["id"])
             garbage_changes.append({
@@ -297,8 +297,8 @@ def consolidate_researchers(entities: List[dict], relationships: List[dict]) -> 
     normalization_changes = []
     
     for researcher in researchers:
-        original_name = researcher["value"]
-        normalized_name = normalize_name(researcher["value"])
+        original_name = researcher["value"].get("name")
+        normalized_name = normalize_name(original_name)
         if original_name != normalized_name:
             normalization_changes.append({
                 "type": "normalization",
@@ -306,7 +306,7 @@ def consolidate_researchers(entities: List[dict], relationships: List[dict]) -> 
                 "original": original_name,
                 "normalized": normalized_name
             })
-        researcher["value"] = normalized_name
+        researcher["value"]["name"] = normalized_name
     
     if normalization_changes:
         transformation_log.append({
@@ -337,11 +337,11 @@ def consolidate_researchers(entities: List[dict], relationships: List[dict]) -> 
             merge_changes.append({
                 "type": "merge",
                 "duplicate_id": dup_id,
-                "duplicate_name": dup_researcher["value"],
+                "duplicate_name": dup_researcher["value"].get("name"),
                 "canonical_id": canonical_id,
                 "canonical_name": canonical_name
             })
-            print(f"  Consolidando '{dup_researcher['value']}' -> '{canonical_name}'")
+            print(f"  Consolidando '{dup_researcher['value'].get('name')}' -> '{canonical_name}'")
     
     # Agregar investigadores sin duplicados
     for researcher in researchers:
