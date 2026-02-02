@@ -7,8 +7,6 @@ from typing import Any, Callable
 
 import pytest
 
-# 🔁 Ajustá este import si tu archivo está en otro módulo
-# Ej: from institutional_graphrag.graph.graph import ...
 from institutional_graphrag.graph.builder import (
     GraphBuilder,
     Neo4jGraphBuilder,
@@ -34,7 +32,6 @@ def make_entity_class(lbl: str):
         id: str
         value: Any = None
 
-        # usamos un field "computed" fijo para la clase
         @property
         def label(self) -> str:
             return lbl
@@ -196,8 +193,6 @@ def test_load_graph_json_remaps_relationships_and_drops_contained_investigators(
     assert ("PARTICIPO_EN", "qf_stella_peña", "proy_1") in rel_types_and_endpoints
     assert ("EVIDENCIA_DE", "proy_1", "qf_stella_peña") in rel_types_and_endpoints
 
-    # 3) No deberían existir errores de "source_id no existe" porque se remapeó
-    # (si querés verificar logs)
     assert "source_id no existe" not in caplog.text
 
 
