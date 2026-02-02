@@ -4,15 +4,14 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
-
 from neo4j import GraphDatabase
-
 from institutional_graphrag.graph.schema import (
     Entity,
     GraphSchema,
     Relationship,
     validate_relationship_endpoints,
 )
+
 
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
