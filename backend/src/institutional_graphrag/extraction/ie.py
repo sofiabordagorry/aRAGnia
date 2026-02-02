@@ -17,7 +17,6 @@ from institutional_graphrag.extraction.llm_extractor import (
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )
-from institutional_graphrag.graph.builder import load_graph_json
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
