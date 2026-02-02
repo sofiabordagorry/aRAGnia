@@ -8,15 +8,14 @@ Script de demostración del flujo completo:
 """
 
 import json
-import uuid
 from pathlib import Path
-
 from docling_core.types.doc import DoclingDocument
+import uuid
 
-from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.retrieval.vector_store import VectorStore
+from institutional_graphrag.config import EMBED_MODEL_ID
 
 
 def main():

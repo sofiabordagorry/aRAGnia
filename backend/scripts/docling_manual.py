@@ -1,14 +1,14 @@
 """Script para testear manualmente el procesamiento con Docling."""
 
-import json
 import sys
+import json
 from pathlib import Path
 
 from institutional_graphrag.ingest.docling_parser import (
-    DEFAULT_DOCLING_DIR,
-    DocumentAlreadyProcessed,
     parse_corpus,
     parse_single_document,
+    DEFAULT_DOCLING_DIR,
+    DocumentAlreadyProcessed,
 )
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"

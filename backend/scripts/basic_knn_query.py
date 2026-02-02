@@ -1,14 +1,12 @@
 import json
-from pathlib import Path
-
 import numpy as np
+from pathlib import Path
 from sklearn.neighbors import NearestNeighbors
-
 from institutional_graphrag.ingest.embedder import E5Embedder
 
 # Paths
-BASE_DIR = Path(__file__).resolve().parents[2] / "data"
-embeddings_dir = BASE_DIR / Path("embeddings")
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+embeddings_dir = DATA_DIR / Path("embeddings")
 
 
 def get_top_k_knn(query_text, k=3):
@@ -25,6 +23,7 @@ def get_top_k_knn(query_text, k=3):
         metadata_path = npy_file.with_name(f"{npy_file.stem}_metadata.json")
         with open(metadata_path, "r", encoding="utf-8") as f:
             metadata = json.load(f)
+
         all_embeddings.append(embeddings)
         all_metadata.extend(metadata)
 

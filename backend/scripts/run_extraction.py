@@ -149,18 +149,14 @@ def postprocess_extraction(json_path: Path) -> None:
     print(f"[OK] Resumen legible guardado en: {summary_path}")
 
 
-def main(
-    max_docs: int | None = None, do_llm_researchers: bool = True, do_llm_topics: bool = True
-) -> int:
+def main(max_docs: int | None = None) -> int:
     extractor = EntityExtractor(
         llm_provider=LLM_PROVIDER,
         llm_model=LLM_MODEL,
     )
 
     # 1) Ejecutar extracción
-    res = extractor.run(
-        max_docs=max_docs, do_llm_researchers=do_llm_researchers, do_llm_topics=do_llm_topics
-    )
+    res = extractor.run(max_docs=max_docs)
 
     # 2) Guardar resultado
     filename = "entity_documents.json"
@@ -210,18 +206,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-docs", type=int, default=None, help="Límite de documentos a procesar (None = todos)"
     )
-    parser.add_argument(
-        "--no-llm-researchers",
-        action="store_true",
-        help="No ejecutar extracción de investigadores con LLM",
-    )
-
-    parser.add_argument(
-        "--no-llm-topics",
-        action="store_true",
-        help="No ejecutar extracción de tópicos con LLM",
-    )
-
     args = parser.parse_args()
 
     if args.max_docs is not None:
@@ -229,10 +213,4 @@ if __name__ == "__main__":
     else:
         print("[CONFIG] Procesando todos los documentos")
 
-    raise SystemExit(
-        main(
-            max_docs=args.max_docs,
-            do_llm_researchers=not args.no_llm_researchers,
-            do_llm_topics=not args.no_llm_topics,
-        )
-    )
+    raise SystemExit(main(max_docs=args.max_docs))

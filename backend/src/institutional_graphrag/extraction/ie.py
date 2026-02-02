@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import unicodedata
 from collections import Counter, defaultdict
@@ -96,35 +97,23 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        *,
-        do_llm_researchers: bool = True,
-        do_llm_topics: bool = True,
     ) -> ExtractionResult:
         entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
-            if not do_llm_researchers:
-                self.load_subset_from_graph_json(
-                    entities_json,
-                    label="Investigador",
-                    value_filter={"source": "llm"},
-                )
-            if not do_llm_topics:
-                self.load_subset_from_graph_json(entities_json, label="Topico")
+            self.load_subset_from_graph_json(
+                entities_json,
+                label="Investigador",
+                value_filter={"source": "llm"},
+            )
+            self.load_subset_from_graph_json(entities_json, label="Topico")
 
         self.extract_documents()
         self._build_doc_indexes()
         self.extract_chunks()
         self.extract_projects()
         self.extract_responsible()
-
-        if do_llm_researchers:
-            self.extract_researchers_llm(max_docs=max_docs)
-        else:
-            logger.info("[RUN] Saltando extracción LLM de investigadores")
-        if do_llm_topics:
-            self.extract_topics_llm(max_docs=max_docs)
-        else:
-            logger.info("[RUN] Saltando extracción LLM de tópicos")
+        self.extract_researchers_llm(max_docs=max_docs)
+        self.extract_topics_llm(max_docs=max_docs)
 
         return self.res
 
@@ -1179,6 +1168,29 @@ class EntityExtractor:
 
         return ExtractionResult(entities=entities, relationships=relationships, errors=errors)
 
+    def load_registry(self, path: Path) -> Dict[str, List[str]]:
+        if not path.exists():
+            return {}
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def atomic_write(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text(json.dumps(self.reg, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(tmp, path)
+
+    def already_run(self, path: Path, doc_id: str, entity_label: str) -> bool:
+        self.reg = self.load_registry(path)
+        return entity_label in self.reg.get(doc_id, [])
+
+    def mark_success(self, path: Path, doc_id: str, entity_label: str) -> None:
+        self.reg = self.load_registry(path)
+        self.reg.setdefault(doc_id, [])
+        if entity_label not in self.reg[doc_id]:
+            self.reg[doc_id].append(entity_label)
+            self.reg[doc_id].sort()
+            self.atomic_write(path)
+
     def extract_researchers_llm(self, max_docs: int | None = None) -> None:
         """Extraer investigadores usando LLM con deduplicación por proyecto.
 
@@ -1227,72 +1239,75 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-
-                # Cargar chunks del documento
-                base_name = doc.value.get("base_name", "")
-                if not base_name:
-                    continue
-
-                chunks_file = self.chunks_dir / f"{base_name}_chunks.json"
-                if not chunks_file.exists():
-                    continue
-
-                try:
-                    # Cargar chunks del archivo
-                    payload = self._read_json(chunks_file)
-                    if payload is None:
+                if self.already_run(DATA_DIR / "llm_registry.json", doc_id, "Investigador"):
+                    logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
+                else:
+                    # Cargar chunks del documento
+                    base_name = doc.value.get("base_name", "")
+                    if not base_name:
                         continue
 
-                    chunks = payload.get("chunks", [])
-                    if not isinstance(chunks, list):
+                    chunks_file = self.chunks_dir / f"{base_name}_chunks.json"
+                    if not chunks_file.exists():
                         continue
 
-                    # Extraer investigadores usando LLM de todos los chunks
-                    logger.info(
-                        f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
-                    )
-                    llm_result = llm_extractor.extract_researchers_from_chunks(
-                        chunks, max_chunks=None
-                    )
-                    logger.info(
-                        f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores"
-                    )
+                    try:
+                        # Cargar chunks del archivo
+                        payload = self._read_json(chunks_file)
+                        if payload is None:
+                            continue
 
-                    # Agregar errores
-                    self.res.errors.extend(llm_result.errors)
+                        chunks = payload.get("chunks", [])
+                        if not isinstance(chunks, list):
+                            continue
 
-                    # Crear entidades y relaciones
-                    # NOTA: existing_researcher_ids resetea por proyecto
-                    # Mismo investigador en docs del mismo proyecto = misma entidad
-                    # Mismo investigador en diferentes proyectos = entidades distintas
-                    new_entities, new_relationships = (
-                        create_entities_and_relationships_from_llm_extraction(
-                            llm_result, project_id, existing_researcher_ids
+                        # Extraer investigadores usando LLM de todos los chunks
+                        logger.info(
+                            f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
                         )
-                    )
+                        llm_result = llm_extractor.extract_researchers_from_chunks(
+                            chunks, max_chunks=None
+                        )
+                        logger.info(
+                            f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores"
+                        )
 
-                    # Agregar al resultado
-                    for e in new_entities:
-                        self.add_entity(e)
+                        # Agregar errores
+                        self.res.errors.extend(llm_result.errors)
 
-                    for r in new_relationships:
-                        self.add_relationship(r)
+                        # Crear entidades y relaciones
+                        # NOTA: existing_researcher_ids resetea por proyecto
+                        # Mismo investigador en docs del mismo proyecto = misma entidad
+                        # Mismo investigador en diferentes proyectos = entidades distintas
+                        new_entities, new_relationships = (
+                            create_entities_and_relationships_from_llm_extraction(
+                                llm_result, project_id, existing_researcher_ids
+                            )
+                        )
 
-                    # Actualizar el set de IDs existentes para este proyecto
-                    existing_researcher_ids.update(e.id for e in new_entities)
+                        # Agregar al resultado
+                        for e in new_entities:
+                            self.add_entity(e)
 
-                    # Incrementar contador de documentos procesados
-                    docs_processed += 1
+                        for r in new_relationships:
+                            self.add_relationship(r)
 
-                except Exception as e:
-                    self.res.errors.append(
-                        {
-                            "type": "LLMExtractionError",
-                            "document": base_name,
-                            "message": f"Error procesando documento con LLM: {str(e)}",
-                        }
-                    )
-                    docs_processed += 1
+                        # Actualizar el set de IDs existentes para este proyecto
+                        existing_researcher_ids.update(e.id for e in new_entities)
+
+                        # Incrementar contador de documentos procesados
+                        docs_processed += 1
+                        self.mark_success(DATA_DIR / "llm_registry.json", doc_id, "Investigador")
+
+                    except Exception as e:
+                        self.res.errors.append(
+                            {
+                                "type": "LLMExtractionError",
+                                "document": base_name,
+                                "message": f"Error procesando documento con LLM: {str(e)}",
+                            }
+                        )
+                        docs_processed += 1
 
     def extract_topics_llm(self, max_docs: int | None = None) -> None:
         """Extraer tópicos usando LLM.
@@ -1345,63 +1360,70 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-
-                # Cargar chunks del documento
-                base_name = doc.value.get("base_name", "")
-                if not base_name:
-                    continue
-
-                chunks_file = self.chunks_dir / f"{base_name}_chunks.json"
-                if not chunks_file.exists():
-                    continue
-
-                try:
-                    # Cargar chunks del archivo
-                    payload = self._read_json(chunks_file)
-                    if payload is None:
+                if self.already_run(DATA_DIR / "llm_registry.json", doc_id, "Topico"):
+                    logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
+                else:
+                    # Cargar chunks del documento
+                    base_name = doc.value.get("base_name", "")
+                    if not base_name:
                         continue
 
-                    chunks = payload.get("chunks", [])
-                    if not isinstance(chunks, list):
+                    chunks_file = self.chunks_dir / f"{base_name}_chunks.json"
+                    if not chunks_file.exists():
                         continue
 
-                    # Extraer tópicos usando LLM de todos los chunks
-                    logger.info(f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}...")
-                    llm_result = llm_extractor.extract_topics_from_chunks(chunks, max_chunks=None)
-                    logger.info(
-                        f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores"
-                    )
+                    try:
+                        # Cargar chunks del archivo
+                        payload = self._read_json(chunks_file)
+                        if payload is None:
+                            continue
 
-                    # Agregar errores
-                    self.res.errors.extend(llm_result.errors)
+                        chunks = payload.get("chunks", [])
+                        if not isinstance(chunks, list):
+                            continue
 
-                    # Crear entidades y relaciones chunk->topico
-                    new_entities, new_relationships = create_topics_from_llm_extraction(
-                        llm_result, existing_topic_ids
-                    )
+                        # Extraer tópicos usando LLM de todos los chunks
+                        logger.info(
+                            f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}..."
+                        )
+                        llm_result = llm_extractor.extract_topics_from_chunks(
+                            chunks, max_chunks=None
+                        )
+                        logger.info(
+                            f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores"
+                        )
 
-                    # Agregar al resultado
-                    for e in new_entities:
-                        self.add_entity(e)
+                        # Agregar errores
+                        self.res.errors.extend(llm_result.errors)
 
-                    for r in new_relationships:
-                        self.add_relationship(r)
+                        # Crear entidades y relaciones chunk->topico
+                        new_entities, new_relationships = create_topics_from_llm_extraction(
+                            llm_result, existing_topic_ids
+                        )
 
-                    # Actualizar el set de IDs globales
-                    existing_topic_ids.update(e.id for e in new_entities)
+                        # Agregar al resultado
+                        for e in new_entities:
+                            self.add_entity(e)
 
-                    # Incrementar contador de documentos procesados
-                    docs_processed += 1
+                        for r in new_relationships:
+                            self.add_relationship(r)
 
-                except Exception as e:
-                    self.res.errors.append(
-                        {
-                            "type": "LLMExtractionError",
-                            "document": base_name,
-                            "message": f"Error procesando tópicos con LLM: {str(e)}",
-                        }
-                    )
-                    docs_processed += 1
+                        # Actualizar el set de IDs globales
+                        existing_topic_ids.update(e.id for e in new_entities)
+
+                        # Incrementar contador de documentos procesados
+                        docs_processed += 1
+                        self.mark_success(DATA_DIR / "llm_registry.json", doc_id, "Topico")
+
+                    except Exception as e:
+                        self.res.errors.append(
+                            {
+                                "type": "LLMExtractionError",
+                                "document": base_name,
+                                "message": f"Error procesando tópicos con LLM: {str(e)}",
+                            }
+                        )
+                        docs_processed += 1
 
             # Agregar relaciones proyecto->topico basadas en los chunks del proyecto
             self._aggregate_topics_for_project(project_id)
