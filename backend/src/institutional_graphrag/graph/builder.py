@@ -14,11 +14,13 @@ from institutional_graphrag.graph.schema import (
     validate_relationship_endpoints,
 )
 
+logger = logging.getLogger("graph_ingest")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+
+
 # ============================================================
 # Neo4j backend
 # ============================================================
-logger = logging.getLogger("graph_ingest")
-logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 
 class Neo4jGraphBuilder:
@@ -114,14 +116,13 @@ class Neo4jGraphBuilder:
                     matched = total - created
 
                     # limpiar flag (solo para los que se crearon en este batch)
-                    session.run(
-                        f"""
-                    MATCH (e:{label})
-                    WHERE e.__created__ = true
-                    REMOVE e.__created__
-                    """
-                    )
-
+                session.run(
+                    f"""
+                MATCH (e:{label})
+                WHERE e.__created__ = true
+                REMOVE e.__created__
+                """
+                )
                 logger.info(
                     "Neo4j ENTIDADES label=%s total=%d creadas=%d ya_existian=%d",
                     label,
@@ -144,17 +145,22 @@ class Neo4jGraphBuilder:
         for rel, src, tgt in relationships:
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
                 )
                 continue
 
             key = (rel.type, src.id, tgt.id)
             if key in seen:
                 logger.warning(
-                    "Relación repetida (se omite): %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación repetida (se omite): %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
                 )
                 continue
-
             if not validate_relationship_endpoints(rel, src, tgt):
                 logger.error(
                     "Relación inválida por schema (se omite): %s (%s -> %s)",
@@ -204,7 +210,7 @@ class Neo4jGraphBuilder:
                         total = int(result["total"])
                     matched = total - created
 
-                    # limpiar flag (opcional)
+                    # limpiar flag
                     session.run(
                         f"""
                     MATCH ()-[r:{rel_type}]->()
