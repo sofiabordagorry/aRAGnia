@@ -77,12 +77,11 @@ class Neo4jGraphBuilder:
 
     def upsert_entities(self, entities: Iterable[Entity]):
         """Upsert entities usando batching correcto, por label."""
-        # Agrupar por label
+
         entities_by_label: dict[str, list[Entity]] = {}
         for e in entities:
             entities_by_label.setdefault(e.label, []).append(e)
 
-        # Ahora sí hacemos batching por label
         for label, entities_label in entities_by_label.items():
             for batch in self._chunks(entities_label, self.batch_size):
                 rows = []
@@ -112,7 +111,7 @@ class Neo4jGraphBuilder:
         self,
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
     ):
-        # 1) Filtrado + Dedupe global
+
         seen: set[tuple[str, str, str]] = set()
         deduped: list[Tuple[Relationship, Entity, Entity]] = []
 
@@ -127,9 +126,6 @@ class Neo4jGraphBuilder:
             # Regla B: no aceptar repetidas (type + source + target)
             key = (rel.type, src.id, tgt.id)
             if key in seen:
-                logger.warning(
-                    "Relación repetida (se omite): %s %s -> %s", rel.type, src.id, tgt.id
-                )
                 continue
 
             # Regla C: validar endpoints
@@ -145,7 +141,6 @@ class Neo4jGraphBuilder:
             seen.add(key)
             deduped.append((rel, src, tgt))
 
-        # 2) Batching + agrupación por (rel_type, src_label, tgt_label)
         for batch in self._chunks(deduped, self.batch_size):
             groups: Dict[Tuple[str, str, str], List[Dict]] = {}
 
@@ -230,8 +225,6 @@ def load_graph_json(
     entities_by_id: dict[str, Entity] = {}
     seen_labels_by_id: dict[str, set[str]] = {}
 
-    # Política simple: "primero gana" (first wins)
-    # Si preferís "último gana" (last wins), te dejo más abajo.
     for raw in payload.get("entities", []):
         entity_label = raw["label"]
         entity_id = raw["id"]
@@ -239,7 +232,6 @@ def load_graph_json(
 
         seen_labels_by_id.setdefault(entity_id, set()).add(entity_label)
 
-        # Si ya existe, no reemplazamos: nos quedamos con 1 sola entidad
         if entity_id in entities_by_id:
             prev = entities_by_id[entity_id]
             if prev.label != entity_label:
@@ -260,7 +252,6 @@ def load_graph_json(
         entity_cls = GraphSchema.get_entity_class(entity_label)
         entities_by_id[entity_id] = entity_cls(id=entity_id, value=value)
 
-    # (Opcional) resumen final de duplicados
     dup_diff = {eid: labels for eid, labels in seen_labels_by_id.items() if len(labels) > 1}
     if dup_diff:
         logger.error(
@@ -273,7 +264,6 @@ def load_graph_json(
     if inv_remap:
         # Eliminamos las entidades Investigador "contenidas"
         for drop_id in inv_remap.keys():
-            # por seguridad, solo borramos si sigue siendo Investigador
             e = entities_by_id.get(drop_id)
             if e is not None and e.label == "Investigador":
                 del entities_by_id[drop_id]
@@ -282,7 +272,7 @@ def load_graph_json(
             "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
         )
 
-    # Relationships (igual que antes)
+    # Relationships
     relationships: list[Tuple[Relationship, Entity, Entity]] = []
     for raw in payload.get("relationships", []):
         rel_type = raw["type"]
@@ -320,7 +310,6 @@ def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]
     remap: dict[str, str] = {}
 
     for cand in inv_ids_sorted:
-        # Si ya está “contenido” en alguno que quedó, lo dropeamos
         container = next((k for k in kept if cand != k and cand in k), None)
         if container:
             remap[cand] = container
