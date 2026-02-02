@@ -1297,7 +1297,11 @@ class EntityExtractor:
 
                         # Incrementar contador de documentos procesados
                         docs_processed += 1
-                        self.mark_success(DATA_DIR / "llm_registry.json", doc_id, "Investigador")
+                        self.mark_success(
+                            DATA_DIR / "entities_relations" / "llm_registry.json",
+                            doc_id,
+                            "Investigador",
+                        )
 
                     except Exception as e:
                         self.res.errors.append(
@@ -1360,7 +1364,9 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                if self.already_run(DATA_DIR / "llm_registry.json", doc_id, "Topico"):
+                if self.already_run(
+                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                ):
                     logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
                 else:
                     # Cargar chunks del documento

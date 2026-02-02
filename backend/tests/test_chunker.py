@@ -45,7 +45,7 @@ class TestNativeDoclingChunker:
 
     def test_chunk_document_structure(self, sample_doc):
         """Verifica que el output tenga la estructura de diccionario requerida."""
-        chunker = get_native_chunker(max_tokens=512)
+        chunker = get_native_chunker()
         chunks = chunk_document(doc=sample_doc, chunker=chunker)
 
         assert len(chunks) > 0

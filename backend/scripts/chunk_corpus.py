@@ -50,7 +50,7 @@ def main():
         try:
             file_path = Path(output_dir) / Path(json_file)
             if file_path.exists():
-                print("El archivo a descargar ya existe :", json_file, "en la carpeta ", output_dir)
+                print("El archivo a particionar en chunks ya existe :", json_file, "en la carpeta ", output_dir)
                 print("=" * 60)
                 continue
             # Cargar JSON procesado por Docling
