@@ -13,13 +13,11 @@ from institutional_graphrag.graph.schema import (
 )
 
 
-logger = logging.getLogger("graph_ingest")
-logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
-
-
 # ============================================================
 # Neo4j backend
 # ============================================================
+logger = logging.getLogger("graph_ingest")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 
 class Neo4jGraphBuilder:
