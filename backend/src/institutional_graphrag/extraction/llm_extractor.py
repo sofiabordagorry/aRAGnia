@@ -1109,7 +1109,7 @@ def create_topics_from_llm_extraction(
             )
             continue
 
-        entities.append(Topico(id=topic_id, value={"topic": mention.name, "source": "llm"}))
+        entities.append(Topico(id=topic_id, value=mention.topic))
         relationships.append(
             EVIDENCIA_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
         )

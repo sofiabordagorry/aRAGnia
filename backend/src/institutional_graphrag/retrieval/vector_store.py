@@ -1,10 +1,11 @@
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 from uuid import uuid4
 
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
+    Condition,
     Distance,
     FieldCondition,
     Filter,
@@ -128,15 +129,13 @@ class VectorStore:
             )
 
         # Construir filtro si se provee
-        qfilter = None
+        qfilter: Filter | None = None
         if filter_dict:
-            must = []
+            must: list[Condition] = []
             for k, v in filter_dict.items():
                 if isinstance(v, (list, tuple, set)):
-                    # Usar MatchAny para consultas IN (ej: category in ["research", "education"])
                     must.append(FieldCondition(key=k, match=MatchAny(any=list(v))))
                 else:
-                    # Usar MatchValue para igualdad exacta
                     must.append(FieldCondition(key=k, match=MatchValue(value=v)))
             qfilter = Filter(must=must)
 
@@ -152,11 +151,11 @@ class VectorStore:
         # Formatear resultados
         results = []
         for scored_point in search_result:
-            doc_id = scored_point.id
+            doc_id = str(scored_point.id)
             score = scored_point.score
             metadata = dict(scored_point.payload or {})
 
-            results.append((doc_id, score, metadata))
+            results.append((doc_id, float(score), metadata))
 
         return results
 

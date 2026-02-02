@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 import tabula
@@ -183,10 +183,16 @@ def ods_table(path: Path) -> pd.DataFrame:
 
 # ---------- pdf ----------
 def pdf_table(path: Path) -> pd.DataFrame:
-    dfs = tabula.read_pdf(
-        str(path), pages="all", lattice=True, multiple_tables=True, encoding="latin-1"
+    dfs = cast(
+        list[pd.DataFrame],
+        tabula.read_pdf(
+            str(path),
+            pages="all",
+            lattice=True,
+            multiple_tables=True,
+            encoding="latin-1",
+        ),
     )
-
     if not dfs:
         raise ValueError(f"No se detectaron tablas en {path}")
 

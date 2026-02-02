@@ -105,8 +105,12 @@ class Neo4jGraphBuilder:
 
                 with self.driver.session() as session:
                     result = session.run(query, rows=rows).single()
-                    created = int(result["created"])
-                    total = int(result["total"])
+                    if result is None:
+                        created = 0
+                        total = 0
+                    else:
+                        created = int(result["created"])
+                        total = int(result["total"])
                     matched = total - created
 
                     # limpiar flag (solo para los que se crearon en este batch)
@@ -192,8 +196,12 @@ class Neo4jGraphBuilder:
                     """
 
                     result = session.run(query, rows=rows).single()
-                    created = int(result["created"])
-                    total = int(result["total"])
+                    if result is None:
+                        created = 0
+                        total = 0
+                    else:
+                        created = int(result["created"])
+                        total = int(result["total"])
                     matched = total - created
 
                     # limpiar flag (opcional)
@@ -252,11 +260,16 @@ class GraphBuilder:
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
     ):
-        logger.info("INGEST inicio: entidades=%d relaciones=%d", len(entities), len(relationships))
-        self.backend.upsert_entities(entities)
-        self.backend.upsert_relationships(relationships)
+        entities_list = list(entities)
+        relationships_list = list(relationships)
 
-        logger.info("INGEST fin")
+        logger.info(
+            "INGEST inicio: entidades=%d relaciones=%d",
+            len(entities_list),
+            len(relationships_list),
+        )
+        self.backend.upsert_entities(entities_list)
+        self.backend.upsert_relationships(relationships_list)
 
 
 # ============================================================
@@ -266,7 +279,7 @@ class GraphBuilder:
 
 def load_graph_json(
     json_path: str | Path,
-) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]]]:
+) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]], list[dict[str, Any]]]:
     json_path = Path(json_path).resolve()
     if not json_path.exists():
         raise FileNotFoundError(f"No existe el archivo: {json_path}")
