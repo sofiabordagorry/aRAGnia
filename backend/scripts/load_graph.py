@@ -1,12 +1,13 @@
-from institutional_graphrag.graph.builder import load_graph_json
-from institutional_graphrag.graph.builder import GraphBuilder
-from pathlib import Path
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
+from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
 
 load_dotenv()
 JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
+
 
 def main():
     entities, relationships, _ = load_graph_json(JSON_PATH)

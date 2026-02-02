@@ -1,16 +1,18 @@
-import requests
 import os
+import re
+
+import requests
 import urllib3
 from dotenv import load_dotenv
-import re 
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from urllib.parse import quote
-from pathlib import Path
-from institutional_graphrag.ingest.file_namer import generate_new_filename
-from institutional_graphrag.ingest.table_extractors import extract_table
 import tempfile
 from enum import Enum
+from pathlib import Path
+from urllib.parse import quote
 
+from institutional_graphrag.ingest.file_namer import generate_new_filename
+from institutional_graphrag.ingest.table_extractors import extract_table
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
@@ -62,16 +64,30 @@ def main():
             line = line.strip()
             if not line:
                 continue
-                
+
             new_filename = generate_new_filename(line)
             file_path = Path(output_dir) / new_filename
             if file_path.exists():
-                print("El archivo a descargar ya existe :", line, "con el nombre: ", new_filename, "en la carpeta ", output_dir)
+                print(
+                    "El archivo a descargar ya existe :",
+                    line,
+                    "con el nombre: ",
+                    new_filename,
+                    "en la carpeta ",
+                    output_dir,
+                )
                 print("=" * 60)
                 continue
             file_path = Path(output_dir_tables) / f"{Path(new_filename).stem}.parquet"
             if file_path.exists():
-                print("El archivo a descargar ya existe :", line, "con el nombre: ", new_filename, "en la carpeta ", output_dir_tables)
+                print(
+                    "El archivo a descargar ya existe :",
+                    line,
+                    "con el nombre: ",
+                    new_filename,
+                    "en la carpeta ",
+                    output_dir_tables,
+                )
                 print("=" * 60)
                 continue
             line = line.replace("\\", "/")
@@ -108,7 +124,7 @@ def main():
                 print()
 
         print(f"The number of files downloaded was: {archive_count}")
-    except FileNotFoundError :
+    except FileNotFoundError:
         print(f" Error: The file '{input_dir}' was not found.")
 
 

@@ -1,7 +1,9 @@
 import json
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 from sklearn.neighbors import NearestNeighbors
+
 from institutional_graphrag.ingest.embedder import E5Embedder
 
 # Paths
