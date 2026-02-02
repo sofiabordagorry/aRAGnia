@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple, Any
+from typing import Any, Dict, Iterable, List, Tuple
 
 from neo4j import GraphDatabase
 
@@ -122,9 +122,11 @@ class Neo4jGraphBuilder:
 
                 logger.info(
                     "Neo4j ENTIDADES label=%s total=%d creadas=%d ya_existian=%d",
-                    label, total, created, matched
+                    label,
+                    total,
+                    created,
+                    matched,
                 )
-
 
     # -------------------------
     # Relaciones
@@ -140,23 +142,23 @@ class Neo4jGraphBuilder:
         for rel, src, tgt in relationships:
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s",
-                    rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
                 )
                 continue
 
             key = (rel.type, src.id, tgt.id)
             if key in seen:
                 logger.warning(
-                    "Relación repetida (se omite): %s %s -> %s",
-                    rel.type, src.id, tgt.id
+                    "Relación repetida (se omite): %s %s -> %s", rel.type, src.id, tgt.id
                 )
                 continue
 
             if not validate_relationship_endpoints(rel, src, tgt):
                 logger.error(
                     "Relación inválida por schema (se omite): %s (%s -> %s)",
-                    rel.type, src.label, tgt.label
+                    rel.type,
+                    src.label,
+                    tgt.label,
                 )
                 continue
 
@@ -207,10 +209,14 @@ class Neo4jGraphBuilder:
 
                     logger.info(
                         "Neo4j RELACIONES type=%s (%s->%s) total=%d creadas=%d ya_existian=%d",
-                        rel_type, src_label, tgt_label, total, created, matched
+                        rel_type,
+                        src_label,
+                        tgt_label,
+                        total,
+                        created,
+                        matched,
                     )
 
-    
     def clear_graph(self):
         """
         Borra **todos los nodos y relaciones** del grafo.
@@ -248,12 +254,12 @@ class GraphBuilder:
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
     ):
-        logger.info("INGEST inicio: entidades=%d relaciones=%d",
-                len(entities), len(relationships))
+        logger.info("INGEST inicio: entidades=%d relaciones=%d", len(entities), len(relationships))
         self.backend.upsert_entities(entities)
         self.backend.upsert_relationships(relationships)
 
         logger.info("INGEST fin")
+
 
 # ============================================================
 # Funciones auxiliares
@@ -352,7 +358,6 @@ def load_graph_json(
     raw_errors = payload.get("errors", [])
     errors: list[dict[str, Any]] = raw_errors if isinstance(raw_errors, list) else []
     errors = [e for e in errors if isinstance(e, dict)]
-
 
     # Logs de conteos
     raw_entities_n = len(payload.get("entities", []))

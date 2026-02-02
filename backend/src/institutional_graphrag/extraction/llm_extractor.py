@@ -1054,7 +1054,9 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        entities.append(Investigador(id=researcher_id, value={"name": mention.name,"source": "llm"}))
+        entities.append(
+            Investigador(id=researcher_id, value={"name": mention.name, "source": "llm"})
+        )
         relationships.append(PARTICIPO_EN(researcher_id, project_id))
         relationships.append(
             EVIDENCIA_DE(
@@ -1107,7 +1109,7 @@ def create_topics_from_llm_extraction(
             )
             continue
 
-        entities.append(Topico(id=topic_id, value={"topic": mention.name,"source": "llm"}))
+        entities.append(Topico(id=topic_id, value={"topic": mention.name, "source": "llm"}))
         relationships.append(
             EVIDENCIA_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
         )

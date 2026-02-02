@@ -11,12 +11,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
-from institutional_graphrag.graph.builder import load_graph_json
+
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )
+from institutional_graphrag.graph.builder import load_graph_json
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
@@ -60,6 +61,7 @@ PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECA
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
+
 @dataclass
 class ExtractionResult:
     entities: List[Entity]
@@ -99,7 +101,7 @@ class EntityExtractor:
         do_llm_researchers: bool = True,
         do_llm_topics: bool = True,
     ) -> ExtractionResult:
-        entities_json = DATA_DIR / "entities_relations" / "entity_documents.json" 
+        entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
             if not do_llm_researchers:
                 self.load_subset_from_graph_json(
@@ -108,11 +110,8 @@ class EntityExtractor:
                     value_filter={"source": "llm"},
                 )
             if not do_llm_topics:
-                self.load_subset_from_graph_json(
-                    entities_json,
-                    label="Topico"
-                )
-               
+                self.load_subset_from_graph_json(entities_json, label="Topico")
+
         self.extract_documents()
         self._build_doc_indexes()
         self.extract_chunks()
@@ -148,7 +147,9 @@ class EntityExtractor:
         """
         json_path = Path(json_path).resolve()
         if not json_path.is_file():
-            self.res.errors.append({"type": "MissingFile", "message": f"No existe el archivo: {json_path}"})
+            self.res.errors.append(
+                {"type": "MissingFile", "message": f"No existe el archivo: {json_path}"}
+            )
             return
 
         with json_path.open(encoding="utf-8") as f:
@@ -162,7 +163,12 @@ class EntityExtractor:
             self.res.errors.extend([e for e in errors_raw if isinstance(e, dict)])
 
         if not isinstance(entities_raw, list) or not isinstance(rels_raw, list):
-            self.res.errors.append({"type": "InvalidJson", "message": "Formato inválido: entities/relationships no son listas"})
+            self.res.errors.append(
+                {
+                    "type": "InvalidJson",
+                    "message": "Formato inválido: entities/relationships no son listas",
+                }
+            )
             return
 
         # ---- 1) Filtrar entidades target ----
@@ -189,13 +195,17 @@ class EntityExtractor:
 
             cls = GraphSchema.ENTITIES.get(label)
             if cls is None:
-                self.res.errors.append({"type": "UnknownEntityType", "message": f"Label desconocido: {label}"})
+                self.res.errors.append(
+                    {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
+                )
                 return
 
             try:
                 ent = cls(id=entity_id, value=v)
             except Exception as exc:
-                self.res.errors.append({"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"})
+                self.res.errors.append(
+                    {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
+                )
                 continue
 
             matched_entities.append(ent)
@@ -203,7 +213,6 @@ class EntityExtractor:
 
         for e in matched_entities:
             self.add_entity(e)
-
 
         for raw in rels_raw:
             if not isinstance(raw, dict):
@@ -213,7 +222,11 @@ class EntityExtractor:
             target_id = raw.get("target_id")
             props = raw.get("properties") or {}
 
-            if not isinstance(rel_type, str) or not isinstance(source_id, str) or not isinstance(target_id, str):
+            if (
+                not isinstance(rel_type, str)
+                or not isinstance(source_id, str)
+                or not isinstance(target_id, str)
+            ):
                 continue
             if source_id not in matched_ids and target_id not in matched_ids:
                 continue
@@ -221,9 +234,18 @@ class EntityExtractor:
                 props = {}
 
             try:
-                self.add_relationship(Relationship(type=rel_type, source_id=source_id, target_id=target_id, properties=props))
+                self.add_relationship(
+                    Relationship(
+                        type=rel_type, source_id=source_id, target_id=target_id, properties=props
+                    )
+                )
             except Exception as exc:
-                self.res.errors.append({"type": "InvalidRelationship", "message": f"{rel_type}({source_id}->{target_id}): {exc}"})
+                self.res.errors.append(
+                    {
+                        "type": "InvalidRelationship",
+                        "message": f"{rel_type}({source_id}->{target_id}): {exc}",
+                    }
+                )
 
     def _build_doc_indexes(self) -> None:
         docs = [cast(Documento, e) for e in self.res.entities if e.label == "Documento"]
@@ -265,7 +287,7 @@ class EntityExtractor:
         self._rel_index[key] = len(self.res.relationships)
         self.res.relationships.append(r)
         return True
-    
+
     def extract_documents(self) -> None:
 
         def ensure_dir(d: Path) -> bool:
@@ -775,7 +797,15 @@ class EntityExtractor:
                                 ]
                     candidate_id = self.make_candidate_id(candidate_in_text)
                     if candidate_id:
-                        self.add_entity(Investigador(id=candidate_id, value={"name": candidate_in_text,"source": "static",}))
+                        self.add_entity(
+                            Investigador(
+                                id=candidate_id,
+                                value={
+                                    "name": candidate_in_text,
+                                    "source": "static",
+                                },
+                            )
+                        )
                         self.add_relationship(PARTICIPO_EN(candidate_id, project_id))
                         self.add_relationship(
                             EVIDENCIA_DE(
@@ -1245,7 +1275,7 @@ class EntityExtractor:
                     # Agregar al resultado
                     for e in new_entities:
                         self.add_entity(e)
-                        
+
                     for r in new_relationships:
                         self.add_relationship(r)
 

@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
@@ -12,6 +13,8 @@ from qdrant_client.models import (
     PointStruct,
     VectorParams,
 )
+
+load_dotenv()
 
 
 class VectorStore:
@@ -32,7 +35,7 @@ class VectorStore:
         self.collection_name = collection_name
         self.embedding_dim = embedding_dim
 
-        host = os.getenv("QDRANT_HOST", "localhost")
+        host = os.getenv("HOST", "localhost")
         port = int(os.getenv("QDRANT_PORT", "6333"))
         self.client = QdrantClient(host=host, port=port)
 
@@ -178,9 +181,7 @@ class VectorStore:
         for i in range(0, len(values), chunk_size):
             chunk = values[i : i + chunk_size]
 
-            qfilter = Filter(
-                must=[FieldCondition(key=key, match=MatchAny(any=chunk))]
-            )
+            qfilter = Filter(must=[FieldCondition(key=key, match=MatchAny(any=chunk))])
 
             # scroll devuelve puntos que matchean el filtro
             points, _next = self.client.scroll(
@@ -207,5 +208,3 @@ class VectorStore:
     def close(self) -> None:
         """Cierra la conexión con Qdrant."""
         self.client.close()
-
-    

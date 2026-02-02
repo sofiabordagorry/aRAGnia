@@ -4,13 +4,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
-import os 
-import subprocess
-os.environ["JAVA_HOME"] = r"C:\Users\Matias Marin\Desktop\jdk-21.0.7"
-os.environ["PATH"] = os.path.join(os.environ["JAVA_HOME"], "bin") + os.pathsep + os.environ["PATH"]
 
-# Verificar que Python lo vea
-subprocess.run(["java", "-version"])
 import pandas as pd
 import tabula
 from odf import teletype

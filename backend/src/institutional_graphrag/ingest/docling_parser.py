@@ -196,7 +196,7 @@ def parse_single_document(source: Path) -> dict[str, Any] | None:
         return _postprocess_doc_dict(doc_dict)
     except Exception as e:
         print(f"Info:{e}")
-        return None  
+        return None
 
 
 #### Parsear Carpeta
