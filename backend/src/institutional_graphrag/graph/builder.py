@@ -4,14 +4,15 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
+
 from neo4j import GraphDatabase
+
 from institutional_graphrag.graph.schema import (
     Entity,
     GraphSchema,
     Relationship,
     validate_relationship_endpoints,
 )
-
 
 # ============================================================
 # Neo4j backend
