@@ -111,10 +111,10 @@ class Neo4jGraphBuilder:
                     # limpiar flag (solo para los que se crearon en este batch)
                     session.run(
                         f"""
-                        MATCH (e:{label})
-                        WHERE e.__created__ = true
-                        REMOVE e.__created__
-                        """
+                    MATCH (e:{label})
+                    WHERE e.__created__ = true
+                    REMOVE e.__created__
+                    """
                     )
 
                 logger.info(
@@ -198,10 +198,10 @@ class Neo4jGraphBuilder:
                     # limpiar flag (opcional)
                     session.run(
                         f"""
-                        MATCH ()-[r:{rel_type}]->()
-                        WHERE r.__created__ = true
-                        REMOVE r.__created__
-                        """
+                    MATCH ()-[r:{rel_type}]->()
+                    WHERE r.__created__ = true
+                    REMOVE r.__created__
+                    """
                     )
 
                     logger.info(
