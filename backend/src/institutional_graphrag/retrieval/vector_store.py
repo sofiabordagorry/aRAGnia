@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 from dotenv import load_dotenv
