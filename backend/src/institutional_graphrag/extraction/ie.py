@@ -61,6 +61,8 @@ PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECA
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
+ALLOWED_SUFFIXES = {".parquet", ".pdf"}
+
 
 @dataclass
 class ExtractionResult:
@@ -805,6 +807,22 @@ class EntityExtractor:
                             )
                         )
                         inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
+
+    def make_candidate_id(self, name: str) -> str:
+        # 1) pasar a minúsculas
+        s = name.lower()
+
+        # 2) quitar acentos
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+
+        # 3) reemplazar cualquier cosa que no sea letra o número por _
+        s = re.sub(r"[^a-z0-9]+", "_", s)
+
+        # 4) limpiar _ al inicio/final
+        s = s.strip("_")
+
+        return s
 
     def make_candidate_id(self, name: str) -> str:
         # 1) pasar a minúsculas
