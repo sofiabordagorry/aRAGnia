@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import json
+import uuid
 from pathlib import Path
 from typing import Optional
-import uuid
-from institutional_graphrag.retrieval.vector_store import VectorStore
 
 import numpy as np
+
+from institutional_graphrag.retrieval.vector_store import VectorStore
 
 EMBEDDINGS_DIR = Path(__file__).resolve().parents[4] / "data" / "embeddings"
 
