@@ -824,22 +824,6 @@ class EntityExtractor:
 
         return s
 
-    def make_candidate_id(self, name: str) -> str:
-        # 1) pasar a minúsculas
-        s = name.lower()
-
-        # 2) quitar acentos
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
-
-        # 3) reemplazar cualquier cosa que no sea letra o número por _
-        s = re.sub(r"[^a-z0-9]+", "_", s)
-
-        # 4) limpiar _ al inicio/final
-        s = s.strip("_")
-
-        return s
-
     def _build_indexes(self):
         inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
         for r in self.res.relationships:
