@@ -1173,7 +1173,9 @@ class EntityExtractor:
     def load_registry(self, path: Path) -> Dict[str, List[str]]:
         if not path.exists():
             return {}
-        return json.loads(path.read_text(encoding="utf-8"))
+        data_any: Any = json.loads(path.read_text(encoding="utf-8"))
+        data = cast(dict[str, list[str]], data_any)
+        return data
 
     def atomic_write(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
