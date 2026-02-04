@@ -99,6 +99,8 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
+        llm_researchers: bool = True,
+        llm_topics: bool = True,
     ) -> ExtractionResult:
         entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
@@ -114,8 +116,10 @@ class EntityExtractor:
         self.extract_chunks()
         self.extract_projects()
         self.extract_responsible()
-        self.extract_researchers_llm(max_docs=max_docs)
-        self.extract_topics_llm(max_docs=max_docs)
+        if llm_researchers:
+            self.extract_researchers_llm(max_docs=max_docs)
+        if llm_topics:
+            self.extract_topics_llm(max_docs=max_docs)
 
         return self.res
 
@@ -421,6 +425,7 @@ class EntityExtractor:
                 self.add_relationship(DE_DOCUMENTO(chunk_id, doc.id))
 
                 meta = c.get("metadata", {})
+                meta["text"] = c.get("text", "")
 
                 self.add_entity(Chunk(id=chunk_id, value=meta))
 
