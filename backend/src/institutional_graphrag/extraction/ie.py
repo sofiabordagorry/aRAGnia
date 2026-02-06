@@ -1287,7 +1287,6 @@ class EntityExtractor:
                         # Crear entidades y relaciones
                         # NOTA: existing_researcher_ids resetea por proyecto
                         # Mismo investigador en docs del mismo proyecto = misma entidad
-                        # Mismo investigador en diferentes proyectos = entidades distintas
                         new_entities, new_relationships = (
                             create_entities_and_relationships_from_llm_extraction(
                                 llm_result, project_id, existing_researcher_ids
@@ -1428,7 +1427,7 @@ class EntityExtractor:
 
                         # Incrementar contador de documentos procesados
                         docs_processed += 1
-                        self.mark_success(DATA_DIR / "llm_registry.json", doc_id, "Topico")
+                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
 
                     except Exception as e:
                         self.res.errors.append(
