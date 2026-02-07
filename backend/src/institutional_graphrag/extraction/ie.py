@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import ijson
 import logging
 import os
 import re
@@ -12,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
+import ijson
 import pandas as pd
 
 from institutional_graphrag.extraction.llm_extractor import (
@@ -137,10 +137,10 @@ class EntityExtractor:
                 {"type": "MissingFile", "message": f"No existe el archivo: {json_path}"}
             )
             return
-    
+
         matched_ids: set[str] = set()
         matched_entities: list[Entity] = []
-    
+
         # -------- 1) ENTITIES (streaming) --------
         try:
             with json_path.open("rb") as f:
@@ -149,25 +149,25 @@ class EntityExtractor:
                         continue
                     if raw.get("label") != label:
                         continue
-    
+
                     v = raw.get("value")
                     if value_filter is not None:
                         if not isinstance(v, dict):
                             continue
                         if not all(v.get(k) == expected for k, expected in value_filter.items()):
                             continue
-    
+
                     entity_id = raw.get("id")
                     if not isinstance(entity_id, str) or not entity_id:
                         continue
-    
+
                     cls = GraphSchema.ENTITIES.get(label)
                     if cls is None:
                         self.res.errors.append(
                             {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
                         )
                         return
-    
+
                     try:
                         ent = cls(id=entity_id, value=v)
                     except Exception as exc:
@@ -175,44 +175,44 @@ class EntityExtractor:
                             {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
                         )
                         continue
-    
+
                     matched_entities.append(ent)
                     matched_ids.add(entity_id)
-    
+
         except Exception as exc:
             self.res.errors.append(
                 {"type": "JsonReadError", "message": f"Error leyendo entities: {exc}"}
             )
             return
-    
+
         for e in matched_entities:
             self.add_entity(e)
-    
+
         # -------- 2) RELATIONSHIPS (segunda pasada) --------
         try:
             with json_path.open("rb") as f:
                 for raw in ijson.items(f, "relationships.item"):
                     if not isinstance(raw, dict):
                         continue
-    
+
                     rel_type = raw.get("type")
                     source_id = raw.get("source_id")
                     target_id = raw.get("target_id")
                     props = raw.get("properties") or {}
-    
+
                     if (
                         not isinstance(rel_type, str)
                         or not isinstance(source_id, str)
                         or not isinstance(target_id, str)
                     ):
                         continue
-    
+
                     if source_id not in matched_ids and target_id not in matched_ids:
                         continue
-    
+
                     if not isinstance(props, dict):
                         props = {}
-    
+
                     try:
                         self.add_relationship(
                             Relationship(
@@ -229,7 +229,7 @@ class EntityExtractor:
                                 "message": f"{rel_type}({source_id}->{target_id}): {exc}",
                             }
                         )
-    
+
         except Exception as exc:
             self.res.errors.append(
                 {"type": "JsonReadError", "message": f"Error leyendo relationships: {exc}"}
@@ -1252,7 +1252,9 @@ class EntityExtractor:
                 if doc is None:
                     continue
                 docs_processed += 1
-                if self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"):
+                if self.already_run(
+                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"
+                ):
                     logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 else:
                     # Cargar chunks del documento
