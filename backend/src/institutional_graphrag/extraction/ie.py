@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import ijson
 import logging
 import os
 import re
@@ -130,116 +131,109 @@ class EntityExtractor:
         label: str,
         value_filter: Optional[dict[str, Any]] = None,
     ) -> None:
-        """
-        Carga al self un subgrafo del JSON:
-        - Entidades con `label` y (opcional) filtros exactos dentro de `value`
-        - Todas las relaciones donde aparezcan esas entidades (como source o target)
-
-        Ejemplos:
-        label="Investigador", value_filter={"source": "llm"}
-        label="Topico"  (sin value_filter)
-        """
         json_path = Path(json_path).resolve()
         if not json_path.is_file():
             self.res.errors.append(
                 {"type": "MissingFile", "message": f"No existe el archivo: {json_path}"}
             )
             return
-
-        with json_path.open(encoding="utf-8") as f:
-            payload = json.load(f)
-
-        entities_raw = payload.get("entities", [])
-        rels_raw = payload.get("relationships", [])
-        errors_raw = payload.get("errors", [])
-
-        if isinstance(errors_raw, list):
-            self.res.errors.extend([e for e in errors_raw if isinstance(e, dict)])
-
-        if not isinstance(entities_raw, list) or not isinstance(rels_raw, list):
+    
+        matched_ids: set[str] = set()
+        matched_entities: list[Entity] = []
+    
+        # -------- 1) ENTITIES (streaming) --------
+        try:
+            with json_path.open("rb") as f:
+                for raw in ijson.items(f, "entities.item"):
+                    if not isinstance(raw, dict):
+                        continue
+                    if raw.get("label") != label:
+                        continue
+    
+                    v = raw.get("value")
+                    if value_filter is not None:
+                        if not isinstance(v, dict):
+                            continue
+                        if not all(v.get(k) == expected for k, expected in value_filter.items()):
+                            continue
+    
+                    entity_id = raw.get("id")
+                    if not isinstance(entity_id, str) or not entity_id:
+                        continue
+    
+                    cls = GraphSchema.ENTITIES.get(label)
+                    if cls is None:
+                        self.res.errors.append(
+                            {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
+                        )
+                        return
+    
+                    try:
+                        ent = cls(id=entity_id, value=v)
+                    except Exception as exc:
+                        self.res.errors.append(
+                            {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
+                        )
+                        continue
+    
+                    matched_entities.append(ent)
+                    matched_ids.add(entity_id)
+    
+        except Exception as exc:
             self.res.errors.append(
-                {
-                    "type": "InvalidJson",
-                    "message": "Formato inválido: entities/relationships no son listas",
-                }
+                {"type": "JsonReadError", "message": f"Error leyendo entities: {exc}"}
             )
             return
-
-        # ---- 1) Filtrar entidades target ----
-        matched_entities: list[Entity] = []
-        matched_ids: set[str] = set()
-
-        for raw in entities_raw:
-            if not isinstance(raw, dict):
-                continue
-            if raw.get("label") != label:
-                continue
-
-            v = raw.get("value")
-            if value_filter is not None:
-                if not isinstance(v, dict):
-                    continue
-                ok = all(v.get(k) == expected for k, expected in value_filter.items())
-                if not ok:
-                    continue
-
-            entity_id = raw.get("id")
-            if not isinstance(entity_id, str) or not entity_id:
-                continue
-
-            cls = GraphSchema.ENTITIES.get(label)
-            if cls is None:
-                self.res.errors.append(
-                    {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
-                )
-                return
-
-            try:
-                ent = cls(id=entity_id, value=v)
-            except Exception as exc:
-                self.res.errors.append(
-                    {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
-                )
-                continue
-
-            matched_entities.append(ent)
-            matched_ids.add(entity_id)
-
+    
         for e in matched_entities:
             self.add_entity(e)
-
-        for raw in rels_raw:
-            if not isinstance(raw, dict):
-                continue
-            rel_type = raw.get("type")
-            source_id = raw.get("source_id")
-            target_id = raw.get("target_id")
-            props = raw.get("properties") or {}
-
-            if (
-                not isinstance(rel_type, str)
-                or not isinstance(source_id, str)
-                or not isinstance(target_id, str)
-            ):
-                continue
-            if source_id not in matched_ids and target_id not in matched_ids:
-                continue
-            if not isinstance(props, dict):
-                props = {}
-
-            try:
-                self.add_relationship(
-                    Relationship(
-                        type=rel_type, source_id=source_id, target_id=target_id, properties=props
-                    )
-                )
-            except Exception as exc:
-                self.res.errors.append(
-                    {
-                        "type": "InvalidRelationship",
-                        "message": f"{rel_type}({source_id}->{target_id}): {exc}",
-                    }
-                )
+    
+        # -------- 2) RELATIONSHIPS (segunda pasada) --------
+        try:
+            with json_path.open("rb") as f:
+                for raw in ijson.items(f, "relationships.item"):
+                    if not isinstance(raw, dict):
+                        continue
+    
+                    rel_type = raw.get("type")
+                    source_id = raw.get("source_id")
+                    target_id = raw.get("target_id")
+                    props = raw.get("properties") or {}
+    
+                    if (
+                        not isinstance(rel_type, str)
+                        or not isinstance(source_id, str)
+                        or not isinstance(target_id, str)
+                    ):
+                        continue
+    
+                    if source_id not in matched_ids and target_id not in matched_ids:
+                        continue
+    
+                    if not isinstance(props, dict):
+                        props = {}
+    
+                    try:
+                        self.add_relationship(
+                            Relationship(
+                                type=rel_type,
+                                source_id=source_id,
+                                target_id=target_id,
+                                properties=props,
+                            )
+                        )
+                    except Exception as exc:
+                        self.res.errors.append(
+                            {
+                                "type": "InvalidRelationship",
+                                "message": f"{rel_type}({source_id}->{target_id}): {exc}",
+                            }
+                        )
+    
+        except Exception as exc:
+            self.res.errors.append(
+                {"type": "JsonReadError", "message": f"Error leyendo relationships: {exc}"}
+            )
 
     def _build_doc_indexes(self) -> None:
         docs = [cast(Documento, e) for e in self.res.entities if e.label == "Documento"]
