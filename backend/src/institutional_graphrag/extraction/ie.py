@@ -1436,7 +1436,9 @@ class EntityExtractor:
 
                         # Incrementar contador de documentos procesados
                         docs_processed += 1
-                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
+                        self.mark_success(
+                            DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                        )
 
                     except Exception as e:
                         self.res.errors.append(
