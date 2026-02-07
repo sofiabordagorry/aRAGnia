@@ -1251,7 +1251,7 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                if self.already_run(DATA_DIR / "llm_registry.json", doc_id, "Investigador"):
+                if self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"):
                     logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 else:
                     # Cargar chunks del documento
