@@ -830,16 +830,25 @@ class EntityExtractor:
         return s
 
     def _build_indexes(self):
-        inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
+        inv_ids_by_project: dict[str, set[tuple[str, str]]] = defaultdict(set)
+
+        # Mapa rápido: inv_id -> inv_name
+        inv_name_by_id: dict[str, str] = {}
+        for e in self.res.entities:
+            if e.label == "Investigador":
+                if isinstance(e.value, dict):
+                    name = str(e.value.get("name", "")).strip()
+                else:
+                    name = str(e.value).strip()
+                inv_name_by_id[e.id] = name
+
+        # Índice: project_id -> {(inv_id, name), ...}
         for r in self.res.relationships:
             if r.type == "PARTICIPO_EN":
-                responsible_by_id = {
-                    str(e.value): e
-                    for e in self.res.entities
-                    if (e.label == "Investigador" and e.id == r.source_id)
-                }
-                investigador = next(iter(responsible_by_id.values()), None)
-                inv_ids_by_project[str(r.target_id)].add(investigador)
+                inv_id = str(r.source_id)
+                proj_id = str(r.target_id)
+                inv_name = inv_name_by_id.get(inv_id, "")
+                inv_ids_by_project[proj_id].add((inv_id, inv_name))
 
         return inv_ids_by_project
 
