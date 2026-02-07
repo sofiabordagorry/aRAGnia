@@ -1251,6 +1251,7 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
+                docs_processed += 1
                 if self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"):
                     logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 else:
@@ -1307,7 +1308,6 @@ class EntityExtractor:
                         existing_researcher_ids.update(e.id for e in new_entities)
 
                         # Incrementar contador de documentos procesados
-                        docs_processed += 1
                         self.mark_success(
                             DATA_DIR / "entities_relations" / "llm_registry.json",
                             doc_id,
@@ -1322,7 +1322,6 @@ class EntityExtractor:
                                 "message": f"Error procesando documento con LLM: {str(e)}",
                             }
                         )
-                        docs_processed += 1
 
     def extract_topics_llm(self, max_docs: int | None = None) -> None:
         """Extraer tópicos usando LLM.
@@ -1375,6 +1374,7 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
+                docs_processed += 1
                 if self.already_run(
                     DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
                 ):
@@ -1429,7 +1429,6 @@ class EntityExtractor:
                         existing_topic_ids.update(e.id for e in new_entities)
 
                         # Incrementar contador de documentos procesados
-                        docs_processed += 1
                         self.mark_success(
                             DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
                         )
@@ -1442,8 +1441,6 @@ class EntityExtractor:
                                 "message": f"Error procesando tópicos con LLM: {str(e)}",
                             }
                         )
-                        docs_processed += 1
-
             # Agregar relaciones proyecto->topico basadas en los chunks del proyecto
             self._aggregate_topics_for_project(project_id)
 
