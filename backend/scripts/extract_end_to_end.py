@@ -185,8 +185,10 @@ async def main(
             # DOC LING
             # -------------------------------------------------
             print("Ejecutando Docling...")
-            
-            doc_dict = parse_single_document(file_path)
+            try:
+                doc_dict = parse_single_document(file_path)
+            except Exception:
+                continue
 
             filename = doc_dict.get("name", "sin_nombre")
             print(f"Docling name: {filename}")
@@ -253,8 +255,6 @@ async def main(
 
             print(f" Embeddings guardados → {embedding_dir}")
 
-        except Exception as e:
-            print(f"✗ {filename}: {e}")
 
 
         # -------------------------------------------------
@@ -278,23 +278,27 @@ async def main(
                 value_builder=lambda *_: meta,
                 create_year_entity=True,
             )
+            print(res)
             entity_extractor.add_entities(res.entities)
             entity_extractor.add_relationship(res.relationships)
             entity_extractor.res.errors.extend(res.errors)
             # Extraer Chunk
             entity_extractor._build_doc_indexes()
+            print("dob bi id", entity_extractor.doc_by_id)
             res = static_extractor.extract_chunk(file_path, entity_extractor.doc_by_basename)
             entity_extractor.add_entities(res.entities)
             entity_extractor.add_relationship(res.relationships)
             entity_extractor.res.errors.extend(res.errors)
             saved.append(filename)
+        except Exception as e:
+            print(f"✗ {filename}: {e}")
 
     # Extraer Proyecto y responsable
-    res = static_extractor.associate_tables_with_documents(entity_extractor.docs_by_group_year)
+    res = static_extractor.associate_tables_with_documents(entity_extractor.docs_by_group_year, DATA_DIR / "tables")
     entity_extractor.res.errors.extend(res.errors)
 
     # Extraer con LLMS 
-    
+    print("dob bi id", entity_extractor.doc_by_id)
     res = static_extractor.extract_projects_and_responsible_from_tables(entity_extractor.doc_by_id, entity_extractor.chunks_dir)
     entity_extractor.add_entities(res.entities)
     entity_extractor.add_relationship(res.relationships)
@@ -310,6 +314,10 @@ async def main(
     entity_extractor.res.entities = entities
     entity_extractor.res.relationships = relationships
     # Guardado temporal para ver errores
+    if not entity_extractor.doc_by_id:
+        print("⚠️ No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web.")
+        return {"processed": saved, "warning": "doc_by_id vacío (no se generaron entidades de Documento)"}
+
     first_key, _ = next(iter(entity_extractor.doc_by_id.items()))
     filename = f"entity_extraction_web_{first_key}"
     entity_extractor.save_in_file(filename)
