@@ -55,8 +55,6 @@ TYPE_PRECEDENCIA = {
 class StaticExtractor:
     def __init__(self):
         self.datasets: list[pd.DataFrame] = []
-        
-        yield
 
     def extract_document(self,
             path: Path, pattern, value_builder, create_year_entity: bool = False
@@ -227,14 +225,14 @@ class StaticExtractor:
         return ExtractionResult(entities, relationships, errors)
 
     #def extract_projects(self) -> ExtractionResult:
-    def extract_projects_and_responsible_from_tables(self, datasets: list[pd.DataFrame],  doc_by_id: dict[str, Documento], chunk_dir: Path) -> ExtractionResult:
+    def extract_projects_and_responsible_from_tables(self,  doc_by_id: dict[str, Documento], chunk_dir: Path) -> ExtractionResult:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         all_projects_candidates: dict[str, list[dict[str, Any]]] = defaultdict(list)
         inv_ids_by_project = self._build_indexes()
         normalized_targets = {self._normalize_col(x) for x in TYPE_TABLE_NAME}
 
 
-        for df in datasets:
+        for df in self.datasets:
             title_col = next((c for c in df.columns if "TITULO" in c.upper() or "TÍTULO" in c.upper()), None)        
             if not title_col:
                 return {}
@@ -345,7 +343,6 @@ class StaticExtractor:
             project_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
             table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
 
-            # misma relación que tenías
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
             chunk_file = chunk_dir / f"{doc.value['base_name']}_chunks.json"
             candidate = self._search_title(chunk_file, frac_title)

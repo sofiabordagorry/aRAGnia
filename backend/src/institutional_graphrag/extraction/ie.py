@@ -83,13 +83,10 @@ class EntityExtractor:
         self._build_doc_indexes()
 
         res = self.static.associate_tables_with_documents(self.docs_by_group_year)
-        self.add_entities(res.entities)
-        self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
         self._extract_projects_and_resposible()
-        self._build_proyect_indexes()
         self._extract_with_llm(max_docs=max_docs)
 
         return self.res
@@ -321,8 +318,7 @@ class EntityExtractor:
             self.res.errors.extend(res.errors)
 
     def _extract_projects_and_resposible(self) -> None:
-        datasets = self.static.datasets
-        res = self.static.extract_projects_and_responsible_from_tables(datasets, self.doc_by_id, self.chunks_dir)
+        res = self.static.extract_projects_and_responsible_from_tables(self.doc_by_id, self.chunks_dir)
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)

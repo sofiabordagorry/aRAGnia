@@ -10,7 +10,7 @@ from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResu
 # Importar funciones de postprocesamiento
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
-from postprocess_entities import (
+from backend.src.institutional_graphrag.ingest.postprocess_entities import (
     consolidate_researchers,
     add_missing_evidence_text
 )

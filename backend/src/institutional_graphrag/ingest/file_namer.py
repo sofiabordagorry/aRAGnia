@@ -1,5 +1,31 @@
 import re
 
+from enum import Enum
+from pathlib import Path
+import tempfile
+
+
+class PdfKind(Enum):
+    TABULAR = "tabular"
+    NARRATIVE = "narrative"
+
+def looks_tabular(fileName: str) -> bool:
+    if any(k in fileName for k in ("informe", "propuesta", "resumen")):
+        return False
+    return True
+
+
+def classify_pdf(fileName: str) -> PdfKind:
+    return PdfKind.TABULAR if looks_tabular(fileName) else PdfKind.NARRATIVE
+
+def save_temp_file(content: bytes, filename: str) -> Path:
+    tmp_dir = Path(tempfile.gettempdir()) / "institutional_graphrag"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+
+    path = tmp_dir / filename
+    path.write_bytes(content)
+    return path
+
 
 def extract_relevant_year(path):
     path = path.replace("\\", "/")

@@ -8,36 +8,11 @@ from urllib.parse import quote
 from pathlib import Path
 from institutional_graphrag.ingest.file_namer import generate_new_filename
 from institutional_graphrag.ingest.table_extractors import extract_table
-import tempfile
-from enum import Enum
+from institutional_graphrag.ingest.file_namer import classify_pdf, PdfKind, save_temp_file
+
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-
-
-class PdfKind(Enum):
-    TABULAR = "tabular"
-    NARRATIVE = "narrative"
-
-
-def looks_tabular(fileName: str) -> bool:
-    if any(k in fileName for k in ("informe", "propuesta", "resumen")):
-        return False
-    return True
-
-
-def classify_pdf(fileName: str) -> PdfKind:
-    return PdfKind.TABULAR if looks_tabular(fileName) else PdfKind.NARRATIVE
-
-
-def save_temp_file(content: bytes, filename: str) -> Path:
-    tmp_dir = Path(tempfile.gettempdir()) / "institutional_graphrag"
-    tmp_dir.mkdir(parents=True, exist_ok=True)
-
-    path = tmp_dir / filename
-    path.write_bytes(content)
-    return path
-
 
 def main():
     backend_dir = BASE_DIR / "backend"

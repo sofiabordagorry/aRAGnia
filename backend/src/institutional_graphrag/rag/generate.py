@@ -286,9 +286,40 @@ class HFLocalLLM:
         new_tokens = output[0, input_ids.shape[1] :]
         return str(self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip())
 
+class ColabClient(LLMClient):
+    """
+    Cliente HTTP para tu FastAPI en Colab (/generate).
+    Compatible con la interfaz de OllamaClient.
+    """
+
+    def __init__(self, base_url: str):
+        self.url = f"{base_url}/generate"
+        self.session = requests.Session()
+        self.session.trust_env = False  # ignora proxies raros
+
+    def generate(
+        self,
+        *,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+
+        payload = {
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+
+        r = self.session.post(self.url, json=payload, timeout=600)
+
+        if not r.ok:
+            raise RuntimeError(f"Colab LLM error {r.status_code}: {r.text}")
+
+        return r.json()["text"]
 
 def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
-    if provider not in {"groq", "ollama", "local"}:
+    if provider not in {"groq", "ollama", "local", "colab"}:
         raise ValueError(f"LLM provider no soportado: {provider}")
 
     cached = _llm_instances.get(provider)
@@ -299,6 +330,9 @@ def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
         client: LLMClient = GroqClient(model=model or "llama-3.1-8b-instant")
     elif provider == "ollama":
         client = OllamaClient(model or "qwen2.5:3b-instruct")
+    elif provider == "colab":
+        # model = URL del tunnel
+        client = ColabClient(model or "https://coalition-hints-trial-relation.trycloudflare.com")
     else:  # provider == "local"
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 
