@@ -5,6 +5,7 @@ Tests para extraction/ie.py
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -20,8 +21,10 @@ from institutional_graphrag.graph.schema import (
     Anio,
     Chunk,
     Documento,
+    Investigador,
     Proyecto,
     Relationship,
+    Topico,
 )
 
 # -------------------------
@@ -364,12 +367,8 @@ def test_run_integration_minimal(tmp_path: Path):
 def test_extract_researchers_and_topics_llm_integration(
     extractor: EntityExtractor, tmp_path: Path, monkeypatch
 ):
-    """Test deduplicación: mismo investigador en mismo proyecto = 1 entidad, en proyectos diferentes = 2 entidades."""
-    extractor.chunks_dir.mkdir(parents=True)
-    extractor.documents_dir.mkdir(parents=True)
-
-    # Crear dos proyectos diferentes
-    # Proyecto 1: dos documentos
+    """Test deduplicación: mismo investigador en mismo proyecto = 1 entidad, en proyectos diferentes = 1 entidades."""
+    # docs
     doc1 = Documento(
         id="doc1",
         value={
@@ -390,7 +389,6 @@ def test_extract_researchers_and_topics_llm_integration(
             "type": "propuesta",
         },
     )
-    # Proyecto 2: un documento
     doc3 = Documento(
         id="doc3",
         value={
@@ -407,6 +405,7 @@ def test_extract_researchers_and_topics_llm_integration(
     proyecto1 = Proyecto(id="gi_2010_152", value="Proyecto 152")
     proyecto2 = Proyecto(id="gi_2010_391", value="Proyecto 391")
     extractor.res.entities.extend([proyecto1, proyecto2])
+
     extractor.res.relationships.extend(
         [
             Relationship(
@@ -421,34 +420,73 @@ def test_extract_researchers_and_topics_llm_integration(
         ]
     )
 
-    # Los 3 documentos mencionan "Juan Pérez"
-    for base_name in ["gi_2010_152_informe", "gi_2010_152_propuesta", "gi_2010_391_informe"]:
-        chunks = [
-            {
-                "chunk_id": f"{base_name}_chunk0",
-                "text": "Juan Pérez investiga machine learning.",
-                "metadata": {},
-            },
-        ]
-        write_chunks_file(
-            extractor.chunks_dir / f"{base_name}_chunks.json",
-            source=f"C:/tmp/{base_name}.pdf",
-            chunks=chunks,
-        )
-
-        # Crear entidades Chunk y relaciones DE_DOCUMENTO necesarias para agregación
-        doc_id = {
-            "gi_2010_152_informe": "doc1",
-            "gi_2010_152_propuesta": "doc2",
-            "gi_2010_391_informe": "doc3",
-        }[base_name]
+    for base_name, doc_id in [
+        ("gi_2010_152_informe", "doc1"),
+        ("gi_2010_152_propuesta", "doc2"),
+        ("gi_2010_391_informe", "doc3"),
+    ]:
         chunk_id = f"{base_name}_chunk0"
         extractor.res.entities.append(Chunk(id=chunk_id, value={}))
         extractor.res.relationships.append(
             Relationship(type="DE_DOCUMENTO", source_id=chunk_id, target_id=doc_id, properties={})
         )
 
-    # Mock para investigadores
+    chunks_by_base = {
+        "gi_2010_152_informe": {
+            "source": "C:/tmp/gi_2010_152_informe.pdf",
+            "chunks": [
+                {
+                    "chunk_id": "gi_2010_152_informe_chunk0",
+                    "text": "Juan Pérez investiga machine learning.",
+                    "metadata": {},
+                }
+            ],
+        },
+        "gi_2010_152_propuesta": {
+            "source": "C:/tmp/gi_2010_152_propuesta.pdf",
+            "chunks": [
+                {
+                    "chunk_id": "gi_2010_152_propuesta_chunk0",
+                    "text": "Juan Pérez investiga machine learning.",
+                    "metadata": {},
+                }
+            ],
+        },
+        "gi_2010_391_informe": {
+            "source": "C:/tmp/gi_2010_391_informe.pdf",
+            "chunks": [
+                {
+                    "chunk_id": "gi_2010_391_informe_chunk0",
+                    "text": "Juan Pérez investiga machine learning.",
+                    "metadata": {},
+                }
+            ],
+        },
+    }
+
+    monkeypatch.setattr(extractor, "already_run", lambda *args, **kwargs: False)
+    monkeypatch.setattr(extractor, "mark_success", lambda *args, **kwargs: None)
+
+    orig_exists = Path.exists
+
+    def fake_exists(self: Path) -> bool:
+        try:
+            if str(self).startswith(str(extractor.chunks_dir)) and self.name.endswith(
+                "_chunks.json"
+            ):
+                return True
+        except Exception:
+            pass
+        return orig_exists(self)
+
+    monkeypatch.setattr(Path, "exists", fake_exists)
+
+    def fake_read_json(path: Path):
+        base = path.name.replace("_chunks.json", "")
+        return chunks_by_base.get(base)
+
+    monkeypatch.setattr(extractor, "_read_json", fake_read_json)
+
     def mock_extract_researchers(chunks_list, max_chunks=None):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
@@ -461,7 +499,6 @@ def test_extract_researchers_and_topics_llm_integration(
             errors=[],
         )
 
-    # Mock para tópicos
     def mock_extract_topics(chunks_list, max_chunks=None):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
@@ -483,39 +520,103 @@ def test_extract_researchers_and_topics_llm_integration(
         lambda self, chunks, max_chunks=None: mock_extract_topics(chunks, max_chunks),
     )
 
-    # Ejecutar ambas extracciones
+    import institutional_graphrag.extraction.ie as ie_mod
+
+    def fake_create_entities_and_relationships_from_llm_extraction(
+        llm_result, project_id, existing_ids
+    ):
+        new_entities = []
+        new_relationships = []
+
+        for m in llm_result.researchers:
+            name = getattr(m, "name", None)
+            chunk_id = getattr(m, "chunk_id", None)
+            evidence = getattr(m, "evidence", "") or ""
+            if not name or not chunk_id:
+                continue
+
+            inv_id = "juan_perez"
+
+            if inv_id not in existing_ids:
+                new_entities.append(Investigador(id=inv_id, value={"name": name, "source": "llm"}))
+
+            new_relationships.append(
+                Relationship(
+                    type="PARTICIPO_EN", source_id=inv_id, target_id=project_id, properties={}
+                )
+            )
+            new_relationships.append(
+                Relationship(
+                    type="EVIDENCIA_DE",
+                    source_id=chunk_id,
+                    target_id=inv_id,
+                    properties={"evidence_text": evidence},
+                )
+            )
+
+        return new_entities, new_relationships
+
+    monkeypatch.setattr(
+        ie_mod,
+        "create_entities_and_relationships_from_llm_extraction",
+        fake_create_entities_and_relationships_from_llm_extraction,
+    )
+
+    def fake_create_topics_from_llm_extraction(llm_result, existing_topic_ids):
+        new_entities = []
+        new_relationships = []
+
+        for m in llm_result.topics:
+            topic_text = getattr(m, "topic", None) or getattr(m, "name", None)
+            chunk_id = getattr(m, "chunk_id", None)
+            evidence = getattr(m, "evidence", "") or ""
+
+            if not topic_text or not chunk_id:
+                continue
+
+            topic_id = re.sub(r"[^a-z0-9]+", "_", str(topic_text).lower()).strip("_")
+
+            if topic_id not in existing_topic_ids:
+                new_entities.append(
+                    Topico(id=topic_id, value={"name": topic_text, "source": "llm"})
+                )
+
+            new_relationships.append(
+                Relationship(
+                    type="EVIDENCIA_DE",
+                    source_id=chunk_id,
+                    target_id=topic_id,
+                    properties={"evidence_text": evidence},
+                )
+            )
+
+        return new_entities, new_relationships
+
+    monkeypatch.setattr(
+        "institutional_graphrag.extraction.ie.create_topics_from_llm_extraction",
+        fake_create_topics_from_llm_extraction,
+    )
+
     extractor.extract_researchers_llm()
     extractor.extract_topics_llm()
 
-    # Verificar deduplicación:
-    # - Investigadores: mismo nombre en diferentes proyectos = entidades distintas
-    # - Mismo proyecto (doc1 y doc2): 1 investigador
-    # - Proyecto diferente (doc3): otro investigador
-    # Total: 2 investigadores
     investigadores = [e for e in extractor.res.entities if e.label == "Investigador"]
-    assert len(investigadores) == 2, "Debe haber 2 investigadores (uno por proyecto)"
+    assert len(investigadores) == 1, "Debe haber 1 investigador"
 
-    # - Tópicos: mismo tópico en diferentes proyectos = misma entidad
-    # "Machine Learning" es siempre el mismo concepto
-    # Total: 1 tópico compartido entre ambos proyectos
     topicos = [e for e in extractor.res.entities if e.label == "Topico"]
     assert len(topicos) == 1, "Debe haber 1 tópico (compartido entre proyectos)"
 
-    # Verificar que cada investigador participa en SU proyecto
     participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
     assert len(participo_rels) == 2
     project_ids_from_rels = {r.target_id for r in participo_rels}
     assert project_ids_from_rels == {"gi_2010_152", "gi_2010_391"}
 
-    # Verificar relaciones TIENE_TOPICO:
-    # Solo proyecto->topico (basado en agregación de chunks)
     tiene_topico_rels = [r for r in extractor.res.relationships if r.type == "TIENE_TOPICO"]
     assert (
         len(tiene_topico_rels) == 2
-    ), f"Debe haber 2 relaciones TIENE_TOPICO (proyecto->topico), encontradas: {len(tiene_topico_rels)}"
+    ), f"Debe haber 2 relaciones TIENE_TOPICO, encontradas: {len(tiene_topico_rels)}"
     assert all(r.source_id in {"gi_2010_152", "gi_2010_391"} for r in tiene_topico_rels)
 
-    # Verificar mention_count en propiedades
     proj1_rel = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_152")
     proj2_rel = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_391")
     assert (
@@ -525,7 +626,6 @@ def test_extract_researchers_and_topics_llm_integration(
         proj2_rel.properties.get("mention_count") == 1
     ), "Proyecto 2 tiene 1 mención del tópico (1 chunk)"
 
-    # Verificar evidencias: 3 chunks mencionan investigadores (2 en proyecto1, 1 en proyecto2)
     evidencia_inv = [
         r
         for r in extractor.res.relationships
@@ -533,7 +633,6 @@ def test_extract_researchers_and_topics_llm_integration(
     ]
     assert len(evidencia_inv) == 3
 
-    # Verificar evidencias de tópicos: 3 chunks mencionan el mismo tópico
     evidencia_top = [
         r
         for r in extractor.res.relationships

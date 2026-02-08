@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
 from neo4j import GraphDatabase
 
@@ -75,16 +75,15 @@ class Neo4jGraphBuilder:
     # Nodos
     # -------------------------
 
-    def upsert_entities(self, entities: Iterable[Entity]):
+    def upsert_entities(self, entities: Iterable[Entity]) -> None:
         """Upsert entities usando batching correcto, por label."""
-
         entities_by_label: dict[str, list[Entity]] = {}
         for e in entities:
             entities_by_label.setdefault(e.label, []).append(e)
 
         for label, entities_label in entities_by_label.items():
             for batch in self._chunks(entities_label, self.batch_size):
-                rows = []
+                rows: list[dict] = []
                 for e in batch:
                     props = {"id": e.id}
                     if isinstance(e.value, dict):
@@ -99,10 +98,36 @@ class Neo4jGraphBuilder:
                 query = f"""
                 UNWIND $rows AS row
                 MERGE (e:{label} {{id: row.id}})
+                ON CREATE SET e.__created__ = true
                 SET e += row
+                RETURN
+                sum(CASE WHEN e.__created__ = true THEN 1 ELSE 0 END) AS created,
+                count(*) AS total
                 """
+
                 with self.driver.session() as session:
-                    session.run(query, rows=rows)
+                    result = session.run(query, rows=rows).single()
+                    if result is None:
+                        created = 0
+                        total = 0
+                    else:
+                        created = int(result["created"])
+                        total = int(result["total"])
+                    matched = total - created
+
+                    # limpiar flag (solo para los que se crearon en este batch)
+                session.run(f"""
+                MATCH (e:{label})
+                WHERE e.__created__ = true
+                REMOVE e.__created__
+                """)
+                logger.info(
+                    "Neo4j ENTIDADES label=%s total=%d creadas=%d ya_existian=%d",
+                    label,
+                    total,
+                    created,
+                    matched,
+                )
 
     # -------------------------
     # Relaciones
@@ -110,25 +135,30 @@ class Neo4jGraphBuilder:
     def upsert_relationships(
         self,
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
-    ):
-
+    ) -> None:
+        # 1) Filtrado + dedupe global
         seen: set[tuple[str, str, str]] = set()
         deduped: list[Tuple[Relationship, Entity, Entity]] = []
 
         for rel, src, tgt in relationships:
-            # Regla A: no permitir relaciones de un nodo consigo mismo
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
                 )
                 continue
 
-            # Regla B: no aceptar repetidas (type + source + target)
             key = (rel.type, src.id, tgt.id)
             if key in seen:
+                logger.warning(
+                    "Relación repetida (se omite): %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
+                )
                 continue
-
-            # Regla C: validar endpoints
             if not validate_relationship_endpoints(rel, src, tgt):
                 logger.error(
                     "Relación inválida por schema (se omite): %s (%s -> %s)",
@@ -141,12 +171,13 @@ class Neo4jGraphBuilder:
             seen.add(key)
             deduped.append((rel, src, tgt))
 
+        # 2) batching + agrupación por (rel_type, src_label, tgt_label)
         for batch in self._chunks(deduped, self.batch_size):
             groups: Dict[Tuple[str, str, str], List[Dict]] = {}
 
             for rel, src, tgt in batch:
-                key = (rel.type, src.label, tgt.label)
-                groups.setdefault(key, []).append(
+                gkey = (rel.type, src.label, tgt.label)
+                groups.setdefault(gkey, []).append(
                     {
                         "source_id": src.id,
                         "target_id": tgt.id,
@@ -161,9 +192,38 @@ class Neo4jGraphBuilder:
                     MATCH (s:{src_label} {{id: row.source_id}})
                     MATCH (t:{tgt_label} {{id: row.target_id}})
                     MERGE (s)-[r:{rel_type}]->(t)
+                    ON CREATE SET r.__created__ = true
                     SET r += row.properties
+                    RETURN
+                    sum(CASE WHEN r.__created__ = true THEN 1 ELSE 0 END) AS created,
+                    count(*) AS total
                     """
-                    session.run(query, rows=rows)
+
+                    result = session.run(query, rows=rows).single()
+                    if result is None:
+                        created = 0
+                        total = 0
+                    else:
+                        created = int(result["created"])
+                        total = int(result["total"])
+                    matched = total - created
+
+                    # limpiar flag
+                    session.run(f"""
+                    MATCH ()-[r:{rel_type}]->()
+                    WHERE r.__created__ = true
+                    REMOVE r.__created__
+                    """)
+
+                    logger.info(
+                        "Neo4j RELACIONES type=%s (%s->%s) total=%d creadas=%d ya_existian=%d",
+                        rel_type,
+                        src_label,
+                        tgt_label,
+                        total,
+                        created,
+                        matched,
+                    )
 
     def clear_graph(self):
         """
@@ -202,9 +262,16 @@ class GraphBuilder:
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
     ):
-        """Inserta entidades y relaciones usando batching genérico."""
-        self.backend.upsert_entities(entities)
-        self.backend.upsert_relationships(relationships)
+        entities_list = list(entities)
+        relationships_list = list(relationships)
+
+        logger.info(
+            "INGEST inicio: entidades=%d relaciones=%d",
+            len(entities_list),
+            len(relationships_list),
+        )
+        self.backend.upsert_entities(entities_list)
+        self.backend.upsert_relationships(relationships_list)
 
 
 # ============================================================
@@ -214,7 +281,7 @@ class GraphBuilder:
 
 def load_graph_json(
     json_path: str | Path,
-) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]]]:
+) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]], list[dict[str, Any]]]:
     json_path = Path(json_path).resolve()
     if not json_path.exists():
         raise FileNotFoundError(f"No existe el archivo: {json_path}")
@@ -225,6 +292,8 @@ def load_graph_json(
     entities_by_id: dict[str, Entity] = {}
     seen_labels_by_id: dict[str, set[str]] = {}
 
+    # Política simple: "primero gana" (first wins)
+    # Si preferís "último gana" (last wins), te dejo más abajo.
     for raw in payload.get("entities", []):
         entity_label = raw["label"]
         entity_id = raw["id"]
@@ -232,6 +301,7 @@ def load_graph_json(
 
         seen_labels_by_id.setdefault(entity_id, set()).add(entity_label)
 
+        # Si ya existe, no reemplazamos: nos quedamos con 1 sola entidad
         if entity_id in entities_by_id:
             prev = entities_by_id[entity_id]
             if prev.label != entity_label:
@@ -252,6 +322,7 @@ def load_graph_json(
         entity_cls = GraphSchema.get_entity_class(entity_label)
         entities_by_id[entity_id] = entity_cls(id=entity_id, value=value)
 
+    # (Opcional) resumen final de duplicados
     dup_diff = {eid: labels for eid, labels in seen_labels_by_id.items() if len(labels) > 1}
     if dup_diff:
         logger.error(
@@ -264,6 +335,7 @@ def load_graph_json(
     if inv_remap:
         # Eliminamos las entidades Investigador "contenidas"
         for drop_id in inv_remap.keys():
+            # por seguridad, solo borramos si sigue siendo Investigador
             e = entities_by_id.get(drop_id)
             if e is not None and e.label == "Investigador":
                 del entities_by_id[drop_id]
@@ -272,7 +344,7 @@ def load_graph_json(
             "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
         )
 
-    # Relationships
+    # Relationships (igual que antes)
     relationships: list[Tuple[Relationship, Entity, Entity]] = []
     for raw in payload.get("relationships", []):
         rel_type = raw["type"]
@@ -296,7 +368,21 @@ def load_graph_json(
 
         relationships.append((rel, src, tgt))
 
-    return list(entities_by_id.values()), relationships
+    raw_errors = payload.get("errors", [])
+    errors: list[dict[str, Any]] = raw_errors if isinstance(raw_errors, list) else []
+    errors = [e for e in errors if isinstance(e, dict)]
+
+    # Logs de conteos
+    raw_entities_n = len(payload.get("entities", []))
+    raw_rels_n = len(payload.get("relationships", []))
+
+    logger.info("JSON: entidades leídas=%d", raw_entities_n)
+    logger.info("JSON: relaciones leídas=%d", raw_rels_n)
+    logger.info("JSON: errores leídos=%d", len(errors))
+
+    logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
+    logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
+    return list(entities_by_id.values()), relationships, errors
 
 
 def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]:
@@ -310,6 +396,7 @@ def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]
     remap: dict[str, str] = {}
 
     for cand in inv_ids_sorted:
+        # Si ya está “contenido” en alguno que quedó, lo dropeamos
         container = next((k for k in kept if cand != k and cand in k), None)
         if container:
             remap[cand] = container

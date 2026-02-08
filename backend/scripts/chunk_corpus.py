@@ -8,10 +8,9 @@ from pathlib import Path
 
 from docling_core.types.doc import DoclingDocument
 
-from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.config import EMBED_MODEL_ID
+from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.table_extractors import convert_table_to_chunks
-
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
@@ -49,6 +48,11 @@ def main():
 
     for json_file in sorted(json_files):
         try:
+            file_path = Path(output_dir) / Path(json_file)
+            if file_path.exists():
+                print("El archivo a particionar en chunks ya existe :", json_file, "en la carpeta ", output_dir)
+                print("=" * 60)
+                continue
             # Cargar JSON procesado por Docling
             with open(json_file, "r", encoding="utf-8") as f:
                 doc_dict = json.load(f)

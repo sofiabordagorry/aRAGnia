@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 import tabula
@@ -183,10 +183,16 @@ def ods_table(path: Path) -> pd.DataFrame:
 
 # ---------- pdf ----------
 def pdf_table(path: Path) -> pd.DataFrame:
-    dfs = tabula.read_pdf(
-        str(path), pages="all", lattice=True, multiple_tables=True, encoding="latin-1"
+    dfs = cast(
+        list[pd.DataFrame],
+        tabula.read_pdf(
+            str(path),
+            pages="all",
+            lattice=True,
+            multiple_tables=True,
+            encoding="latin-1",
+        ),
     )
-
     if not dfs:
         raise ValueError(f"No se detectaron tablas en {path}")
 
@@ -215,15 +221,9 @@ def pdf_table(path: Path) -> pd.DataFrame:
 def save_table(df: pd.DataFrame, output_dir: Path, base_name: str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     df = df.astype("string")
-    pattern_table = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
-    match = pattern_table.match(base_name)
-    if match is None:
-        raise ValueError(f"Nombre de tabla inválido: {base_name}")
-
-    name_safe = f"{match.group('group')}_{match.group('year')}_table"
-    print(f"-> Guardando como: {name_safe}.parquet y {name_safe}.xlsx")
-    df.to_parquet(output_dir / f"{name_safe}.parquet")
-    df.to_excel(output_dir / f"{name_safe}.xlsx", index=False)
+    print(f"-> Guardando como: {base_name}.parquet y {base_name}.xlsx")
+    df.to_parquet(output_dir / f"{base_name}.parquet")
+    df.to_excel(output_dir / f"{base_name}.xlsx", index=False)
 
 
 def extract_table(path: Path, output_dir: Path) -> None:

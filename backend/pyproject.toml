@@ -33,14 +33,15 @@ dependencies = [
     "openpyxl>=3.1",
     "pyarrow>=14.0",
     "tabula-py>=2.9",
-    "neo4j>=5.0"
+    "neo4j>=5.0",
+    "ijson>=3.2.3"
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
-    "black>=23.0.0",
+    "black==26.1.0",
     "mypy>=1.5.0",
     "ruff>=0.1.0",
 ]

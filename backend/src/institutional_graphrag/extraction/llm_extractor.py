@@ -1054,7 +1054,9 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        entities.append(Investigador(id=researcher_id, value=mention.name))
+        entities.append(
+            Investigador(id=researcher_id, value={"name": mention.name, "source": "llm"})
+        )
         relationships.append(PARTICIPO_EN(researcher_id, project_id))
         relationships.append(
             EVIDENCIA_DE(

@@ -1,13 +1,15 @@
 import json
-import numpy as np
 from pathlib import Path
-from institutional_graphrag.ingest.embedder import E5Embedder
+
+import numpy as np
 
 # Todavía no se usa, pero va a ser necesaria si despues tenemos varios modelos
 # Para cohesividad con el chunker
 from institutional_graphrag.config import EMBED_MODEL_ID
+from institutional_graphrag.ingest.embedder import E5Embedder
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+
 
 def main():
     chunks_dir = DATA_DIR / Path("chunks")
