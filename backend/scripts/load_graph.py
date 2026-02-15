@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 
 
-load_dotenv()
+env_path = Path(__file__).parents[1] / ".env"
+load_dotenv(env_path)
 JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
 
 def main():

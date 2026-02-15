@@ -14,9 +14,9 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     validate_relationship_endpoints,
 )
-
-logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+logging.getLogger("neo4j").setLevel(logging.WARNING)
+logger = logging.getLogger("graph_ingest")
 
 
 # ============================================================
@@ -139,8 +139,8 @@ class Neo4jGraphBuilder:
                     stats.add_counters(summary.counters)
 
                     if record is not None:
-                        _extend_sample(stats.node_ids, record["ids"] or [], sample_ids)
-                        _extend_sample(stats.node_eids, record["eids"] or [], sample_ids)
+                        self._extend_sample(stats.node_ids, record["ids"] or [], sample_ids)
+                        self._extend_sample(stats.node_eids, record["eids"] or [], sample_ids)
 
         return stats
 
@@ -336,6 +336,31 @@ class Neo4jGraphBuilder:
         if remaining <= 0:
             return
         dst.extend(src[:remaining])
+
+    def fetch_entity_by_id(self, entity_id: str) -> list[Entity]:
+        """
+        Busca un nodo por id en todos los labels del schema y devuelve entidades mínimas.
+        (Si hay más de un label con el mismo id, devuelve varias.)
+        """
+        query = """
+        MATCH (n {id: $id})
+        RETURN labels(n) AS labels
+        LIMIT 5
+        """
+        with self.driver.session() as session:
+            rows = session.run(query, id=entity_id).data()
+
+        if not rows:
+            return []
+
+        labels = rows[0]["labels"] or []
+        out: list[Entity] = []
+        for lab in labels:
+            if lab in GraphSchema.ENTITIES:
+                cls = GraphSchema.get_entity_class(lab)
+                out.append(cls(id=entity_id, value={}))  # value vacío (o {"source":"db"} si querés)
+        return out
+
 # ============================================================
 # Fachada unificada
 # ============================================================
@@ -436,7 +461,6 @@ def load_graph_json(
         )
     database = Neo4jGraphBuilder(neo4j_uri, neo4j_user, neo4j_password)
     inv_ids_db = database.fetch_investigador_ids()
-    database.close()
     inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
     inv_remap, db_merge, _ = build_containment_plan(
         inv_ids_batch=inv_ids,
@@ -467,16 +491,34 @@ def load_graph_json(
 
         src = entities_by_id.get(source_id)
         if src is None:
-            logger.error("Relación %s: source_id no existe: %s (se omite)", rel_type, source_id)
-            continue
+            db_candidates = database.fetch_entity_by_id(source_id)
+            if len(db_candidates) == 1:
+                src = db_candidates[0]
+            else:
+                logger.error(
+                    "Relación %s: source_id no existe en batch y en DB es %s: %s (se omite)",
+                    rel_type,
+                    "inexistente" if not db_candidates else "ambiguo",
+                    source_id,
+                )
+                continue
 
         tgt = entities_by_id.get(target_id)
         if tgt is None:
-            logger.error("Relación %s: target_id no existe: %s (se omite)", rel_type, target_id)
-            continue
+            db_candidates = database.fetch_entity_by_id(target_id)
+            if len(db_candidates) == 1:
+                tgt = db_candidates[0]
+            else:
+                logger.error(
+                    "Relación %s: source_id no existe en batch y en DB es %s: %s (se omite)",
+                    rel_type,
+                    "inexistente" if not db_candidates else "ambiguo",
+                    source_id,
+                )
+                continue
 
         relationships.append((rel, src, tgt))
-
+    database.close()
     return list(entities_by_id.values()), relationships, db_merge
 
 

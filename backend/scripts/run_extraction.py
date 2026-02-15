@@ -10,7 +10,7 @@ from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResu
 # Importar funciones de postprocesamiento
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
-from backend.src.institutional_graphrag.ingest.postprocess_entities import (
+from institutional_graphrag.ingest.postprocess_entities import (
     consolidate_researchers,
     add_missing_evidence_text
 )
@@ -192,7 +192,8 @@ def main(max_docs: int | None = None) -> int:
     print("\n" + "="*60)
     print("INICIANDO POST-PROCESAMIENTO")
     print("="*60)
-    postprocess_extraction(out_path)
+
+    #postprocess_extraction(out_path)
         
     return 0
 

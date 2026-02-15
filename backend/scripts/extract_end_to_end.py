@@ -57,6 +57,9 @@ import json
 from pydantic import BaseModel
 from enum import Enum
 
+
+env_path = Path(__file__).parents[1] / ".env"
+load_dotenv(env_path)
 class PdfKind(Enum):
     TABULAR = "tabular"
     NARRATIVE = "narrative"
@@ -94,7 +97,7 @@ def make_uploadfiles(paths: Iterable[str | Path]) -> List[UploadFile]:
 class FileMeta(BaseModel):
     logical_path: str  # ej: "\1_GRUPOS I+D_2010_2014_2018\2010_Informes...\Negreira.pdf"
     group: str
-    year: int
+    year: str
     identifier: str   # ej: "1445"
     doc_type: str     # ej: "Resumen_publicable"
 
@@ -278,15 +281,15 @@ async def main(
                 value_builder=lambda *_: meta,
                 create_year_entity=True,
             )
-            print(res)
             entity_extractor.add_entities(res.entities)
             entity_extractor.add_relationship(res.relationships)
             entity_extractor.res.errors.extend(res.errors)
             # Extraer Chunk
+
             entity_extractor._build_doc_indexes()
-            print("dob bi id", entity_extractor.doc_by_id)
-            res = static_extractor.extract_chunk(file_path, entity_extractor.doc_by_basename)
+            res = static_extractor.extract_chunk(output_file, entity_extractor.doc_by_basename)
             entity_extractor.add_entities(res.entities)
+
             entity_extractor.add_relationship(res.relationships)
             entity_extractor.res.errors.extend(res.errors)
             saved.append(filename)
@@ -296,37 +299,48 @@ async def main(
     # Extraer Proyecto y responsable
     res = static_extractor.associate_tables_with_documents(entity_extractor.docs_by_group_year, DATA_DIR / "tables")
     entity_extractor.res.errors.extend(res.errors)
-
-    # Extraer con LLMS 
-    print("dob bi id", entity_extractor.doc_by_id)
     res = static_extractor.extract_projects_and_responsible_from_tables(entity_extractor.doc_by_id, entity_extractor.chunks_dir)
     entity_extractor.add_entities(res.entities)
     entity_extractor.add_relationship(res.relationships)
     entity_extractor.res.errors.extend(res.errors)
-    entity_extractor._extract_with_llm()
 
+
+    # Extraer con LLMS 
+    entity_extractor._extract_with_llm()
+    
     # Normalizar entidades
-    entities, relationships, _ = consolidate_researchers(
-        entity_extractor.res.entities,
-        entity_extractor.res.relationships
-    )
-    relationships, _ = add_missing_evidence_text(relationships)
-    entity_extractor.res.entities = entities
-    entity_extractor.res.relationships = relationships
-    # Guardado temporal para ver errores
+    entities_dicts = [e.to_dict() for e in entity_extractor.res.entities]
+    rels_dicts = [r.to_dict() for r in entity_extractor.res.relationships]
+
+    entities_dicts, rels_dicts, _ = consolidate_researchers(entities_dicts, rels_dicts)
+    rels_dicts, _ = add_missing_evidence_text(rels_dicts)
+
+    # Guardado temporal (JSON ya normalizado)
     if not entity_extractor.doc_by_id:
-        print("⚠️ No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web.")
+        print("No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web.")
         return {"processed": saved, "warning": "doc_by_id vacío (no se generaron entidades de Documento)"}
 
-    first_key, _ = next(iter(entity_extractor.doc_by_id.items()))
-    filename = f"entity_extraction_web_{first_key}"
-    entity_extractor.save_in_file(filename)
+    first_key = next(iter(entity_extractor.doc_by_id.keys()))
+    filename = f"entity_extraction_web_{first_key}.json"
+    path = DATA_DIR / "entities_relations" / filename
+    path.parent.mkdir(parents=True, exist_ok=True)
 
-    filename = f"{filename}.json"
+    path.write_text(
+        json.dumps(
+            {
+                "entities": entities_dicts,
+                "relationships": rels_dicts,
+                "errors": entity_extractor.res.errors,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
 
     # GUARDAR ENTIDAD EN BASE DE DATOS. 
-    neo4j_host = os.getenv("NEO4J_HOST", "localhost")
+    neo4j_host = os.getenv("HOST", "localhost")
     neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
 
     neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
@@ -336,7 +350,7 @@ async def main(
     os.getenv("NEO4J_PASSWORD"),
     )
     path = DATA_DIR / "entities_relations" / filename
-    entities, relationships, db_merge = load_graph_json(path)
+    entities, relationships, db_merge = load_graph_json(path, neo4j_uri, os.getenv("NEO4J_USER"), os.getenv("NEO4J_PASSWORD"))
     grafo.ingest(entities=entities, relationships=relationships)
 
     for old_id, new_id in db_merge:
@@ -374,15 +388,15 @@ if __name__ == "__main__":
     meta_dict = {
         "2465_documento_avales.pdf": {
             "logical_path": r"\...\2465_documento_avales.pdf",
-            "group": "Proyecto",
-            "year": 2020,
+            "group": "proy",
+            "year": "2020",
             "identifier": "69",
             "doc_type": "propuesta",
         },
         "624_documento_documentosrequeridos.pdf": {
             "logical_path": r"\...\624_documento_documentosrequeridos.pdf",
-            "group": "Proyecto",
-            "year": 2020,
+            "group": "proy",
+            "year": "2020",
             "identifier": "69",
             "doc_type": "informe",
         },
@@ -391,4 +405,3 @@ if __name__ == "__main__":
     files = make_uploadfiles(paths)
 
     res = asyncio.run(main(files, meta_dict=meta_dict))
-    print(res)

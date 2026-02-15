@@ -332,7 +332,7 @@ def get_llm_client(provider: str, *, model: Optional[str] = None) -> LLMClient:
         client = OllamaClient(model or "qwen2.5:3b-instruct")
     elif provider == "colab":
         # model = URL del tunnel
-        client = ColabClient(model or "https://coalition-hints-trial-relation.trycloudflare.com")
+        client = ColabClient(model or "https://architecture-lesson-golden-terrorism.trycloudflare.com")
     else:  # provider == "local"
         client = HFLocalLLM(model_name=model or "TinyLlama/TinyLlama-1.1B-Chat-v1.0")
 

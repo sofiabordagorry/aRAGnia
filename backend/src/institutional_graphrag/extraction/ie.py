@@ -82,7 +82,7 @@ class EntityExtractor:
         self._extract_documents()
         self._build_doc_indexes()
 
-        res = self.static.associate_tables_with_documents(self.docs_by_group_year)
+        res = self.static.associate_tables_with_documents(self.docs_by_group_year, self.table_dir)
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
@@ -240,7 +240,6 @@ class EntityExtractor:
 
     def add_relationship(self, relations: List[Relationship]) -> bool:
         for r in relations:
-
             key = (r.type, str(r.source_id), str(r.target_id))
 
             if key in self._rel_index:
@@ -550,7 +549,7 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                researcher_cache = self.already_run(DATA_DIR / "llm_registry.json", doc_id, "Investigador")
+                researcher_cache = self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador")
                     #logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 topic_cache = self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
                 
@@ -584,7 +583,7 @@ class EntityExtractor:
                             chunks, max_chunks=None
                         )
                         logger.info(
-                            f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result.researchers)} investigadores, {len(llm_result.errors)} errores"
+                            f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
                         )
                     if topic_cache:
                         logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
@@ -598,16 +597,12 @@ class EntityExtractor:
                         )
 
                         logger.info(
-                            f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result.topics)} tópicos, {len(llm_result.errors)} errores"
+                            f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
                         )
-                    llm_result: LLMExtractionResult = LLMExtractionResult([], [], [])
-                    llm_result.researchers.extend(llm_result_researcher.researchers)
-                    llm_result.topics.extend(llm_result_topic.topics)
-                    llm_result.errors.extend(llm_result_researcher.errors)
-                    llm_result.errors.extend(llm_result_topic.errors)
 
                     # Agregar errores
-                    self.res.errors.extend(llm_result.errors)
+                    self.res.errors.extend(llm_result_topic.errors)
+                    self.res.errors.extend(llm_result_researcher.errors)
                     
                     # Crear entidades y relaciones
                     # NOTA: existing_researcher_ids resetea por proyecto
@@ -615,7 +610,7 @@ class EntityExtractor:
                     # Mismo investigador en diferentes proyectos = entidades distintas
                     new_entities, new_relationships = (
                         create_entities_and_relationships_from_llm_extraction(
-                            llm_result, project_id, existing_researcher_ids
+                            llm_result_researcher, project_id, existing_researcher_ids
                         )
                     )
                     # Agregar al resultado
@@ -624,7 +619,7 @@ class EntityExtractor:
 
                     # Crear entidades y relaciones chunk->topico
                     new_entities, new_relationships = create_topics_from_llm_extraction(
-                            llm_result, existing_topic_ids
+                            llm_result_topic, existing_topic_ids
                         )
                     # Agregar al resultado
                     self.add_entities(new_entities)
@@ -644,8 +639,9 @@ class EntityExtractor:
                             doc_id,
                             "Investigador",
                         )
+                        print("guardado")
                     if not topic_cache:
-                        self.mark_success(DATA_DIR / "llm_registry.json", doc_id, "Topico")
+                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
                 except Exception as e:
                     self.res.errors.append(
                         {
@@ -689,13 +685,15 @@ class EntityExtractor:
 
         # Crear relaciones proyecto->topico para los top 3 tópicos más mencionados
         top_topics = topic_counts.most_common(3)
-
+        relationships_to_add = []
         for topic_id, count in top_topics:
-            self.add_relationship(
-                Relationship(
-                    type="TIENE_TOPICO",
-                    source_id=project_id,
-                    target_id=topic_id,
-                    properties={"mention_count": count},
-                )
+            rel = Relationship(
+                type="TIENE_TOPICO",
+                source_id=project_id,
+                target_id=topic_id,
+                properties={"mention_count": count},
             )
+            relationships_to_add.append(rel)
+
+        # 3️⃣ Llamar una sola vez al método
+        self.add_relationship(relationships_to_add)
