@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import json
 import logging
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
 from neo4j import GraphDatabase
 
@@ -126,6 +126,7 @@ class Neo4jGraphBuilder:
                 query = f"""
                 UNWIND $rows AS row
                 MERGE (e:{label} {{id: row.id}})
+                ON CREATE SET e.__created__ = true
                 SET e += row
                 RETURN collect(row.id) AS ids,
                     collect(elementId(e)) AS eids
@@ -165,6 +166,12 @@ class Neo4jGraphBuilder:
 
             key = (rel.type, src.id, tgt.id)
             if key in seen:
+                logger.warning(
+                    "Relación repetida (se omite): %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
+                )
                 continue
 
             if not validate_relationship_endpoints(rel, src, tgt):
@@ -174,12 +181,13 @@ class Neo4jGraphBuilder:
             seen.add(key)
             deduped.append((rel, src, tgt))
 
+        # 2) batching + agrupación por (rel_type, src_label, tgt_label)
         for batch in self._chunks(deduped, self.batch_size):
             groups: Dict[Tuple[str, str, str], List[Dict]] = {}
 
             for rel, src, tgt in batch:
-                k = (rel.type, src.label, tgt.label)
-                groups.setdefault(k, []).append(
+                gkey = (rel.type, src.label, tgt.label)
+                groups.setdefault(gkey, []).append(
                     {
                         "source_id": src.id,
                         "target_id": tgt.id,
@@ -194,6 +202,7 @@ class Neo4jGraphBuilder:
                     MATCH (s:{src_label} {{id: row.source_id}})
                     MATCH (t:{tgt_label} {{id: row.target_id}})
                     MERGE (s)-[r:{rel_type}]->(t)
+                    ON CREATE SET r.__created__ = true
                     SET r += row.properties
                     RETURN collect(elementId(r)) AS rel_eids,
                         collect([row.source_id, row.target_id]) AS pairs
@@ -426,6 +435,8 @@ def load_graph_json(
     entities_by_id: dict[str, Entity] = {}
     seen_labels_by_id: dict[str, set[str]] = {}
 
+    # Política simple: "primero gana" (first wins)
+    # Si preferís "último gana" (last wins), te dejo más abajo.
     for raw in payload.get("entities", []):
         entity_label = raw["label"]
         entity_id = raw["id"]
@@ -433,6 +444,7 @@ def load_graph_json(
 
         seen_labels_by_id.setdefault(entity_id, set()).add(entity_label)
 
+        # Si ya existe, no reemplazamos: nos quedamos con 1 sola entidad
         if entity_id in entities_by_id:
             prev = entities_by_id[entity_id]
             if prev.label != entity_label:
@@ -453,6 +465,7 @@ def load_graph_json(
         entity_cls = GraphSchema.get_entity_class(entity_label)
         entities_by_id[entity_id] = entity_cls(id=entity_id, value=value)
 
+    # (Opcional) resumen final de duplicados
     dup_diff = {eid: labels for eid, labels in seen_labels_by_id.items() if len(labels) > 1}
     if dup_diff:
         logger.error(
@@ -469,6 +482,7 @@ def load_graph_json(
     if inv_remap:
         # Eliminamos las entidades Investigador "contenidas"
         for drop_id in inv_remap.keys():
+            # por seguridad, solo borramos si sigue siendo Investigador
             e = entities_by_id.get(drop_id)
             if e is not None and e.label == "Investigador":
                 del entities_by_id[drop_id]
@@ -518,8 +532,22 @@ def load_graph_json(
                 continue
 
         relationships.append((rel, src, tgt))
-    database.close()
-    return list(entities_by_id.values()), relationships, db_merge
+
+    raw_errors = payload.get("errors", [])
+    errors: list[dict[str, Any]] = raw_errors if isinstance(raw_errors, list) else []
+    errors = [e for e in errors if isinstance(e, dict)]
+
+    # Logs de conteos
+    raw_entities_n = len(payload.get("entities", []))
+    raw_rels_n = len(payload.get("relationships", []))
+
+    logger.info("JSON: entidades leídas=%d", raw_entities_n)
+    logger.info("JSON: relaciones leídas=%d", raw_rels_n)
+    logger.info("JSON: errores leídos=%d", len(errors))
+
+    logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
+    logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
+    return list(entities_by_id.values()), relationships, errors
 
 
 def build_containment_plan(

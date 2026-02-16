@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
+import ijson
+import pandas as pd
+
 from institutional_graphrag.extraction.static_extractor import StaticExtractor
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
@@ -33,6 +36,9 @@ PATTERN_DOCUMENT = re.compile(
 )
 
 PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
+
+ALLOWED_SUFFIXES = {".parquet", ".pdf"}
+
 
 @dataclass
 class ExtractionResult:
@@ -70,6 +76,8 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
+        llm_researchers: bool = True,
+        llm_topics: bool = True,
     ) -> ExtractionResult:
         entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
@@ -78,17 +86,16 @@ class EntityExtractor:
                 label="Investigador",
                 value_filter={"source": "llm"},
             )
-        self.load_subset_from_graph_json(entities_json, label="Topico")
+            self.load_subset_from_graph_json(entities_json, label="Topico")
+
         self._extract_documents()
         self._build_doc_indexes()
-
         res = self.static.associate_tables_with_documents(self.docs_by_group_year, self.table_dir)
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
         self._extract_projects_and_resposible()
-        self._extract_with_llm(max_docs=max_docs)
-
+        self._extract_with_llm(max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics)
         return self.res
 
     def load_subset_from_graph_json(
@@ -98,15 +105,6 @@ class EntityExtractor:
         label: str,
         value_filter: Optional[dict[str, Any]] = None,
     ) -> None:
-        """
-        Carga al self un subgrafo del JSON:
-        - Entidades con `label` y (opcional) filtros exactos dentro de `value`
-        - Todas las relaciones donde aparezcan esas entidades (como source o target)
-
-        Ejemplos:
-        label="Investigador", value_filter={"source": "llm"}
-        label="Topico"  (sin value_filter)
-        """
         json_path = Path(json_path).resolve()
         if not json_path.is_file():
             self.res.errors.append(
@@ -114,99 +112,102 @@ class EntityExtractor:
             )
             return
 
-        with json_path.open(encoding="utf-8") as f:
-            payload = json.load(f)
+        matched_ids: set[str] = set()
+        matched_entities: list[Entity] = []
 
-        entities_raw = payload.get("entities", [])
-        rels_raw = payload.get("relationships", [])
-        errors_raw = payload.get("errors", [])
+        # -------- 1) ENTITIES (streaming) --------
+        try:
+            with json_path.open("rb") as f:
+                for raw in ijson.items(f, "entities.item"):
+                    if not isinstance(raw, dict):
+                        continue
+                    if raw.get("label") != label:
+                        continue
 
-        if isinstance(errors_raw, list):
-            self.res.errors.extend([e for e in errors_raw if isinstance(e, dict)])
+                    v = raw.get("value")
+                    if value_filter is not None:
+                        if not isinstance(v, dict):
+                            continue
+                        if not all(v.get(k) == expected for k, expected in value_filter.items()):
+                            continue
 
-        if not isinstance(entities_raw, list) or not isinstance(rels_raw, list):
+                    entity_id = raw.get("id")
+                    if not isinstance(entity_id, str) or not entity_id:
+                        continue
+
+                    cls = GraphSchema.ENTITIES.get(label)
+                    if cls is None:
+                        self.res.errors.append(
+                            {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
+                        )
+                        return
+
+                    try:
+                        ent = cls(id=entity_id, value=v)
+                    except Exception as exc:
+                        self.res.errors.append(
+                            {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
+                        )
+                        continue
+
+                    matched_entities.append(ent)
+                    matched_ids.add(entity_id)
+
+        except Exception as exc:
             self.res.errors.append(
-                {
-                    "type": "InvalidJson",
-                    "message": "Formato inválido: entities/relationships no son listas",
-                }
+                {"type": "JsonReadError", "message": f"Error leyendo entities: {exc}"}
             )
             return
 
-        # ---- 1) Filtrar entidades target ----
-        matched_entities: list[Entity] = []
-        matched_ids: set[str] = set()
-
-        for raw in entities_raw:
-            if not isinstance(raw, dict):
-                continue
-            if raw.get("label") != label:
-                continue
-
-            v = raw.get("value")
-            if value_filter is not None:
-                if not isinstance(v, dict):
-                    continue
-                ok = all(v.get(k) == expected for k, expected in value_filter.items())
-                if not ok:
-                    continue
-
-            entity_id = raw.get("id")
-            if not isinstance(entity_id, str) or not entity_id:
-                continue
-
-            cls = GraphSchema.ENTITIES.get(label)
-            if cls is None:
-                self.res.errors.append(
-                    {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
-                )
-                return
-
-            try:
-                ent = cls(id=entity_id, value=v)
-            except Exception as exc:
-                self.res.errors.append(
-                    {"type": "InvalidEntity", "message": f"{label}({entity_id}): {exc}"}
-                )
-                continue
-
-            matched_entities.append(ent)
-            matched_ids.add(entity_id)
-
         self.add_entities(matched_entities)
 
-        for raw in rels_raw:
-            if not isinstance(raw, dict):
-                continue
-            rel_type = raw.get("type")
-            source_id = raw.get("source_id")
-            target_id = raw.get("target_id")
-            props = raw.get("properties") or {}
 
-            if (
-                not isinstance(rel_type, str)
-                or not isinstance(source_id, str)
-                or not isinstance(target_id, str)
-            ):
-                continue
-            if source_id not in matched_ids and target_id not in matched_ids:
-                continue
-            if not isinstance(props, dict):
-                props = {}
+        # -------- 2) RELATIONSHIPS (segunda pasada) --------
+        try:
+            with json_path.open("rb") as f:
+                for raw in ijson.items(f, "relationships.item"):
+                    if not isinstance(raw, dict):
+                        continue
 
-            try:
-                self.add_relationship(
-                    Relationship(
-                        type=rel_type, source_id=source_id, target_id=target_id, properties=props
-                    )
-                )
-            except Exception as exc:
-                self.res.errors.append(
-                    {
-                        "type": "InvalidRelationship",
-                        "message": f"{rel_type}({source_id}->{target_id}): {exc}",
-                    }
-                )
+                    rel_type = raw.get("type")
+                    source_id = raw.get("source_id")
+                    target_id = raw.get("target_id")
+                    props = raw.get("properties") or {}
+
+                    if (
+                        not isinstance(rel_type, str)
+                        or not isinstance(source_id, str)
+                        or not isinstance(target_id, str)
+                    ):
+                        continue
+
+                    if source_id not in matched_ids and target_id not in matched_ids:
+                        continue
+
+                    if not isinstance(props, dict):
+                        props = {}
+
+                    try:
+                        self.add_relationship(
+                            Relationship(
+                                type=rel_type,
+                                source_id=source_id,
+                                target_id=target_id,
+                                properties=props,
+                            )
+                        )
+                    except Exception as exc:
+                        self.res.errors.append(
+                            {
+                                "type": "InvalidRelationship",
+                                "message": f"{rel_type}({source_id}->{target_id}): {exc}",
+                            }
+                        )
+
+        except Exception as exc:
+            self.res.errors.append(
+                {"type": "JsonReadError", "message": f"Error leyendo relationships: {exc}"}
+            )
 
     def _build_doc_indexes(self) -> None:
         docs = [cast(Documento, e) for e in self.res.entities if e.label == "Documento"]
@@ -218,10 +219,8 @@ class EntityExtractor:
             base = d.value["base_name"]
             self.doc_by_basename[base] = d
             key = (d.value["is_group"], d.value["year_publisher"])
-            self.docs_by_group_year[key].append(d)      
+            self.docs_by_group_year[key].append(d)
 
-
-    # VER DE CAMBIAR ESTRUCTURA INTERNA PARA Q CUESTE MENOS
     def add_entities(self, entities: List[Entity]) -> bool:
         for e in entities:
             key = (e.label, str(e.id))
@@ -321,7 +320,6 @@ class EntityExtractor:
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)
-
 
     def _result_to_json(self) -> Dict[str, Any]:
         return {
@@ -479,7 +477,9 @@ class EntityExtractor:
     def load_registry(self, path: Path) -> Dict[str, List[str]]:
         if not path.exists():
             return {}
-        return json.loads(path.read_text(encoding="utf-8"))
+        data_any: Any = json.loads(path.read_text(encoding="utf-8"))
+        data = cast(dict[str, list[str]], data_any)
+        return data
 
     def atomic_write(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -499,7 +499,7 @@ class EntityExtractor:
             self.reg[doc_id].sort()
             self.atomic_write(path)
 
-    def _extract_with_llm(self, max_docs: int | None = None) -> None:
+    def _extract_with_llm(self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
             Args:
                 max_docs: Límite opcional de documentos a procesar.
@@ -572,7 +572,7 @@ class EntityExtractor:
                     if not isinstance(chunks, list):
                         continue
                     
-                    if researcher_cache:
+                    if researcher_cache or not llm_researchers:
                         logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                     else:
                         # Extraer investigadores usando LLM de todos los chunks
@@ -582,10 +582,28 @@ class EntityExtractor:
                         llm_result_researcher = llm_extractor.extract_researchers_from_chunks(
                             chunks, max_chunks=None
                         )
+                        # Agregar errores
+                        self.res.errors.extend(llm_result_researcher.errors)
+                        # Crear entidades y relaciones
+                        # NOTA: existing_researcher_ids resetea por proyecto
+                        # Mismo investigador en docs del mismo proyecto = misma entidad
+                        # Mismo investigador en diferentes proyectos = entidades distintas
+                        new_entities, new_relationships = (
+                            create_entities_and_relationships_from_llm_extraction(
+                                llm_result_researcher, project_id, existing_researcher_ids
+                            )
+                        )
+                        # Agregar al resultado
+                        self.add_entities(new_entities)
+                        self.add_relationship(new_relationships)
+
+                        # Actualizar el set de IDs existentes para este proyecto
+                        existing_researcher_ids.update(e.id for e in new_entities)
+                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador")
                         logger.info(
                             f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
                         )
-                    if topic_cache:
+                    if topic_cache or not llm_topics:
                         logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
                     else:
                         # Extraer tópicos usando LLM de todos los chunks
@@ -595,53 +613,26 @@ class EntityExtractor:
                         llm_result_topic = llm_extractor.extract_topics_from_chunks(
                             chunks, max_chunks=None
                         )
+                        # Agregar errores
+                        self.res.errors.extend(llm_result_topic.errors)
+                        # Crear entidades y relaciones chunk->topico
+                        new_entities, new_relationships = create_topics_from_llm_extraction(
+                                llm_result_topic, existing_topic_ids
+                            )
+                        # Agregar al resultado
+                        self.add_entities(new_entities)
+                        self.add_relationship(new_relationships)
+
+                        # Actualizar el set de IDs globales
+                        existing_topic_ids.update(e.id for e in new_entities)
+                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
 
                         logger.info(
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
                         )
 
-                    # Agregar errores
-                    self.res.errors.extend(llm_result_topic.errors)
-                    self.res.errors.extend(llm_result_researcher.errors)
-                    
-                    # Crear entidades y relaciones
-                    # NOTA: existing_researcher_ids resetea por proyecto
-                    # Mismo investigador en docs del mismo proyecto = misma entidad
-                    # Mismo investigador en diferentes proyectos = entidades distintas
-                    new_entities, new_relationships = (
-                        create_entities_and_relationships_from_llm_extraction(
-                            llm_result_researcher, project_id, existing_researcher_ids
-                        )
-                    )
-                    # Agregar al resultado
-                    self.add_entities(new_entities)
-                    self.add_relationship(new_relationships)
-
-                    # Crear entidades y relaciones chunk->topico
-                    new_entities, new_relationships = create_topics_from_llm_extraction(
-                            llm_result_topic, existing_topic_ids
-                        )
-                    # Agregar al resultado
-                    self.add_entities(new_entities)
-                    self.add_relationship(new_relationships)
-
-                    # Actualizar el set de IDs existentes para este proyecto
-                    existing_researcher_ids.update(e.id for e in new_entities)
-
-                    # Actualizar el set de IDs globales
-                    existing_topic_ids.update(e.id for e in new_entities)
-
                     # Incrementar contador de documentos procesados
                     docs_processed += 1
-                    if not researcher_cache:
-                        self.mark_success(
-                            DATA_DIR / "entities_relations" / "llm_registry.json",
-                            doc_id,
-                            "Investigador",
-                        )
-                        print("guardado")
-                    if not topic_cache:
-                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
                 except Exception as e:
                     self.res.errors.append(
                         {

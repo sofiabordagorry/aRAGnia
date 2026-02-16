@@ -7,6 +7,8 @@ from typing import Any, Callable
 
 import pytest
 
+# 🔁 Ajustá este import si tu archivo está en otro módulo
+# Ej: from institutional_graphrag.graph.graph import ...
 from institutional_graphrag.graph.builder import (
     GraphBuilder,
     Neo4jGraphBuilder,
@@ -32,6 +34,7 @@ def make_entity_class(lbl: str):
         id: str
         value: Any = None
 
+        # usamos un field "computed" fijo para la clase
         @property
         def label(self) -> str:
             return lbl
@@ -45,12 +48,23 @@ class DummyRel:
     properties: dict[str, Any] | None = None
 
 
+class FakeResult:
+    def __init__(self, record=None):
+        self._record = record or {"created": 0, "total": 0}
+
+    def single(self):
+        return self._record
+
+
 class FakeSession:
     def __init__(self, calls: list[dict[str, Any]]):
         self.calls = calls
 
     def run(self, query: str, **params):
         self.calls.append({"query": query, "params": params})
+
+        rows = params.get("rows", [])
+        return FakeResult({"created": 0, "total": len(rows)})
 
     def __enter__(self):
         return self
@@ -179,7 +193,7 @@ def test_load_graph_json_remaps_relationships_and_drops_contained_investigators(
     monkeypatch.setattr(graph_mod, "GraphSchema", FakeGraphSchema)
     monkeypatch.setattr(graph_mod, "validate_relationship_endpoints", lambda rel, src, tgt: True)
 
-    entities, relationships = load_graph_json(json_path)
+    entities, relationships, _ = load_graph_json(json_path)
 
     # 1) Debe haberse eliminado el Investigador contenido: "stella_peña"
     entity_ids = {e.id for e in entities}
@@ -193,6 +207,8 @@ def test_load_graph_json_remaps_relationships_and_drops_contained_investigators(
     assert ("PARTICIPO_EN", "qf_stella_peña", "proy_1") in rel_types_and_endpoints
     assert ("EVIDENCIA_DE", "proy_1", "qf_stella_peña") in rel_types_and_endpoints
 
+    # 3) No deberían existir errores de "source_id no existe" porque se remapeó
+    # (si querés verificar logs)
     assert "source_id no existe" not in caplog.text
 
 
@@ -226,6 +242,11 @@ def test_neo4j_builder_creates_constraints(monkeypatch: pytest.MonkeyPatch):
     b.close()
 
 
+def _only_upsert_calls(calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    # Las queries de upsert son las que llevan UNWIND $rows
+    return [c for c in calls if "UNWIND $rows" in c["query"]]
+
+
 def test_upsert_entities_batches_by_label(monkeypatch: pytest.MonkeyPatch):
     import institutional_graphrag.graph.builder as graph_mod
 
@@ -250,15 +271,17 @@ def test_upsert_entities_batches_by_label(monkeypatch: pytest.MonkeyPatch):
 
     b.upsert_entities(entities)
 
-    # Debe haber 2 runs (A en batch de 2, B en batch de 1)
-    assert len(fake_driver.calls) == 2
+    upsert_calls = _only_upsert_calls(fake_driver.calls)
+
+    # Debe haber 2 upserts (A en batch de 2, B en batch de 1)
+    assert len(upsert_calls) == 2
 
     # Revisar que query tenga MERGE con label correcto
-    assert "(e:A" in fake_driver.calls[0]["query"]
-    assert "(e:B" in fake_driver.calls[1]["query"]
+    assert "(e:A" in upsert_calls[0]["query"]
+    assert "(e:B" in upsert_calls[1]["query"]
 
     # Revisar rows
-    rows_a = fake_driver.calls[0]["params"]["rows"]
+    rows_a = upsert_calls[0]["params"]["rows"]
     assert rows_a[0]["id"] == "1" and rows_a[0]["k"] == 1
     assert rows_a[1]["id"] == "2" and rows_a[1]["value"] == "v2"
 
@@ -294,9 +317,11 @@ def test_upsert_relationships_dedupes_and_blocks_self_loops(monkeypatch: pytest.
 
     b.upsert_relationships(relationships)
 
-    # Debe ejecutar 1 query de MERGE de relaciones (solo 1 relación válida)
-    assert len(fake_driver.calls) == 1
-    call = fake_driver.calls[0]
+    upsert_calls = _only_upsert_calls(fake_driver.calls)
+
+    # Debe ejecutar 1 upsert de relaciones (solo 1 relación válida)
+    assert len(upsert_calls) == 1
+    call = upsert_calls[0]
     assert "MERGE (s)-[r:REL]->(t)" in call["query"]
     assert len(call["params"]["rows"]) == 1
     assert call["params"]["rows"][0]["source_id"] == "1"

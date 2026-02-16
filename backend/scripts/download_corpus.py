@@ -1,11 +1,16 @@
-import requests
 import os
+import re
+
+import requests
 import urllib3
 from dotenv import load_dotenv
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from urllib.parse import quote
+import tempfile
+from enum import Enum
 from pathlib import Path
+from urllib.parse import quote
+
 from institutional_graphrag.ingest.file_namer import generate_new_filename
 from institutional_graphrag.ingest.table_extractors import extract_table
 from institutional_graphrag.ingest.file_namer import classify_pdf, PdfKind, save_temp_file
@@ -39,7 +44,30 @@ def main():
                 continue
 
             new_filename = generate_new_filename(line)
-
+            file_path = Path(output_dir) / new_filename
+            if file_path.exists():
+                print(
+                    "El archivo a descargar ya existe :",
+                    line,
+                    "con el nombre: ",
+                    new_filename,
+                    "en la carpeta ",
+                    output_dir,
+                )
+                print("=" * 60)
+                continue
+            file_path = Path(output_dir_tables) / f"{Path(new_filename).stem}.parquet"
+            if file_path.exists():
+                print(
+                    "El archivo a descargar ya existe :",
+                    line,
+                    "con el nombre: ",
+                    new_filename,
+                    "en la carpeta ",
+                    output_dir_tables,
+                )
+                print("=" * 60)
+                continue
             line = line.replace("\\", "/")
             parts = line.rsplit("/", 1)
             path = parts[0]

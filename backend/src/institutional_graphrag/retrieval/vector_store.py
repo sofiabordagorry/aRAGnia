@@ -2,8 +2,10 @@ import os
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
+    Condition,
     Distance,
     FieldCondition,
     Filter,
@@ -12,6 +14,8 @@ from qdrant_client.models import (
     PointStruct,
     VectorParams,
 )
+
+load_dotenv()
 
 
 class VectorStore:
@@ -32,7 +36,7 @@ class VectorStore:
         self.collection_name = collection_name
         self.embedding_dim = embedding_dim
 
-        host = os.getenv("QDRANT_HOST", "localhost")
+        host = os.getenv("HOST", "localhost")
         port = int(os.getenv("QDRANT_PORT", "6333"))
         self.client = QdrantClient(host=host, port=port)
 
@@ -125,15 +129,13 @@ class VectorStore:
             )
 
         # Construir filtro si se provee
-        qfilter = None
+        qfilter: Filter | None = None
         if filter_dict:
-            must = []
+            must: list[Condition] = []
             for k, v in filter_dict.items():
                 if isinstance(v, (list, tuple, set)):
-                    # Usar MatchAny para consultas IN (ej: category in ["research", "education"])
                     must.append(FieldCondition(key=k, match=MatchAny(any=list(v))))
                 else:
-                    # Usar MatchValue para igualdad exacta
                     must.append(FieldCondition(key=k, match=MatchValue(value=v)))
             qfilter = Filter(must=must)
 
@@ -149,11 +151,11 @@ class VectorStore:
         # Formatear resultados
         results = []
         for scored_point in search_result:
-            doc_id = scored_point.id
+            doc_id = str(scored_point.id)
             score = scored_point.score
             metadata = dict(scored_point.payload or {})
 
-            results.append((doc_id, score, metadata))
+            results.append((doc_id, float(score), metadata))
 
         return results
 
@@ -163,6 +165,39 @@ class VectorStore:
         """
         result = self.client.count(collection_name=self.collection_name, exact=True)
         return int(result.count)
+
+    def existing_payload_values(self, key: str, values: List[str]) -> set[str]:
+        """
+        Devuelve el subset de `values` que ya existe en la colección,
+        buscando por payload field `key` (ej: key="semantic_id").
+        """
+        if not values:
+            return set()
+
+        existing: set[str] = set()
+        chunk_size = 512
+
+        for i in range(0, len(values), chunk_size):
+            chunk = values[i : i + chunk_size]
+
+            qfilter = Filter(must=[FieldCondition(key=key, match=MatchAny(any=chunk))])
+
+            # scroll devuelve puntos que matchean el filtro
+            points, _next = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=qfilter,
+                with_payload=True,
+                with_vectors=False,
+                limit=len(chunk),
+            )
+
+            for p in points:
+                payload = dict(p.payload or {})
+                v = payload.get(key)
+                if isinstance(v, str):
+                    existing.add(v)
+
+        return existing
 
     def clear_collection(self) -> None:
         """Elimina todos los documentos de la colección."""
