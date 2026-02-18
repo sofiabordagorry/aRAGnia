@@ -48,7 +48,7 @@ def main():
 
     for json_file in sorted(json_files):
         try:
-            file_path = Path(output_dir) / Path(json_file)
+            file_path = Path(output_dir) / Path(json_file).name
             if file_path.exists():
                 print("El archivo a particionar en chunks ya existe :", json_file, "en la carpeta ", output_dir)
                 print("=" * 60)
