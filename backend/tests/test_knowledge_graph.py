@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 
@@ -12,7 +10,6 @@ import pytest
 from institutional_graphrag.graph.builder import (
     GraphBuilder,
     Neo4jGraphBuilder,
-    load_graph_json,
 )
 
 # ============================================================
