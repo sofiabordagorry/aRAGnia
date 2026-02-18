@@ -11,7 +11,7 @@ from pathlib import Path
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 
 sys.path.insert(0, str(Path(__file__).parent))
-from institutional_graphrag.ingest.postprocess_entities import add_missing_evidence_text, consolidate_researchers
+from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 # Configurar logging
 logging.basicConfig(
@@ -47,6 +47,7 @@ def main(
     max_docs: int | None = None,
     llm_researchers: bool = True,
     llm_topics: bool = True,
+    enable_researcher_consolidation: bool = False,
 ) -> int:
     extractor = EntityExtractor(
         llm_provider=LLM_PROVIDER,
@@ -92,7 +93,11 @@ def main(
     print("\n" + "=" * 60)
     print("INICIANDO POST-PROCESAMIENTO")
     print("=" * 60)
-    postprocess_extraction(out_path)
+    post_processor = Postprocessor(
+        enable_researcher_consolidation=enable_researcher_consolidation,
+        similarity_threshold=0.85,
+    )
+    post_processor.postprocess_file(out_path)
 
     return 0
 
@@ -115,6 +120,13 @@ if __name__ == "__main__":
         action="store_true",
         help="Desactiva la búsqueda de tópicos por LLM",
     )
+
+    parser.add_argument(
+        "--enable_researcher_consolidation",
+        action="store_true",
+        help="Desactiva la búsqueda de tópicos por LLM",
+    )
+
     args = parser.parse_args()
 
     if args.max_docs is not None:
@@ -124,9 +136,10 @@ if __name__ == "__main__":
 
     llm_researchers = not args.no_llm_researchers
     llm_topics = not args.no_llm_topics
-
+    enable_researcher_consolidation = args.enable_researcher_consolidation
     print(f"[CONFIG] LLM investigadores: {'ACTIVO' if llm_researchers else 'DESACTIVADO'}")
     print(f"[CONFIG] LLM tópicos: {'ACTIVO' if llm_topics else 'DESACTIVADO'}")
+    print(f"[CONFIG] Unificacion de Investigadores: {'ACTIVO' if enable_researcher_consolidation else 'DESACTIVADO'}")
 
     # -------------------------------------------------
 
@@ -135,5 +148,6 @@ if __name__ == "__main__":
             max_docs=args.max_docs,
             llm_researchers=llm_researchers,
             llm_topics=llm_topics,
+            enable_researcher_consolidation=enable_researcher_consolidation,
         )
     )

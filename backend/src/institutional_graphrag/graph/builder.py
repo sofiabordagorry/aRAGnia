@@ -13,7 +13,8 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     validate_relationship_endpoints,
 )
-from institutional_graphrag.ingest.postprocess_entities import build_containment_remap 
+from institutional_graphrag.ingest.postprocess_entities import build_containment_remap
+
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
@@ -367,6 +368,3 @@ def load_graph_json(
     logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
     logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
     return list(entities_by_id.values()), relationships, errors
-
-
-

@@ -1,12 +1,12 @@
 """Post-procesar entidades y relaciones para mejorar calidad."""
 
 import json
+import logging
 import re
 import unicodedata
-import logging
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 from institutional_graphrag.graph.schema import Entity
 
@@ -14,26 +14,18 @@ logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
 
-class GraphPostprocessor:
+class Postprocessor:
     """
     Postprocesador con módulo apagable.
-
-    Si self.enabled == False, NO se hace ningún postprocesamiento (devuelve datos tal cual).
-    También podés apagar/encender pasos individuales con flags.
+    Si self.enable_researcher_consolidation == False, NO se hace la unificacion de Investigadores
     """
 
     def __init__(
         self,
-        enabled: bool = True,  # <- "la variable" principal: si está activa postprocesa; si no, no
-        enable_researcher_consolidation: bool = True,
-        enable_evidence_filter: bool = True,
-        enable_containment_remap: bool = False,  # opcional, por defecto apagado
+        enable_researcher_consolidation: bool = False,
         similarity_threshold: float = 0.85,
     ) -> None:
-        self.enabled = enabled
         self.enable_researcher_consolidation = enable_researcher_consolidation
-        self.enable_evidence_filter = enable_evidence_filter
-        self.enable_containment_remap = enable_containment_remap
         self.similarity_threshold = similarity_threshold
 
     # -------------------------
@@ -45,9 +37,7 @@ class GraphPostprocessor:
         normalized = name.strip().upper()
 
         normalized = "".join(
-            c
-            for c in unicodedata.normalize("NFD", normalized)
-            if unicodedata.category(c) != "Mn"
+            c for c in unicodedata.normalize("NFD", normalized) if unicodedata.category(c) != "Mn"
         )
 
         normalized = re.sub(r"\s+", " ", normalized)
@@ -173,7 +163,10 @@ class GraphPostprocessor:
                     duplicates.append(other_id)
                     processed.add(other_id)
 
-                elif self.name_similarity(norm1, norm2) >= self.similarity_threshold and self.enable_researcher_consolidation:
+                elif (
+                    self.name_similarity(norm1, norm2) >= self.similarity_threshold
+                    and self.enable_researcher_consolidation
+                ):
                     tokens1 = norm1.split()
                     tokens2 = norm2.split()
                     common = set(tokens1) & set(tokens2)
@@ -183,7 +176,10 @@ class GraphPostprocessor:
                         duplicates.append(other_id)
                         processed.add(other_id)
 
-                elif self.is_partial_name(other_name, researcher_name) and self.enable_researcher_consolidation:
+                elif (
+                    self.is_partial_name(other_name, researcher_name)
+                    and self.enable_researcher_consolidation
+                ):
                     duplicates.append(other_id)
                     processed.add(other_id)
 
@@ -255,7 +251,12 @@ class GraphPostprocessor:
             normalized = self.normalize_name(original)
             if original != normalized:
                 normalization_changes.append(
-                    {"type": "normalization", "id": r["id"], "original": original, "normalized": normalized}
+                    {
+                        "type": "normalization",
+                        "id": r["id"],
+                        "original": original,
+                        "normalized": normalized,
+                    }
                 )
             r["value"]["name"] = normalized
 
@@ -304,7 +305,11 @@ class GraphPostprocessor:
         print(f"[Consolidación] {len(merge_changes)} investigadores consolidados")
         if merge_changes:
             transformation_log.append(
-                {"step": "Consolidación de duplicados", "count": len(merge_changes), "changes": merge_changes[:30]}
+                {
+                    "step": "Consolidación de duplicados",
+                    "count": len(merge_changes),
+                    "changes": merge_changes[:30],
+                }
             )
 
         # PASO 5: actualizar relaciones y filtrar duplicadas / genéricas
@@ -363,7 +368,9 @@ class GraphPostprocessor:
         consolidated = [r for r in consolidated if r["id"] in researchers_with_valid_rels]
 
         if to_remove:
-            print(f"[Consolidación] {len(to_remove)} investigadores sin relaciones válidas eliminados")
+            print(
+                f"[Consolidación] {len(to_remove)} investigadores sin relaciones válidas eliminados"
+            )
             transformation_log.append(
                 {
                     "step": "Eliminación de investigadores sin relaciones válidas",
@@ -373,13 +380,17 @@ class GraphPostprocessor:
             )
 
         print(f"[Consolidación] {duplicate_rels_removed} relaciones duplicadas eliminadas")
-        print(f"[Consolidación] {generic_rels_removed} relaciones EVIDENCIA_DE genéricas eliminadas")
+        print(
+            f"[Consolidación] {generic_rels_removed} relaciones EVIDENCIA_DE genéricas eliminadas"
+        )
 
         if relationship_updates or (duplicate_rels_removed + generic_rels_removed) > 0:
             transformation_log.append(
                 {
                     "step": "Actualización y filtrado de relaciones",
-                    "count": len(relationship_updates) + duplicate_rels_removed + generic_rels_removed,
+                    "count": len(relationship_updates)
+                    + duplicate_rels_removed
+                    + generic_rels_removed,
                     "relationship_updates": len(relationship_updates),
                     "duplicate_relationships_removed": duplicate_rels_removed,
                     "generic_relationships_removed": generic_rels_removed,
@@ -390,9 +401,7 @@ class GraphPostprocessor:
         final_entities = other_entities + consolidated
         return final_entities, updated_relationships, transformation_log
 
-    def add_missing_evidence_text(
-        self, relationships: List[dict]
-    ) -> Tuple[List[dict], List[dict]]:
+    def add_missing_evidence_text(self, relationships: List[dict]) -> Tuple[List[dict], List[dict]]:
         """Descarta EVIDENCIA_DE sin evidence_text real."""
         updated: List[dict] = []
         filtered_rels: List[dict] = []
@@ -404,17 +413,27 @@ class GraphPostprocessor:
                 if not evidence or self.is_generic_evidence(evidence):
                     filtered_count += 1
                     filtered_rels.append(
-                        {"source_id": rel.get("source_id"), "target_id": rel.get("target_id"), "evidence": evidence}
+                        {
+                            "source_id": rel.get("source_id"),
+                            "target_id": rel.get("target_id"),
+                            "evidence": evidence,
+                        }
                     )
                     continue
             updated.append(rel)
 
-        print(f"[Evidence Filter] {filtered_count} relaciones EVIDENCIA_DE sin evidence válido descartadas")
+        print(
+            f"[Evidence Filter] {filtered_count} relaciones EVIDENCIA_DE sin evidence válido descartadas"
+        )
 
         transformation_log: List[dict] = []
         if filtered_count > 0:
             transformation_log.append(
-                {"step": "Filtrado de EVIDENCIA_DE genéricas", "count": filtered_count, "sample_filtered": filtered_rels[:10]}
+                {
+                    "step": "Filtrado de EVIDENCIA_DE genéricas",
+                    "count": filtered_count,
+                    "sample_filtered": filtered_rels[:10],
+                }
             )
         return updated, transformation_log
 
@@ -426,26 +445,24 @@ class GraphPostprocessor:
         Recibe dict con {entities: [...], relationships: [...]}
         Devuelve (data_actualizado, logs)
         """
-        if not self.enabled:
-            logger.info("Postprocesamiento DESACTIVADO (enabled=False). Se devuelve tal cual.")
-            return data, [{"step": "postprocess_disabled", "enabled": False}]
-
         entities = data.get("entities", [])
         relationships = data.get("relationships", [])
 
         full_log = {
-            "timestamp": logging.Formatter().formatTime(logging.LogRecord("", 0, "", 0, "", (), None)),
+            "timestamp": logging.Formatter().formatTime(
+                logging.LogRecord("", 0, "", 0, "", (), None)
+            ),
             "original_counts": {"entities": len(entities), "relationships": len(relationships)},
             "transformations": [],
         }
 
-        if self.enable_researcher_consolidation:
-            entities, relationships, consolidation_log = self.consolidate_researchers(entities, relationships)
-            full_log["transformations"].extend(consolidation_log)
+        entities, relationships, consolidation_log = self.consolidate_researchers(
+            entities, relationships
+        )
+        full_log["transformations"].extend(consolidation_log)
 
-        if self.enable_evidence_filter:
-            relationships, evidence_log = self.add_missing_evidence_text(relationships)
-            full_log["transformations"].extend(evidence_log)
+        relationships, evidence_log = self.add_missing_evidence_text(relationships)
+        full_log["transformations"].extend(evidence_log)
 
         data["entities"] = entities
         data["relationships"] = relationships
@@ -472,19 +489,25 @@ class GraphPostprocessor:
 
         original_entities = len(data.get("entities", []))
         original_relationships = len(data.get("relationships", []))
-        print(f"[Postprocess] Original: {original_entities} entidades, {original_relationships} relaciones")
+        print(
+            f"[Postprocess] Original: {original_entities} entidades, {original_relationships} relaciones"
+        )
 
         data, full_log = self.postprocess_payload(data)
-        
-        print(f"\n[Postprocess] Final: {len(data['entities'])} entidades, {len(data['relationships'])} relaciones")
-        print(f"[Postprocess] Reducción: {original_entities - len(data['entities'])} entidades, {original_relationships - len(data['relationships'])} relaciones")
+
+        print(
+            f"\n[Postprocess] Final: {len(data['entities'])} entidades, {len(data['relationships'])} relaciones"
+        )
+        print(
+            f"[Postprocess] Reducción: {original_entities - len(data['entities'])} entidades, {original_relationships - len(data['relationships'])} relaciones"
+        )
 
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
         print(f"\n[OK] Guardado en: {json_path}")
 
-         # Generar resumen legible en texto
+        # Generar resumen legible en texto
         summary_path = json_path.parent / f"{json_path.stem}_postprocess_summary.txt"
         with open(summary_path, "w", encoding="utf-8") as f:
             f.write("=" * 80 + "\n")
@@ -497,8 +520,10 @@ class GraphPostprocessor:
             f.write("CONTEOS:\n")
             f.write(f"  Entidades originales: {original_entities}\n")
             f.write(f"  Entidades finales: {len(data['entities'])}\n")
-            f.write(f"  Entidades eliminadas (duplicados): {original_entities - len(data['entities'])}\n")
-            f.write(f"  Relaciones: {len(data['relationship'])}\n\n")
+            f.write(
+                f"  Entidades eliminadas (duplicados): {original_entities - len(data['entities'])}\n"
+            )
+            f.write(f"  Relaciones: {len(data['relationships'])}\n\n")
 
             for transformation in full_log["transformations"]:
                 f.write("-" * 80 + "\n")
@@ -528,19 +553,4 @@ class GraphPostprocessor:
 
                 f.write("\n")
 
-        print(f"[OK] Resumen legible guardado en: {summary_path}")        
-
-if __name__ == "__main__":
-    # Variable principal (la que pediste):
-    # - True  => hace postprocesamiento según flags
-    # - False => NO hace nada (pasa todo tal cual)
-    ENABLE_POSTPROCESSING = True
-
-    pp = GraphPostprocessor(
-        enabled=ENABLE_POSTPROCESSING,
-        enable_researcher_consolidation=True,
-        enable_evidence_filter=True,
-        enable_containment_remap=False,  # prendelo si lo necesitás
-        similarity_threshold=0.85,
-    )
-    pp.postprocess_file()
+        print(f"[OK] Resumen legible guardado en: {summary_path}")
