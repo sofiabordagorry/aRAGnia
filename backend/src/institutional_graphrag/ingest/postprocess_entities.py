@@ -6,7 +6,7 @@ import re
 import unicodedata
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Any
 
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -339,7 +339,10 @@ class Postprocessor:
                 if self.is_generic_evidence(evidence):
                     generic_rels_removed += 1
                     continue
-                researchers_with_valid_rels.add(rel_copy.get("target_id"))
+
+                target_id = rel_copy.get("target_id")
+                if isinstance(target_id, str):
+                    researchers_with_valid_rels.add(target_id)
 
             rel_key = (rel_copy.get("source_id"), rel_copy.get("target_id"), rel_copy.get("type"))
             if rel_key in seen_relationships:
@@ -438,15 +441,15 @@ class Postprocessor:
     # -------------------------
     # API principal
     # -------------------------
-    def postprocess_payload(self, data: dict) -> Tuple[dict, List[dict]]:
+    def postprocess_payload(self, data: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Recibe dict con {entities: [...], relationships: [...]}
         Devuelve (data_actualizado, logs)
         """
-        entities = data.get("entities", [])
-        relationships = data.get("relationships", [])
+        entities: list[dict[str, Any]] = data.get("entities", [])
+        relationships: list[dict[str, Any]] = data.get("relationships", [])
 
-        full_log = {
+        full_log: dict[str, Any] = {
             "timestamp": logging.Formatter().formatTime(
                 logging.LogRecord("", 0, "", 0, "", (), None)
             ),
