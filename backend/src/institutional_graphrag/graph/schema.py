@@ -9,17 +9,21 @@ from typing import Any, Dict, List, Optional, Literal, TypedDict
 
 # Definiciones del campo Value
 
+
 class AnioValue(TypedDict):
     year: str
+
 
 class DocumentoValue(TypedDict):
     base_name: str
     is_group: str
     year_publisher: str
 
+
 class InvestigadorValue(TypedDict):
     name: str
     source: Literal["static", "llm"]
+
 
 class ChunkValue(TypedDict):
     headings: List[str]
@@ -28,6 +32,7 @@ class ChunkValue(TypedDict):
     parent_doc: str
     token_count: int
     text: str
+
 
 @dataclass
 class Entity:
