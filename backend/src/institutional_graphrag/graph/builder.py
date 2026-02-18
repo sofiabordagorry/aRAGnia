@@ -13,7 +13,7 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     validate_relationship_endpoints,
 )
-
+from institutional_graphrag.ingest.postprocess_entities import build_containment_remap 
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 
@@ -292,8 +292,6 @@ def load_graph_json(
     entities_by_id: dict[str, Entity] = {}
     seen_labels_by_id: dict[str, set[str]] = {}
 
-    # Política simple: "primero gana" (first wins)
-    # Si preferís "último gana" (last wins), te dejo más abajo.
     for raw in payload.get("entities", []):
         entity_label = raw["label"]
         entity_id = raw["id"]
@@ -330,26 +328,12 @@ def load_graph_json(
             len(dup_diff),
         )
 
-    inv_remap = build_containment_remap(entities_by_id)
-
-    if inv_remap:
-        # Eliminamos las entidades Investigador "contenidas"
-        for drop_id in inv_remap.keys():
-            # por seguridad, solo borramos si sigue siendo Investigador
-            e = entities_by_id.get(drop_id)
-            if e is not None and e.label == "Investigador":
-                del entities_by_id[drop_id]
-
-        logger.warning(
-            "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
-        )
-
     # Relationships (igual que antes)
     relationships: list[Tuple[Relationship, Entity, Entity]] = []
     for raw in payload.get("relationships", []):
         rel_type = raw["type"]
-        source_id = inv_remap.get(raw["source_id"], raw["source_id"])
-        target_id = inv_remap.get(raw["target_id"], raw["target_id"])
+        source_id = raw["source_id"]
+        target_id = raw["target_id"]
 
         properties = raw.get("properties") or {}
 
@@ -385,25 +369,4 @@ def load_graph_json(
     return list(entities_by_id.values()), relationships, errors
 
 
-def build_containment_remap(entities_by_id: dict[str, Entity]) -> dict[str, str]:
 
-    inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
-
-    # Ordenamos por largo DESC: primero los más largos (candidatos a quedar)
-    inv_ids_sorted = sorted(inv_ids, key=len, reverse=True)
-
-    kept: list[str] = []
-    remap: dict[str, str] = {}
-
-    for cand in inv_ids_sorted:
-        # Si ya está “contenido” en alguno que quedó, lo dropeamos
-        container = next((k for k in kept if cand != k and cand in k), None)
-        if container:
-            remap[cand] = container
-            logger.warning(
-                "Investigador id contenido (se elimina): drop=%s keep=%s", cand, container
-            )
-        else:
-            kept.append(cand)
-
-    return remap
