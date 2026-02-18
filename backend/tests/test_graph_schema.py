@@ -1,6 +1,8 @@
 """Tests for the graph schema module."""
 
 import pytest
+import json
+from pathlib import Path
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
@@ -21,6 +23,20 @@ from institutional_graphrag.graph.schema import (
     Topico,
     validate_relationship_endpoints,
 )
+
+
+# auxiliary function
+def load_entities():
+    # 1. Define path relative to the project root or this file
+    current_file = Path(__file__).resolve()
+    # Go up 2 levels: tests -> backend -> root
+    json_path = current_file.parents[2] / "data" / "entities_relations" / "entity_documents.json"
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Return the list (assuming structure is {"entities": [...]})
+    return data["entities"]
 
 
 class TestEntities:
@@ -77,6 +93,25 @@ class TestEntities:
         assert result["id"] == "proyecto_123"
         assert result["label"] == "Proyecto"
         assert result["value"] == "Test Project"
+
+    @pytest.mark.parametrize("entity_data", load_entities())
+    def test_individual_entity_schema(self, entity_data):
+        """
+        Tests one entity at a time. Pytest will generate a
+        separate test case for every item in the list.
+        """
+        entity_id = entity_data.get("id")
+        label = entity_data.get("label")
+        value = entity_data.get("value")
+
+        # 1. Check label exists
+        assert label is not None, f"Entity {entity_id} missing label"
+
+        # 2. Get Class
+        EntityClass = GraphSchema.get_entity_class(label)
+
+        # 3. Validate
+        EntityClass(id=entity_id, value=value)
 
 
 class TestRelationships:
