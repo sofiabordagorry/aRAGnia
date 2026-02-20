@@ -6,7 +6,7 @@ import re
 import unicodedata
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 logger = logging.getLogger("graph_ingest")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -157,7 +157,10 @@ class Postprocessor:
                     duplicates.append(other_id)
                     processed.add(other_id)
 
-                elif self.is_inverted_name(researcher_name, other_name):
+                elif (
+                    self.is_inverted_name(researcher_name, other_name)
+                    and self.enable_researcher_consolidation
+                ):
                     duplicates.append(other_id)
                     processed.add(other_id)
 
