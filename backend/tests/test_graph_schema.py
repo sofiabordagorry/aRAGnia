@@ -3,7 +3,7 @@
 import pytest
 import json
 from pathlib import Path
-from pydantic import TypeAdapter, ValidationError
+from pydantic import TypeAdapter
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
