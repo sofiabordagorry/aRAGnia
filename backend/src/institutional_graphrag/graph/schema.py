@@ -5,7 +5,8 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Literal, TypedDict
+from typing import Any, Dict, List, Optional, Literal
+from typing_extensions import NotRequired, TypedDict
 
 # Definiciones del campo Value
 
@@ -18,20 +19,13 @@ class DocumentoValue(TypedDict):
     base_name: str
     is_group: str
     year_publisher: str
+    sub_id: NotRequired[str]
+    type: Literal["informe","propuesta","resumen","tabla"]
 
 
 class InvestigadorValue(TypedDict):
     name: str
     source: Literal["static", "llm"]
-
-
-class ChunkValue(TypedDict):
-    headings: List[str]
-    page_numbers: List[int]
-    element_type: str
-    parent_doc: str
-    token_count: int
-    text: str
 
 
 @dataclass
@@ -116,7 +110,7 @@ class Documento(Entity):
 
 @dataclass
 class Chunk(Entity):
-    value: ChunkValue
+    pass
 
 
 def PARTICIPO_EN(
@@ -328,3 +322,5 @@ def validate_relationship_endpoints(
         return source_label == expected[0] and target_label in expected[1]
 
     return source_label == expected[0] and target_label == expected[1]
+
+

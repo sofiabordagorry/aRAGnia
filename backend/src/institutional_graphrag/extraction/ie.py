@@ -339,6 +339,7 @@ class EntityExtractor:
                 "base_name": base,
                 "is_group": m.group("group"),
                 "year_publisher": m.group("year"),
+                "type": "tabla",
             },
             create_year_entity=True,
         )
