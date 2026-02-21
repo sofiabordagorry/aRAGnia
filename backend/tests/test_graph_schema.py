@@ -34,6 +34,7 @@ VALUE_SCHEMAS = {
     "Investigador": TypeAdapter(InvestigadorValue),
 }
 
+
 # auxiliary function
 def load_entities():
     current_file = Path(__file__).resolve()
@@ -115,7 +116,7 @@ class TestEntities:
             # 1. Check label exists
             if label is None:
                 failures.append(f"Entity {entity_id}: missing label")
-                continue 
+                continue
 
             try:
                 # 2. Get Class
@@ -132,9 +133,8 @@ class TestEntities:
 
         if failures:
             error_count = len(failures)
-            formatted_errors = "\n" + "="*40 + "\n".join(failures)
+            formatted_errors = "\n" + "=" * 40 + "\n".join(failures)
             pytest.fail(f"Se encontraron {error_count} entidades invalidas: {formatted_errors}")
-
 
     # @pytest.mark.parametrize("entity_data", load_entities())
     # def test_individual_entity_schema(self, entity_data):

@@ -20,7 +20,7 @@ class DocumentoValue(TypedDict):
     is_group: str
     year_publisher: str
     sub_id: NotRequired[str]
-    type: Literal["informe","propuesta","resumen","tabla"]
+    type: Literal["informe", "propuesta", "resumen", "tabla"]
 
 
 class InvestigadorValue(TypedDict):
@@ -322,5 +322,3 @@ def validate_relationship_endpoints(
         return source_label == expected[0] and target_label in expected[1]
 
     return source_label == expected[0] and target_label == expected[1]
-
-
