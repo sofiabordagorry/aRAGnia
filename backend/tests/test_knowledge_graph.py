@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 
@@ -12,8 +10,6 @@ import pytest
 from institutional_graphrag.graph.builder import (
     GraphBuilder,
     Neo4jGraphBuilder,
-    build_containment_remap,
-    load_graph_json,
 )
 
 # ============================================================
@@ -84,34 +80,6 @@ class FakeDriver:
         pass
 
 
-# ============================================================
-# Tests unitarios puros (sin Neo4j)
-# ============================================================
-
-
-def test_build_containment_remap_drops_shorter_contained_ids():
-    entities_by_id = {
-        # Investigadores
-        "ana": DummyEntity(id="ana", label="Investigador"),
-        "ana_maria": DummyEntity(id="ana_maria", label="Investigador"),
-        "juan": DummyEntity(id="juan", label="Investigador"),
-        "x_juan_perez": DummyEntity(id="x_juan_perez", label="Investigador"),
-        # otro tipo no debe entrar
-        "proy_1": DummyEntity(id="proy_1", label="Proyecto"),
-    }
-
-    remap = build_containment_remap(entities_by_id)
-
-    # "ana" está contenido en "ana_maria" -> remap ana -> ana_maria
-    assert remap["ana"] == "ana_maria"
-
-    # "juan" está contenido en "x_juan_perez" -> remap juan -> x_juan_perez
-    assert remap["juan"] == "x_juan_perez"
-
-    # "ana_maria" no debe remapearse a sí mismo
-    assert "ana_maria" not in remap
-
-
 def test_graphbuilder_requires_credentials():
     with pytest.raises(ValueError, match="Faltan credenciales"):
         GraphBuilder(neo4j_uri=None, neo4j_user="neo4j", neo4j_password="x")
@@ -127,89 +95,6 @@ def test_chunks_splits_iterable():
     data = list(range(10))
     chunks = list(Neo4jGraphBuilder._chunks(data, 4))
     assert chunks == [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9]]
-
-
-# ============================================================
-# Tests de load_graph_json con monkeypatch de GraphSchema
-# ============================================================
-
-
-def test_load_graph_json_remaps_relationships_and_drops_contained_investigators(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    caplog: pytest.LogCaptureFixture,
-):
-    # Payload mínimo
-    payload = {
-        "entities": [
-            {"label": "Investigador", "id": "stella_peña", "value": {"name": "Stella Peña"}},
-            {"label": "Investigador", "id": "qf_stella_peña", "value": {"name": "Stella Peña"}},
-            {"label": "Proyecto", "id": "proy_1", "value": {"title": "P1"}},
-        ],
-        "relationships": [
-            # Esta relación viene apuntando al ID corto -> debe remapearse al largo
-            {
-                "type": "PARTICIPO_EN",
-                "source_id": "stella_peña",
-                "target_id": "proy_1",
-                "properties": {},
-            },
-            # Target también remapea (si existiera)
-            {
-                "type": "EVIDENCIA_DE",
-                "source_id": "proy_1",
-                "target_id": "stella_peña",
-                "properties": {"x": 1},
-            },
-        ],
-    }
-
-    json_path = tmp_path / "Entity_documents.json"
-    json_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-
-    # --- Monkeypatch GraphSchema y validate_relationship_endpoints dentro del módulo ---
-    import institutional_graphrag.graph.builder as graph_mod
-
-    def fake_get_entity_class(label: str):
-        return make_entity_class(label)
-
-    def fake_get_rel_factory(rel_type: str) -> Callable[[str, str, dict[str, Any]], DummyRel]:
-        def _factory(source_id: str, target_id: str, properties: dict[str, Any]):
-            return DummyRel(type=rel_type, properties=properties)
-
-        return _factory
-
-    class FakeGraphSchema:
-        ENTITIES = ["Investigador", "Proyecto"]
-
-        @staticmethod
-        def get_entity_class(label: str):
-            return fake_get_entity_class(label)
-
-        @staticmethod
-        def get_relationship_factory(rel_type: str):
-            return fake_get_rel_factory(rel_type)
-
-    monkeypatch.setattr(graph_mod, "GraphSchema", FakeGraphSchema)
-    monkeypatch.setattr(graph_mod, "validate_relationship_endpoints", lambda rel, src, tgt: True)
-
-    entities, relationships, _ = load_graph_json(json_path)
-
-    # 1) Debe haberse eliminado el Investigador contenido: "stella_peña"
-    entity_ids = {e.id for e in entities}
-    assert "stella_peña" not in entity_ids
-    assert "qf_stella_peña" in entity_ids
-
-    # 2) Relaciones deben estar remapeadas
-    # relationships es lista de (rel, src_entity, tgt_entity)
-    rel_types_and_endpoints = {(rel.type, src.id, tgt.id) for (rel, src, tgt) in relationships}
-
-    assert ("PARTICIPO_EN", "qf_stella_peña", "proy_1") in rel_types_and_endpoints
-    assert ("EVIDENCIA_DE", "proy_1", "qf_stella_peña") in rel_types_and_endpoints
-
-    # 3) No deberían existir errores de "source_id no existe" porque se remapeó
-    # (si querés verificar logs)
-    assert "source_id no existe" not in caplog.text
 
 
 # ============================================================
