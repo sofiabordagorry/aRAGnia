@@ -5,7 +5,27 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Literal
+from typing_extensions import NotRequired, TypedDict
+
+# Definiciones del campo Value
+
+
+class AnioValue(TypedDict):
+    year: str
+
+
+class DocumentoValue(TypedDict):
+    base_name: str
+    is_group: str
+    year_publisher: str
+    sub_id: NotRequired[str]
+    type: Literal["informe", "propuesta", "resumen", "tabla"]
+
+
+class InvestigadorValue(TypedDict):
+    name: str
+    source: Literal["static", "llm"]
 
 
 @dataclass
@@ -65,27 +85,27 @@ class Relationship:
 
 @dataclass
 class Proyecto(Entity):
-    pass
+    value: str
 
 
 @dataclass
 class Anio(Entity):
-    pass
+    value: AnioValue
 
 
 @dataclass
 class Investigador(Entity):
-    pass
+    value: InvestigadorValue
 
 
 @dataclass
 class Topico(Entity):
-    pass
+    value: str
 
 
 @dataclass
 class Documento(Entity):
-    pass
+    value: DocumentoValue
 
 
 @dataclass
