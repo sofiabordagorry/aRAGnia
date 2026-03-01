@@ -1,12 +1,14 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+
 import json
 import logging
+import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
 from neo4j import GraphDatabase
+from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
 
 from institutional_graphrag.graph.schema import (
     Entity,
@@ -14,10 +16,12 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     validate_relationship_endpoints,
 )
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 logging.getLogger("neo4j").setLevel(logging.WARNING)
 logger = logging.getLogger("graph_ingest")
 ENABLE_NON_EQUAL_NAME_UNIFICATION = False
+
 
 # ============================================================
 # Neo4j backend
@@ -33,19 +37,20 @@ class Neo4jStats:
     labels_removed: int = 0
 
     # IDs (opcionales / sample)
-    node_ids: List[str] = field(default_factory=list)         # tus ids lógicos (row.id)
-    node_eids: List[str] = field(default_factory=list)        # elementId(e)
-    rel_eids: List[str] = field(default_factory=list)         # elementId(r)
+    node_ids: List[str] = field(default_factory=list)  # tus ids lógicos (row.id)
+    node_eids: List[str] = field(default_factory=list)  # elementId(e)
+    rel_eids: List[str] = field(default_factory=list)  # elementId(r)
     rel_pairs: List[Tuple[str, str]] = field(default_factory=list)  # (source_id, target_id)
 
     def add_counters(self, counters) -> None:
-            self.nodes_created += counters.nodes_created
-            self.nodes_deleted += counters.nodes_deleted
-            self.relationships_created += counters.relationships_created
-            self.relationships_deleted += counters.relationships_deleted
-            self.properties_set += counters.properties_set
-            self.labels_added += counters.labels_added
-            self.labels_removed += counters.labels_removed
+        self.nodes_created += counters.nodes_created
+        self.nodes_deleted += counters.nodes_deleted
+        self.relationships_created += counters.relationships_created
+        self.relationships_deleted += counters.relationships_deleted
+        self.properties_set += counters.properties_set
+        self.labels_added += counters.labels_added
+        self.labels_removed += counters.labels_removed
+
 
 class Neo4jGraphBuilder:
     """
@@ -55,12 +60,40 @@ class Neo4jGraphBuilder:
     - Valida esquema antes de persistir
     - Implementa batching para nodos y relaciones
     """
-    
 
     def __init__(self, uri: str, user: str, password: str, batch_size: int = 500):
-        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        try:
+            self.driver = GraphDatabase.driver(uri, auth=(user, password))
+            self._ping(max_attempts=6, sleep_s=2)
+        except AuthError:
+            logger.error("Neo4j: credenciales inválidas")
+            raise RuntimeError("No se pudo autenticar con Neo4j. Verificá usuario y contraseña.")
+
+        except ServiceUnavailable:
+            logger.error("Neo4j: servidor no disponible en %s", uri)
+            raise RuntimeError("No se pudo conectar a Neo4j. ¿Está el contenedor corriendo?")
+
+        except SessionExpired:
+            logger.error("Neo4j: conexión expirada durante el handshake")
+            raise RuntimeError("La conexión con Neo4j falló durante la inicialización.")
         self.batch_size = batch_size
         self._create_constraints()
+
+    def _ping(self, max_attempts: int = 2, sleep_s: int = 2) -> None:
+        last_err = None
+        for attempt in range(1, max_attempts + 1):
+            try:
+                with self.driver.session() as session:
+                    session.run("RETURN 1").consume()
+                logger.info("Neo4j listo (ping OK)")
+                return
+            except (ServiceUnavailable, SessionExpired, OSError) as e:
+                last_err = e
+                logger.warning("Neo4j no listo (ping %d/%d): %s", attempt, max_attempts, e)
+                time.sleep(sleep_s)
+            except AuthError:
+                raise
+        raise last_err  # type: ignore[misc]
 
     def close(self):
         self.driver.close()
@@ -69,16 +102,31 @@ class Neo4jGraphBuilder:
     # Constraints
     # -------------------------
 
-    def _create_constraints(self):
-        """Crear constraints únicos para cada label automáticamente."""
-        with self.driver.session() as session:
-            for label in GraphSchema.ENTITIES:
-                query = f"""
-                CREATE CONSTRAINT IF NOT EXISTS
-                FOR (n:{label})
-                REQUIRE n.id IS UNIQUE;
-                """
-                session.run(query)
+    def _create_constraints(self, max_attempts: int = 5, sleep_s: int = 2) -> None:
+        last_err = None
+        for attempt in range(1, max_attempts + 1):
+            try:
+                with self.driver.session() as session:
+                    for label in GraphSchema.ENTITIES:
+                        query = f"""
+                        CREATE CONSTRAINT IF NOT EXISTS
+                        FOR (n:{label})
+                        REQUIRE n.id IS UNIQUE
+                        """
+                        session.run(query).consume()
+                logger.info("Constraints OK")
+                return
+            except (ServiceUnavailable, SessionExpired, OSError) as e:
+                last_err = e
+                logger.warning("Fallo creando constraints (%d/%d): %s", attempt, max_attempts, e)
+                time.sleep(sleep_s)
+            except AuthError:
+                raise
+
+        raise RuntimeError(
+            "Neo4j no respondió al crear constraints. "
+            "Probablemente el contenedor se reinició o todavía no terminó de iniciar."
+        ) from last_err
 
     # -------------------------
     # Utilidades de batching
@@ -161,7 +209,9 @@ class Neo4jGraphBuilder:
 
         for rel, src, tgt in relationships:
             if src.id == tgt.id:
-                logger.warning("Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id)
+                logger.warning(
+                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
+                )
                 continue
 
             key = (rel.type, src.id, tgt.id)
@@ -175,7 +225,12 @@ class Neo4jGraphBuilder:
                 continue
 
             if not validate_relationship_endpoints(rel, src, tgt):
-                logger.error("Relación inválida por schema (se omite): %s (%s -> %s)", rel.type, src.label, tgt.label)
+                logger.error(
+                    "Relación inválida por schema (se omite): %s (%s -> %s)",
+                    rel.type,
+                    src.label,
+                    tgt.label,
+                )
                 continue
 
             seen.add(key)
@@ -222,8 +277,6 @@ class Neo4jGraphBuilder:
 
         return stats
 
-
-
     def clear_graph(self):
         """
         Borra **todos los nodos y relaciones** del grafo.
@@ -239,7 +292,6 @@ class Neo4jGraphBuilder:
         with self.driver.session() as session:
             rows = session.run(query).data()
         return [r["id"] for r in rows if r.get("id")]
-
 
     def merge_node_id(
         self,
@@ -262,7 +314,8 @@ class Neo4jGraphBuilder:
                 MERGE (b:{label} {{id: $new_id}})
                 RETURN elementId(a) AS a_eid, elementId(b) AS b_eid
                 """,
-                old_id=old_id, new_id=new_id,
+                old_id=old_id,
+                new_id=new_id,
             )
             rec = r.single()
             summ = r.consume()
@@ -277,7 +330,8 @@ class Neo4jGraphBuilder:
                 MATCH (b:{label} {{id: $new_id}})
                 SET b += a
                 """,
-                old_id=old_id, new_id=new_id,
+                old_id=old_id,
+                new_id=new_id,
             )
             stats.add_counters(r.consume().counters)
 
@@ -300,7 +354,8 @@ class Neo4jGraphBuilder:
                     RETURN collect(elementId(r2)) AS moved_rel_eids,
                         collect([b.id, x.id]) AS pairs
                     """,
-                    old_id=old_id, new_id=new_id,
+                    old_id=old_id,
+                    new_id=new_id,
                 )
                 rec = r.single()
                 summ = r.consume()
@@ -318,7 +373,8 @@ class Neo4jGraphBuilder:
                     DELETE r
                     RETURN collect(elementId(r2)) AS moved_rel_eids
                     """,
-                    old_id=old_id, new_id=new_id,
+                    old_id=old_id,
+                    new_id=new_id,
                 )
                 rec = r.single()
                 summ = r.consume()
@@ -370,6 +426,7 @@ class Neo4jGraphBuilder:
                 out.append(cls(id=entity_id, value={}))  # value vacío (o {"source":"db"} si querés)
         return out
 
+
 # ============================================================
 # Fachada unificada
 # ============================================================
@@ -400,23 +457,35 @@ class GraphBuilder:
         ent_stats = self.backend.upsert_entities(entities, sample_ids=15)
         rel_stats = self.backend.upsert_relationships(relationships, sample_ids=15)
 
-        print("ENTIDADES:",
-            "nodes_created=", ent_stats.nodes_created,
-            "props_set=", ent_stats.properties_set,
-            "sample_node_ids=", ent_stats.node_ids[:10],
-            "sample_node_eids=", ent_stats.node_eids[:10])
+        print(
+            "ENTIDADES:",
+            "nodes_created=",
+            ent_stats.nodes_created,
+            "props_set=",
+            ent_stats.properties_set,
+            "sample_node_ids=",
+            ent_stats.node_ids[:10],
+            "sample_node_eids=",
+            ent_stats.node_eids[:10],
+        )
 
-        print("RELACIONES:",
-            "rels_created=", rel_stats.relationships_created,
-            "props_set=", rel_stats.properties_set,
-            "sample_rel_eids=", rel_stats.rel_eids[:10],
-            "sample_pairs=", rel_stats.rel_pairs[:10])
+        print(
+            "RELACIONES:",
+            "rels_created=",
+            rel_stats.relationships_created,
+            "props_set=",
+            rel_stats.properties_set,
+            "sample_rel_eids=",
+            rel_stats.rel_eids[:10],
+            "sample_pairs=",
+            rel_stats.rel_pairs[:10],
+        )
         self.backend.close()
+
 
 # ============================================================
 # Funciones auxiliares
 # ============================================================
-
 
 
 def load_graph_json(
@@ -471,6 +540,7 @@ def load_graph_json(
             "Se detectaron %d IDs con múltiples labels. Se guardó solo 1 entidad por id.",
             len(dup_diff),
         )
+
     database = Neo4jGraphBuilder(neo4j_uri, neo4j_user, neo4j_password)
     common_remap: Dict[str, str] = {}
 
@@ -491,7 +561,7 @@ def load_graph_json(
 
             logger.warning(
                 "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
-        )
+            )
         common_remap = {**inv_remap, **dict(db_merge)}
     else:
         inv_remap, db_merge = {}, []
@@ -553,6 +623,7 @@ def load_graph_json(
     logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
     return list(entities_by_id.values()), relationships, db_merge
 
+
 def build_containment_plan(
     *,
     inv_ids_batch: List[str],
@@ -569,7 +640,7 @@ def build_containment_plan(
         # Sin remapeos, sin merges, "kept" = ids únicos
         kept = sorted(set(inv_ids_batch) | set(inv_ids_db))
         return {}, [], kept
-    
+
     db_set = set(inv_ids_db)
     batch_set = set(inv_ids_batch)
 

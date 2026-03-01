@@ -13,12 +13,13 @@ from typing import Any, Dict, List, Optional, cast
 import ijson
 import pandas as pd
 
-from institutional_graphrag.extraction.static_extractor import StaticExtractor
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
+    LLMExtractionResult,
     create_entities_and_relationships_from_llm_extraction,
-    create_topics_from_llm_extraction, LLMExtractionResult
+    create_topics_from_llm_extraction,
 )
+from institutional_graphrag.extraction.static_extractor import StaticExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -95,7 +96,9 @@ class EntityExtractor:
 
         self._extract_chunks()
         self._extract_projects_and_resposible()
-        self._extract_with_llm(max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics)
+        self._extract_with_llm(
+            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics
+        )
         return self.res
 
     def load_subset_from_graph_json(
@@ -160,7 +163,6 @@ class EntityExtractor:
             return
 
         self.add_entities(matched_entities)
-
 
         # -------- 2) RELATIONSHIPS (segunda pasada) --------
         try:
@@ -317,7 +319,9 @@ class EntityExtractor:
             self.res.errors.extend(res.errors)
 
     def _extract_projects_and_resposible(self) -> None:
-        res = self.static.extract_projects_and_responsible_from_tables(self.doc_by_id, self.chunks_dir)
+        res = self.static.extract_projects_and_responsible_from_tables(
+            self.doc_by_id, self.chunks_dir
+        )
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)
@@ -500,10 +504,12 @@ class EntityExtractor:
             self.reg[doc_id].sort()
             self.atomic_write(path)
 
-    def _extract_with_llm(self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True) -> None:
+    def _extract_with_llm(
+        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True
+    ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
-            Args:
-                max_docs: Límite opcional de documentos a procesar.
+        Args:
+            max_docs: Límite opcional de documentos a procesar.
         """
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
@@ -532,7 +538,6 @@ class EntityExtractor:
             # Obtener documentos del proyecto
             project_docs = self.docs_by_project.get(project_id, [])
 
-
             if not project_docs:
                 continue
 
@@ -550,10 +555,14 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                researcher_cache = self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador")
-                    #logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
-                topic_cache = self.already_run(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
-                
+                researcher_cache = self.already_run(
+                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"
+                )
+                # logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
+                topic_cache = self.already_run(
+                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                )
+
                 # Cargar chunks del documento
                 base_name = doc.value.get("base_name", "")
                 if not base_name:
@@ -572,7 +581,7 @@ class EntityExtractor:
                     chunks = payload.get("chunks", [])
                     if not isinstance(chunks, list):
                         continue
-                    
+
                     if researcher_cache or not llm_researchers:
                         logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                     else:
@@ -600,7 +609,11 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs existentes para este proyecto
                         existing_researcher_ids.update(e.id for e in new_entities)
-                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador")
+                        self.mark_success(
+                            DATA_DIR / "entities_relations" / "llm_registry.json",
+                            doc_id,
+                            "Investigador",
+                        )
                         logger.info(
                             f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
                         )
@@ -618,15 +631,17 @@ class EntityExtractor:
                         self.res.errors.extend(llm_result_topic.errors)
                         # Crear entidades y relaciones chunk->topico
                         new_entities, new_relationships = create_topics_from_llm_extraction(
-                                llm_result_topic, existing_topic_ids
-                            )
+                            llm_result_topic, existing_topic_ids
+                        )
                         # Agregar al resultado
                         self.add_entities(new_entities)
                         self.add_relationship(new_relationships)
 
                         # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
-                        self.mark_success(DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico")
+                        self.mark_success(
+                            DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                        )
 
                         logger.info(
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"

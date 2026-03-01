@@ -13,14 +13,13 @@ from urllib.parse import unquote
 
 import numpy as np
 import requests
-from dotenv import load_dotenv
 from docling_core.types.doc import DoclingDocument
+from dotenv import load_dotenv
 
 from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.static_extractor import StaticExtractor
 from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.docling_parser import parse_single_document
 from institutional_graphrag.ingest.embedder import E5Embedder
@@ -30,6 +29,7 @@ from institutional_graphrag.ingest.file_namer import (
     generate_new_filename,
     save_temp_file,
 )
+from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
 
 PATTERN_DOCUMENT = re.compile(
@@ -44,7 +44,13 @@ PATTERN_TABLE = re.compile(
 
 
 class IngestService:
-    def __init__(self, *, data_dir: Path, env_path: Optional[Path] = None, enable_researcher_consolidation: bool):
+    def __init__(
+        self,
+        *,
+        data_dir: Path,
+        env_path: Optional[Path] = None,
+        enable_researcher_consolidation: bool,
+    ):
         self.enable_researcher_consolidation = enable_researcher_consolidation
         self.data_dir = data_dir
         self.tables_dir = data_dir / "tables"
@@ -67,8 +73,8 @@ class IngestService:
         if env_path is not None:
             load_dotenv(env_path)
 
-        self.token_corpus = os.getenv("FING_TOKEN")
-        self.cache_file = data_dir / "rutas_cache.csv"
+        self.corpus_token = os.getenv("FING_TOKEN")
+        self.cache_file = data_dir / "cache_paths.csv"
 
         self.tokenizer = EMBED_MODEL_ID
         self.chunker = get_native_chunker(tokenizer=self.tokenizer)
@@ -76,9 +82,8 @@ class IngestService:
 
         self.static_extractor = StaticExtractor()
         self.entity_extractor = EntityExtractor()
-        self.saved: List[str] = []
+        self.processed_files: List[str] = []
 
-        # cache en memoria (ruta -> tamaño)
         self.cache_dict: Dict[str, int] = {}
 
     async def ingest_items(self, path: str) -> Dict[str, Any]:
@@ -86,7 +91,7 @@ class IngestService:
         Descarga una carpeta/archivo desde la nube (zip o archivo individual),
         procesa cada PDF y al final ingesta al grafo y hace cleanup.
         """
-        self.cache_dict = self.cargar_cache()
+        self.cache_dict = self.load_cache()
 
         zf = self.download_path(path)
         if zf is None:
@@ -118,10 +123,10 @@ class IngestService:
         self.entity_extractor._extract_with_llm()
 
         # Normalización
-        entities_dicts, rels_dicts = self._postprocess_entities()
+        entity_dicts, rel_dicts = self._postprocess_entities()
 
         # Guardar JSON normalizado
-        entity_json_path = self._save_entities_json(entities_dicts, rels_dicts)
+        entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 
         # Persistir a Neo4j
         if entity_json_path is not None:
@@ -150,26 +155,24 @@ class IngestService:
 
         relative_path = Path(zi.filename)
 
-        ruta_completa_en_nube = (
-            "\\"
-            + str(Path(unquote(path_encoded).strip("/")) / relative_path).replace("/", "\\")
-        )
-        tamaño = zi.file_size
+        full_cloud_path = "\\" + str(
+            Path(unquote(path_encoded).strip("/")) / relative_path
+        ).replace("/", "\\")
+        file_size = zi.file_size
 
-        # cache por tamaño
-        prev = self.cache_dict.get(ruta_completa_en_nube)
-        if prev is not None and prev == tamaño:
-            print(f"Sin cambios (mismo tamaño): {ruta_completa_en_nube}")
+        prev_size = self.cache_dict.get(full_cloud_path)
+        if prev_size is not None and prev_size == file_size:
+            print(f"Sin cambios (mismo tamaño): {full_cloud_path}")
             return None
-        if prev is not None and prev != tamaño:
-            print(f"Actualizado (cambió tamaño): {ruta_completa_en_nube}")
+        if prev_size is not None and prev_size != file_size:
+            print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
-        self.guardar_en_cache(ruta_completa_en_nube, tamaño)
-        self.cache_dict[ruta_completa_en_nube] = tamaño
-        print(f"Guardado en CSV: {ruta_completa_en_nube} ({tamaño} bytes)")
+        self.update_cache(full_cloud_path, file_size)
+        self.cache_dict[full_cloud_path] = file_size
+        print(f"Guardado en CSV: {full_cloud_path} ({file_size} bytes)")
 
         # nombre nuevo (idealmente incluye .pdf)
-        new_filename = generate_new_filename(ruta_completa_en_nube)
+        new_filename = generate_new_filename(full_cloud_path)
         base_name = Path(new_filename).stem  # clave: TODO se guarda con base_name
 
         # paths de salida
@@ -273,7 +276,7 @@ class IngestService:
         Descarga carpeta (zip) o archivo individual y devuelve un ZipFile.
         Si es archivo individual, crea un zip en memoria con ese archivo.
         """
-        base_url = f"https://nube.fing.edu.uy/index.php/s/{self.token_corpus}/download"
+        base_url = f"https://nube.fing.edu.uy/index.php/s/{self.corpus_token}/download"
         url = f"{base_url}?path={path_encoded}&files="
         original_folder_path = unquote(path_encoded).strip("/")
 
@@ -287,27 +290,27 @@ class IngestService:
         except zipfile.BadZipFile:
             mem_zip = io.BytesIO()
             with zipfile.ZipFile(mem_zip, mode="w") as z:
-                nombre_archivo = Path(original_folder_path).name
-                z.writestr(nombre_archivo, response.content)
+                filename = Path(original_folder_path).name
+                z.writestr(filename, response.content)
             mem_zip.seek(0)
             return zipfile.ZipFile(mem_zip)
 
-    def cargar_cache(self) -> Dict[str, int]:
-        rutas: Dict[str, int] = {}
+    def load_cache(self) -> Dict[str, int]:
+        paths: Dict[str, int] = {}
         if self.cache_file.exists():
             with open(self.cache_file, "r", newline="", encoding="utf-8") as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if len(row) >= 2:
-                        rutas[row[0]] = int(row[1])
-        return rutas
+                        paths[row[0]] = int(row[1])
+        return paths
 
-    def guardar_en_cache(self, ruta: str, tamaño: int) -> None:
-        cache_actual = self.cargar_cache()
-        cache_actual[ruta] = tamaño
+    def update_cache(self, path: str, file_size: int) -> None:
+        cache = self.load_cache()
+        cache[path] = file_size
         with open(self.cache_file, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            for r, t in cache_actual.items():
+            for r, t in cache.items():
                 writer.writerow([r, t])
 
     def _extract_document_only(
@@ -328,7 +331,7 @@ class IngestService:
         self.entity_extractor.add_relationship(res.relationships)
         self.entity_extractor.res.errors.extend(res.errors)
         self.entity_extractor._build_doc_indexes()
-        self.saved.append(str(file_path))
+        self.processed_files.append(str(file_path))
 
     def _extract_doc_and_chunks(
         self,
@@ -360,7 +363,7 @@ class IngestService:
         self.entity_extractor.add_relationship(res2.relationships)
         self.entity_extractor.res.errors.extend(res2.errors)
 
-        self.saved.append(str(file_path))
+        self.processed_files.append(str(file_path))
 
     def _extract_projects_and_responsibles(self) -> None:
         try:
@@ -382,15 +385,15 @@ class IngestService:
             self.entity_extractor.res.errors.append(f"projects/responsibles: {e}")
 
     def _postprocess_entities(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-        entities_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
-        rels_dicts = [r.to_dict() for r in self.entity_extractor.res.relationships]
+        entity_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
+        rel_dicts = [r.to_dict() for r in self.entity_extractor.res.relationships]
         post_processor = Postprocessor(
             enable_researcher_consolidation=self.enable_researcher_consolidation,
             similarity_threshold=0.85,
         )
-        entities_dicts, rels_dicts, _ = post_processor.consolidate_researchers(entities_dicts, rels_dicts)
-        rels_dicts, _ = post_processor.add_missing_evidence_text(rels_dicts)
-        return entities_dicts, rels_dicts
+        entity_dicts, rel_dicts, _ = post_processor.consolidate_researchers(entity_dicts, rel_dicts)
+        rel_dicts, _ = post_processor.add_missing_evidence_text(rel_dicts)
+        return entity_dicts, rel_dicts
 
     def _save_entities_json(
         self,
@@ -398,7 +401,9 @@ class IngestService:
         rels: List[Dict[str, Any]],
     ) -> Optional[Path]:
         if not self.entity_extractor.doc_by_id:
-            print("No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web.")
+            print(
+                "No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web."
+            )
             return None
 
         first_key = next(iter(self.entity_extractor.doc_by_id.keys()))
@@ -425,15 +430,15 @@ class IngestService:
             neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
 
             user = os.getenv("NEO4J_USER")
-            pwd = os.getenv("NEO4J_PASSWORD")
+            password = os.getenv("NEO4J_PASSWORD")
 
-            builder = GraphBuilder(neo4j_uri, user, pwd)
-            entities, relationships, db_merge = load_graph_json(
-                entity_json_path, neo4j_uri, user, pwd, self.enable_researcher_consolidation
+            builder = GraphBuilder(neo4j_uri, user, password)
+            entities, relationships, merge_plan = load_graph_json(
+                entity_json_path, neo4j_uri, user, password, self.enable_researcher_consolidation
             )
             builder.ingest(entities=entities, relationships=relationships)
 
-            for old_id, new_id in db_merge:
+            for old_id, new_id in merge_plan:
                 stats = builder.backend.merge_node_id(
                     label="Investigador",
                     old_id=old_id,
@@ -443,16 +448,21 @@ class IngestService:
                 print(
                     "MERGE Investigador:",
                     f"{old_id} -> {new_id}",
-                    "nodes_created=", stats.nodes_created,
-                    "nodes_deleted=", stats.nodes_deleted,
-                    "rels_created=", stats.relationships_created,
-                    "rels_deleted=", stats.relationships_deleted,
-                    "props_set=", stats.properties_set,
+                    "nodes_created=",
+                    stats.nodes_created,
+                    "nodes_deleted=",
+                    stats.nodes_deleted,
+                    "rels_created=",
+                    stats.relationships_created,
+                    "rels_deleted=",
+                    stats.relationships_deleted,
+                    "props_set=",
+                    stats.properties_set,
                 )
 
             print("\n" + "=" * 80)
             print("PIPELINE FINALIZADO")
-            print("Archivos procesados:", self.saved)
+            print("Archivos procesados:", self.processed_files)
             print("=" * 80)
 
         except Exception as e:

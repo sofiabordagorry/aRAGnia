@@ -1,14 +1,13 @@
 import re
-from pathlib import Path
-
+import tempfile
 from enum import Enum
 from pathlib import Path
-import tempfile
 
 
 class PdfKind(Enum):
     TABULAR = "tabular"
     NARRATIVE = "narrative"
+
 
 def looks_tabular(fileName: str) -> bool:
     if any(k in fileName for k in ("informe", "propuesta", "resumen")):
@@ -18,6 +17,7 @@ def looks_tabular(fileName: str) -> bool:
 
 def classify_pdf(fileName: str) -> PdfKind:
     return PdfKind.TABULAR if looks_tabular(fileName) else PdfKind.NARRATIVE
+
 
 def save_temp_file(content: bytes, filename: str) -> Path:
     tmp_dir = Path(tempfile.gettempdir()) / "institutional_graphrag"

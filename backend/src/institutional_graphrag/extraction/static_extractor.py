@@ -1,11 +1,12 @@
+import json
+import re
+import unicodedata
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
-import json
-import pandas as pd 
-import re 
-from collections import Counter, defaultdict
-import unicodedata
+
+import pandas as pd
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
@@ -31,11 +32,13 @@ class ExtractionResult:
     entities: List[Entity]
     relationships: List[Relationship]
     errors: List[Dict[str, Any]]
-    
+
+
 @dataclass
 class ReadJsonResult:
     data: Optional[dict[str, Any]]
     errors: dict[str, Any]
+
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
@@ -53,46 +56,46 @@ TYPE_PRECEDENCIA = {
     "propuesta": 3,
 }
 
+
 class StaticExtractor:
     def __init__(self):
         self.datasets: list[pd.DataFrame] = []
 
-    def extract_document(self,
-            path: Path, pattern, value_builder, create_year_entity: bool = False
-        ) -> ExtractionResult:
-            entities: List[Entity] = []
-            relationships: List[Relationship] = []
-            errors: list[dict[str, Any]] = []
-            if path.suffix.lower() in ALLOWED_SUFFIXES:
-                base_name = path.stem
+    def extract_document(
+        self, path: Path, pattern, value_builder, create_year_entity: bool = False
+    ) -> ExtractionResult:
+        entities: List[Entity] = []
+        relationships: List[Relationship] = []
+        errors: list[dict[str, Any]] = []
+        if path.suffix.lower() in ALLOWED_SUFFIXES:
+            base_name = path.stem
 
-                m = pattern.match(base_name)
-                if not m:
-                    errors.append(
-                        {
-                            "type": "Document Invalid",
-                            "message": f"El formato del documento es invalido: {base_name}",
-                        }
-                    )
-                    return ExtractionResult(entities, relationships, errors)
-                entities.append(Documento(id=base_name, value=value_builder(base_name, m)))
-                if create_year_entity:
-                    year = m.group("year")
-                    anio = Anio(
-                        id=year,
-                        value={"year": year},
-                    )
-                    entities.append(anio)
-            else:
+            m = pattern.match(base_name)
+            if not m:
                 errors.append(
                     {
                         "type": "Document Invalid",
-                        "message": f"La extension del documento es invalido: {path.name}",
+                        "message": f"El formato del documento es invalido: {base_name}",
                     }
                 )
+                return ExtractionResult(entities, relationships, errors)
+            entities.append(Documento(id=base_name, value=value_builder(base_name, m)))
+            if create_year_entity:
+                year = m.group("year")
+                anio = Anio(
+                    id=year,
+                    value={"year": year},
+                )
+                entities.append(anio)
+        else:
+            errors.append(
+                {
+                    "type": "Document Invalid",
+                    "message": f"La extension del documento es invalido: {path.name}",
+                }
+            )
 
-            return ExtractionResult(entities, relationships, errors)
-
+        return ExtractionResult(entities, relationships, errors)
 
     def extract_chunk(self, path: Path, doc_by_basename: dict[str, Documento]) -> ExtractionResult:
         entities: List[Entity] = []
@@ -166,15 +169,15 @@ class StaticExtractor:
             entities.append(Chunk(id=chunk_id, value=meta))
         return ExtractionResult(entities, relationships, errors)
 
-#  LEER TABLAS ASOCIADAS A UN CONJUNTO DE DOCUMENTOS
-    def associate_tables_with_documents(self, docs_by_group_year: dict[tuple[str, str], list[Documento]], table_dir: Path) -> ExtractionResult:
+    #  LEER TABLAS ASOCIADAS A UN CONJUNTO DE DOCUMENTOS
+    def associate_tables_with_documents(
+        self, docs_by_group_year: dict[tuple[str, str], list[Documento]], table_dir: Path
+    ) -> ExtractionResult:
         entities: List[Entity] = []
         relationships: List[Relationship] = []
         errors: list[dict[str, Any]] = []
         if not table_dir.exists():
-            errors.append(
-                {"type": "MissingFolder", "message": f"No existe: {table_dir}"}
-            )
+            errors.append({"type": "MissingFolder", "message": f"No existe: {table_dir}"})
             return ExtractionResult(entities, relationships, errors)
 
         for path in sorted(table_dir.iterdir()):
@@ -196,9 +199,7 @@ class StaticExtractor:
             docs = docs_by_group_year.get(key)
 
             if not docs:
-                errors.append(
-                    {"type": "InvalidTable", "message": f"{path.name} sin docs {key}"}
-                )
+                errors.append({"type": "InvalidTable", "message": f"{path.name} sin docs {key}"})
                 continue
 
             df = pd.read_parquet(path)
@@ -221,8 +222,10 @@ class StaticExtractor:
 
         return ExtractionResult(entities, relationships, errors)
 
-    #def extract_projects(self) -> ExtractionResult:
-    def extract_projects_and_responsible_from_tables(self,  doc_by_id: dict[str, Documento], chunk_dir: Path) -> ExtractionResult:
+    # def extract_projects(self) -> ExtractionResult:
+    def extract_projects_and_responsible_from_tables(
+        self, doc_by_id: dict[str, Documento], chunk_dir: Path
+    ) -> ExtractionResult:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         all_projects_candidates: dict[str, list[dict[str, Any]]] = defaultdict(list)
         inv_ids_by_project = self._build_indexes()
@@ -230,7 +233,9 @@ class StaticExtractor:
         self.doc_by_id = doc_by_id
 
         for df in self.datasets:
-            title_col = next((c for c in df.columns if "TITULO" in c.upper() or "TÍTULO" in c.upper()), None)        
+            title_col = next(
+                (c for c in df.columns if "TITULO" in c.upper() or "TÍTULO" in c.upper()), None
+            )
             if not title_col:
                 return {}
             responsible_cols = [
@@ -241,25 +246,29 @@ class StaticExtractor:
             if not responsible_cols:
                 continue
 
-            chunk = self._collect_candidates_from_table_df(df, title_col, responsible_cols, chunk_dir, inv_ids_by_project)
+            chunk = self._collect_candidates_from_table_df(
+                df, title_col, responsible_cols, chunk_dir, inv_ids_by_project
+            )
             for project_id, candidates in chunk.items():
                 all_projects_candidates[project_id].extend(candidates)
 
         self._apply_projects_from_candidates(all_projects_candidates)
 
         # 2) fallback para docs no relacionados
-        related_docs = {rel.target_id for rel in self.res.relationships if rel.type == "ES_DESCRITO_POR"}
+        related_docs = {
+            rel.target_id for rel in self.res.relationships if rel.type == "ES_DESCRITO_POR"
+        }
         unrelated_docs = [doc_id for doc_id in self.doc_by_id.keys() if doc_id not in related_docs]
 
-
-        fallback_candidates = self._collect_fallback_candidates_for_unrelated_docs(unrelated_docs, chunk_dir)
+        fallback_candidates = self._collect_fallback_candidates_for_unrelated_docs(
+            unrelated_docs, chunk_dir
+        )
         self._apply_fallback_projects(fallback_candidates)
 
         # 3) link doc_table -> proyectos
         self._link_table_docs_to_projects(unrelated_docs)
 
         return self.res
-
 
     ##############################
     #       AUXILIARES
@@ -311,11 +320,18 @@ class StaticExtractor:
             if out_parts
             else pd.DataFrame(columns=df.columns)
         )
-    
+
     #############################
-    # Auxiliares para proyectos #   
+    # Auxiliares para proyectos #
     #############################
-    def _collect_candidates_from_table_df(self, df: pd.DataFrame, title_col: str, responsible_cols: List[str], chunk_dir: Path, inv_ids_by_project: dict[str, set[str]]) -> dict[str, list[dict[str, Any]]]:
+    def _collect_candidates_from_table_df(
+        self,
+        df: pd.DataFrame,
+        title_col: str,
+        responsible_cols: List[str],
+        chunk_dir: Path,
+        inv_ids_by_project: dict[str, set[str]],
+    ) -> dict[str, list[dict[str, Any]]]:
         """
         De un df de tabla:
         - encuentra columna titulo
@@ -333,12 +349,19 @@ class StaticExtractor:
             doc = self.doc_by_id.get(doc_id)
             if doc is None:
                 self.res.errors.append(
-                    {"type": "MissingDocument", "message": f"No se encontró Documento con id={doc_id}"}
+                    {
+                        "type": "MissingDocument",
+                        "message": f"No se encontró Documento con id={doc_id}",
+                    }
                 )
                 continue
 
-            project_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
-            table_chunk_id = f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
+            project_id = (
+                f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
+            )
+            table_chunk_id = (
+                f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
+            )
 
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
             chunk_file = chunk_dir / f"{doc.value['base_name']}_chunks.json"
@@ -352,20 +375,23 @@ class StaticExtractor:
             # Investigador
             ####
             people = self._extract_up_to_people(row, cols, id_col)
-            self._process_table_investigators(people, inv_ids_by_project, project_id, table_chunk_id)
+            self._process_table_investigators(
+                people, inv_ids_by_project, project_id, table_chunk_id
+            )
         return projects
-    
 
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
         if not path.exists():
-            self.res.errors.append({"type": "MissingFile", "message": f"No existe el archivo : {path}"})
+            self.res.errors.append(
+                {"type": "MissingFile", "message": f"No existe el archivo : {path}"}
+            )
             return None
 
         res = self._read_json(path)
         if res.errors:
             self.res.errors.extend(res.errors)
             return None
-        
+
         payload = res.data
         if payload is None:
             return None
@@ -380,14 +406,19 @@ class StaticExtractor:
         def add(chunk_id: Any, candidate_title: Any, grade: int) -> None:
             if chunk_id is None or candidate_title is None:
                 return
-            results.append({"chunk_id": chunk_id, "candidate_title": candidate_title, "best_grade": grade})
+            results.append(
+                {"chunk_id": chunk_id, "candidate_title": candidate_title, "best_grade": grade}
+            )
+
         ###
-        
+
         rx1 = rx2 = None
         title_esc = None
         if title:
             title_esc = re.escape(title)
-            rx1 = re.compile(rf"(Titulo|Título).*?[:,\n]\s*.*?({title_esc}.*?)(?:\.|\n|$)", re.I | re.S)
+            rx1 = re.compile(
+                rf"(Titulo|Título).*?[:,\n]\s*.*?({title_esc}.*?)(?:\.|\n|$)", re.I | re.S
+            )
             rx2 = re.compile(r'(Titulo|Título).*?[:,\n]\s*([^:,.\n\'"]+)', re.I)
 
         for i, chunk in enumerate(chunks[:4]):
@@ -425,13 +456,16 @@ class StaticExtractor:
             add(chunk_id, title, 5)
 
         return min(results, key=lambda x: x["best_grade"]) if results else None
-    
+
     def _apply_projects_from_candidates(self, projects: dict[str, list[dict[str, Any]]]) -> None:
         for project_id, candidates in projects.items():
             best = self._pick_best_candidate(candidates)
             if best is None:
                 self.res.errors.append(
-                    {"type": "MissingCandidate", "message": f"No candidates for project_id={project_id}"}
+                    {
+                        "type": "MissingCandidate",
+                        "message": f"No candidates for project_id={project_id}",
+                    }
                 )
                 continue
             self._add_project_from_best(project_id, best)
@@ -447,7 +481,7 @@ class StaticExtractor:
             return (grado, tipo)
 
         return min(candidatos, key=_score)
-    
+
     def _add_project_from_best(self, project_id: str, best: dict[str, Any]) -> None:
         # mismo comportamiento que tu bloque
         self.res.entities.append(Proyecto(id=project_id, value=best["candidate_title"]))
@@ -478,7 +512,6 @@ class StaticExtractor:
             )
         )
 
-
     def _collect_fallback_candidates_for_unrelated_docs(
         self,
         unrelated_docs: list[str],
@@ -499,8 +532,10 @@ class StaticExtractor:
             if not fallback_result:
                 continue
 
-            project_id = (f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}")
-            
+            project_id = (
+                f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
+            )
+
             # misma relación que tenías
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
@@ -513,8 +548,10 @@ class StaticExtractor:
             )
 
         return candidates_for_projects
-    
-    def _apply_fallback_projects(self, candidates_for_projects: dict[str, list[dict[str, Any]]]) -> None:
+
+    def _apply_fallback_projects(
+        self, candidates_for_projects: dict[str, list[dict[str, Any]]]
+    ) -> None:
         for project_id, candidates in candidates_for_projects.items():
             best = self._pick_best_candidate(candidates)
             if best is None:
@@ -571,7 +608,7 @@ class StaticExtractor:
                 self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
 
     ################################
-    # Auxiliares para Responsables #   
+    # Auxiliares para Responsables #
     ################################
 
     def _build_indexes(self) -> dict[str, set[str]]:
@@ -587,7 +624,6 @@ class StaticExtractor:
                 inv_ids_by_project[str(r.target_id)].add(investigador)
 
         return inv_ids_by_project
-    
 
     def _extract_up_to_people(
         self, row, cols: list[str], id_col: str
@@ -645,7 +681,7 @@ class StaticExtractor:
             c for c in unicodedata.normalize("NFD", name) if unicodedata.category(c) != "Mn"
         )
         return " ".join(name.split())
-    
+
     def is_name_col(self, col: str) -> bool:
         c = self._normalize_col(col).upper()
         return "NOMBRE" in c or "NOMBRES" in c
@@ -668,7 +704,7 @@ class StaticExtractor:
             pass
         s = str(v).strip()
         return s if s else None
-    
+
     def _clean_pair(
         self, full: Optional[str], fallback: Optional[str]
     ) -> tuple[Optional[str], Optional[str]]:
@@ -681,9 +717,14 @@ class StaticExtractor:
             if not fallback:
                 fallback = None
         return full, fallback
-    
 
-    def _process_table_investigators(self, people: list[tuple[Optional[str], Optional[str]]], inv_ids_by_project: dict[str, set[str]], project_id: str, table_chunk_id: str):
+    def _process_table_investigators(
+        self,
+        people: list[tuple[Optional[str], Optional[str]]],
+        inv_ids_by_project: dict[str, set[str]],
+        project_id: str,
+        table_chunk_id: str,
+    ):
         for full_name, fallback in people:
             # buscar en chunks (primero full, luego fallback)
             candidate_in_text = None
@@ -706,16 +747,13 @@ class StaticExtractor:
                 and any(fallback == value for _, value in inv_ids_by_project[project_id])
                 and candidate_in_text == fallback
             ) or (
-                full_name
-                and any(full_name == value for _, value in inv_ids_by_project[project_id])
+                full_name and any(full_name == value for _, value in inv_ids_by_project[project_id])
             ):
                 continue
 
             # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
             if fallback:
-                to_remove = {
-                    item for item in inv_ids_by_project[project_id] if item[1] == fallback
-                }
+                to_remove = {item for item in inv_ids_by_project[project_id] if item[1] == fallback}
 
                 if to_remove:
                     inv_ids_by_project[project_id] -= to_remove

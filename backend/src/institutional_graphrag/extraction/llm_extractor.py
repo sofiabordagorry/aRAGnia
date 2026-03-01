@@ -310,7 +310,7 @@ class LLMEntityExtractor:
     def __init__(
         self,
         *,
-        llm_provider: str = "colab",
+        llm_provider: str = "ollama",
         llm_model: Optional[str] = None,
         temperature: float = 0.1,
         max_tokens: int = 1024,

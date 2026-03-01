@@ -1,8 +1,9 @@
 """Tests for the graph schema module."""
 
-import pytest
 import json
 from pathlib import Path
+
+import pytest
 from pydantic import TypeAdapter
 
 from institutional_graphrag.graph.schema import (
@@ -15,17 +16,17 @@ from institutional_graphrag.graph.schema import (
     SIGUIENTE_CHUNK,
     TIENE_TOPICO,
     Anio,
+    AnioValue,
     Chunk,
     Documento,
+    DocumentoValue,
     GraphSchema,
     Investigador,
+    InvestigadorValue,
     Proyecto,
     Relationship,
     Topico,
     validate_relationship_endpoints,
-    AnioValue,
-    DocumentoValue,
-    InvestigadorValue,
 )
 
 VALUE_SCHEMAS = {
