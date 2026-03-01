@@ -137,10 +137,7 @@ Classification (answer only SEARCH or CHAT):"""
         """
         Genera respuesta conversacional amigable para queries tipo chat.
         """
-        system_prompt = """Eres un asistente amigable de consultas académicas. 
-
-El usuario no está buscando información específica. 
-Responde de forma breve, amigable y profesional en español.
+        system_prompt = """Eres un asistente amigable de consultas académicas. Responde de forma breve, amigable y profesional en español.
 
 Si te preguntan qué puedes hacer, explica que puedes buscar información sobre proyectos de investigación, investigadores, tópicos y documentos académicos."""
         
