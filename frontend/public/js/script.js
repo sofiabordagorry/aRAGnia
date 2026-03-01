@@ -15,9 +15,6 @@ const els = {
   status: document.getElementById("status"),
   modeBadge: document.getElementById("modeBadge"),
 
-  chunksPanel: document.getElementById("chunksPanel"),
-  chunksList: document.getElementById("chunksList"),
-
   settingsBtn: document.getElementById("settingsBtn"),
   modal: document.getElementById("settingsModal"),
   backdrop: document.getElementById("modalBackdrop"),
@@ -87,14 +84,20 @@ function escapeHtml(str) {
 
 function clearConversationUI() {
   els.chat.innerHTML = "";
-  renderChunks([]);
 }
 
 function addMessage(type, textOrNode) {
   const div = document.createElement("div");
   div.className = `msg ${type}`;
-  if (typeof textOrNode === "string") div.textContent = textOrNode;
-  else div.appendChild(textOrNode);
+  if (typeof textOrNode === "string") {
+    if (type === "assistant" && typeof marked !== "undefined") {
+      div.innerHTML = marked.parse(textOrNode);
+    } else {
+      div.textContent = textOrNode;
+    }
+  } else {
+    div.appendChild(textOrNode);
+  }
 
   els.chat.appendChild(div);
   return div;
@@ -107,34 +110,82 @@ function addTyping() {
   return addMessage("assistant", wrap);
 }
 
-function renderChunks(chunks) {
-  if (!Array.isArray(chunks) || chunks.length === 0) {
-    els.chunksList.innerHTML = "";
-    els.chunksPanel.classList.add("hidden");
-    return;
+function getEntitySnippet(text, entities) {
+  const BEFORE = 80;
+  const AFTER = 160;
+  const terms = [];
+  for (const [id, label] of entities) {
+    if (label === "Investigador") {
+      terms.push(id);
+      const parts = id.trim().split(/\s+/);
+      if (parts.length > 1) terms.push(parts[parts.length - 1]);
+    }
   }
+  const textLower = text.toLowerCase();
+  for (const term of terms) {
+    if (!term) continue;
+    const idx = textLower.indexOf(term.toLowerCase());
+    if (idx !== -1) {
+      const start = Math.max(0, idx - BEFORE);
+      const end = Math.min(text.length, idx + term.length + AFTER);
+      return {
+        snippet: (start > 0 ? "\u2026" : "") + text.slice(start, end) + (end < text.length ? "\u2026" : ""),
+        highlight: term,
+      };
+    }
+  }
+  return { snippet: text.slice(0, 300) + (text.length > 300 ? "\u2026" : ""), highlight: "" };
+}
 
-  els.chunksPanel.classList.remove("hidden");
-  els.chunksList.innerHTML = "";
+function renderChunks(chunks, chunkToEntities = {}, msgEl = null) {
+  if (!msgEl || !Array.isArray(chunks) || chunks.length === 0) return;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "msg-sources";
+
+  const toggle = document.createElement("button");
+  toggle.className = "sources-toggle";
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.innerHTML = `Fuentes <span class="sources-count">${chunks.length}</span><span class="sources-icon"></span>`;
+  toggle.addEventListener("click", () => {
+    const open = wrapper.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+
+  const list = document.createElement("div");
+  list.className = "sources-list";
 
   chunks.forEach((c, idx) => {
     const title = c.id ?? `Chunk ${idx + 1}`;
-    const score = typeof c.score === "number" ? c.score.toFixed(3) : "";
-    const text = c.text ?? c.content ?? "";
+    const text = (c.text ?? c.content ?? "").replace(/[ \t]+/g, " ").replace(/\n[ \t]+/g, "\n").trim();
+    const entities = chunkToEntities[c.id] || [];
 
-    const card = document.createElement("div");
-    card.className = "chunk-card";
-    card.innerHTML = `
-      <div class="chunk-head">
-        <div class="chunk-title" title="${escapeHtml(title)}">${escapeHtml(
-          title,
-        )}</div>
-        <div class="chunk-score">${score ? `score ${score}` : ""}</div>
+    let entitiesHtml = "";
+    if (entities.length > 0 && settings.graphrag_enabled) {
+      const tags = entities
+        .map(([id, label]) => `<span class="entity-tag" title="${escapeHtml(label)}">${escapeHtml(id)}</span>`)
+        .join(" ");
+      entitiesHtml = `<div class="source-entities chunk-entities">${tags}</div>`;
+    }
+
+    const { snippet, highlight } = getEntitySnippet(text, entities);
+
+    const item = document.createElement("div");
+    item.className = "source-item";
+    item.innerHTML = `
+      <div class="source-num">${idx + 1}</div>
+      <div class="source-body">
+        <div class="source-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>
+        <div class="source-preview">${escapeHtml(snippet)}</div>
+        ${entitiesHtml}
       </div>
-      <div class="chunk-text">${escapeHtml(text)}</div>
     `;
-    els.chunksList.appendChild(card);
+    list.appendChild(item);
   });
+
+  wrapper.appendChild(toggle);
+  wrapper.appendChild(list);
+  msgEl.appendChild(wrapper);
 }
 
 /* ========= Modal (draft) ========= */
@@ -273,9 +324,10 @@ async function ask() {
     const data = await res.json();
 
     typingMsg.remove();
-    addMessage("assistant", data.answer ?? "(sin answer)");
+    const assistantMsg = addMessage("assistant", data.answer ?? "(sin answer)");
 
-    renderChunks(data.chunks ?? data.context ?? []);
+    const chunkToEntities = data.chunk_to_entities || {};
+    renderChunks(data.chunks ?? data.context ?? [], chunkToEntities, assistantMsg);
     setStatus("Listo.");
   } catch (err) {
     typingMsg.remove();
@@ -315,7 +367,6 @@ function init() {
   els.modeBadge.textContent = modeLabel(settings);
   applyTheme(settings.theme);
   applyCompact(settings.compact_mode);
-  renderChunks([]);
 
   // soporte para venir desde history.html sin sessionStorage
   const prefill = getUrlParam("q");

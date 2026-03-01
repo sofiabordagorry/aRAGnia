@@ -1,4 +1,4 @@
-"""GraphRAG retriever using Neo4j subgraph queries."""
+"""GraphRAG retriever usando queries Cypher sobre Neo4j."""
 
 from __future__ import annotations
 
@@ -47,12 +47,7 @@ class CypherQueryValidator:
 
     @classmethod
     def is_safe(cls, query: str) -> tuple[bool, Optional[str]]:
-        """
-        Valida que la query sea segura (solo lectura).
-        
-        Returns:
-            (is_safe, error_message)
-        """
+        """Valida que la query sea segura (solo lectura)."""
         if not query or not query.strip():
             return False, "Query vacía"
 
@@ -200,7 +195,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         return cypher_query
 
     def _build_cypher_generation_prompt(self, user_query: str) -> str:
-        """Build prompt for Cypher query generation."""
+        """Construye el prompt para la generación de queries Cypher."""
         return f"""Generate a Cypher query for Neo4j to answer this question.
 
 SCHEMA:
@@ -310,7 +305,7 @@ CRITICAL:
 
         with self.driver.session() as session:
             result = session.run(cypher_query)
-            records = list(result)  # Keep as Record objects, not .data()
+            records = list(result)
 
         logger.info(f"Query ejecutada, {len(records)} registros obtenidos")
         return records
@@ -333,7 +328,6 @@ CRITICAL:
             for key in record.keys():
                 value = record[key]
                 if isinstance(value, Node):
-                    # Show human-readable representation of node
                     labels = list(value.labels)
                     label = labels[0] if labels else "Node"
                     props = dict(value)
@@ -352,18 +346,10 @@ CRITICAL:
 
     def _extract_chunks_and_entities_from_results(
         self, records: List[Any]
-    ) -> tuple[List[GraphRAGChunk], List[tuple[str, str]], Dict[str, List[tuple[str, str]]]]:
-        """
-        Extrae chunks y evidencia de entidades desde los resultados de Cypher.
-        
-        Args:
-            records: Lista de neo4j Record objects
-        
-        Returns:
-            (chunks, evidence_entities, chunk_to_entities_map)
-        """
+    ) -> tuple[List[GraphRAGChunk], Dict[tuple[str, str], dict], Dict[str, List[tuple[str, str]]]]:
+        """Extrae chunks y evidencia de entidades desde los resultados de Cypher."""
         chunks_dict: Dict[str, GraphRAGChunk] = {}  # chunk_id -> GraphRAGChunk
-        evidence_entities = set()
+        evidence_entities: Dict[tuple[str, str], dict] = {}  # (entity_id, label) -> props
         chunk_to_entities: Dict[str, List[tuple[str, str]]] = {}  # chunk_id -> [(entity_id, label)]
 
         for record in records:
@@ -397,29 +383,30 @@ CRITICAL:
                                 entities_collected.append(item)
 
             def resolve_entity_id(entity_node):
-                entity_id = entity_node.get("id", "")
+                props = dict(entity_node)
                 entity_labels = list(entity_node.labels)
                 entity_label = next((lbl for lbl in entity_labels if lbl in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]), "")
+                entity_id = props.get("id", "")
                 if entity_label == "Investigador":
-                    entity_id = entity_node.get("name", entity_id) or entity_id
+                    entity_id = props.get("name", entity_id) or entity_id
                 elif entity_label == "Proyecto":
-                    raw_id = entity_node.get("id", "")
-                    title = entity_node.get("value", "")
+                    raw_id = props.get("id", "")
+                    title = props.get("value", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
-                    entity_id = entity_node.get("base_name", entity_id) or entity_id
+                    entity_id = props.get("id", entity_id) or entity_id
                 elif entity_label == "Topico":
-                    entity_id = entity_node.get("value", entity_id) or entity_id
+                    entity_id = props.get("value", entity_id) or entity_id
                 elif entity_label == "Anio":
-                    entity_id = entity_node.get("year", entity_id) or entity_id
-                return entity_id, entity_label
+                    entity_id = props.get("year", entity_id) or entity_id
+                return entity_id, entity_label, props
 
             # Agregar entidades collected a evidence_entities (para el contexto del LLM)
             # pero NO asociarlas a chunks individuales
             for entity_node in entities_collected:
-                entity_id, entity_label = resolve_entity_id(entity_node)
+                entity_id, entity_label, props = resolve_entity_id(entity_node)
                 if entity_id and entity_label:
-                    evidence_entities.add((entity_id, entity_label))
+                    evidence_entities[(entity_id, entity_label)] = props
 
             # Procesar chunks encontrados
             for chunk_node in chunks_in_record:
@@ -439,37 +426,21 @@ CRITICAL:
                 # Solo asociar entidades DIRECTAS al chunk (implican EVIDENCIA_DE)
                 if entities_direct and chunk_id in chunks_dict:
                     for entity_node in entities_direct:
-                        entity_id, entity_label = resolve_entity_id(entity_node)
+                        entity_id, entity_label, props = resolve_entity_id(entity_node)
                         if entity_id and entity_label:
                             entity_tuple = (entity_id, entity_label)
                             if chunk_id not in chunk_to_entities:
                                 chunk_to_entities[chunk_id] = []
                             if entity_tuple not in chunk_to_entities[chunk_id]:
                                 chunk_to_entities[chunk_id].append(entity_tuple)
-                            evidence_entities.add(entity_tuple)
+                            evidence_entities[(entity_id, entity_label)] = props
 
-        return list(chunks_dict.values()), list(evidence_entities), chunk_to_entities
+        return list(chunks_dict.values()), evidence_entities, chunk_to_entities
 
-    def build_entity_context(self, evidence_entities: List[tuple], chunk_to_entities: Dict[str, List[tuple]]) -> str:
-        """
-        Construye contexto estructurado de entidades y relaciones para el LLM.
-        Los chunks van solo al frontend, no al LLM.
-        """
+    def build_entity_context(self, evidence_entities: Dict[tuple, dict], chunk_to_entities: Dict[str, List[tuple]]) -> str:
+        """Construye contexto de entidades para el LLM con todas sus propiedades."""
         if not evidence_entities:
             return "No se encontraron entidades relevantes en el grafo."
-
-        # Agrupar entidades por tipo
-        by_label: Dict[str, List[str]] = {}
-        for entity_id, entity_label in evidence_entities:
-            by_label.setdefault(entity_label, []).append(entity_id)
-
-        # Contar chunks de evidencia por entidad
-        chunks_per_entity: Dict[str, int] = {}
-        for chunk_id, entities in chunk_to_entities.items():
-            for entity_id, entity_label in entities:
-                chunks_per_entity[entity_id] = chunks_per_entity.get(entity_id, 0) + 1
-
-        lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
 
         label_display = {
             "Proyecto": "Proyectos",
@@ -479,13 +450,16 @@ CRITICAL:
             "Anio": "Año",
         }
 
+        lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
+
         for label in ["Proyecto", "Investigador", "Topico", "Documento", "Anio"]:
-            ids = by_label.get(label, [])
-            if not ids:
+            entries = [((eid, lbl), props) for (eid, lbl), props in evidence_entities.items() if lbl == label]
+            if not entries:
                 continue
             lines.append(f"\n{label_display[label]}:")
-            for eid in sorted(ids):
-                lines.append(f"  - {eid}")
+            for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
+                props_str = " | ".join(f"{k}: {v}" for k, v in props.items() if v is not None and k != "text")
+                lines.append(f"  - {props_str}")
 
         return "\n".join(lines)
 
@@ -530,7 +504,7 @@ Respondé la consulta con una frase introductoria y la lista:"""
             return GraphRAGResult(
                 answer=conversational_answer,
                 chunks=[],
-                cypher_query="",  # No Cypher query for conversational responses
+                cypher_query="",
                 chunk_to_entities={},
             )
 

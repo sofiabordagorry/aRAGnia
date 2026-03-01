@@ -62,11 +62,8 @@ body {
 }
 
 .layout {
-  max-width: 1200px;
+  max-width: 820px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 24px;
   margin-top: 20px;
 }
 
@@ -150,7 +147,36 @@ body.compact .msg {
   align-self: flex-start;
   background: color-mix(in srgb, var(--bg) 65%, var(--panel));
   border-color: var(--soft);
+  white-space: normal;
 }
+
+/* Markdown */
+.msg.assistant p { margin: 0 0 0.5em; }
+.msg.assistant p:last-child { margin-bottom: 0; }
+.msg.assistant ul,
+.msg.assistant ol { margin: 0.25em 0 0.5em 1.4em; padding: 0; }
+.msg.assistant li { margin-bottom: 0.2em; }
+.msg.assistant h1,
+.msg.assistant h2,
+.msg.assistant h3 { margin: 0.6em 0 0.3em; font-weight: 700; line-height: 1.2; }
+.msg.assistant h1 { font-size: 1.15em; }
+.msg.assistant h2 { font-size: 1.05em; }
+.msg.assistant h3 { font-size: 1em; }
+.msg.assistant code {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+.msg.assistant pre {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 6px;
+  padding: 0.6em 0.8em;
+  overflow-x: auto;
+}
+.msg.assistant pre code { background: none; padding: 0; }
+.msg.assistant strong { font-weight: 700; }
+.msg.assistant em { font-style: italic; }
 
 .typing {
   display: inline-flex;
@@ -200,21 +226,102 @@ body.compact .msg {
   font-weight: 900;
 }
 
-.right {
+.msg-sources {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1.5px solid var(--soft);
+}
+.sources-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.sources-toggle:hover { color: var(--ink); }
+.sources-count {
+  background: var(--soft);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.sources-icon {
+  width: 10px;
+  height: 10px;
+  position: relative;
+}
+.sources-icon::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+}
+.msg-sources.open .sources-icon::before {
+  transform: rotate(-135deg);
+  top: 4px;
+}
+.sources-list {
+  display: none;
+  flex-direction: column;
+  margin-top: 8px;
+}
+.msg-sources.open .sources-list { display: flex; }
+.source-item {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 0 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--soft);
+}
+.source-item:last-child { border-bottom: none; }
+.source-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  padding-top: 1px;
+}
+.source-body {}
+.source-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.source-preview {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.4;
+  white-space: normal;
+}
+mark.entity-hit {
+  background: color-mix(in srgb, var(--blue) 22%, transparent);
+  color: var(--ink);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+.source-entities {
+  margin-top: 4px;
   display: flex;
-  justify-content: flex-end;
-}
-.chunks-panel {
-  width: 100%;
-  border: 2.5px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  background: var(--panel);
-}
-.chunks-title {
-  font-size: 13px;
-  font-weight: 900;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .chunks-list {
   display: flex;
@@ -259,6 +366,24 @@ body.compact .msg {
   color: var(--ink);
   opacity: 0.92;
   white-space: pre-wrap;
+}
+
+.chunk-entities {
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.entity-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--soft);
+  color: var(--muted);
+  border: 1.5px solid var(--border);
 }
 
 .hidden {
@@ -621,13 +746,6 @@ body.compact .msg {
 }
 
 @media (max-width: 960px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-  .right {
-    justify-content: stretch;
-  }
-
   .history-tools {
     flex-direction: column;
     align-items: stretch;
