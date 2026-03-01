@@ -17,7 +17,7 @@ from institutional_graphrag.graph.schema import (
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 logging.getLogger("neo4j").setLevel(logging.WARNING)
 logger = logging.getLogger("graph_ingest")
-
+ENABLE_NON_EQUAL_NAME_UNIFICATION = False
 
 # ============================================================
 # Neo4j backend
@@ -424,6 +424,7 @@ def load_graph_json(
     neo4j_uri: str,
     neo4j_user: str,
     neo4j_password: str,
+    enable_non_equal_name_unification: bool = ENABLE_NON_EQUAL_NAME_UNIFICATION,
 ) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]], List[Tuple[str, str]]]:
     json_path = Path(json_path).resolve()
     if not json_path.exists():
@@ -435,8 +436,6 @@ def load_graph_json(
     entities_by_id: dict[str, Entity] = {}
     seen_labels_by_id: dict[str, set[str]] = {}
 
-    # Política simple: "primero gana" (first wins)
-    # Si preferís "último gana" (last wins), te dejo más abajo.
     for raw in payload.get("entities", []):
         entity_label = raw["label"]
         entity_id = raw["id"]
@@ -473,24 +472,29 @@ def load_graph_json(
             len(dup_diff),
         )
     database = Neo4jGraphBuilder(neo4j_uri, neo4j_user, neo4j_password)
-    inv_ids_db = database.fetch_investigador_ids()
-    inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
-    inv_remap, db_merge, _ = build_containment_plan(
-        inv_ids_batch=inv_ids,
-        inv_ids_db=inv_ids_db,
-    )
-    if inv_remap:
-        # Eliminamos las entidades Investigador "contenidas"
-        for drop_id in inv_remap.keys():
-            # por seguridad, solo borramos si sigue siendo Investigador
-            e = entities_by_id.get(drop_id)
-            if e is not None and e.label == "Investigador":
-                del entities_by_id[drop_id]
+    common_remap: Dict[str, str] = {}
 
-        logger.warning(
-            "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
+    if enable_non_equal_name_unification:
+        inv_ids_db = database.fetch_investigador_ids()
+        inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
+        inv_remap, db_merge, _ = build_containment_plan(
+            inv_ids_batch=inv_ids,
+            inv_ids_db=inv_ids_db,
         )
-    common_remap = {**inv_remap, **dict(db_merge)}
+        if inv_remap:
+            # Eliminamos las entidades Investigador "contenidas"
+            for drop_id in inv_remap.keys():
+                # por seguridad, solo borramos si sigue siendo Investigador
+                e = entities_by_id.get(drop_id)
+                if e is not None and e.label == "Investigador":
+                    del entities_by_id[drop_id]
+
+            logger.warning(
+                "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
+        )
+        common_remap = {**inv_remap, **dict(db_merge)}
+    else:
+        inv_remap, db_merge = {}, []
     # Relationships
     relationships: list[Tuple[Relationship, Entity, Entity]] = []
     for raw in payload.get("relationships", []):
@@ -547,13 +551,13 @@ def load_graph_json(
 
     logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
     logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
-    return list(entities_by_id.values()), relationships, errors
-
+    return list(entities_by_id.values()), relationships, db_merge
 
 def build_containment_plan(
     *,
     inv_ids_batch: List[str],
     inv_ids_db: List[str],
+    enable_non_equal_name_unification: bool = ENABLE_NON_EQUAL_NAME_UNIFICATION,
 ) -> Tuple[Dict[str, str], List[Tuple[str, str]], List[str]]:
     """
     Devuelve:
@@ -561,7 +565,11 @@ def build_containment_plan(
       2) db_merge: [(old_id, new_id), ...] donde old_id SÍ está en la DB y debe migrar a new_id
       3) kept: lista de ids canónicos (los que "quedan")
     """
-
+    if not enable_non_equal_name_unification:
+        # Sin remapeos, sin merges, "kept" = ids únicos
+        kept = sorted(set(inv_ids_batch) | set(inv_ids_db))
+        return {}, [], kept
+    
     db_set = set(inv_ids_db)
     batch_set = set(inv_ids_batch)
 

@@ -193,7 +193,6 @@ class StaticExtractor:
                 continue
 
             key = (match.group("group"), match.group("year"))
-            print("llave",key)
             docs = docs_by_group_year.get(key)
 
             if not docs:

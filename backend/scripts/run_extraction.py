@@ -11,10 +11,7 @@ from pathlib import Path
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 
 sys.path.insert(0, str(Path(__file__).parent))
-from institutional_graphrag.ingest.postprocess_entities import (
-    consolidate_researchers,
-    add_missing_evidence_text
-)
+from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 # Configurar logging
 logging.basicConfig(
@@ -46,116 +43,11 @@ def normalize_result(res: ExtractionResult) -> dict:
         ),
     }
 
-
-def postprocess_extraction(json_path: Path) -> None:
-    """Post-procesar entidades y relaciones para mejorar calidad."""
-
-    print(f"\n[Postprocess] Cargando {json_path}...")
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    original_entities = len(data["entities"])
-    original_relationships = len(data["relationships"])
-
-    print(
-        f"[Postprocess] Original: {original_entities} entidades, {original_relationships} relaciones"
-    )
-
-    # Registro completo de transformaciones
-    full_log = {
-        "timestamp": logging.Formatter().formatTime(logging.LogRecord("", 0, "", 0, "", (), None)),
-        "original_counts": {"entities": original_entities, "relationships": original_relationships},
-        "transformations": [],
-    }
-
-    # 1. Consolidar investigadores
-    entities, relationships, consolidation_log = consolidate_researchers(
-        data["entities"], data["relationships"]
-    )
-    full_log["transformations"].extend(consolidation_log)
-
-    # 2. Agregar evidence_text faltante
-    relationships, evidence_log = add_missing_evidence_text(relationships)
-    full_log["transformations"].extend(evidence_log)
-
-    # Actualizar data
-    data["entities"] = entities
-    data["relationships"] = relationships
-
-    full_log["final_counts"] = {"entities": len(entities), "relationships": len(relationships)}
-    full_log["summary"] = {
-        "entities_removed": original_entities - len(entities),
-        "entities_kept": len(entities),
-    }
-
-    print(f"[Postprocess] Final: {len(entities)} entidades, {len(relationships)} relaciones")
-    print(f"[Postprocess] Reducción: {original_entities - len(entities)} entidades eliminadas")
-
-    # Sobrescribir archivo original
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-    print(f"[OK] Post-procesamiento completado en: {json_path}")
-
-    # Guardar log de transformaciones
-    log_path = json_path.parent / f"{json_path.stem}_postprocess_log.json"
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(full_log, f, indent=2, ensure_ascii=False)
-
-    print(f"[OK] Log de transformaciones guardado en: {log_path}")
-
-    # Generar resumen legible en texto
-    summary_path = json_path.parent / f"{json_path.stem}_postprocess_summary.txt"
-    with open(summary_path, "w", encoding="utf-8") as f:
-        f.write("=" * 80 + "\n")
-        f.write("RESUMEN DE POST-PROCESAMIENTO\n")
-        f.write("=" * 80 + "\n\n")
-
-        f.write(f"Archivo procesado: {json_path.name}\n")
-        f.write(f"Fecha: {full_log['timestamp']}\n\n")
-
-        f.write("CONTEOS:\n")
-        f.write(f"  Entidades originales: {original_entities}\n")
-        f.write(f"  Entidades finales: {len(entities)}\n")
-        f.write(f"  Entidades eliminadas (duplicados): {original_entities - len(entities)}\n")
-        f.write(f"  Relaciones: {len(relationships)}\n\n")
-
-        for transformation in full_log["transformations"]:
-            f.write("-" * 80 + "\n")
-            f.write(f"PASO: {transformation['step']}\n")
-            f.write(f"Cambios: {transformation['count']}\n\n")
-
-            if transformation["step"] == "Normalización a MAYÚSCULAS":
-                f.write("Ejemplos de normalizaciones:\n")
-                for change in transformation["changes"][:10]:
-                    f.write(f"  '{change['original']}' → '{change['normalized']}'\n")
-
-            elif transformation["step"] == "Consolidación de nombres parciales":
-                f.write("Merges realizados:\n")
-                for change in transformation["changes"]:
-                    f.write(f"  '{change['partial_name']}' → '{change['canonical_name']}'\n")
-                    f.write(f"    (ID: {change['partial_id']} → {change['canonical_id']})\n")
-
-            elif transformation["step"] == "Actualización de relaciones":
-                f.write(f"Relaciones actualizadas: {transformation['count']}\n")
-                f.write("(Ver log JSON completo para detalles)\n")
-
-            elif transformation["step"] == "Agregar evidence_text faltante":
-                f.write(f"Relaciones corregidas: {transformation['count']}\n")
-                f.write("Ejemplos:\n")
-                for fix in transformation.get("sample", [])[:10]:
-                    f.write(f"  {fix['relation']}\n")
-
-            f.write("\n")
-
-    print(f"[OK] Resumen legible guardado en: {summary_path}")
-
-
 def main(
     max_docs: int | None = None,
     llm_researchers: bool = True,
     llm_topics: bool = True,
+    enable_researcher_consolidation: bool = False,
 ) -> int:
     extractor = EntityExtractor(
         llm_provider=LLM_PROVIDER,
@@ -200,10 +92,13 @@ def main(
     # 5) Post-procesamiento automático
     print("\n" + "=" * 60)
     print("INICIANDO POST-PROCESAMIENTO")
-    print("="*60)
+    print("=" * 60)
+    post_processor = Postprocessor(
+        enable_researcher_consolidation=enable_researcher_consolidation,
+        similarity_threshold=0.85,
+    )
+    post_processor.postprocess_file(out_path)
 
-    #postprocess_extraction(out_path)
-        
     return 0
 
 
@@ -225,6 +120,13 @@ if __name__ == "__main__":
         action="store_true",
         help="Desactiva la búsqueda de tópicos por LLM",
     )
+
+    parser.add_argument(
+        "--enable_researcher_consolidation",
+        action="store_true",
+        help="Desactiva la búsqueda de tópicos por LLM",
+    )
+
     args = parser.parse_args()
 
     if args.max_docs is not None:
@@ -234,9 +136,10 @@ if __name__ == "__main__":
 
     llm_researchers = not args.no_llm_researchers
     llm_topics = not args.no_llm_topics
-
+    enable_researcher_consolidation = args.enable_researcher_consolidation
     print(f"[CONFIG] LLM investigadores: {'ACTIVO' if llm_researchers else 'DESACTIVADO'}")
     print(f"[CONFIG] LLM tópicos: {'ACTIVO' if llm_topics else 'DESACTIVADO'}")
+    print(f"[CONFIG] Unificacion de Investigadores: {'ACTIVO' if enable_researcher_consolidation else 'DESACTIVADO'}")
 
     # -------------------------------------------------
 
@@ -245,5 +148,6 @@ if __name__ == "__main__":
             max_docs=args.max_docs,
             llm_researchers=llm_researchers,
             llm_topics=llm_topics,
+            enable_researcher_consolidation=enable_researcher_consolidation,
         )
     )

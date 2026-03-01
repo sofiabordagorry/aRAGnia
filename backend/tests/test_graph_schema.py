@@ -1,6 +1,9 @@
 """Tests for the graph schema module."""
 
 import pytest
+import json
+from pathlib import Path
+from pydantic import TypeAdapter
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
@@ -20,7 +23,27 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     Topico,
     validate_relationship_endpoints,
+    AnioValue,
+    DocumentoValue,
+    InvestigadorValue,
 )
+
+VALUE_SCHEMAS = {
+    "Anio": TypeAdapter(AnioValue),
+    "Documento": TypeAdapter(DocumentoValue),
+    "Investigador": TypeAdapter(InvestigadorValue),
+}
+
+
+# auxiliary function
+def load_entities():
+    current_file = Path(__file__).resolve()
+    json_path = current_file.parents[2] / "data" / "entities_relations" / "entity_documents.json"
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return data["entities"]
 
 
 class TestEntities:
@@ -77,6 +100,66 @@ class TestEntities:
         assert result["id"] == "proyecto_123"
         assert result["label"] == "Proyecto"
         assert result["value"] == "Test Project"
+
+    def test_entity_schema(self):
+        """
+        Tests if entity data complies with the expected schema.
+        """
+        entities = load_entities()
+        failures = []
+
+        for entity_data in entities:
+            entity_id = entity_data.get("id")
+            label = entity_data.get("label")
+            value = entity_data.get("value")
+
+            # 1. Check label exists
+            if label is None:
+                failures.append(f"Entity {entity_id}: missing label")
+                continue
+
+            try:
+                # 2. Get Class
+                EntityClass = GraphSchema.get_entity_class(label)
+
+                # 3. Validate
+                EntityClass(id=entity_id, value=value)
+                if label in VALUE_SCHEMAS:
+                    schema_adapter = VALUE_SCHEMAS[label]
+                    schema_adapter.validate_python(value)
+
+            except Exception as e:
+                failures.append(f"Entity {entity_id} ({label}) falló validación:\n{str(e)}")
+
+        if failures:
+            error_count = len(failures)
+            formatted_errors = "\n" + "=" * 40 + "\n".join(failures)
+            pytest.fail(f"Se encontraron {error_count} entidades invalidas: {formatted_errors}")
+
+    # @pytest.mark.parametrize("entity_data", load_entities())
+    # def test_individual_entity_schema(self, entity_data):
+    #     """
+    #     Tests one entity at a time. Pytest will generate a
+    #     separate test case for every item in the list.
+    #     """
+    #     entity_id = entity_data.get("id")
+    #     label = entity_data.get("label")
+    #     value = entity_data.get("value")
+
+    #     # 1. Check label exists
+    #     assert label is not None, f"Entity {entity_id} missing label"
+
+    #     # 2. Get Class
+    #     EntityClass = GraphSchema.get_entity_class(label)
+
+    #     # 3. Validate
+    #     EntityClass(id=entity_id, value=value)
+    #     if label in VALUE_SCHEMAS:
+    #         schema_adapter = VALUE_SCHEMAS[label]
+    #         try:
+    #             schema_adapter.validate_python(value)
+    #         except ValidationError as e:
+    #             pytest.fail(f"Entity {entity_id} ({label}) falló validación de campo value:\n{e}")
 
 
 class TestRelationships:
