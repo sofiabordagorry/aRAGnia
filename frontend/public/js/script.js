@@ -129,12 +129,18 @@ function getEntitySnippet(text, entities) {
       const start = Math.max(0, idx - BEFORE);
       const end = Math.min(text.length, idx + term.length + AFTER);
       return {
-        snippet: (start > 0 ? "\u2026" : "") + text.slice(start, end) + (end < text.length ? "\u2026" : ""),
+        snippet:
+          (start > 0 ? "\u2026" : "") +
+          text.slice(start, end) +
+          (end < text.length ? "\u2026" : ""),
         highlight: term,
       };
     }
   }
-  return { snippet: text.slice(0, 300) + (text.length > 300 ? "\u2026" : ""), highlight: "" };
+  return {
+    snippet: text.slice(0, 300) + (text.length > 300 ? "\u2026" : ""),
+    highlight: "",
+  };
 }
 
 function renderChunks(chunks, chunkToEntities = {}, msgEl = null) {
@@ -157,13 +163,19 @@ function renderChunks(chunks, chunkToEntities = {}, msgEl = null) {
 
   chunks.forEach((c, idx) => {
     const title = c.id ?? `Chunk ${idx + 1}`;
-    const text = (c.text ?? c.content ?? "").replace(/[ \t]+/g, " ").replace(/\n[ \t]+/g, "\n").trim();
+    const text = (c.text ?? c.content ?? "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n[ \t]+/g, "\n")
+      .trim();
     const entities = chunkToEntities[c.id] || [];
 
     let entitiesHtml = "";
     if (entities.length > 0 && settings.graphrag_enabled) {
       const tags = entities
-        .map(([id, label]) => `<span class="entity-tag" title="${escapeHtml(label)}">${escapeHtml(id)}</span>`)
+        .map(
+          ([id, label]) =>
+            `<span class="entity-tag" title="${escapeHtml(label)}">${escapeHtml(id)}</span>`,
+        )
         .join(" ");
       entitiesHtml = `<div class="source-entities chunk-entities">${tags}</div>`;
     }
@@ -327,7 +339,11 @@ async function ask() {
     const assistantMsg = addMessage("assistant", data.answer ?? "(sin answer)");
 
     const chunkToEntities = data.chunk_to_entities || {};
-    renderChunks(data.chunks ?? data.context ?? [], chunkToEntities, assistantMsg);
+    renderChunks(
+      data.chunks ?? data.context ?? [],
+      chunkToEntities,
+      assistantMsg,
+    );
     setStatus("Listo.");
   } catch (err) {
     typingMsg.remove();

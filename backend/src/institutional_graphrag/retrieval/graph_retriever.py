@@ -28,7 +28,9 @@ class GraphRAGResult:
     answer: str
     chunks: List[GraphRAGChunk]
     cypher_query: str
-    chunk_to_entities: Dict[str, List[tuple[str, str]]]  # Mapeo chunk_id -> [(entity_id, entity_label)] - TRAZABILIDAD COMPLETA
+    chunk_to_entities: Dict[
+        str, List[tuple[str, str]]
+    ]  # Mapeo chunk_id -> [(entity_id, entity_label)] - TRAZABILIDAD COMPLETA
 
 
 class CypherQueryValidator:
@@ -79,19 +81,19 @@ class GraphRAGRetriever:
         max_tokens: int = 1024,
     ):
         from institutional_graphrag.rag.generate import get_llm_client
-        
+
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
-        # LLM para clasificación y Cypher 
+        # LLM para clasificación y Cypher
         self.cypher_llm_client = get_llm_client(provider=llm_provider, model="qwen2.5:3b-instruct")
-        # LLM para respuestas finales 
+        # LLM para respuestas finales
         self.answer_llm_client = get_llm_client(provider=llm_provider, model="llama3.2:3b")
         self.temperature = temperature
         self.max_tokens = max_tokens
-        
+
     def close(self):
         """Cerrar conexión a Neo4j."""
         self.driver.close()
-    
+
     def _classify_query_intent(self, user_query: str) -> str:
         """
         Clasifica si la consulta del usuario necesita búsqueda en grafo o es conversacional.
@@ -111,18 +113,22 @@ Examples:
 Query: "{user_query}"
 
 Classification (answer only SEARCH or CHAT):"""
-        
+
         messages = [
             {"role": "system", "content": "You are a classifier. Answer only with SEARCH or CHAT."},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": prompt},
         ]
-        
-        response = self.cypher_llm_client.generate(
-            messages=messages,
-            temperature=0.0,
-            max_tokens=10,
-        ).strip().upper()
-        
+
+        response = (
+            self.cypher_llm_client.generate(
+                messages=messages,
+                temperature=0.0,
+                max_tokens=10,
+            )
+            .strip()
+            .upper()
+        )
+
         # Parse response - debe ser SEARCH o CHAT
         if "SEARCH" in response:
             return "SEARCH"
@@ -132,7 +138,7 @@ Classification (answer only SEARCH or CHAT):"""
             # Default a CHAT para evitar errores de Cypher con queries ambiguas
             logger.warning(f"Intent classification unclear: '{response}', defaulting to CHAT")
             return "CHAT"
-    
+
     def _generate_conversational_response(self, user_query: str) -> str:
         """
         Genera respuesta conversacional amigable para queries tipo chat.
@@ -140,19 +146,19 @@ Classification (answer only SEARCH or CHAT):"""
         system_prompt = """Eres un asistente amigable de consultas académicas. Responde de forma breve, amigable y profesional en español.
 
 Si te preguntan qué puedes hacer, explica que puedes buscar información sobre proyectos de investigación, investigadores, tópicos y documentos académicos."""
-        
+
         messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_query}
+            {"role": "user", "content": user_query},
         ]
-        
+
         response = self.answer_llm_client.generate(
             messages=messages,
             temperature=0.7,
             max_tokens=150,
         )
         logger.info("Respuesta conversacional generada")
-        
+
         return response.strip()
 
     def generate_cypher_query(self, user_query: str) -> str:
@@ -310,16 +316,16 @@ CRITICAL:
     def _is_aggregation_query(self, cypher_query: str) -> bool:
         """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.)"""
         query_upper = cypher_query.upper()
-        aggregation_functions = ['COUNT(', 'SUM(', 'AVG(', 'MAX(', 'MIN(', 'COLLECT(']
+        aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN(", "COLLECT("]
         return any(func in query_upper for func in aggregation_functions)
 
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
         if not records:
             return "No aggregation results found."
-        
+
         context_parts = ["=== QUERY RESULTS ===\n"]
-        
+
         for idx, record in enumerate(records, 1):
             values = []
             for key in record.keys():
@@ -332,13 +338,13 @@ CRITICAL:
                     values.append(f"{key} ({label}): {display}")
                 else:
                     values.append(f"{key}: {value}")
-            
+
             context_parts.append(f"{idx}. {', '.join(values)}")
-            
+
             if idx >= 50:
                 context_parts.append(f"\n[Note: {len(records) - idx} more results omitted...]")
                 break
-        
+
         return "\n".join(context_parts)
 
     def _extract_chunks_and_entities_from_results(
@@ -356,19 +362,22 @@ CRITICAL:
             entities_direct = []
             # collected = vienen de COLLECT() — son del proyecto/consulta, no del chunk
             entities_collected = []
-            
+
             # Iterar sobre los valores del record
             for key in record.keys():
                 value = record[key]
-                
+
                 # Verificar si es un nodo de Neo4j (directo, no en lista)
                 if isinstance(value, Node):
                     labels = list(value.labels)
                     if "Chunk" in labels:
                         chunks_in_record.append(value)
-                    elif any(label in labels for label in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]):
+                    elif any(
+                        label in labels
+                        for label in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                    ):
                         entities_direct.append(value)
-                
+
                 # Si es una lista (resultado de COLLECT), marcar como collected
                 elif isinstance(value, list):
                     for item in value:
@@ -376,13 +385,29 @@ CRITICAL:
                             labels = list(item.labels)
                             if "Chunk" in labels:
                                 chunks_in_record.append(item)
-                            elif any(label in labels for label in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]):
+                            elif any(
+                                label in labels
+                                for label in [
+                                    "Investigador",
+                                    "Topico",
+                                    "Proyecto",
+                                    "Documento",
+                                    "Anio",
+                                ]
+                            ):
                                 entities_collected.append(item)
 
             def resolve_entity_id(entity_node):
                 props = dict(entity_node)
                 entity_labels = list(entity_node.labels)
-                entity_label = next((lbl for lbl in entity_labels if lbl in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]), "")
+                entity_label = next(
+                    (
+                        lbl
+                        for lbl in entity_labels
+                        if lbl in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                    ),
+                    "",
+                )
                 entity_id = props.get("id", "")
                 if entity_label == "Investigador":
                     entity_id = props.get("name", entity_id) or entity_id
@@ -410,7 +435,7 @@ CRITICAL:
                 chunk_id = chunk_node.get("id", "")
                 if not chunk_id:
                     continue
-                    
+
                 # Agregar chunk si no existe
                 if chunk_id not in chunks_dict:
                     text = chunk_node.get("text", "")
@@ -419,7 +444,7 @@ CRITICAL:
                             chunk_id=chunk_id,
                             text=text,
                         )
-                
+
                 # Solo asociar entidades DIRECTAS al chunk (implican EVIDENCIA_DE)
                 if entities_direct and chunk_id in chunks_dict:
                     for entity_node in entities_direct:
@@ -434,7 +459,9 @@ CRITICAL:
 
         return list(chunks_dict.values()), evidence_entities, chunk_to_entities
 
-    def build_entity_context(self, evidence_entities: Dict[tuple, dict], chunk_to_entities: Dict[str, List[tuple]]) -> str:
+    def build_entity_context(
+        self, evidence_entities: Dict[tuple, dict], chunk_to_entities: Dict[str, List[tuple]]
+    ) -> str:
         """Construye contexto de entidades para el LLM con todas sus propiedades."""
         if not evidence_entities:
             return "No se encontraron entidades relevantes en el grafo."
@@ -450,17 +477,25 @@ CRITICAL:
         lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
 
         for label in ["Proyecto", "Investigador", "Topico", "Documento", "Anio"]:
-            entries = [((eid, lbl), props) for (eid, lbl), props in evidence_entities.items() if lbl == label]
+            entries = [
+                ((eid, lbl), props)
+                for (eid, lbl), props in evidence_entities.items()
+                if lbl == label
+            ]
             if not entries:
                 continue
             lines.append(f"\n{label_display[label]}:")
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
-                props_str = " | ".join(f"{k}: {v}" for k, v in props.items() if v is not None and k != "text")
+                props_str = " | ".join(
+                    f"{k}: {v}" for k, v in props.items() if v is not None and k != "text"
+                )
                 lines.append(f"  - {props_str}")
 
         return "\n".join(lines)
 
-    def build_messages_for_answer(self, user_query: str, entity_context: str) -> List[Dict[str, str]]:
+    def build_messages_for_answer(
+        self, user_query: str, entity_context: str
+    ) -> List[Dict[str, str]]:
         """
         Construir mensajes para el LLM usando SOLO entidades y relaciones del grafo.
         El texto de los chunks va al frontend, no aqui.
@@ -487,13 +522,13 @@ Respondé la consulta con una frase introductoria y la lista:"""
         """
         if not user_query or not user_query.strip():
             raise ValueError("Query vacía")
-        
+
         logger.info(f"Query recibida: '{user_query}'")
-        
+
         # Clasificar intención del usuario
         intent = self._classify_query_intent(user_query)
         logger.info(f"Intención clasificada: {intent}")
-        
+
         # Si es conversacional, generar respuesta directa sin búsqueda en grafo
         if intent == "CHAT":
             logger.info("Modo conversacional activado (usando llama)")
@@ -511,18 +546,26 @@ Respondé la consulta con una frase introductoria y la lista:"""
         records = self.execute_cypher_query(cypher_query)
 
         # Extraer chunks y evidencia
-        chunks, evidence_entities, chunk_to_entities = self._extract_chunks_and_entities_from_results(records)
+        chunks, evidence_entities, chunk_to_entities = (
+            self._extract_chunks_and_entities_from_results(records)
+        )
         logger.info(f"Extraídos {len(chunks)} chunks con {len(evidence_entities)} entidades")
 
         if not chunks:
             logger.warning("No se encontraron chunks en los resultados del grafo")
-            
+
             if records and (self._is_aggregation_query(cypher_query) or not chunks):
                 logger.info("Sin chunks en resultados, usando registros directos")
                 context = self._build_aggregation_context(records)
                 messages = [
-                    {"role": "system", "content": "Respondé en español basado en estos resultados del grafo. Sé directo y conciso."},
-                    {"role": "user", "content": f"{context}\n\nPREGUNTA: {user_query}\n\nRespuesta:"},
+                    {
+                        "role": "system",
+                        "content": "Respondé en español basado en estos resultados del grafo. Sé directo y conciso.",
+                    },
+                    {
+                        "role": "user",
+                        "content": f"{context}\n\nPREGUNTA: {user_query}\n\nRespuesta:",
+                    },
                 ]
                 answer = self.answer_llm_client.generate(
                     messages=messages,
@@ -536,7 +579,7 @@ Respondé la consulta con una frase introductoria y la lista:"""
                     cypher_query=cypher_query,
                     chunk_to_entities={},
                 )
-            
+
             return GraphRAGResult(
                 answer="No se encontró información relevante en el grafo para responder esta pregunta.",
                 chunks=[],

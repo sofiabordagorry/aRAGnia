@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import List, Tuple
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
@@ -19,10 +18,10 @@ class QueryRequest(BaseModel):
 
 
 class QueryResponse(BaseModel):
-    answer: str  
-    chunk_to_entities: dict  
-    chunks: list[dict] = []  
-    cypher_query: str = "" 
+    answer: str
+    chunk_to_entities: dict
+    chunks: list[dict] = []
+    cypher_query: str = ""
 
 
 @router.post("/query", response_model=QueryResponse)
@@ -33,7 +32,7 @@ def graphrag_query(payload: QueryRequest):
         neo4j_host = os.getenv("HOST", "localhost")
         neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
         neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
-        
+
         retriever = GraphRAGRetriever(
             neo4j_uri=neo4j_uri,
             neo4j_user=os.getenv("NEO4J_USER", "neo4j"),
@@ -42,29 +41,31 @@ def graphrag_query(payload: QueryRequest):
             temperature=0.3,
             max_tokens=1024,
         )
-        
+
         result = retriever.query(payload.query)
-        
+
         retriever.close()
         logger.info("Conexión a Neo4j cerrada")
-        
+
         chunks = [
             {
-                "id": chunk.chunk_id,  
-                "text": chunk.text,  
+                "id": chunk.chunk_id,
+                "text": chunk.text,
             }
             for chunk in result.chunks
         ]
-        
-        logger.info(f"[GraphRAG] Respuesta generada: {len(chunks)} chunks, {len(result.answer)} caracteres")
-        
+
+        logger.info(
+            f"[GraphRAG] Respuesta generada: {len(chunks)} chunks, {len(result.answer)} caracteres"
+        )
+
         return QueryResponse(
             answer=result.answer,
             chunk_to_entities=result.chunk_to_entities,
             chunks=chunks,
             cypher_query=result.cypher_query,
         )
-        
+
     except ValueError as e:
         logger.error(f"[GraphRAG] ValueError: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
