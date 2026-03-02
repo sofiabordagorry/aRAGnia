@@ -19,13 +19,14 @@ INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_
 # MAIN ASYNC
 # ==============================
 
-async def main():
+async def main(keep_debug_artifacts: bool):
     print("🚀 Inicializando IngestService...")
 
     service = IngestService(
         data_dir=DATA_DIR,
         env_path=ENV_PATH,
         enable_researcher_consolidation=ENABLE_RESEARCHER_CONSOLIDATION,
+        keep_debug_artifacts=keep_debug_artifacts,
     )
 
     print("📥 Ejecutando ingest...")
@@ -41,4 +42,21 @@ async def main():
 # ==============================
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import argparse
+    import asyncio
+
+    parser = argparse.ArgumentParser(description="Ejecutar end to end")
+
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Mantiene archivos intermedios para debugging (no limpia)",
+    )
+
+    args = parser.parse_args()
+
+    keep_debug_artifacts = args.debug
+
+    print(f"[CONFIG] MODO DEBUG: {'ACTIVO' if keep_debug_artifacts else 'DESACTIVADO'}")
+
+    asyncio.run(main(keep_debug_artifacts))

@@ -1,13 +1,10 @@
 import os
-import re
 
 import requests
 import urllib3
 from dotenv import load_dotenv
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import tempfile
-from enum import Enum
 from pathlib import Path
 from urllib.parse import quote
 
