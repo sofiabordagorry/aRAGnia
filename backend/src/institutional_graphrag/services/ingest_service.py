@@ -50,8 +50,10 @@ class IngestService:
         data_dir: Path,
         env_path: Optional[Path] = None,
         enable_researcher_consolidation: bool,
+        keep_debug_artifacts: bool,
     ):
         self.enable_researcher_consolidation = enable_researcher_consolidation
+        self.keep_debug_artifacts = keep_debug_artifacts
         self.data_dir = data_dir
         self.tables_dir = data_dir / "tables"
         self.output_dir = data_dir / "corpus"
@@ -133,11 +135,12 @@ class IngestService:
             self._ingest_neo4j(entity_json_path)
 
         # Cleanup al final
-        for base in processed:
-            self._cleanup_processed_file(base)
+        if not self.keep_debug_artifacts:
+            for base in processed:
+                self._cleanup_processed_file(base)
 
-        if entity_json_path is not None:
-            entity_json_path.unlink(missing_ok=True)
+            if entity_json_path is not None:
+                entity_json_path.unlink(missing_ok=True)
 
         return {"processed": processed, "errors": self.entity_extractor.res.errors}
 
