@@ -44,6 +44,7 @@ dev = [
     "mypy>=1.5.0",
     "ruff>=0.1.0",
     "types-requests",
+    "pandas-stubs",  # <-- AGREGADO
 ]
 
 [tool.setuptools]
@@ -70,4 +71,8 @@ python_functions = ["test_*"]
 python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["odf", "odf.*", "ijson", "ijson.*", "tabula", "tabula.*"]
 ignore_missing_imports = true

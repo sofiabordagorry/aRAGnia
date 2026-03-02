@@ -329,7 +329,7 @@ class StaticExtractor:
         title_col: str,
         responsible_cols: List[str],
         chunk_dir: Path,
-        inv_ids_by_project: dict[str, set[str]],
+        inv_ids_by_project: dict[str, set[tuple[str, str]]],
     ) -> dict[str, list[dict[str, Any]]]:
         """
         De un df de tabla:
@@ -610,11 +610,14 @@ class StaticExtractor:
     # Auxiliares para Responsables #
     ################################
 
-    def _build_indexes(self) -> dict[str, set[str]]:
-        inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
+    def _build_indexes(self) -> dict[str, set[tuple[str, str]]]:
+        inv_ids_by_project: dict[str, set[tuple[str, str]]] = defaultdict(set)
 
-        investigators_by_id: dict[str, Entity] = {
-            str(e.id): e for e in self.res.entities if e.label == "Investigador"
+        # Si no hay investigadores aún, va a quedar vacío. Está bien.
+        investigators_by_id: dict[str, str] = {
+            str(e.id): str(e.value.get("name", "")) if isinstance(e.value, dict) else str(e.value)
+            for e in self.res.entities
+            if e.label == "Investigador"
         }
 
         for r in self.res.relationships:
@@ -624,8 +627,9 @@ class StaticExtractor:
             inv_id = str(r.source_id)
             proj_id = str(r.target_id)
 
-            if inv_id in investigators_by_id:
-                inv_ids_by_project[proj_id].add(inv_id)
+            name = investigators_by_id.get(inv_id)
+            if name:
+                inv_ids_by_project[proj_id].add((inv_id, name))
 
         return dict(inv_ids_by_project)
 
@@ -725,7 +729,7 @@ class StaticExtractor:
     def _process_table_investigators(
         self,
         people: list[tuple[Optional[str], Optional[str]]],
-        inv_ids_by_project: dict[str, set[str]],
+        inv_ids_by_project: dict[str, set[tuple[str, str]]],
         project_id: str,
         table_chunk_id: str,
     ):
@@ -746,19 +750,18 @@ class StaticExtractor:
             if any(inv in candidate_in_text.lower() for inv in invalid_values):
                 continue
 
+            current = inv_ids_by_project.get(project_id, set())
             if (
                 fallback
-                and fallback in inv_ids_by_project[project_id]
+                and any(name == fallback for _, name in current)
                 and candidate_in_text == fallback
-            ) or (
-                full_name and any(full_name == value for _, value in inv_ids_by_project[project_id])
-            ):
+            ) or (full_name and any(name == full_name for _, name in current)):
                 continue
 
             # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
             if fallback:
-                to_remove = {item for item in inv_ids_by_project[project_id] if item[1] == fallback}
-
+                current = inv_ids_by_project.setdefault(project_id, set())
+                to_remove = {item for item in current if item[1] == fallback}
                 if to_remove:
                     inv_ids_by_project[project_id] -= to_remove
                     candidate_to_remove = next(iter(to_remove), None)
