@@ -612,17 +612,22 @@ class StaticExtractor:
 
     def _build_indexes(self) -> dict[str, set[str]]:
         inv_ids_by_project: dict[str, set[str]] = defaultdict(set)
-        for r in self.res.relationships:
-            if r.type == "PARTICIPO_EN":
-                responsible_by_id = {
-                    str(e.value): e
-                    for e in self.res.entities
-                    if (e.label == "Investigador" and e.id == r.source_id)
-                }
-                investigador = next(iter(responsible_by_id.values()), None)
-                inv_ids_by_project[str(r.target_id)].add(investigador)
 
-        return inv_ids_by_project
+        investigators_by_id: dict[str, Entity] = {
+            str(e.id): e for e in self.res.entities if e.label == "Investigador"
+        }
+
+        for r in self.res.relationships:
+            if r.type != "PARTICIPO_EN":
+                continue
+
+            inv_id = str(r.source_id)
+            proj_id = str(r.target_id)
+
+            if inv_id in investigators_by_id:
+                inv_ids_by_project[proj_id].add(inv_id)
+
+        return dict(inv_ids_by_project)
 
     def _extract_up_to_people(
         self, row, cols: list[str], id_col: str
