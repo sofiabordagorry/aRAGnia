@@ -636,6 +636,7 @@ def build_containment_plan(
       2) db_merge: [(old_id, new_id), ...] donde old_id SÍ está en la DB y debe migrar a new_id
       3) kept: lista de ids canónicos (los que "quedan")
     """
+    kept: List[str] = []
     if not enable_non_equal_name_unification:
         # Sin remapeos, sin merges, "kept" = ids únicos
         kept = sorted(set(inv_ids_batch) | set(inv_ids_db))
@@ -647,7 +648,6 @@ def build_containment_plan(
     # Ordenamos por largo DESC y sin repetidos
     all_ids_sorted = sorted(set(inv_ids_batch) | set(inv_ids_db), key=len, reverse=True)
 
-    kept: List[str] = []
     remap_all: Dict[str, str] = {}
 
     # 1) Remap global (misma lógica que tenías)

@@ -189,12 +189,14 @@ class EntityExtractor:
 
                     try:
                         self.add_relationship(
-                            Relationship(
-                                type=rel_type,
-                                source_id=source_id,
-                                target_id=target_id,
-                                properties=props,
-                            )
+                            [
+                                Relationship(
+                                    type=rel_type,
+                                    source_id=source_id,
+                                    target_id=target_id,
+                                    properties=props,
+                                )
+                            ]
                         )
                     except Exception as exc:
                         self.res.errors.append(

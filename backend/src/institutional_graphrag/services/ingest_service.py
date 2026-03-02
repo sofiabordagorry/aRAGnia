@@ -110,9 +110,14 @@ class IngestService:
                         processed.append(base_name)
                 except Exception as e:
                     # mantener formato consistente (strings)
-                    self.entity_extractor.res.errors.append(f"{zi.filename}: {e}")
+                    self.entity_extractor.res.errors.append(
+                        {
+                            "type": "ProcessOneError",
+                            "file": zi.filename,
+                            "message": str(e),
+                        }
+                    )
         finally:
-            # cerrar zip SIEMPRE
             try:
                 zf.close()
             except Exception:
@@ -387,7 +392,12 @@ class IngestService:
             self.entity_extractor.res.errors.extend(res.errors)
 
         except Exception as e:
-            self.entity_extractor.res.errors.append(f"projects/responsibles: {e}")
+            self.entity_extractor.res.errors.append(
+                {
+                    "type": "ProjectsResponsiblesError",
+                    "message": str(e),
+                }
+            )
 
     def _postprocess_entities(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         entity_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
@@ -436,7 +446,14 @@ class IngestService:
 
             user = os.getenv("NEO4J_USER")
             password = os.getenv("NEO4J_PASSWORD")
-
+            if not user or not password:
+                self.entity_extractor.res.errors.append(
+                    {
+                        "type": "MissingNeo4jCredentials",
+                        "message": "Faltan NEO4J_USER o NEO4J_PASSWORD en el entorno.",
+                    }
+                )
+                return
             builder = GraphBuilder(neo4j_uri, user, password)
             entities, relationships, merge_plan = load_graph_json(
                 entity_json_path, neo4j_uri, user, password, self.enable_researcher_consolidation
@@ -471,7 +488,12 @@ class IngestService:
             print("=" * 80)
 
         except Exception as e:
-            self.entity_extractor.res.errors.append(f"neo4j_ingest: {e}")
+            self.entity_extractor.res.errors.append(
+                {
+                    "type": "Neo4jIngestError",
+                    "message": str(e),
+                }
+            )
 
     def _cleanup_processed_file(self, base_name: str) -> None:
         """

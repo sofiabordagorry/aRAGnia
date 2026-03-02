@@ -236,7 +236,7 @@ class StaticExtractor:
                 (c for c in df.columns if "TITULO" in c.upper() or "TÍTULO" in c.upper()), None
             )
             if not title_col:
-                return {}
+                continue
             responsible_cols = [
                 c
                 for c in df.columns
@@ -388,7 +388,7 @@ class StaticExtractor:
 
         res = self._read_json(path)
         if res.errors:
-            self.res.errors.extend(res.errors)
+            self.res.errors.append(res.errors)
             return None
 
         payload = res.data
@@ -743,7 +743,7 @@ class StaticExtractor:
 
             if (
                 fallback
-                and any(fallback == value for _, value in inv_ids_by_project[project_id])
+                and fallback in inv_ids_by_project[project_id]
                 and candidate_in_text == fallback
             ) or (
                 full_name and any(full_name == value for _, value in inv_ids_by_project[project_id])
