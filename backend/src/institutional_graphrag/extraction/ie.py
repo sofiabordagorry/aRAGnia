@@ -11,11 +11,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 import ijson
-import pandas as pd
 
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
-    LLMExtractionResult,
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )

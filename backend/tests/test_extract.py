@@ -5,10 +5,8 @@ Tests para extraction/ie.py (alineados al ie.py actual)
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod

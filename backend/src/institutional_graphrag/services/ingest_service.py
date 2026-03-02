@@ -198,12 +198,13 @@ class IngestService:
                 extract_table(tmp_path, self.tables_dir)
 
                 # Crear entidad Documento(tabla) (sin chunks)
-                value_builder = lambda base, m: {
-                    "base_name": base,
-                    "is_group": m.group("group"),
-                    "year_publisher": m.group("year"),
-                    "type": "tabla",
-                }
+                def value_builder(base, m):
+                    return {
+                        "base_name": base,
+                        "is_group": m.group("group"),
+                        "year_publisher": m.group("year"),
+                        "type": "tabla",
+                    }
 
                 # Para el extractor estático, pasamos un path "representativo".
                 # Si tu extractor matchea por nombre, esto funciona.
@@ -217,13 +218,14 @@ class IngestService:
             # ---------------------------
             # NARRATIVE
             # ---------------------------
-            value_builder = lambda base, m: {
-                "base_name": base,
-                "is_group": m.group("group"),
-                "year_publisher": m.group("year"),
-                "sub_id": m.group("doc_id"),
-                "type": m.group("kind"),
-            }
+            def value_builder(base, m):
+                return {
+                    "base_name": base,
+                    "is_group": m.group("group"),
+                    "year_publisher": m.group("year"),
+                    "sub_id": m.group("doc_id"),
+                    "type": m.group("kind"),
+                }
 
             # Guardar PDF definitivo
             with open(final_pdf_path, "wb") as out:

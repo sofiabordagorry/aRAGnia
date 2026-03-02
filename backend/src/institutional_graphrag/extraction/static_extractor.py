@@ -1,7 +1,7 @@
 import json
 import re
 import unicodedata
-from collections import Counter, defaultdict
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
@@ -20,7 +20,6 @@ from institutional_graphrag.graph.schema import (
     Chunk,
     Documento,
     Entity,
-    GraphSchema,
     Investigador,
     Proyecto,
     Relationship,
