@@ -12,7 +12,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
 ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env") 
 ENABLE_RESEARCHER_CONSOLIDATION = True
 
-INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"  # <-- CAMBIAR
+INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"  
 
 
 # ==============================
