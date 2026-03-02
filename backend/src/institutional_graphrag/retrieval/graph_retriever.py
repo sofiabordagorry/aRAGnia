@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from neo4j import GraphDatabase
+from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
 
 logger = logging.getLogger(__name__)
@@ -189,6 +190,16 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
         cypher_query = query_match.group(1).strip()
 
+        # Corregir dirección incorrecta de PARTICIPO_EN si el LLM la invirtió
+        cypher_query = self._fix_relationship_directions(cypher_query)
+
+        # Detectar caso UNSUPPORTED (pregunta fuera del alcance de una sola query)
+        if cypher_query.upper() == "UNSUPPORTED":
+            raise ValueError(
+                "UNSUPPORTED: La pregunta requiere múltiples consultas y está fuera del "
+                "alcance de esta solución. Por favor, reformule su pregunta de forma más específica."
+            )
+
         # Validar query
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
@@ -226,9 +237,12 @@ RULES:
 3. Connect patterns: every MATCH must use variables defined in previous MATCHes
 4. Use [:EVIDENCIA_DE] to navigate from entities to their evidence chunks
 5. Topics are stored in ENGLISH: 'Biotechnology', 'Engineering', 'Medicine', etc.
-6. LIMIT 20-30 results
+6. Only add LIMIT when the question explicitly asks for a specific number of results (e.g. "los 10 tópicos con más proyectos" → LIMIT 10). Otherwise, omit LIMIT entirely.
 7. NEVER define relationship variables — use anonymous patterns only: -[:TYPE]-> NOT -[r:TYPE]->
 8. Node variables must be unique and never reused for a different type
+9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
+10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
+11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
 
 PATTERNS (use what fits best):
 
@@ -236,34 +250,35 @@ List projects by topic:
 MATCH (t:Topico {{value: 'Biotechnology'}})
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
-RETURN p, COLLECT(c) AS chunks LIMIT 20
+RETURN p, COLLECT(c) AS chunks
 
 List investigators of a project:
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(i)
-RETURN i, COLLECT(c) AS chunks LIMIT 25
+RETURN i, COLLECT(c) AS chunks
+
+Projects by researcher name — note direction: Investigador -> Proyecto:
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
+MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+RETURN p, i, COLLECT(c) AS chunks
 
 Chunks of a specific topic (only when asked about the topic itself, not its projects):
 MATCH (t:Topico {{value: 'Biotechnology'}})
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(t)
-RETURN c, t LIMIT 25
-
-By researcher name:
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(i)
-RETURN c, i LIMIT 25
+RETURN c, t
 
 By project ID (chunks about a specific project):
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
-RETURN c, p LIMIT 25
+RETURN c, p
 
 Documents of a project:
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 MATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)
 MATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)
-RETURN d, p, COLLECT(c) AS chunks LIMIT 20
+RETURN d, p, COLLECT(c) AS chunks
 
 Describe / full info about a specific project (name, year, topics, investigators):
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
@@ -273,16 +288,26 @@ OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
 RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, a LIMIT 1
 
-Projects by year:
-MATCH (a:Anio {{year: '2014'}})
+Projects by a specific year:
+MATCH (a:Anio {{year: 'year_value'}})
 MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
-RETURN p, COLLECT(c) AS chunks LIMIT 20
+RETURN p
+
+Projects by area for ALL years (e.g. "how many projects per area for each year"):
+MATCH (a:Anio)
+MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+RETURN a.year AS anio, t.value AS area, count(DISTINCT p) AS total_proyectos
+ORDER BY anio DESC, total_proyectos DESC
 
 Count entities (how many X are there):
 MATCH (i:Investigador) RETURN count(i) AS total
 MATCH (p:Proyecto) RETURN count(p) AS total
 MATCH (t:Topico) RETURN count(t) AS total
+
+Top N topics by project count (user asked for specific number, e.g. 10):
+MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)
+RETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10
 
 QUESTION: {user_query}
 
@@ -296,6 +321,89 @@ CRITICAL:
 
 <QUERY>
 """
+
+    def _fix_relationship_directions(self, query: str) -> str:
+        """
+        Corrige la dirección de PARTICIPO_EN cuando el LLM la genera al revés:
+        (Proyecto)-[:PARTICIPO_EN]->(Investigador)  =>  (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+        """
+        pattern = re.compile(
+            r"""
+            MATCH\s*
+            \(\s*(?P<pvar>\w+)\s*(?::\s*Proyecto)?\s*(?:\{[^}]*\})?\s*\)
+            \s*-\s*\[:PARTICIPO_EN\]\s*->\s*
+            \(\s*(?P<ivar>\w+)\s*(?::\s*Investigador)?\s*(?:\{[^}]*\})?\s*\)
+            """,
+            re.IGNORECASE | re.VERBOSE,
+        )
+
+        def _repl(m: re.Match) -> str:
+            return f"MATCH ({m.group('ivar')})-[:PARTICIPO_EN]->({m.group('pvar')})"
+
+        fixed = pattern.sub(_repl, query)
+        if fixed != query:
+            logger.info("Dirección de PARTICIPO_EN corregida automáticamente")
+        return fixed
+
+    def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
+        """
+        Pide al LLM que corrija una query Cypher con error de sintaxis.
+        """
+        prompt = f"""The following Cypher query produced a syntax error. Fix it.
+
+SCHEMA:
+Nodes: Proyecto(id, value), Investigador(id, name), Topico(value), Documento(id, base_name, type, year_publisher, is_group), Chunk(id, text), Anio(year)
+Relationships:
+- (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+- (Proyecto)-[:TIENE_TOPICO]->(Topico)
+- (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
+- (Proyecto)-[:INICIO_EN]->(Anio)
+- (Documento)-[:PRIMER_CHUNK]->(Chunk)
+- (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
+- (Chunk)-[:DE_DOCUMENTO]->(Documento)
+- (Chunk)-[:EVIDENCIA_DE]->(Investigador|Topico|Proyecto)
+
+BROKEN QUERY:
+{broken_query}
+
+ERROR:
+{syntax_error}
+
+RULES:
+- Every variable used in WITH or RETURN must be defined in a prior MATCH/OPTIONAL MATCH
+- Never define relationship variables: use -[:TYPE]-> not -[r:TYPE]->
+- Generate EXACTLY ONE corrected query
+- Read-only (MATCH, RETURN only)
+
+Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
+
+<QUERY>
+"""
+        messages = [
+            {
+                "role": "system",
+                "content": "You are an expert in Neo4j Cypher. Fix the broken query and return it in <QUERY>...</QUERY> tags.",
+            },
+            {"role": "user", "content": prompt},
+        ]
+
+        response = self.cypher_llm_client.generate(
+            messages=messages,
+            temperature=0.0,
+            max_tokens=self.max_tokens,
+        )
+
+        query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
+        if not query_match:
+            raise ValueError("LLM no devolvió query corregida entre tags <QUERY>...</QUERY>")
+
+        fixed_query = query_match.group(1).strip()
+        is_safe, error = CypherQueryValidator.is_safe(fixed_query)
+        if not is_safe:
+            raise ValueError(f"Query corregida no es segura: {error}")
+
+        logger.info(f"Query corregida por LLM: {fixed_query}")
+        return fixed_query
 
     def execute_cypher_query(self, cypher_query: str) -> List[Any]:
         """
@@ -486,10 +594,18 @@ CRITICAL:
                 continue
             lines.append(f"\n{label_display[label]}:")
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
-                props_str = " | ".join(
-                    f"{k}: {v}" for k, v in props.items() if v is not None and k != "text"
-                )
-                lines.append(f"  - {props_str}")
+                if label == "Proyecto":
+                    pid = props.get("id", "")
+                    title = props.get("value", "") or props.get("name", "")
+                    if title and pid:
+                        lines.append(f"  - {title} ({pid})")
+                    else:
+                        lines.append(f"  - {pid or title}")
+                else:
+                    props_str = " | ".join(
+                        f"{k}: {v}" for k, v in props.items() if v is not None and k != "text"
+                    )
+                    lines.append(f"  - {props_str}")
 
         return "\n".join(lines)
 
@@ -540,10 +656,50 @@ Respondé la consulta con una frase introductoria y la lista:"""
                 chunk_to_entities={},
             )
 
-        cypher_query = self.generate_cypher_query(user_query)
+        try:
+            cypher_query = self.generate_cypher_query(user_query)
+        except ValueError as e:
+            if str(e).startswith("UNSUPPORTED"):
+                return GraphRAGResult(
+                    answer=(
+                        "Esta pregunta requiere múltiples consultas para responderse y está "
+                        "fuera del alcance de esta solución. Por favor, intente dividirla en "
+                        "preguntas más específicas."
+                    ),
+                    chunks=[],
+                    cypher_query="",
+                    chunk_to_entities={},
+                )
+            raise
 
-        # Ejecutar query
-        records = self.execute_cypher_query(cypher_query)
+        # Ejecutar query con reintentos en caso de error de sintaxis
+        MAX_SYNTAX_RETRIES = 3
+        _too_complex_result = GraphRAGResult(
+            answer=(
+                "La consulta es muy compleja y está teniendo problemas para resolverla. "
+                "Por favor, intente reformular su pregunta de forma más específica."
+            ),
+            chunks=[],
+            cypher_query=cypher_query,
+            chunk_to_entities={},
+        )
+        records: List[Any] = []
+        for attempt in range(MAX_SYNTAX_RETRIES):
+            try:
+                records = self.execute_cypher_query(cypher_query)
+                break
+            except CypherSyntaxError as exc:
+                logger.warning(
+                    f"Error de sintaxis Cypher (intento {attempt + 1}/{MAX_SYNTAX_RETRIES}): {exc}"
+                )
+                if attempt == MAX_SYNTAX_RETRIES - 1:
+                    logger.error("Se agotaron los reintentos de corrección de sintaxis")
+                    return _too_complex_result
+                try:
+                    cypher_query = self._fix_cypher_query(cypher_query, str(exc))
+                except ValueError as fix_err:
+                    logger.error(f"No se pudo corregir la query: {fix_err}")
+                    return _too_complex_result
 
         # Extraer chunks y evidencia
         chunks, evidence_entities, chunk_to_entities = (
@@ -554,7 +710,7 @@ Respondé la consulta con una frase introductoria y la lista:"""
         if not chunks:
             logger.warning("No se encontraron chunks en los resultados del grafo")
 
-            if records and (self._is_aggregation_query(cypher_query) or not chunks):
+            if records and self._is_aggregation_query(cypher_query):
                 logger.info("Sin chunks en resultados, usando registros directos")
                 context = self._build_aggregation_context(records)
                 messages = [
