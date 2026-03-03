@@ -257,6 +257,9 @@ class GraphBuilder:
         if hasattr(self.backend, "close"):
             self.backend.close()
 
+    def clear_graph(self):
+        self.backend.clear_graph()
+
     def ingest(
         self,
         entities: Iterable[Entity],
