@@ -16,12 +16,13 @@ def main():
 
     neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
 
-    grafo = GraphBuilder(
+    graph = GraphBuilder(
         neo4j_uri,
         os.getenv("NEO4J_USER"),
         os.getenv("NEO4J_PASSWORD"),
     )
-    grafo.ingest(entities=entities, relationships=relationships)
+    graph.clear_graph()
+    graph.ingest(entities=entities, relationships=relationships)
 
 
 if __name__ == "__main__":
