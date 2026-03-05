@@ -346,25 +346,59 @@ CRITICAL:
 
     def _fix_relationship_directions(self, query: str) -> str:
         """
-        Corrige la dirección de PARTICIPO_EN cuando el LLM la genera al revés:
-        (Proyecto)-[:PARTICIPO_EN]->(Investigador)  =>  (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+        Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
+        Schema correcto:
+        - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+        - (Proyecto)-[:TIENE_TOPICO]->(Topico)
+        - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
+        - (Proyecto)-[:INICIO_EN]->(Anio)
+        - (Documento)-[:PRIMER_CHUNK]->(Chunk)
+        - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
+        - (Chunk)-[:DE_DOCUMENTO]->(Documento)
+        - (Chunk)-[:EVIDENCIA_DE]->(Investigador|Topico|Proyecto)
         """
-        pattern = re.compile(
-            r"""
-            MATCH\s*
-            \(\s*(?P<pvar>\w+)\s*(?::\s*Proyecto)?\s*(?:\{[^}]*\})?\s*\)
-            \s*-\s*\[:PARTICIPO_EN\]\s*->\s*
-            \(\s*(?P<ivar>\w+)\s*(?::\s*Investigador)?\s*(?:\{[^}]*\})?\s*\)
-            """,
-            re.IGNORECASE | re.VERBOSE,
-        )
+        # Definir las relaciones correctas: (source_type, rel_type, target_type)
+        correct_directions = [
+            ("Investigador", "PARTICIPO_EN", "Proyecto"),
+            ("Proyecto", "TIENE_TOPICO", "Topico"),
+            ("Proyecto", "ES_DESCRITO_POR", "Documento"),
+            ("Proyecto", "INICIO_EN", "Anio"),
+            ("Documento", "PRIMER_CHUNK", "Chunk"),
+            ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
+            ("Chunk", "DE_DOCUMENTO", "Documento"),
+            ("Chunk", "EVIDENCIA_DE", "Investigador"),
+            ("Chunk", "EVIDENCIA_DE", "Topico"),
+            ("Chunk", "EVIDENCIA_DE", "Proyecto"),
+        ]
 
-        def _repl(m: re.Match) -> str:
-            return f"MATCH ({m.group('ivar')})-[:PARTICIPO_EN]->({m.group('pvar')})"
+        fixed = query
+        corrections_made = []
 
-        fixed = pattern.sub(_repl, query)
-        if fixed != query:
-            logger.info("Dirección de PARTICIPO_EN corregida automáticamente")
+        for source_type, rel_type, target_type in correct_directions:
+            # Patrón para detectar la dirección invertida
+            pattern = re.compile(
+                rf"""
+                MATCH\s*
+                \(\s*(?P<var1>\w+)\s*(?::\s*{target_type})?\s*(?:\{{[^}}]*\}})?\s*\)
+                \s*-\s*\[:{rel_type}\]\s*->\s*
+                \(\s*(?P<var2>\w+)\s*(?::\s*{source_type})?\s*(?:\{{[^}}]*\}})?\s*\)
+                """,
+                re.IGNORECASE | re.VERBOSE,
+            )
+
+            def make_repl(src_type, rel, tgt_type):
+                def _repl(m: re.Match) -> str:
+                    return f"MATCH ({m.group('var2')})-[:{rel}]->({m.group('var1')})"
+                return _repl
+
+            new_fixed = pattern.sub(make_repl(source_type, rel_type, target_type), fixed)
+            if new_fixed != fixed:
+                corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
+                fixed = new_fixed
+
+        if corrections_made:
+            logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
+
         return fixed
 
     def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
