@@ -176,19 +176,41 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             {"role": "user", "content": prompt},
         ]
 
-        response = self.cypher_llm_client.generate(
-            messages=messages,
-            temperature=self.temperature,
-            max_tokens=self.max_tokens,
-        )
+        # Reintentar hasta 2 veces si el LLM no genera los tags correctamente
+        MAX_TAG_RETRIES = 2
+        cypher_query = None
 
-        # Extraer query entre tags <QUERY>
-        query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
+        for attempt in range(MAX_TAG_RETRIES):
+            response = self.cypher_llm_client.generate(
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+            )
 
-        if not query_match:
-            raise ValueError("LLM no devolvió query entre tags <QUERY>...</QUERY>")
+            # Extraer query entre tags <QUERY>
+            query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
 
-        cypher_query = query_match.group(1).strip()
+            if query_match:
+                cypher_query = query_match.group(1).strip()
+                break
+            else:
+                logger.warning(
+                    f"LLM no devolvió query entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
+                )
+                if attempt < MAX_TAG_RETRIES - 1:
+                    # Agregar un mensaje adicional para aclarar al LLM
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": "Please wrap your Cypher query in <QUERY> and </QUERY> tags as requested.",
+                        }
+                    )
+
+        if not cypher_query:
+            raise ValueError(
+                "LLM no devolvió query entre tags <QUERY>...</QUERY> después de múltiples intentos"
+            )
 
         # Corregir dirección incorrecta de PARTICIPO_EN si el LLM la invirtió
         cypher_query = self._fix_relationship_directions(cypher_query)
@@ -387,17 +409,41 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             {"role": "user", "content": prompt},
         ]
 
-        response = self.cypher_llm_client.generate(
-            messages=messages,
-            temperature=0.0,
-            max_tokens=self.max_tokens,
-        )
+        # Reintentar hasta 2 veces si el LLM no genera los tags correctamente
+        MAX_TAG_RETRIES = 2
+        fixed_query = None
 
-        query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
-        if not query_match:
-            raise ValueError("LLM no devolvió query corregida entre tags <QUERY>...</QUERY>")
+        for attempt in range(MAX_TAG_RETRIES):
+            response = self.cypher_llm_client.generate(
+                messages=messages,
+                temperature=0.0,
+                max_tokens=self.max_tokens,
+            )
 
-        fixed_query = query_match.group(1).strip()
+            query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
+
+            if query_match:
+                fixed_query = query_match.group(1).strip()
+                break
+            else:
+                logger.warning(
+                    f"LLM no devolvió query corregida entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
+                )
+                if attempt < MAX_TAG_RETRIES - 1:
+                    # Agregar un mensaje adicional para aclarar al LLM
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": "Please wrap your corrected Cypher query in <QUERY> and </QUERY> tags as requested.",
+                        }
+                    )
+
+        if not fixed_query:
+            raise ValueError(
+                "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
+            )
+
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)
         if not is_safe:
             raise ValueError(f"Query corregida no es segura: {error}")
