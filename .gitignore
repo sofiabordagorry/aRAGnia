@@ -13,6 +13,7 @@ data/chunks/
 data/embeddings/
 data/tables/
 data/entities_relations
+data/cache_paths.csv
 # Virtual environments
 venv/
 .venv/

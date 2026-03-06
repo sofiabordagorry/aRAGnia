@@ -5,7 +5,8 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Literal
+from typing import Any, Dict, List, Literal, Optional
+
 from typing_extensions import NotRequired, TypedDict
 
 # Definiciones del campo Value
