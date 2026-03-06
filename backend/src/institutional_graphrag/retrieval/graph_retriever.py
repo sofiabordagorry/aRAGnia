@@ -200,7 +200,10 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo para reintento...")
-                    prompt_with_reminder = prompt + "\n\nREMINDER: You MUST wrap your Cypher query between <QUERY> and </QUERY> tags."
+                    prompt_with_reminder = (
+                        prompt
+                        + "\n\nREMINDER: You MUST wrap your Cypher query between <QUERY> and </QUERY> tags."
+                    )
                     messages = [
                         {
                             "role": "system",
@@ -519,7 +522,10 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo de corrección para reintento...")
-                    prompt_with_reminder = prompt + "\n\nREMINDER: You MUST wrap your corrected Cypher query between <QUERY> and </QUERY> tags."
+                    prompt_with_reminder = (
+                        prompt
+                        + "\n\nREMINDER: You MUST wrap your corrected Cypher query between <QUERY> and </QUERY> tags."
+                    )
                     messages = [
                         {
                             "role": "system",
@@ -866,10 +872,14 @@ Tu respuesta (frase introductoria + lista completa):"""
                 logger.info("Sin chunks pero con resultados del grafo, procesando...")
                 context = self._build_aggregation_context(records)
                 logger.info(f"Contexto construido ({len(context)} chars)")
-                
+
                 # Detectar si es una query de conteo simple
-                is_count = any(key.lower() in ['total', 'count', 'cantidad'] for record in records for key in record.keys())
-                
+                is_count = any(
+                    key.lower() in ["total", "count", "cantidad"]
+                    for record in records
+                    for key in record.keys()
+                )
+
                 if is_count:
                     # Para queries de conteo, ser muy explícito
                     messages = [
@@ -894,7 +904,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                             "content": f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{context}\n\nIMPORTANTE: Los resultados arriba contienen la respuesta. Úsalos TODOS. Si ves un valor de año, ese es el año. Si ves nombres, esos son los nombres. No digas que no hay información si los resultados muestran datos.",
                         },
                     ]
-                
+
                 answer = self.answer_llm_client.generate(
                     messages=messages,
                     temperature=0.1,  # Más determinístico para respuestas factuales
