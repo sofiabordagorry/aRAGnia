@@ -171,7 +171,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         messages = [
             {
                 "role": "system",
-                "content": "You are an expert in Neo4j and Cypher. Generate precise, safe, read-only queries. Always return chunks with entities. Connect all MATCH patterns via shared variables. NO aggregations.",
+                "content": "You are an expert in Neo4j and Cypher. Generate precise, safe, read-only queries. For COUNT questions (cuántos/how many), use count() aggregation. For LIST questions (cuáles/list/show me), return entities with COLLECT(c) AS chunks. Connect all MATCH patterns via shared variables.",
             },
             {"role": "user", "content": prompt},
         ]
@@ -198,14 +198,16 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                     f"LLM no devolvió query entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
                 if attempt < MAX_TAG_RETRIES - 1:
-                    # Agregar un mensaje adicional para aclarar al LLM
-                    messages.append({"role": "assistant", "content": response})
-                    messages.append(
+                    # Regenerar el prompt completo para mantener el contexto
+                    logger.info("Regenerando prompt completo para reintento...")
+                    prompt_with_reminder = prompt + "\n\nREMINDER: You MUST wrap your Cypher query between <QUERY> and </QUERY> tags."
+                    messages = [
                         {
-                            "role": "user",
-                            "content": "Please wrap your Cypher query in <QUERY> and </QUERY> tags as requested.",
-                        }
-                    )
+                            "role": "system",
+                            "content": "You are an expert in Neo4j and Cypher. Generate precise, safe, read-only queries. For COUNT questions (cuántos/how many), use count() aggregation. For LIST questions (cuáles/list/show me), return entities with COLLECT(c) AS chunks. Connect all MATCH patterns via shared variables.",
+                        },
+                        {"role": "user", "content": prompt_with_reminder},
+                    ]
 
         if not cypher_query:
             raise ValueError(
@@ -269,17 +271,40 @@ RULES:
 
 PATTERNS (use what fits best):
 
+=== COUNT QUERIES (when user asks "cuántos", "cuántas", "how many") ===
+
+Count projects by investigator (e.g., "cuántos proyectos tiene X?"):
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
+RETURN count(p) AS total
+
+Count projects by year (e.g., "cuántos proyectos en 2018?"):
+MATCH (a:Anio {{year: '2018'}})
+MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+RETURN count(p) AS total
+
+Count projects by topic (e.g., "cuántos proyectos de biotecnología?"):
+MATCH (t:Topico {{value: 'Biotechnology'}})
+MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
+RETURN count(p) AS total
+
+Count total entities (e.g., "cuántos investigadores hay?"):
+MATCH (i:Investigador) RETURN count(i) AS total
+MATCH (p:Proyecto) RETURN count(p) AS total
+
+=== LIST QUERIES (when user asks "cuáles", "qué proyectos", "lista", "muéstrame") ===
+
 List projects by topic:
 MATCH (t:Topico {{value: 'Biotechnology'}})
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
 RETURN p, COLLECT(c) AS chunks
 
-List investigators of a project:
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(i)
-RETURN i, COLLECT(c) AS chunks
+List investigators of a project (WHO participated):
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto {{id: 'gi_2014_133'}})
+OPTIONAL MATCH (c:Chunk)-[:EVIDENCIA_DE]->(i)
+RETURN i, COLLECT(DISTINCT c) AS chunks
+-- CRITICAL: RETURN the investigators (i), NOT the project (p)
 
 Projects by researcher name — note direction: Investigador -> Proyecto:
 MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
@@ -317,25 +342,7 @@ MATCH (p:Proyecto)-[:INICIO_EN]->(a)
 MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
 RETURN p, COLLECT(c) AS chunks
 
-Count entities by attribute (when user asks "cuántos X [condition]"):
-MATCH (entity:Type {{property: 'value'}})
-RETURN count(entity) AS total
-
-Count related entities (when user asks "cuántos X de/para/en Y"):
-MATCH (a:EntityA {{property: 'value'}})
-MATCH (a)-[:RELATIONSHIP]->(b:EntityB)
-RETURN count(b) AS total
-
-Examples of COUNT queries:
-- "cuántos proyectos iniciaron en 2018?"
-  MATCH (a:Anio {{year: '2018'}})
-  MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-  RETURN count(p) AS total
-
-- "cuántos proyectos tiene el investigador X?"
-  MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-  MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-  RETURN count(p) AS total
+=== ADVANCED AGGREGATION ===
 
 Projects by area for ALL years (aggregation with grouping):
 MATCH (a:Anio)
@@ -344,18 +351,41 @@ MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
 RETURN a.year AS anio, t.value AS area, count(DISTINCT p) AS total_proyectos
 ORDER BY anio DESC, total_proyectos DESC
 
-Count entities (how many X are there):
-MATCH (i:Investigador) RETURN count(i) AS total
-MATCH (p:Proyecto) RETURN count(p) AS total
-MATCH (t:Topico) RETURN count(t) AS total
-
 Top N topics by project count (user asked for specific number, e.g. 10):
 MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)
 RETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10
 
+Top N investigators by project count (e.g., "qué investigadores participaron en más proyectos? top 10"):
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
+WITH i, count(DISTINCT p) AS num_proyectos
+RETURN i.name AS investigador, num_proyectos
+ORDER BY num_proyectos DESC
+LIMIT 10
+-- CRITICAL: DO NOT add WHERE conditions filtering by name unless explicitly asked
+
+=== SIMPLE VALUE QUERIES (year, name, single property) ===
+
+Get year when a project started:
+MATCH (p:Proyecto {{id: 'gi_2010_152'}})
+OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
+RETURN a.year AS año, a
+
 QUESTION: {user_query}
 
-CRITICAL:
+CRITICAL DECISION - COUNT vs LIST:
+- If question asks "cuántos", "cuántas", "how many", "qué cantidad" → USE count() and RETURN count(x) AS total (NO chunks needed)
+- If question asks "cuáles", "qué proyectos", "quiénes", "list", "muéstrame" → RETURN entities + COLLECT(c) AS chunks
+- If question asks "quién/quiénes" (WHO) → RETURN investigators (i), NOT projects
+- If question asks "qué año" (WHAT year) → RETURN year value directly (a.year or a)
+- Analyze the question intent carefully before generating the query
+
+RETURN RULES:
+- "¿Quiénes participaron?" → RETURN investigadores (i), NOT proyecto (p)
+- "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
+- "¿Cuántos proyectos?" → RETURN count(p) AS total
+- "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
+
+CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
 - Every variable in WITH/RETURN must be defined in a previous MATCH
 - Use [:EVIDENCIA_DE]->(entity) — never [:EVIDENCIA_DE]->(var1|var2)
@@ -487,14 +517,16 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     f"LLM no devolvió query corregida entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
                 if attempt < MAX_TAG_RETRIES - 1:
-                    # Agregar un mensaje adicional para aclarar al LLM
-                    messages.append({"role": "assistant", "content": response})
-                    messages.append(
+                    # Regenerar el prompt completo para mantener el contexto
+                    logger.info("Regenerando prompt completo de corrección para reintento...")
+                    prompt_with_reminder = prompt + "\n\nREMINDER: You MUST wrap your corrected Cypher query between <QUERY> and </QUERY> tags."
+                    messages = [
                         {
-                            "role": "user",
-                            "content": "Please wrap your corrected Cypher query in <QUERY> and </QUERY> tags as requested.",
-                        }
-                    )
+                            "role": "system",
+                            "content": "You are an expert in Neo4j Cypher. Fix the broken query and return it in <QUERY>...</QUERY> tags.",
+                        },
+                        {"role": "user", "content": prompt_with_reminder},
+                    ]
 
         if not fixed_query:
             raise ValueError(
@@ -525,10 +557,15 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         return records
 
     def _is_aggregation_query(self, cypher_query: str) -> bool:
-        """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.)"""
+        """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.) o devuelve valores simples."""
         query_upper = cypher_query.upper()
-        aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN(", "COLLECT("]
-        return any(func in query_upper for func in aggregation_functions)
+        # Agregaciones numéricas
+        aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN("]
+        # También considerar queries que devuelven propiedades simples sin COLLECT
+        has_aggregation = any(func in query_upper for func in aggregation_functions)
+        # Si no tiene COLLECT ni chunks explícitos, probablemente es una query simple
+        has_collect = "COLLECT(" in query_upper
+        return has_aggregation or not has_collect
 
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
@@ -719,16 +756,28 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         Construir mensajes para el LLM usando SOLO entidades y relaciones del grafo.
         El texto de los chunks va al frontend, no aqui.
         """
-        system_prompt = """Eres un asistente de investigación académica.
-Se te dan resultados de una búsqueda en un grafo de conocimiento.
-Respondé en español con UNA frase introductoria que mencione qué se buscó (ej: "Estos son los investigadores que participaron en X:" o "Se encontraron los siguientes proyectos relacionados con Y:"), seguida de una lista simple. Sin análisis, sin interpretaciones, sin mencionar evidencias ni chunks. Máximo 3 oraciones en total."""
+        system_prompt = """Eres un asistente de investigación académica especializado en presentar resultados de búsquedas en grafos de conocimiento.
 
-        user_prompt = f"""CONSULTA: {user_query}
+REGLAS ESTRICTAS:
+1. Debes responder en ESPAÑOL
+2. Debes incluir TODOS los elementos que aparecen en la sección RESULTADOS - no omitas ninguno
+3. Formato: Lista completa de resultados
+4. NO inventes información - solo usa lo que está en RESULTADOS
+5. NO agregues análisis ni interpretaciones
+6. Si hay una lista, reprodúcela COMPLETA
 
-RESULTADOS:
+Ejemplo:
+Si RESULTADOS muestra 5 proyectos, tu respuesta debe listar los 5 proyectos."""
+
+        user_prompt = f"""CONSULTA DEL USUARIO:
+{user_query}
+
+RESULTADOS ENCONTRADOS EN EL GRAFO:
 {entity_context}
 
-Respondé la consulta con una frase introductoria y la lista:"""
+IMPORTANTE: Usa TODOS los resultados mostrados arriba para generar tu respuesta. No omitas ningún elemento de la lista.
+
+Tu respuesta (frase introductoria + lista completa):"""
 
         return [
             {"role": "system", "content": system_prompt},
@@ -809,29 +858,49 @@ Respondé la consulta con una frase introductoria y la lista:"""
             self._extract_chunks_and_entities_from_results(records)
         )
         logger.info(f"Extraídos {len(chunks)} chunks con {len(evidence_entities)} entidades")
-
         if not chunks:
             logger.warning("No se encontraron chunks en los resultados del grafo")
 
-            if records and self._is_aggregation_query(cypher_query):
-                logger.info("Sin chunks en resultados, usando registros directos")
+            # Caso 1: Query tiene resultados (agregación, valores simples, o nodos sin chunks)
+            if records:
+                logger.info("Sin chunks pero con resultados del grafo, procesando...")
                 context = self._build_aggregation_context(records)
-                messages = [
-                    {
-                        "role": "system",
-                        "content": "Respondé en español basado en estos resultados del grafo. Sé directo y conciso.",
-                    },
-                    {
-                        "role": "user",
-                        "content": f"{context}\n\nPREGUNTA: {user_query}\n\nRespuesta:",
-                    },
-                ]
+                logger.info(f"Contexto construido ({len(context)} chars)")
+                
+                # Detectar si es una query de conteo simple
+                is_count = any(key.lower() in ['total', 'count', 'cantidad'] for record in records for key in record.keys())
+                
+                if is_count:
+                    # Para queries de conteo, ser muy explícito
+                    messages = [
+                        {
+                            "role": "system",
+                            "content": "Respondé en español de forma DIRECTA y NUMÉRICA. Si los resultados muestran un número, respondé ese número exacto. No digas 'no se puede determinar' si el número está ahí.",
+                        },
+                        {
+                            "role": "user",
+                            "content": f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{context}\n\nRESPONDE con el número exacto que aparece en los resultados. Ejemplo: Si los resultados muestran 'total: 3', respondé '3 proyectos iniciaron en ese año.'",
+                        },
+                    ]
+                else:
+                    # Para otros resultados sin chunks (años, nombres, etc.)
+                    messages = [
+                        {
+                            "role": "system",
+                            "content": "Respondé en español basado EXACTAMENTE en los resultados mostrados. Incluí TODOS los resultados sin omitir ninguno. Sé directo y completo.",
+                        },
+                        {
+                            "role": "user",
+                            "content": f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{context}\n\nIMPORTANTE: Los resultados arriba contienen la respuesta. Úsalos TODOS. Si ves un valor de año, ese es el año. Si ves nombres, esos son los nombres. No digas que no hay información si los resultados muestran datos.",
+                        },
+                    ]
+                
                 answer = self.answer_llm_client.generate(
                     messages=messages,
-                    temperature=self.temperature,
-                    max_tokens=self.max_tokens,
+                    temperature=0.1,  # Más determinístico para respuestas factuales
+                    max_tokens=2048,
                 )
-                logger.info("Respuesta generada")
+                logger.info(f"Respuesta generada ({len(answer)} chars): {answer[:200]}...")
                 return GraphRAGResult(
                     answer=answer,
                     chunks=[],
@@ -839,6 +908,7 @@ Respondé la consulta con una frase introductoria y la lista:"""
                     chunk_to_entities={},
                 )
 
+            # Caso 2: Sin resultados en absoluto
             return GraphRAGResult(
                 answer="No se encontró información relevante en el grafo para responder esta pregunta.",
                 chunks=[],
@@ -852,9 +922,9 @@ Respondé la consulta con una frase introductoria y la lista:"""
         answer = self.answer_llm_client.generate(
             messages=messages,
             temperature=self.temperature,
-            max_tokens=self.max_tokens,
+            max_tokens=2048,  # Aumentado para permitir listas más largas
         )
-        logger.info("Respuesta final generada correctamente")
+        logger.info(f"Respuesta final generada ({len(answer)} chars): {answer[:200]}...")
 
         return GraphRAGResult(
             answer=answer,
