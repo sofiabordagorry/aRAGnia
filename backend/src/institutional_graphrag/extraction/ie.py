@@ -93,7 +93,7 @@ class EntityExtractor:
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
-        self._extract_projects_and_resposible()
+        self._extract_projects_and_responsible()
         self._extract_with_llm(
             max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics
         )
@@ -318,7 +318,7 @@ class EntityExtractor:
             self.add_relationship(res.relationships)
             self.res.errors.extend(res.errors)
 
-    def _extract_projects_and_resposible(self) -> None:
+    def _extract_projects_and_responsible(self) -> None:
         res = self.static.extract_projects_and_responsible_from_tables(
             self.doc_by_id, self.chunks_dir
         )

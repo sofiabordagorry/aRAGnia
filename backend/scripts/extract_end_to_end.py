@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--enable_researcher_consolidation",
         action="store_true",
-        help="Desactiva la búsqueda de tópicos por LLM",
+        help="Activa la unificacion de Investigadores",
     )
 
     args = parser.parse_args()

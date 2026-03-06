@@ -601,10 +601,10 @@ def load_graph_json(
                 tgt = db_candidates[0]
             else:
                 logger.error(
-                    "Relación %s: source_id no existe en batch y en DB es %s: %s (se omite)",
+                    "Relación %s: target_id no existe en batch y en DB es %s: %s (se omite)",
                     rel_type,
                     "inexistente" if not db_candidates else "ambiguo",
-                    source_id,
+                    target_id,
                 )
                 continue
 
@@ -624,6 +624,7 @@ def load_graph_json(
 
     logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
     logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
+    database.close()
     return list(entities_by_id.values()), relationships, db_merge
 
 

@@ -279,11 +279,11 @@ class StaticExtractor:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception as e:
             errors = {"type": "InvalidJson", "message": f"{path.name}: {e}"}
-            ReadJsonResult(None, errors)
+            return ReadJsonResult(None, errors)
 
         if not isinstance(data, dict):
             errors = {"type": "InvalidJson", "message": f"{path.name}: JSON root is not an object"}
-            ReadJsonResult(None, errors)
+            return ReadJsonResult(None, errors)
 
         return ReadJsonResult(data, errors)
 
