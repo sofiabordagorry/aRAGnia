@@ -159,14 +159,12 @@ class Postprocessor:
 
                 elif (
                     self.is_inverted_name(researcher_name, other_name)
-                    and self.enable_researcher_consolidation
                 ):
                     duplicates.append(other_id)
                     processed.add(other_id)
 
                 elif (
                     self.name_similarity(norm1, norm2) >= self.similarity_threshold
-                    and self.enable_researcher_consolidation
                 ):
                     tokens1 = norm1.split()
                     tokens2 = norm2.split()
@@ -179,7 +177,6 @@ class Postprocessor:
 
                 elif (
                     self.is_partial_name(other_name, researcher_name)
-                    and self.enable_researcher_consolidation
                 ):
                     duplicates.append(other_id)
                     processed.add(other_id)
@@ -274,6 +271,7 @@ class Postprocessor:
         duplicate_groups = self.find_researcher_duplicates(researchers)
 
         # PASO 4: mapear IDs
+        updated_relationships: List[dict] = []
         id_mapping: Dict[str, str] = {}
         consolidated: List[dict] = []
         merge_changes: List[dict] = []
@@ -285,20 +283,27 @@ class Postprocessor:
 
             for dup_id in duplicate_ids:
                 dup_r = next(r for r in researchers if r["id"] == dup_id)
-                id_mapping[dup_id] = canonical_id
-                processed_ids.add(dup_id)
+                if self.enable_researcher_consolidation:
+                    id_mapping[dup_id] = canonical_id
+                    processed_ids.add(dup_id)
 
-                merge_changes.append(
-                    {
-                        "type": "merge",
-                        "duplicate_id": dup_id,
-                        "duplicate_name": dup_r["value"].get("name"),
-                        "canonical_id": canonical_id,
-                        "canonical_name": canonical_name,
-                    }
-                )
-                print(f"  Consolidando '{dup_r['value'].get('name')}' -> '{canonical_name}'")
-
+                    merge_changes.append(
+                        {
+                            "type": "merge",
+                            "duplicate_id": dup_id,
+                            "duplicate_name": dup_r["value"].get("name"),
+                            "canonical_id": canonical_id,
+                            "canonical_name": canonical_name,
+                        }
+                    )
+                    print(f"  Consolidando '{dup_r['value'].get('name')}' -> '{canonical_name}'")
+                else:
+                    updated_relationships.append({
+                        "source_id": canonical_id,
+                        "target_id": dup_id,
+                        "type": "POTENCIAL_IGUALDAD"
+                    })
+                    print(f" Creada Relacion Potencial Igualdad entre '{{dup_r['value'].get('name')}}' y '{canonical_name}'")
         for r in researchers:
             if r["id"] not in processed_ids:
                 consolidated.append(r)
@@ -314,7 +319,6 @@ class Postprocessor:
             )
 
         # PASO 5: actualizar relaciones y filtrar duplicadas / genéricas
-        updated_relationships: List[dict] = []
         seen_relationships = set()
         relationship_updates: List[dict] = []
         duplicate_rels_removed = 0

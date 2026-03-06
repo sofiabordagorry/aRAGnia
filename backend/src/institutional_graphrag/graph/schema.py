@@ -240,6 +240,20 @@ def EVIDENCIA_DE(
         properties=properties or {},
     )
 
+def POTENCIAL_IGUALDAD(
+    investigador_id: str, investigador2_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación POTENCIAL_IGUALDAD.
+
+    (Investigador)<-[POTENCIAL_IGUALDAD]->(PInvestigador)
+    """
+    return Relationship(
+        type="EVIDENCIA_DE",
+        source_id=investigador_id,
+        target_id=investigador2_id,
+        properties=properties or {},
+    )
 
 class GraphSchema:
     # Tipos de entidades
@@ -262,6 +276,7 @@ class GraphSchema:
         "SIGUIENTE_CHUNK": SIGUIENTE_CHUNK,
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EVIDENCIA_DE": EVIDENCIA_DE,
+        "POTENCIAL_IGUALDAD": POTENCIAL_IGUALDAD
     }
 
     @classmethod
@@ -309,6 +324,7 @@ def validate_relationship_endpoints(
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EVIDENCIA_DE": ("Chunk", ["Proyecto", "Topico", "Investigador"]),
+        "POTENCIAL_IGUALDAD":("Investigador", "Investigador"),
     }
 
     expected = valid_combinations.get(relationship.type)
