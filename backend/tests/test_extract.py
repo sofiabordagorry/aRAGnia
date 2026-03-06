@@ -547,7 +547,7 @@ def test_extract_researchers_and_topics_llm_integration(
             )
             new_relationships.append(
                 Relationship(
-                    type="EVIDENCIA_DE",
+                    type="EXTRAIDO_DE",
                     source_id=chunk_id,
                     target_id=inv_id,
                     properties={"evidence_text": evidence},
@@ -583,7 +583,7 @@ def test_extract_researchers_and_topics_llm_integration(
 
             new_relationships.append(
                 Relationship(
-                    type="EVIDENCIA_DE",
+                    type="EXTRAIDO_DE",
                     source_id=chunk_id,
                     target_id=topic_id,
                     properties={"evidence_text": evidence},
@@ -629,13 +629,13 @@ def test_extract_researchers_and_topics_llm_integration(
     evidencia_inv = [
         r
         for r in extractor.res.relationships
-        if r.type == "EVIDENCIA_DE" and r.target_id in {inv.id for inv in investigadores}
+        if r.type == "EXTRAIDO_DE" and r.target_id in {inv.id for inv in investigadores}
     ]
     assert len(evidencia_inv) == 3
 
     evidencia_top = [
         r
         for r in extractor.res.relationships
-        if r.type == "EVIDENCIA_DE" and r.target_id in {top.id for top in topicos}
+        if r.type == "EXTRAIDO_DE" and r.target_id in {top.id for top in topicos}
     ]
     assert len(evidencia_top) == 3

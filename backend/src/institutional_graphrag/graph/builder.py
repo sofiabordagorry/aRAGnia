@@ -116,11 +116,13 @@ class Neo4jGraphBuilder:
                     matched = total - created
 
                     # limpiar flag (solo para los que se crearon en este batch)
-                    session.run(f"""
+                    session.run(
+                        f"""
                     MATCH (e:{label})
                     WHERE e.__created__ = true
                     REMOVE e.__created__
-                    """)
+                    """
+                    )
                     logger.info(
                         "Neo4j ENTIDADES label=%s total=%d creadas=%d ya_existian=%d",
                         label,
@@ -209,11 +211,13 @@ class Neo4jGraphBuilder:
                     matched = total - created
 
                     # limpiar flag
-                    session.run(f"""
+                    session.run(
+                        f"""
                     MATCH ()-[r:{rel_type}]->()
                     WHERE r.__created__ = true
                     REMOVE r.__created__
-                    """)
+                    """
+                    )
 
                     logger.info(
                         "Neo4j RELACIONES type=%s (%s->%s) total=%d creadas=%d ya_existian=%d",

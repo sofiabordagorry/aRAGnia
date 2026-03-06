@@ -1,31 +1,33 @@
 """Tests for the graph schema module."""
 
-import pytest
 import json
 from pathlib import Path
+
+import pytest
 from pydantic import TypeAdapter
 
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
-    EVIDENCIA_DE,
+    EXTRAIDO_DE,
     INICIO_EN,
     PARTICIPO_EN,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
     TIENE_TOPICO,
+    TITULO_EXTRAIDO_DE,
     Anio,
+    AnioValue,
     Chunk,
     Documento,
+    DocumentoValue,
     GraphSchema,
     Investigador,
+    InvestigadorValue,
     Proyecto,
     Relationship,
     Topico,
     validate_relationship_endpoints,
-    AnioValue,
-    DocumentoValue,
-    InvestigadorValue,
 )
 
 VALUE_SCHEMAS = {
@@ -218,11 +220,11 @@ class TestRelationships:
         assert rel.properties["pagina"] == 5
 
     def test_evidencia_de_relationship(self):
-        """Test EVIDENCIA_DE relationship creation."""
-        rel = EVIDENCIA_DE("chunk_1", "proj_1", {"confianza": 0.95})
-        assert rel.type == "EVIDENCIA_DE"
-        assert rel.source_id == "chunk_1"
-        assert rel.target_id == "proj_1"
+        """Test TITULO_EXTRAIDO_DE relationship creation."""
+        rel = TITULO_EXTRAIDO_DE("proj_1", "chunk_1", {"confianza": 0.95})
+        assert rel.type == "TITULO_EXTRAIDO_DE"
+        assert rel.source_id == "proj_1"
+        assert rel.target_id == "chunk_1"
         assert rel.properties["confianza"] == 0.95
 
     def test_relationship_without_source_raises_error(self):
@@ -268,7 +270,8 @@ class TestGraphSchema:
         assert "PRIMER_CHUNK" in relationships
         assert "SIGUIENTE_CHUNK" in relationships
         assert "DE_DOCUMENTO" in relationships
-        assert "EVIDENCIA_DE" in relationships
+        assert "TITULO_EXTRAIDO_DE" in relationships
+        assert "EXTRAIDO_DE" in relationships
 
     def test_get_entity_class(self):
         """Test getting entity class by name."""
@@ -351,26 +354,26 @@ class TestValidation:
         assert validate_relationship_endpoints(rel, chunk, documento) is True
 
     def test_validate_evidencia_de_proyecto(self):
-        """Test validating EVIDENCIA_DE relationship with Proyecto."""
+        """Test validating TITULO_EXTRAIDO_DE relationship with Proyecto."""
         chunk = Chunk(id="chunk_1", value="Texto que menciona el proyecto...")
         proyecto = Proyecto(id="proj_1", value="Proyecto A")
-        rel = EVIDENCIA_DE("chunk_1", "proj_1")
+        rel = TITULO_EXTRAIDO_DE("proj_1", "chunk_1")
 
         assert validate_relationship_endpoints(rel, chunk, proyecto) is True
 
     def test_validate_evidencia_de_topico(self):
-        """Test validating EVIDENCIA_DE relationship with Topico."""
+        """Test validating EXTRAIDO_DE relationship with Topico."""
         chunk = Chunk(id="chunk_1", value="Texto sobre el tópico...")
         topico = Topico(id="topic_1", value="IA")
-        rel = EVIDENCIA_DE("chunk_1", "topic_1")
+        rel = EXTRAIDO_DE("chunk_1", "topic_1")
 
         assert validate_relationship_endpoints(rel, chunk, topico) is True
 
     def test_validate_evidencia_de_investigador(self):
-        """Test validating EVIDENCIA_DE relationship with Investigador."""
+        """Test validating EXTRAIDO_DE relationship with Investigador."""
         chunk = Chunk(id="chunk_1", value="Texto que menciona al investigador...")
         investigador = Investigador(id="inv_1", value="Dr. Smith")
-        rel = EVIDENCIA_DE("chunk_1", "inv_1")
+        rel = EXTRAIDO_DE("chunk_1", "inv_1")
 
         assert validate_relationship_endpoints(rel, chunk, investigador) is True
 
