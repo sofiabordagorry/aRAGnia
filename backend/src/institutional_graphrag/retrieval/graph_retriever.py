@@ -255,7 +255,7 @@ Relationships:
 
 RULES:
 1. Read-only (MATCH, RETURN only)
-2. ALWAYS return chunks (c:Chunk) — they contain the actual text evidence
+2. Return chunks (c:Chunk) when listing or describing entities — they contain the actual text evidence. For COUNT queries, omit chunks and return only the aggregation result.
 3. Connect patterns: every MATCH must use variables defined in previous MATCHes
 4. Use [:EVIDENCIA_DE] to navigate from entities to their evidence chunks
 5. Topics are stored in ENGLISH: 'Biotechnology', 'Engineering', 'Medicine', etc.
@@ -265,6 +265,7 @@ RULES:
 9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
 10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
 11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
+12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
 
 PATTERNS (use what fits best):
 
@@ -310,12 +311,33 @@ OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
 RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, a LIMIT 1
 
-Projects by a specific year:
+Projects by a specific year (LIST):
 MATCH (a:Anio {{year: 'year_value'}})
 MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-RETURN p
+MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+RETURN p, COLLECT(c) AS chunks
 
-Projects by area for ALL years (e.g. "how many projects per area for each year"):
+Count entities by attribute (when user asks "cuántos X [condition]"):
+MATCH (entity:Type {{property: 'value'}})
+RETURN count(entity) AS total
+
+Count related entities (when user asks "cuántos X de/para/en Y"):
+MATCH (a:EntityA {{property: 'value'}})
+MATCH (a)-[:RELATIONSHIP]->(b:EntityB)
+RETURN count(b) AS total
+
+Examples of COUNT queries:
+- "cuántos proyectos iniciaron en 2018?"
+  MATCH (a:Anio {{year: '2018'}})
+  MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+  RETURN count(p) AS total
+
+- "cuántos proyectos tiene el investigador X?"
+  MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+  MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
+  RETURN count(p) AS total
+
+Projects by area for ALL years (aggregation with grouping):
 MATCH (a:Anio)
 MATCH (p:Proyecto)-[:INICIO_EN]->(a)
 MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
@@ -389,6 +411,7 @@ CRITICAL:
             def make_repl(src_type, rel, tgt_type):
                 def _repl(m: re.Match) -> str:
                     return f"MATCH ({m.group('var2')})-[:{rel}]->({m.group('var1')})"
+
                 return _repl
 
             new_fixed = pattern.sub(make_repl(source_type, rel_type, target_type), fixed)
