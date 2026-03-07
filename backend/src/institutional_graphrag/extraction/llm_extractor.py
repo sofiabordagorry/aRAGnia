@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.graph.schema import (
-    EVIDENCIA_DE,
+    EXTRAIDO_DE,
     PARTICIPO_EN,
     Entity,
     Investigador,
@@ -1045,12 +1045,12 @@ def create_entities_and_relationships_from_llm_extraction(
         researcher_id = name_normalized.replace(" ", "_").replace(".", "").replace(",", "")
 
         if researcher_id in existing_ids:
-            relationships.append(EVIDENCIA_DE(mention.chunk_id, researcher_id))
+            relationships.append(EXTRAIDO_DE(mention.chunk_id, researcher_id))
             continue
 
         if name_normalized in researchers_by_name:
             relationships.append(
-                EVIDENCIA_DE(mention.chunk_id, researchers_by_name[name_normalized])
+                EXTRAIDO_DE(mention.chunk_id, researchers_by_name[name_normalized])
             )
             continue
 
@@ -1059,7 +1059,7 @@ def create_entities_and_relationships_from_llm_extraction(
         )
         relationships.append(PARTICIPO_EN(researcher_id, project_id))
         relationships.append(
-            EVIDENCIA_DE(
+            EXTRAIDO_DE(
                 mention.chunk_id, researcher_id, properties={"evidence_text": mention.evidence}
             )
         )
@@ -1076,7 +1076,7 @@ def create_topics_from_llm_extraction(
 ) -> tuple[List[Entity], List[Relationship]]:
     """Crear entidades y relaciones de tópicos con deduplicación global.
 
-    Solo crea entidades Topico y relaciones EVIDENCIA_DE desde chunks.
+    Solo crea entidades Topico y relaciones EXTRAIDO_DE desde chunks.
     Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
     """
     entities: list[Entity] = []
@@ -1091,7 +1091,7 @@ def create_topics_from_llm_extraction(
         # El tópico ya existe globalmente
         if topic_id in existing_ids:
             relationships.append(
-                EVIDENCIA_DE(
+                EXTRAIDO_DE(
                     mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
                 )
             )
@@ -1101,7 +1101,7 @@ def create_topics_from_llm_extraction(
         if topic_normalized in topics_by_name:
             existing_topic_id = topics_by_name[topic_normalized]
             relationships.append(
-                EVIDENCIA_DE(
+                EXTRAIDO_DE(
                     mention.chunk_id,
                     existing_topic_id,
                     properties={"evidence_text": mention.evidence},
@@ -1111,7 +1111,7 @@ def create_topics_from_llm_extraction(
 
         entities.append(Topico(id=topic_id, value=mention.topic))
         relationships.append(
-            EVIDENCIA_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
+            EXTRAIDO_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
         )
 
         topics_by_name[topic_normalized] = topic_id
