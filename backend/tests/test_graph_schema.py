@@ -219,7 +219,7 @@ class TestRelationships:
         assert rel.target_id == "doc_1"
         assert rel.properties["pagina"] == 5
 
-    def test_evidencia_de_relationship(self):
+    def test_titulo_extraido_de_relationship(self):
         """Test TITULO_EXTRAIDO_DE relationship creation."""
         rel = TITULO_EXTRAIDO_DE("proj_1", "chunk_1", {"confianza": 0.95})
         assert rel.type == "TITULO_EXTRAIDO_DE"
@@ -353,7 +353,7 @@ class TestValidation:
 
         assert validate_relationship_endpoints(rel, chunk, documento) is True
 
-    def test_validate_evidencia_de_proyecto(self):
+    def test_validate_titulo_extraido_de_proyecto(self):
         """Test validating TITULO_EXTRAIDO_DE relationship with Proyecto."""
         chunk = Chunk(id="chunk_1", value="Texto que menciona el proyecto...")
         proyecto = Proyecto(id="proj_1", value="Proyecto A")
@@ -361,7 +361,7 @@ class TestValidation:
 
         assert validate_relationship_endpoints(rel, chunk, proyecto) is True
 
-    def test_validate_evidencia_de_topico(self):
+    def test_validate_extraido_de_topico(self):
         """Test validating EXTRAIDO_DE relationship with Topico."""
         chunk = Chunk(id="chunk_1", value="Texto sobre el tópico...")
         topico = Topico(id="topic_1", value="IA")
@@ -369,7 +369,7 @@ class TestValidation:
 
         assert validate_relationship_endpoints(rel, chunk, topico) is True
 
-    def test_validate_evidencia_de_investigador(self):
+    def test_validate_extraido_de_investigador(self):
         """Test validating EXTRAIDO_DE relationship with Investigador."""
         chunk = Chunk(id="chunk_1", value="Texto que menciona al investigador...")
         investigador = Investigador(id="inv_1", value="Dr. Smith")
