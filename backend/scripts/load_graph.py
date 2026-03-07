@@ -16,9 +16,6 @@ def main():
     neo4j_user = os.getenv("NEO4J_USER")
     neo4j_password = os.getenv("NEO4J_PASSWORD")
     neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
-    print(neo4j_uri)
-    print(neo4j_user)
-    print(neo4j_password)
     entities, relationships, _ = load_graph_json(JSON_PATH, neo4j_uri, neo4j_user, neo4j_password, enable_non_equal_name_unification=False)
 
     graph = GraphBuilder(
