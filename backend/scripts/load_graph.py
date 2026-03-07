@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
+from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json, Neo4jGraphBuilder
 
 load_dotenv()
 JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
@@ -21,6 +21,7 @@ def main():
         os.getenv("NEO4J_USER"),
         os.getenv("NEO4J_PASSWORD"),
     )
+    grafo.delete_graph()
     grafo.ingest(entities=entities, relationships=relationships)
 
 
