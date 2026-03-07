@@ -5,7 +5,8 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Literal
+from typing import Any, Dict, List, Literal, Optional
+
 from typing_extensions import NotRequired, TypedDict
 
 # Definiciones del campo Value
@@ -225,16 +226,16 @@ def DE_DOCUMENTO(
     )
 
 
-def EVIDENCIA_DE(
+def EXTRAIDO_DE(
     chunk_id: str, entity_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
-    Crear una relación EVIDENCIA_DE.
+    Crear una relación EXTRAIDO_DE.
 
-    (Chunk)-[EVIDENCIA_DE]->(Proyecto|Topico|Investigador)
+    (Chunk)-[EXTRAIDO_DE]->(Topico|Investigador)
     """
     return Relationship(
-        type="EVIDENCIA_DE",
+        type="EXTRAIDO_DE",
         source_id=chunk_id,
         target_id=entity_id,
         properties=properties or {},
@@ -254,6 +255,22 @@ def POTENCIAL_IGUALDAD(
         target_id=investigador2_id,
         properties=properties or {},
     )
+
+def TITULO_EXTRAIDO_DE(
+    proyect_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación TITULO_EXTRAIDO_DE.
+
+    (Proyecto)-[TITULO_EXTRAIDO_DE]->(Chunk)
+    """
+    return Relationship(
+        type="TITULO_EXTRAIDO_DE",
+        source_id=proyect_id,
+        target_id=chunk_id,
+        properties=properties or {},
+    )
+
 
 class GraphSchema:
     # Tipos de entidades
@@ -275,7 +292,8 @@ class GraphSchema:
         "PRIMER_CHUNK": PRIMER_CHUNK,
         "SIGUIENTE_CHUNK": SIGUIENTE_CHUNK,
         "DE_DOCUMENTO": DE_DOCUMENTO,
-        "EVIDENCIA_DE": EVIDENCIA_DE,
+        "EXTRAIDO_DE": EXTRAIDO_DE,
+        "TITULO_EXTRAIDO_DE": TITULO_EXTRAIDO_DE,
         "POTENCIAL_IGUALDAD": POTENCIAL_IGUALDAD
     }
 
@@ -323,8 +341,9 @@ def validate_relationship_endpoints(
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
-        "EVIDENCIA_DE": ("Chunk", ["Proyecto", "Topico", "Investigador"]),
+        "EXTRAIDO_DE ": ("Chunk", ["Topico", "Investigador"]),
         "POTENCIAL_IGUALDAD":("Investigador", "Investigador"),
+        "TITULO_EXTRAIDO_DE ": ("Proyecto", "Chunk"),
     }
 
     expected = valid_combinations.get(relationship.type)
@@ -334,7 +353,7 @@ def validate_relationship_endpoints(
     source_label = source_entity.label
     target_label = target_entity.label
 
-    if relationship.type == "EVIDENCIA_DE":
+    if relationship.type == "EXTRAIDO_DE":
         return source_label == expected[0] and target_label in expected[1]
 
     return source_label == expected[0] and target_label == expected[1]

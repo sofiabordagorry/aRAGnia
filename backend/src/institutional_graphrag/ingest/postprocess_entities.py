@@ -214,7 +214,7 @@ class Postprocessor:
     ) -> Tuple[List[dict], List[dict], List[dict]]:
         """
         Consolidar investigadores: eliminar duplicados, variantes y basura.
-        También elimina investigadores sin relaciones EVIDENCIA_DE válidas.
+        También elimina investigadores sin relaciones EXTRAIDO_DE válidas.
         """
         researchers = [e for e in entities if e.get("label") == "Investigador"]
         other_entities = [e for e in entities if e.get("label") != "Investigador"]
@@ -341,7 +341,7 @@ class Postprocessor:
                 rel_copy["target_id"] = id_mapping[old_target]
                 changed = True
 
-            if rel_copy.get("type") == "EVIDENCIA_DE":
+            if rel_copy.get("type") == "EXTRAIDO_DE":
                 evidence = rel_copy.get("properties", {}).get("evidence_text", "")
                 if self.is_generic_evidence(evidence):
                     generic_rels_removed += 1
@@ -388,9 +388,7 @@ class Postprocessor:
             )
 
         print(f"[Consolidación] {duplicate_rels_removed} relaciones duplicadas eliminadas")
-        print(
-            f"[Consolidación] {generic_rels_removed} relaciones EVIDENCIA_DE genéricas eliminadas"
-        )
+        print(f"[Consolidación] {generic_rels_removed} relaciones EXTRAIDO_DE genéricas eliminadas")
 
         if relationship_updates or (duplicate_rels_removed + generic_rels_removed) > 0:
             transformation_log.append(
@@ -410,13 +408,13 @@ class Postprocessor:
         return final_entities, updated_relationships, transformation_log
 
     def add_missing_evidence_text(self, relationships: List[dict]) -> Tuple[List[dict], List[dict]]:
-        """Descarta EVIDENCIA_DE sin evidence_text real."""
+        """Descarta EXTRAIDO_DE sin evidence_text real."""
         updated: List[dict] = []
         filtered_rels: List[dict] = []
         filtered_count = 0
 
         for rel in relationships:
-            if rel.get("type") == "EVIDENCIA_DE":
+            if rel.get("type") == "EXTRAIDO_DE":
                 evidence = rel.get("properties", {}).get("evidence_text", "")
                 if not evidence or self.is_generic_evidence(evidence):
                     filtered_count += 1
@@ -431,14 +429,14 @@ class Postprocessor:
             updated.append(rel)
 
         print(
-            f"[Evidence Filter] {filtered_count} relaciones EVIDENCIA_DE sin evidence válido descartadas"
+            f"[Evidence Filter] {filtered_count} relaciones EXTRAIDO_DE sin evidence válido descartadas"
         )
 
         transformation_log: List[dict] = []
         if filtered_count > 0:
             transformation_log.append(
                 {
-                    "step": "Filtrado de EVIDENCIA_DE genéricas",
+                    "step": "Filtrado de EXTRAIDO_DE genéricas",
                     "count": filtered_count,
                     "sample_filtered": filtered_rels[:10],
                 }
