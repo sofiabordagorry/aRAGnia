@@ -2,37 +2,41 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+
 def odt_bytes_to_pdf(odt_bytes: bytes) -> bytes:
-    # Crear un archivo temporal para el ODT
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".odt") as temp_odt:
         temp_odt.write(odt_bytes)
         temp_odt_path = Path(temp_odt.name)
 
-    # Crear un archivo temporal para el PDF
     temp_pdf_path = temp_odt_path.with_suffix(".pdf")
-
     try:
-        # Ejecutar LibreOffice headless para convertir a PDF
-        subprocess.run(
+        result = subprocess.run(
             [
-                "libreoffice",
+                r"C:\Program Files\LibreOffice\program\soffice.exe",
                 "--headless",
-                "--nologo",
-                "--nofirststartwizard",
-                "--convert-to", "pdf",
-                str(temp_odt_path)
+                "--convert-to",
+                "pdf",
+                "--outdir",
+                str(temp_odt_path.parent),
+                str(temp_odt_path),
             ],
-            check=True
+            check=True,
+            capture_output=True,
+            text=True,
         )
 
-        # Leer el PDF generado a memoria
+        if not temp_pdf_path.exists():
+            raise FileNotFoundError(
+                f"No se generó el PDF en {temp_pdf_path}. "
+                f"stdout={result.stdout} stderr={result.stderr}"
+            )
+
         pdf_bytes = temp_pdf_path.read_bytes()
 
     finally:
-        # Limpiar archivos temporales
         if temp_odt_path.exists():
             temp_odt_path.unlink()
         if temp_pdf_path.exists():
             temp_pdf_path.unlink()
-
     return pdf_bytes
