@@ -246,10 +246,10 @@ def POTENCIAL_IGUALDAD(
     """
     Crear una relación POTENCIAL_IGUALDAD.
 
-    (Investigador)<-[POTENCIAL_IGUALDAD]->(PInvestigador)
+    (Investigador)-[POTENCIAL_IGUALDAD]->(PInvestigador)
     """
     return Relationship(
-        type="EVIDENCIA_DE",
+        type="POTENCIAL_IGUALDAD",
         source_id=investigador_id,
         target_id=investigador2_id,
         properties=properties or {},

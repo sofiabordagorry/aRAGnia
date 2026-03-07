@@ -303,7 +303,7 @@ class Postprocessor:
                         "target_id": dup_id,
                         "type": "POTENCIAL_IGUALDAD"
                     })
-                    print(f" Creada Relacion Potencial Igualdad entre '{{dup_r['value'].get('name')}}' y '{canonical_name}'")
+                    print(f" Creada Relacion Potencial Igualdad entre '{dup_r['value'].get('name')}' y '{canonical_name}'")
         for r in researchers:
             if r["id"] not in processed_ids:
                 consolidated.append(r)
