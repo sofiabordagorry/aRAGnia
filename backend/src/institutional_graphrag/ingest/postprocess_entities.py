@@ -175,7 +175,9 @@ class Postprocessor:
                         else:
                             duplicates_relation.append(other_id)
 
-                elif self.is_partial_name(other_name, researcher_name) or self.is_partial_name(researcher_name, other_name):
+                elif self.is_partial_name(other_name, researcher_name) or self.is_partial_name(
+                    researcher_name, other_name
+                ):
                     if self.enable_researcher_consolidation:
                         if other_id not in processed:
                             duplicates.append(other_id)
