@@ -157,15 +157,11 @@ class Postprocessor:
                     duplicates.append(other_id)
                     processed.add(other_id)
 
-                elif (
-                    self.is_inverted_name(researcher_name, other_name)
-                ):
+                elif self.is_inverted_name(researcher_name, other_name):
                     duplicates.append(other_id)
                     processed.add(other_id)
 
-                elif (
-                    self.name_similarity(norm1, norm2) >= self.similarity_threshold
-                ):
+                elif self.name_similarity(norm1, norm2) >= self.similarity_threshold:
                     tokens1 = norm1.split()
                     tokens2 = norm2.split()
                     common = set(tokens1) & set(tokens2)
@@ -175,9 +171,7 @@ class Postprocessor:
                         duplicates.append(other_id)
                         processed.add(other_id)
 
-                elif (
-                    self.is_partial_name(other_name, researcher_name)
-                ):
+                elif self.is_partial_name(other_name, researcher_name):
                     duplicates.append(other_id)
                     processed.add(other_id)
 
@@ -298,12 +292,16 @@ class Postprocessor:
                     )
                     print(f"  Consolidando '{dup_r['value'].get('name')}' -> '{canonical_name}'")
                 else:
-                    updated_relationships.append({
-                        "source_id": canonical_id,
-                        "target_id": dup_id,
-                        "type": "POTENCIAL_IGUALDAD"
-                    })
-                    print(f" Creada Relacion Potencial Igualdad entre '{dup_r['value'].get('name')}' y '{canonical_name}'")
+                    updated_relationships.append(
+                        {
+                            "source_id": canonical_id,
+                            "target_id": dup_id,
+                            "type": "POTENCIAL_IGUALDAD",
+                        }
+                    )
+                    print(
+                        f" Creada Relacion Potencial Igualdad entre '{dup_r['value'].get('name')}' y '{canonical_name}'"
+                    )
         for r in researchers:
             if r["id"] not in processed_ids:
                 consolidated.append(r)

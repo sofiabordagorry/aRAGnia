@@ -241,6 +241,7 @@ def EXTRAIDO_DE(
         properties=properties or {},
     )
 
+
 def POTENCIAL_IGUALDAD(
     investigador_id: str, investigador2_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -255,6 +256,7 @@ def POTENCIAL_IGUALDAD(
         target_id=investigador2_id,
         properties=properties or {},
     )
+
 
 def TITULO_EXTRAIDO_DE(
     proyect_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
@@ -294,7 +296,7 @@ class GraphSchema:
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EXTRAIDO_DE": EXTRAIDO_DE,
         "TITULO_EXTRAIDO_DE": TITULO_EXTRAIDO_DE,
-        "POTENCIAL_IGUALDAD": POTENCIAL_IGUALDAD
+        "POTENCIAL_IGUALDAD": POTENCIAL_IGUALDAD,
     }
 
     @classmethod
@@ -342,7 +344,7 @@ def validate_relationship_endpoints(
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EXTRAIDO_DE ": ("Chunk", ["Topico", "Investigador"]),
-        "POTENCIAL_IGUALDAD":("Investigador", "Investigador"),
+        "POTENCIAL_IGUALDAD": ("Investigador", "Investigador"),
         "TITULO_EXTRAIDO_DE ": ("Proyecto", "Chunk"),
     }
 
