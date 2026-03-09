@@ -121,7 +121,10 @@ class Postprocessor:
     # -------------------------
     def find_researcher_duplicates(
         self, researchers: List[dict]
-    ) -> Dict[str, Tuple[str, List[str]]]:
+    ) -> Tuple[
+        Dict[str, Tuple[str, List[str]]],
+        Dict[str, Tuple[str, List[str]]],
+    ]:
         """
         Returns:
             {canonical_id: (canonical_name, [duplicate_ids])}
