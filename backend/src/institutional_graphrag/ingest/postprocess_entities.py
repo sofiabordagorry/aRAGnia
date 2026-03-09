@@ -119,9 +119,7 @@ class Postprocessor:
     # -------------------------
     # Duplicados investigadores
     # -------------------------
-    def find_researcher_duplicates(
-        self, researchers: List[dict]
-    ) -> Tuple[
+    def find_researcher_duplicates(self, researchers: List[dict]) -> Tuple[
         Dict[str, Tuple[str, List[str]]],
         Dict[str, Tuple[str, List[str]]],
     ]:
