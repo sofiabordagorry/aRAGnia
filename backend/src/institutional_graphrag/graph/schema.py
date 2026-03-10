@@ -343,13 +343,14 @@ def validate_relationship_endpoints(
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
-        "EXTRAIDO_DE ": ("Chunk", ["Topico", "Investigador"]),
+        "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
         "POSIBLE_ALIAS": ("Investigador", "Investigador"),
-        "TITULO_EXTRAIDO_DE ": ("Proyecto", "Chunk"),
+        "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
     }
 
     expected = valid_combinations.get(relationship.type)
     if not expected:
+        print("entro", relationship.type)
         return False
 
     source_label = source_entity.label
