@@ -256,13 +256,14 @@ Relationships:
 - (Documento)-[:PRIMER_CHUNK]->(Chunk)
 - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
 - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EVIDENCIA_DE]->(Investigador|Topico|Proyecto)
+- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
 
 RULES:
 1. Read-only (MATCH, RETURN only)
 2. Return chunks (c:Chunk) when listing or describing entities — they contain the actual text evidence. For COUNT queries, omit chunks and return only the aggregation result.
 3. Connect patterns: every MATCH must use variables defined in previous MATCHes
-4. Use [:EVIDENCIA_DE] to navigate from entities to their evidence chunks
+4. Use [:EXTRAIDO_DE] for investigators/topics, [:TITULO_EXTRAIDO_DE] for projects to navigate to their evidence chunks
 5. Topics are stored in ENGLISH: 'Biotechnology', 'Engineering', 'Medicine', etc.
 6. Only add LIMIT when the question explicitly asks for a specific number of results (e.g. "los 10 tópicos con más proyectos" → LIMIT 10). Otherwise, omit LIMIT entirely.
 7. NEVER define relationship variables — use anonymous patterns only: -[:TYPE]-> NOT -[r:TYPE]->
@@ -300,29 +301,29 @@ MATCH (p:Proyecto) RETURN count(p) AS total
 List projects by topic:
 MATCH (t:Topico {{value: 'Biotechnology'}})
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 RETURN p, COLLECT(c) AS chunks
 
 List investigators of a project (WHO participated):
 MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto {{id: 'gi_2014_133'}})
-OPTIONAL MATCH (c:Chunk)-[:EVIDENCIA_DE]->(i)
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
 RETURN i, COLLECT(DISTINCT c) AS chunks
 -- CRITICAL: RETURN the investigators (i), NOT the project (p)
 
 Projects by researcher name — note direction: Investigador -> Proyecto:
 MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
 MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 RETURN p, i, COLLECT(c) AS chunks
 
 Chunks of a specific topic (only when asked about the topic itself, not its projects):
 MATCH (t:Topico {{value: 'Biotechnology'}})
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(t)
+MATCH (c:Chunk)-[:EXTRAIDO_DE]->(t)
 RETURN c, t
 
 By project ID (chunks about a specific project):
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 RETURN c, p
 
 Documents of a project:
@@ -333,7 +334,7 @@ RETURN d, p, COLLECT(c) AS chunks
 
 Describe / full info about a specific project (name, year, topics, investigators):
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-OPTIONAL MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
 OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
@@ -342,7 +343,7 @@ RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(
 Projects by a specific year (LIST):
 MATCH (a:Anio {{year: 'year_value'}})
 MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (c:Chunk)-[:EVIDENCIA_DE]->(p)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 RETURN p, COLLECT(c) AS chunks
 
 === ADVANCED AGGREGATION ===
@@ -391,7 +392,7 @@ RETURN RULES:
 CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
 - Every variable in WITH/RETURN must be defined in a previous MATCH
-- Use [:EVIDENCIA_DE]->(entity) — never [:EVIDENCIA_DE]->(var1|var2)
+- Use [:EXTRAIDO_DE]->(entity) for investigators/topics, [:TITULO_EXTRAIDO_DE]->(chunk) for projects
 - Topico uses {{value: '...'}}, Anio uses {{year: '...'}}, all others use {{id: '...'}}
 - NEVER name a relationship variable (never write -[r:TYPE]-> or -[rel:TYPE]->), always use -[:TYPE]->
 - NEVER use a variable as both a relationship and a node
@@ -410,7 +411,8 @@ CRITICAL SYNTAX:
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-        - (Chunk)-[:EVIDENCIA_DE]->(Investigador|Topico|Proyecto)
+        - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+        - (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
@@ -421,9 +423,9 @@ CRITICAL SYNTAX:
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
-            ("Chunk", "EVIDENCIA_DE", "Investigador"),
-            ("Chunk", "EVIDENCIA_DE", "Topico"),
-            ("Chunk", "EVIDENCIA_DE", "Proyecto"),
+            ("Chunk", "EXTRAIDO_DE", "Investigador"),
+            ("Chunk", "EXTRAIDO_DE", "Topico"),
+            ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
         ]
 
         fixed = query
@@ -473,7 +475,8 @@ Relationships:
 - (Documento)-[:PRIMER_CHUNK]->(Chunk)
 - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
 - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EVIDENCIA_DE]->(Investigador|Topico|Proyecto)
+- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
 
 BROKEN QUERY:
 {broken_query}
@@ -612,7 +615,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         for record in records:
             # Recopilar chunks y entidades de este record
             chunks_in_record = []
-            # direct = vienen de MATCH directo (implica relación EVIDENCIA_DE)
+            # direct = vienen de MATCH directo (implica relación EXTRAIDO_DE/TITULO_EXTRAIDO_DE)
             entities_direct = []
             # collected = vienen de COLLECT() — son del proyecto/consulta, no del chunk
             entities_collected = []
@@ -699,7 +702,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                             text=text,
                         )
 
-                # Solo asociar entidades DIRECTAS al chunk (implican EVIDENCIA_DE)
+                # Solo asociar entidades DIRECTAS al chunk (implican EXTRAIDO_DE/TITULO_EXTRAIDO_DE)
                 if entities_direct and chunk_id in chunks_dict:
                     for entity_node in entities_direct:
                         entity_id, entity_label, props = resolve_entity_id(entity_node)
