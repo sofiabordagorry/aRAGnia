@@ -11,11 +11,12 @@ import pandas as pd
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
-    EVIDENCIA_DE,
+    EXTRAIDO_DE,
     INICIO_EN,
     PARTICIPO_EN,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
+    TITULO_EXTRAIDO_DE,
     Anio,
     Chunk,
     Documento,
@@ -497,16 +498,16 @@ class StaticExtractor:
             self.res.relationships.append(INICIO_EN(project_id, year))
 
         self.res.relationships.append(
-            EVIDENCIA_DE(
-                best["chunk_id"],
+            TITULO_EXTRAIDO_DE(
                 project_id,
+                best["chunk_id"],
                 properties={"evidence_text": f"Proyecto identificado en chunk {best['chunk_id']}"},
             )
         )
         self.res.relationships.append(
-            EVIDENCIA_DE(
-                best["table_chunk_id"],
+            TITULO_EXTRAIDO_DE(
                 project_id,
+                best["table_chunk_id"],
                 properties={"evidence_text": "Proyecto identificado en tabla"},
             )
         )
@@ -578,9 +579,9 @@ class StaticExtractor:
                 )
 
             self.res.relationships.append(
-                EVIDENCIA_DE(
-                    chunk_id,
+                TITULO_EXTRAIDO_DE(
                     project_id,
+                    chunk_id,
                     properties={"evidence_text": f"Proyecto mencionado en {chunk_id}"},
                 )
             )
@@ -795,7 +796,7 @@ class StaticExtractor:
                 )
                 self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
                 self.res.relationships.append(
-                    EVIDENCIA_DE(
+                    EXTRAIDO_DE(
                         table_chunk_id,
                         candidate_id,
                         properties={

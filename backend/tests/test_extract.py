@@ -482,7 +482,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
             )
             new_relationships.append(
                 Relationship(
-                    type="EVIDENCIA_DE",
+                    type="EXTRAIDO_DE",
                     source_id=chunk_id,
                     target_id=inv_id,
                     properties={"evidence_text": evidence},
@@ -510,7 +510,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
                 )
             new_relationships.append(
                 Relationship(
-                    type="EVIDENCIA_DE",
+                    type="EXTRAIDO_DE",
                     source_id=chunk_id,
                     target_id=topic_id,
                     properties={"evidence_text": evidence},
@@ -544,7 +544,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
     evidencia_top = [
         r
         for r in extractor.res.relationships
-        if r.type == "EVIDENCIA_DE" and r.target_id == "machine_learning"
+        if r.type == "EXTRAIDO_DE" and r.target_id == "machine_learning"
     ]
     assert len(evidencia_top) == 3, "3 chunks => 3 evidencias del tópico"
 

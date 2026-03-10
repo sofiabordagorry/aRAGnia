@@ -674,7 +674,7 @@ class EntityExtractor:
         for r in self.res.relationships:
             if r.type == "DE_DOCUMENTO":
                 chunk_by_doc[r.target_id].append(r.source_id)
-            elif r.type == "EVIDENCIA_DE":
+            elif r.type == "EXTRAIDO_DE":
                 topic_by_chunk[r.source_id].append(r.target_id)
 
         project_chunks = set()

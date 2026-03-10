@@ -3,12 +3,13 @@
 from .schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
-    EVIDENCIA_DE,
+    EXTRAIDO_DE,
     INICIO_EN,
     PARTICIPO_EN,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
     TIENE_TOPICO,
+    TITULO_EXTRAIDO_DE,
     Anio,
     Chunk,
     Documento,
@@ -33,5 +34,6 @@ __all__ = [
     "PRIMER_CHUNK",
     "SIGUIENTE_CHUNK",
     "DE_DOCUMENTO",
-    "EVIDENCIA_DE",
+    "EXTRAIDO_DE",
+    "TITULO_EXTRAIDO_DE",
 ]
