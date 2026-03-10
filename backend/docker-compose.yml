@@ -21,6 +21,16 @@ services:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
 
+  libreoffice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: libreoffice-converter
+    command: tail -f /dev/null
+    volumes:
+      - ./shared:/data
+    restart: unless-stopped
+
 volumes:
   neo4j_data:
   qdrant_data:
