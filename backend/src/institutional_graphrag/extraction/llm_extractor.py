@@ -811,7 +811,7 @@ If no match:
 
                     # 2. Verificar que el nombre esté en el chunk
                     name_parts = [p.strip() for p in name_normalized.split() if len(p.strip()) > 2]
-                    
+
                     # Cantidad de errores (substitute, insert, delete) tolerados
                     # Para valores especificos para cada uno en vez de "e<=3" en el pattern usar "s<=3,i<=3,d<=3"
                     allowed_errors = 3
@@ -821,7 +821,7 @@ If no match:
                     failed_check = False
 
                     for part in name_parts:
-                        pattern = f'({part}){{e<={allowed_errors}}}'
+                        pattern = f"({part}){{e<={allowed_errors}}}"
                         patterns.append(pattern)
 
                     if patterns:
@@ -842,7 +842,7 @@ If no match:
                         if failed_check:
                             continue
                         else:
-                            name = ' '.join(name_in_chunk)
+                            name = " ".join(name_in_chunk)
 
                     # if name_parts and not all(part in chunk_normalized for part in name_parts):
                     #     errors.append(
