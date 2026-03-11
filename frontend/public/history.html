@@ -1,51 +1,43 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
+ <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Historial - RAG / GraphRAG</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/history.css" /> 
+    <link rel="stylesheet" href="/css/styles.css" /> 
   </head>
   <body>
+    <div id="topbar"></div>
     <div class="app">
       <div class="history-page">
+
+        <!-- CABECERA -->
         <div class="history-top">
-          <div>
-            <div class="history-title">Historial</div>
-            <div class="history-sub">
-              Preguntas guardadas en tu navegador (localStorage).
+          <div class="history-title">Historial</div>
+          <div class="history-sub">Preguntas guardadas en tu navegador (localStorage).</div>
+        </div>
+
+        <!-- BARRA DE HERRAMIENTAS + BOTONES INTEGRADOS -->
+        <div class="history-tools">
+          <div class="tools-bar">
+            <input
+              id="searchInput"
+              class="query-input"
+              placeholder="Buscar en el historial..."
+            />
+            <div class="history-filters">
+              <button id="filterAll" class="seg-btn active" type="button">Todo</button>
+              <button id="filterRag" class="seg-btn" type="button">RAG</button>
+              <button id="filterGraph" class="seg-btn" type="button">GraphRAG</button>
             </div>
           </div>
-
-          <div class="history-actions">
-            <a class="secondary-link" href="./index.html">← Volver</a>
-            <button id="clearHistoryBtn" class="danger-btn" type="button">
-              Borrar historial
-            </button>
-          </div>
+          <button id="clearHistoryBtn" class="danger-btn" type="button">Borrar historial</button>
         </div>
 
-        <div class="history-tools">
-          <input
-            id="searchInput"
-            class="query-input"
-            placeholder="Buscar en el historial..."
-          />
-          <div class="history-filters">
-            <button id="filterAll" class="seg-btn active" type="button">
-              Todo
-            </button>
-            <button id="filterRag" class="seg-btn" type="button">RAG</button>
-            <button id="filterGraph" class="seg-btn" type="button">
-              GraphRAG
-            </button>
-          </div>
-        </div>
-
+        <!-- MENSAJE VACÍO -->
         <div id="historyEmpty" class="history-empty">
           Aún no hay preguntas en el historial.
         </div>
 
+        <!-- LISTADO DE TARJETAS -->
         <div id="historyList" class="history-list-page" aria-label="Historial">
           <!-- items por JS -->
         </div>
@@ -53,5 +45,6 @@
     </div>
 
     <script src="/js/history.js" defer></script>
+    <script src="/js/layout.js"></script>
   </body>
 </html>

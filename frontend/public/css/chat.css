@@ -1,0 +1,121 @@
+/* =====================================================
+   1. VARIABLES
+===================================================== */
+:root {
+  --blue-1: #00527a;
+  --blue-2: #004466;
+  --panel: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --border: var(--blue-1);
+  --soft: #eaf3ff;
+}
+
+/* =====================================================
+   2. RESET
+===================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* =====================================================
+   3. FONDO AZUL
+===================================================== */
+body,
+html {
+  width: 100%;
+  min-height: 100vh;
+  font-family: system-ui, sans-serif;
+  background: linear-gradient(180deg, var(--blue-1), var(--blue-2));
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+}
+
+/* =====================================================
+   4. PANEL BLANCO CENTRAL
+===================================================== */
+.chat-page {
+  background: var(--panel);
+  border-radius: 28px;
+  width: 97%;
+  max-width: 1800px;
+  min-height: 90vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+/* =====================================================
+   6. LAYOUT DE CHAT
+===================================================== */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* INPUTS Y BOTONES */
+.query-input {
+  flex: 1;
+  height: 54px;
+  padding: 0 14px;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 16px;
+  outline: none;
+}
+
+.ask-btn {
+  height: 54px;
+  padding: 0 16px;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* CHAT */
+.chat {
+  margin-top: 12px;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  min-height: 520px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  background: var(--panel);
+}
+
+/* STATUS ROW */
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+/* CHUNKS PANEL */
+.chunks-panel {
+  width: 100%;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--panel);
+}

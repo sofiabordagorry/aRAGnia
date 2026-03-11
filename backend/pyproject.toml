@@ -34,7 +34,9 @@ dependencies = [
     "pyarrow>=14.0",
     "tabula-py>=2.9",
     "neo4j>=5.0",
-    "ijson>=3.2.3"
+    "ijson>=3.2.3",
+    "psycopg2-binary>=2.9.6",
+    "docker>=6.1"
 ]
 
 [project.optional-dependencies]

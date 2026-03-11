@@ -2,6 +2,8 @@
 
 __version__ = "0.2.0"
 
+from .queries import insert_query, insert_chunks, delete_all_queries, delete_query_by_id, get_queries_with_chunks
+from .database import create_tables, get_connection
 from .config import EMBED_MODEL_ID
 from .ingest.chunker import (
     chunk_document,
