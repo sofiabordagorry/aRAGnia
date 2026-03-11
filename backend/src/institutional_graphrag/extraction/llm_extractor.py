@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import regex
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -810,16 +811,48 @@ If no match:
 
                     # 2. Verificar que el nombre esté en el chunk
                     name_parts = [p.strip() for p in name_normalized.split() if len(p.strip()) > 2]
+                    
+                    # Cantidad de errores (substitute, insert, delete) tolerados
+                    # Para valores especificos para cada uno en vez de "e<=3" en el pattern usar "s<=3,i<=3,d<=3"
+                    allowed_errors = 3
 
-                    if name_parts and not any(part in chunk_normalized for part in name_parts):
-                        errors.append(
-                            {
-                                "type": "NameNotInChunk",
-                                "chunk_id": chunk_id,
-                                "message": f"El nombre '{name}' no aparece en el chunk",
-                            }
-                        )
-                        continue
+                    patterns = []
+                    name_in_chunk = []
+                    failed_check = False
+
+                    for part in name_parts:
+                        pattern = f'({part}){{e<={allowed_errors}}}'
+                        patterns.append(pattern)
+
+                    if patterns:
+                        for pattern in patterns:
+                            match = regex.search(pattern, chunk_normalized, regex.BESTMATCH)
+                            if match is not None:
+                                name_in_chunk.append(match.group())
+                            else:
+                                errors.append(
+                                    {
+                                        "type": "NameNotInChunk",
+                                        "chunk_id": chunk_id,
+                                        "message": f"El nombre '{name}' no aparece en el chunk",
+                                    }
+                                )
+                                failed_check = True
+                                break
+                        if failed_check:
+                            continue
+                        else:
+                            name = ' '.join(name_in_chunk)
+
+                    # if name_parts and not all(part in chunk_normalized for part in name_parts):
+                    #     errors.append(
+                    #         {
+                    #             "type": "NameNotInChunk",
+                    #             "chunk_id": chunk_id,
+                    #             "message": f"El nombre '{name}' no aparece en el chunk",
+                    #         }
+                    #     )
+                    #     continue
 
                 # Si llegamos hasta acá, pasó todas las validaciones
                 if name and not any(pattern in name.lower() for pattern in invalid_patterns):
