@@ -350,7 +350,6 @@ def validate_relationship_endpoints(
 
     expected = valid_combinations.get(relationship.type)
     if not expected:
-        print("entro", relationship.type)
         return False
 
     source_label = source_entity.label
