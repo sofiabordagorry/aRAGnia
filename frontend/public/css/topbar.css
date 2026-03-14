@@ -348,7 +348,7 @@ body.modal-open .modal {
   line-height: 1.4;
   opacity: 0;
   transform: translateY(-8px) scale(0.98);
-  pointer-events: none;
+  pointer-events: auto;
   transition:
     opacity 160ms ease,
     transform 160ms ease;
@@ -490,4 +490,100 @@ body.dark .topbar-toast.loading {
   .modal::before {
     display: none;
   }
+}
+
+.topbar-nav .nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+.topbar-nav .nav-link,
+.topbar-nav .reload-files-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 16px;
+  min-height: 36px;
+
+  border: 2px solid #ffffff;
+  border-radius: 8px; /* más cuadrado */
+
+  background: #2f6ea3; /* azul de Consultas */
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.topbar-nav .nav-link:hover,
+.topbar-nav .reload-files-btn:hover {
+  background: #3f7db1;
+}
+.reload-files-btn {
+  appearance: none;
+  -webkit-appearance: none;
+
+  padding: 4px 12px; /* lo hace más chico */
+  height: 32px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  border-radius: 10px; /* menos cuadrado */
+}
+
+/* Asegura que los links tengan el mismo alto */
+.topbar-nav .nav-link {
+  height: 32px;
+  padding: 4px 12px;
+  border-radius: 10px;
+}
+.sliders-icon .knob {
+  display: none;
+}
+.topbar-toast-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar-toast-message {
+  flex: 1;
+}
+
+.topbar-toast-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.topbar-toast-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+  opacity: 1;
+}
+
+body.dark .topbar-toast-close:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

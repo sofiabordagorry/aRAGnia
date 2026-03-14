@@ -35,13 +35,13 @@ body {
   display: flex;
   flex-direction: column;
   gap: 28px;
-  width: 99%;
+  width: 100%;
   min-height: calc(100vh - var(--topbar-h));
-  margin: 0 auto;
+  margin: 0;
   padding: 52px 48px 64px;
-  border-radius: 28px;
   background: var(--panel);
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.35);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .layout {

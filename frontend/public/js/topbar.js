@@ -1,6 +1,7 @@
 (() => {
   const TOPBAR_HTML_URL = "/topbar.html";
   const RELOAD_STATE_KEY = "csic_graphrag_reload_state_v2";
+  const RELOAD_TOAST_DISMISSED_KEY = "csic_graphrag_reload_toast_dismissed_v1";
   const POLL_INTERVALS_MS = [10000, 20000, 50000];
 
   let toastHideTimer = null;
@@ -26,6 +27,26 @@
     return document.getElementById("topbarToast");
   }
 
+  function markReloadToastDismissed() {
+    try {
+      sessionStorage.setItem(RELOAD_TOAST_DISMISSED_KEY, "true");
+    } catch {}
+  }
+
+  function clearReloadToastDismissed() {
+    try {
+      sessionStorage.removeItem(RELOAD_TOAST_DISMISSED_KEY);
+    } catch {}
+  }
+
+  function isReloadToastDismissed() {
+    try {
+      return sessionStorage.getItem(RELOAD_TOAST_DISMISSED_KEY) === "true";
+    } catch {
+      return false;
+    }
+  }
+
   function showToast(message, type = "success", { sticky = false } = {}) {
     const toast = getToast();
     if (!toast) return;
@@ -34,13 +55,41 @@
     toast.className = "topbar-toast";
     toast.classList.add(type);
     toast.classList.remove("hidden");
-    toast.innerHTML = message;
+
+    toast.innerHTML = `
+      <div class="topbar-toast-content">
+        <div class="topbar-toast-message">${message}</div>
+        <button
+          type="button"
+          class="topbar-toast-close"
+          aria-label="Cerrar mensaje"
+          title="Cerrar"
+        >
+          ✕
+        </button>
+      </div>
+    `;
+
+    const closeBtn = toast.querySelector(".topbar-toast-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        if (type === "loading") {
+          markReloadToastDismissed();
+        }
+        hideToast();
+      });
+    }
 
     requestAnimationFrame(() => toast.classList.add("show"));
 
     if (!sticky) {
       toastHideTimer = setTimeout(hideToast, 3400);
     }
+  }
+
+  function maybeShowReloadToast(message) {
+    if (isReloadToastDismissed()) return;
+    showToast(message, "loading", { sticky: true });
   }
 
   function hideToast() {
@@ -150,12 +199,54 @@
     return parseJsonResponse(response, endpoint);
   }
 
+  async function syncReloadStateFromServer() {
+    const base = getApiBase();
+    if (!base) return;
+
+    try {
+      const endpoint = `${base}/ui/upload/status`;
+      const response = await fetch(endpoint);
+      const data = await parseJsonResponse(response, endpoint);
+
+      if (
+        data?.job_id &&
+        (data.status === "queued" || data.status === "running")
+      ) {
+        reloadJob = { job_id: data.job_id, status: data.status };
+
+        saveReloadState({
+          job_id: data.job_id,
+          status: data.status,
+          startedAt: data?.started_at ?? null,
+          createdAt: data?.created_at ?? null,
+          message: data?.message ?? "Recarga en curso...",
+        });
+
+        updateReloadButtonUI();
+        scheduleStatusPoll(data.job_id);
+        maybeShowReloadToast(
+          "Hay una recarga en curso… Podés seguir usando el chat mientras termina.",
+        );
+        return;
+      }
+
+      reloadJob = null;
+      clearReloadState();
+      clearReloadToastDismissed();
+      updateReloadButtonUI();
+    } catch {
+      reloadJob = null;
+      updateReloadButtonUI();
+    }
+  }
+
   function handleReloadStatus(statusData) {
     const jobId = statusData?.job_id;
     const status = statusData?.status;
 
     if (!jobId) {
       reloadJob = null;
+      clearReloadToastDismissed();
       updateReloadButtonUI();
       stopPolling();
       return;
@@ -173,10 +264,8 @@
       });
 
       updateReloadButtonUI();
-      showToast(
+      maybeShowReloadToast(
         "Recargando archivos en segundo plano… Podés seguir usando el chat mientras termina.",
-        "loading",
-        { sticky: true },
       );
       scheduleStatusPoll(jobId);
       return;
@@ -194,6 +283,7 @@
 
       saveReloadState(state);
       reloadJob = null;
+      clearReloadToastDismissed();
       updateReloadButtonUI();
       stopPolling();
       showToast(formatReloadSuccessMessage(statusData), "success");
@@ -217,6 +307,7 @@
 
       saveReloadState(state);
       reloadJob = null;
+      clearReloadToastDismissed();
       updateReloadButtonUI();
       stopPolling();
       showToast(message, "error", { sticky: true });
@@ -225,6 +316,7 @@
     }
 
     reloadJob = null;
+    clearReloadToastDismissed();
     updateReloadButtonUI();
     stopPolling();
   }
@@ -244,6 +336,7 @@
           errMessage.includes("No hay recargas registradas")
         ) {
           clearReloadState();
+          clearReloadToastDismissed();
           reloadJob = null;
           updateReloadButtonUI();
           stopPolling();
@@ -252,6 +345,7 @@
         }
 
         const message = `Error consultando estado de recarga.<br><span style="font-weight:700;opacity:.9">${escapeHtml(errMessage)}</span>`;
+        clearReloadToastDismissed();
         showToast(message, "error", { sticky: true });
         emitReloadEvent("reload:error", {
           job_id: jobId,
@@ -277,10 +371,9 @@
     const endpoint = `${base}/ui/upload`;
     reloadJob = { status: "starting" };
     pollAttempt = 0;
+    clearReloadToastDismissed();
     updateReloadButtonUI();
-    showToast("Iniciando recarga en segundo plano…", "loading", {
-      sticky: true,
-    });
+    maybeShowReloadToast("Iniciando recarga en segundo plano…");
 
     try {
       const data = await parseJsonResponse(
@@ -302,10 +395,8 @@
       });
 
       updateReloadButtonUI();
-      showToast(
+      maybeShowReloadToast(
         "Recargando archivos en segundo plano… Podés seguir usando el chat mientras termina.",
-        "loading",
-        { sticky: true },
       );
       emitReloadEvent("reload:start", {
         job_id: jobId,
@@ -316,6 +407,7 @@
       return data;
     } catch (error) {
       reloadJob = null;
+      clearReloadToastDismissed();
       updateReloadButtonUI();
       stopPolling();
 
@@ -345,22 +437,32 @@
       reloadJob = { job_id: state.job_id, status: state.status };
       pollAttempt = 0;
       updateReloadButtonUI();
-      showToast(
-        "Hay una recarga en curso en esta pestaña… Podés seguir usando el chat mientras termina.",
-        "loading",
-        { sticky: true },
-      );
-      scheduleStatusPoll(state.job_id);
+
+      fetchReloadStatus(state.job_id)
+        .then((statusData) => {
+          handleReloadStatus(statusData);
+        })
+        .catch(() => {
+          clearReloadState();
+          clearReloadToastDismissed();
+          reloadJob = null;
+          updateReloadButtonUI();
+          stopPolling();
+          hideToast();
+        });
+
       return;
     }
 
     if (state.status === "success") {
+      clearReloadToastDismissed();
       showToast(state.message || "Recarga finalizada.", "success");
       clearReloadState();
       return;
     }
 
     if (state.status === "error") {
+      clearReloadToastDismissed();
       showToast(state.message || "Error al recargar archivos.", "error", {
         sticky: true,
       });
@@ -368,6 +470,7 @@
     }
 
     clearReloadState();
+    clearReloadToastDismissed();
   }
 
   function attachReloadButtonHandler() {
@@ -384,8 +487,9 @@
 
   async function loadTopbar() {
     const response = await fetch(TOPBAR_HTML_URL);
-    if (!response.ok)
+    if (!response.ok) {
       throw new Error(`GET ${TOPBAR_HTML_URL} -> ${response.status}`);
+    }
 
     const mountPoint = document.getElementById("topbar");
     if (mountPoint) {
@@ -397,6 +501,7 @@
 
     window.SettingsUI?.mount();
     attachReloadButtonHandler();
+    await syncReloadStateFromServer();
     restoreReloadToastFromState();
   }
 
