@@ -29,5 +29,5 @@ __all__ = [
     "delete_query_by_id",
     "get_queries_with_chunks",
     "insert_chunks",
-    "insert_query",    
+    "insert_query",
 ]
