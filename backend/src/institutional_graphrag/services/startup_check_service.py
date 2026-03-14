@@ -130,7 +130,7 @@ def check_postgres_not_empty() -> None:
     cur.close()
     conn.close()
 
-    return None
+    return
 
 
 def check_neo4j_not_empty() -> None:
@@ -139,18 +139,15 @@ def check_neo4j_not_empty() -> None:
     password = os.getenv("NEO4J_PASSWORD", "password")
 
     driver = GraphDatabase.driver(uri, auth=(user, password))
-
     with driver.session() as session:
         node_result = session.run("MATCH (n) RETURN count(n) AS c").single()
-        if node_result is None:
-            raise RuntimeError("Neo4j no devolvió resultado para count(n)")
-
         rel_result = session.run("MATCH ()-[r]->() RETURN count(r) AS c").single()
-        if rel_result is None:
-            raise RuntimeError("Neo4j no devolvió resultado para count(r)")
 
-        node_count = node_result["c"]
-        rel_count = rel_result["c"]
+        if node_result is None or rel_result is None:
+            raise RuntimeError("No se pudieron obtener métricas de Neo4j.")
+
+        node_count = int(node_result["c"])
+        rel_count = int(rel_result["c"])
 
     driver.close()
 
