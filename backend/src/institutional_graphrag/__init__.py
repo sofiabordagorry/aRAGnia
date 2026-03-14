@@ -23,4 +23,11 @@ __all__ = [
     "chunk_document",
     "parse_corpus",
     "parse_single_document",
+    "create_tables",
+    "get_connection",
+    "delete_all_queries",
+    "delete_query_by_id",
+    "get_queries_with_chunks",
+    "insert_chunks",
+    "insert_query",    
 ]
