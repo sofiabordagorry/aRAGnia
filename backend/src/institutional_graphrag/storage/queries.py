@@ -31,23 +31,23 @@ def insert_query(type, query_text, response, cypher_query=None):
 
 
 def insert_chunks(query_id, chunks_list):
-    """
-    Insert chunks associated with a query.
-
-    Args:
-        query_id: id of the query
-        chunks_list: list of tuples (chunk_text, score)
-    """
     conn = get_connection()
     cur = conn.cursor()
-    for chunk_text, score in chunks_list:
+
+    for chunk in chunks_list:
         cur.execute(
             """
-            INSERT INTO chunks (query_id, chunk_text, score)
-            VALUES (%s, %s, %s);
+            INSERT INTO chunks (query_id, chunk_id, chunk_text, score)
+            VALUES (%s, %s, %s, %s);
             """,
-            (query_id, chunk_text, score),
+            (
+                query_id,
+                chunk["id"],
+                chunk["text"],
+                chunk["score"],
+            ),
         )
+
     conn.commit()
     cur.close()
     conn.close()
@@ -157,6 +157,7 @@ def get_queries_with_chunks():
         SELECT
             id,
             query_id,
+            chunk_id,
             chunk_text,
             score
         FROM chunks
@@ -168,7 +169,12 @@ def get_queries_with_chunks():
         qid = row["query_id"]
         if qid in queries:
             queries[qid]["chunks"].append(
-                {"id": row["id"], "chunk_text": row["chunk_text"], "score": row["score"]}
+                {
+                    "id": row["id"],
+                    "chunk_id": row["chunk_id"],
+                    "chunk_text": row["chunk_text"],
+                    "score": row["score"],
+                }
             )
 
     # Traer chunks de GraphRAG

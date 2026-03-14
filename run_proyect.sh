@@ -3,6 +3,9 @@
 # Ir al directorio donde está el script
 cd "$(dirname "$0")"
 
+echo "Levantando contenedores Docker..."
+docker compose -f backend/docker-compose.yml up -d
+
 # Activar entorno virtual
 source .venv/bin/activate
 

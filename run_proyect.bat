@@ -1,6 +1,9 @@
 @echo off
 cd /d %~dp0
 
+echo Levantando contenedores Docker...
+docker compose -f backend\docker-compose.yml up -d
+
 call .venv\Scripts\activate
 
 echo Iniciando backend...

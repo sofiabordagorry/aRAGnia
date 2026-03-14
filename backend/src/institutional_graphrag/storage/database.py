@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DB_CONFIG = {
-    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "host": os.getenv("HOST", "localhost"),
     "port": int(os.getenv("POSTGRES_PORT", 5432)),
     "user": os.getenv("POSTGRES_USER", "admin"),
     "password": os.getenv("POSTGRES_PASSWORD", "admin123"),
@@ -46,6 +46,7 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS chunks (
             id SERIAL PRIMARY KEY,
             query_id INTEGER NOT NULL REFERENCES queries(id) ON DELETE CASCADE,
+            chunk_id TEXT NOT NULL,
             chunk_text TEXT NOT NULL,
             score REAL
         );
