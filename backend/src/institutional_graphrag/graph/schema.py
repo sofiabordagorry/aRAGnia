@@ -326,8 +326,8 @@ def validate_relationship_endpoints(
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
-        "EXTRAIDO_DE ": ("Chunk", ["Topico", "Investigador"]),
-        "TITULO_EXTRAIDO_DE ": ("Proyecto", "Chunk"),
+        "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
+        "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
     }
 
     expected = valid_combinations.get(relationship.type)

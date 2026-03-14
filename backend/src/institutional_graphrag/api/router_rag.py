@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from institutional_graphrag.rag.generate import RAG
-from institutional_graphrag.storage.queries import insert_query, insert_chunks
+from institutional_graphrag.storage.queries import insert_chunks, insert_query
 
 router = APIRouter()
 
@@ -31,6 +31,6 @@ def rag_query(payload: QueryRequest):
         for ch in result.contexts
     ]
 
-    query_id = insert_query("rag", query, result)
+    query_id = insert_query("rag", query, result.answer)
     insert_chunks(query_id, chunks)
-    return QueryResponse(answer=result, chunks=chunks)
+    return QueryResponse(answer=result.answer, chunks=chunks)

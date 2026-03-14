@@ -1,21 +1,24 @@
- <meta charset="utf-8" />
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Historial - RAG / GraphRAG</title>
-    <link rel="stylesheet" href="/css/history.css" /> 
-    <link rel="stylesheet" href="/css/styles.css" /> 
+    <link rel="stylesheet" href="/css/history.css" />
+    <link rel="stylesheet" href="/css/topbar.css" />
   </head>
-  <body>
+  <body data-page="history">
     <div id="topbar"></div>
-    <div class="app">
-      <div class="history-page">
 
-        <!-- CABECERA -->
-        <div class="history-top">
-          <div class="history-title">Historial</div>
-          <div class="history-sub">Preguntas guardadas en tu navegador (localStorage).</div>
-        </div>
+    <main class="app">
+      <section class="history-page">
+        <header class="history-top">
+          <h1 class="history-title">Historial</h1>
+          <p class="history-sub">
+            Preguntas guardadas en tu navegador (localStorage).
+          </p>
+        </header>
 
-        <!-- BARRA DE HERRAMIENTAS + BOTONES INTEGRADOS -->
         <div class="history-tools">
           <div class="tools-bar">
             <input
@@ -24,27 +27,85 @@
               placeholder="Buscar en el historial..."
             />
             <div class="history-filters">
-              <button id="filterAll" class="seg-btn active" type="button">Todo</button>
+              <button id="filterAll" class="seg-btn active" type="button">
+                Todo
+              </button>
               <button id="filterRag" class="seg-btn" type="button">RAG</button>
-              <button id="filterGraph" class="seg-btn" type="button">GraphRAG</button>
+              <button id="filterGraph" class="seg-btn" type="button">
+                GraphRAG
+              </button>
             </div>
           </div>
-          <button id="clearHistoryBtn" class="danger-btn" type="button">Borrar historial</button>
+
+          <button id="clearHistoryBtn" class="danger-btn" type="button">
+            Borrar historial
+          </button>
         </div>
 
-        <!-- MENSAJE VACÍO -->
         <div id="historyEmpty" class="history-empty">
           Aún no hay preguntas en el historial.
         </div>
 
-        <!-- LISTADO DE TARJETAS -->
-        <div id="historyList" class="history-list-page" aria-label="Historial">
-          <!-- items por JS -->
+        <div
+          id="historyList"
+          class="history-list-page"
+          aria-label="Historial"
+        ></div>
+      </section>
+    </main>
+
+    <div id="historyDrawer" class="history-drawer" aria-hidden="true">
+      <div id="historyDrawerBackdrop" class="history-drawer-backdrop"></div>
+
+      <aside
+        class="history-drawer-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle del historial"
+      >
+        <div class="drawer-header">
+          <div class="drawer-title">Detalle</div>
+          <button
+            id="drawerCloseBtn"
+            class="icon-btn"
+            type="button"
+            aria-label="Cerrar"
+          >
+            ✕
+          </button>
         </div>
-      </div>
+
+        <div class="drawer-body">
+          <div class="drawer-meta">
+            <span id="drawerMode" class="history-pill">RAG</span>
+            <span id="drawerDate" class="drawer-date"></span>
+          </div>
+
+          <div class="drawer-section">
+            <div class="drawer-label">Pregunta</div>
+            <div id="drawerQuestion" class="drawer-box"></div>
+          </div>
+
+          <div id="drawerCypherSection" class="drawer-section" hidden>
+            <div class="drawer-label">Cypher query</div>
+            <pre id="drawerCypher" class="drawer-box drawer-code"></pre>
+          </div>
+
+          <div class="drawer-section">
+            <div class="drawer-label">Respuesta</div>
+            <div id="drawerAnswer" class="drawer-box"></div>
+          </div>
+
+          <div class="drawer-section drawer-section-full">
+            <div class="drawer-label">Chunks recuperados</div>
+            <div id="drawerChunks" class="drawer-chunks"></div>
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <script src="/js/history.js" defer></script>
-    <script src="/js/layout.js"></script>
+    <script src="/js/settings.js"></script>
+    <script src="/js/topbar.js"></script>
+    <script src="/js/history.js"></script>
   </body>
 </html>
