@@ -101,7 +101,7 @@ def _run_ingest_job(job_id: str) -> None:
 
         result = asyncio.run(
             service.ingest_items(
-                f"%2F1_GRUPOS%20I%2BD_2010_2014_2018%2F2010_Informes%20finales%20Grupos%20I%2BD%2F10"
+                f"/"
             )
         )
 
