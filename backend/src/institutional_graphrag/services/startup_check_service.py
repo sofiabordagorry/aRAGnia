@@ -139,9 +139,19 @@ def check_neo4j_not_empty() -> None:
     password = os.getenv("NEO4J_PASSWORD", "password")
 
     driver = GraphDatabase.driver(uri, auth=(user, password))
+
     with driver.session() as session:
-        node_count = session.run("MATCH (n) RETURN count(n) AS c").single()["c"]
-        rel_count = session.run("MATCH ()-[r]->() RETURN count(r) AS c").single()["c"]
+        node_result = session.run("MATCH (n) RETURN count(n) AS c").single()
+        if node_result is None:
+            raise RuntimeError("Neo4j no devolvió resultado para count(n)")
+
+        rel_result = session.run("MATCH ()-[r]->() RETURN count(r) AS c").single()
+        if rel_result is None:
+            raise RuntimeError("Neo4j no devolvió resultado para count(r)")
+
+        node_count = node_result["c"]
+        rel_count = rel_result["c"]
+
     driver.close()
 
     neo4j_status = {
@@ -168,7 +178,7 @@ def check_neo4j_not_empty() -> None:
             print("No se pudo crear el grafo:", e)
 
 
-def check_qdrant_not_empty() -> dict:
+def check_qdrant_not_empty() -> None:
     host = os.getenv("QDRANT_HOST", "localhost")
     port = int(os.getenv("QDRANT_HTTP_PORT", 6333))
 
