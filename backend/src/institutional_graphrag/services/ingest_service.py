@@ -77,7 +77,7 @@ class IngestService:
 
         self.corpus_token = os.getenv("FING_TOKEN")
         self.cache_file = data_dir / "cache_paths.csv"
-
+        self.cache_file.touch(exist_ok=True)
         self.tokenizer = EMBED_MODEL_ID
         self.chunker = get_native_chunker(tokenizer=self.tokenizer)
         self.embedder = E5Embedder()
@@ -165,7 +165,8 @@ class IngestService:
         content = zf.read(zi)
 
         relative_path = Path(zi.filename)
-
+        if relative_path.parts and relative_path.parts[0] == "CSIC VALIDACION INFORMES":
+            relative_path = Path(*relative_path.parts[1:])
         full_cloud_path = "\\" + str(
             Path(unquote(path_encoded).strip("/")) / relative_path
         ).replace("/", "\\")
@@ -182,6 +183,7 @@ class IngestService:
 
         # nombre nuevo (idealmente incluye .pdf)
         new_filename = generate_new_filename(full_cloud_path)
+        print("NOMBRE", new_filename)
         base_name = Path(new_filename).stem  # clave: TODO se guarda con base_name
 
         # paths de salida
