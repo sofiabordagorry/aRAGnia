@@ -11,7 +11,7 @@ DB_CONFIG = {
     "port": int(os.getenv("POSTGRES_PORT", 5432)),
     "user": os.getenv("POSTGRES_USER", "admin"),
     "password": os.getenv("POSTGRES_PASSWORD", "admin123"),
-    "database": os.getenv("POSTGRES_NAME", "app_db"),
+    "database": os.getenv("POSTGRES_DB", "app_db"),
 }
 
 
