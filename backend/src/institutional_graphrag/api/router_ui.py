@@ -99,11 +99,7 @@ def _run_ingest_job(job_id: str) -> None:
             keep_debug_artifacts=False,
         )
 
-        result = asyncio.run(
-            service.ingest_items(
-                f"/"
-            )
-        )
+        result = asyncio.run(service.ingest_items(f"/"))
 
         errors = result.get("errors", []) if isinstance(result, dict) else []
         message = (
