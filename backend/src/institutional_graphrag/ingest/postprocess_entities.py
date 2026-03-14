@@ -119,75 +119,79 @@ class Postprocessor:
     # -------------------------
     # Duplicados investigadores
     # -------------------------
-    def find_researcher_duplicates(
-        self, researchers: List[dict]
-    ) -> Dict[str, Tuple[str, List[str]]]:
+    def find_researcher_duplicates(self, researchers: List[dict]) -> Tuple[
+        Dict[str, Tuple[str, List[str]]],
+        Dict[str, Tuple[str, List[str]]],
+    ]:
         """
         Returns:
             {canonical_id: (canonical_name, [duplicate_ids])}
         """
         processed = set()
         duplicate_groups: Dict[str, Tuple[str, List[str]]] = {}
+        duplicate_groups_relation: Dict[str, Tuple[str, List[str]]] = {}
 
         sorted_researchers = sorted(
             researchers, key=lambda x: len(x["value"].get("name", "")), reverse=True
         )
 
-        for i, researcher in enumerate(sorted_researchers):
+        for researcher in sorted_researchers:
             researcher_id = researcher["id"]
             researcher_name = researcher["value"].get("name", "")
 
-            if researcher_id in processed:
-                continue
-
             duplicates: List[str] = []
+            duplicates_relation: List[str] = []
             processed.add(researcher_id)
 
-            for other in sorted_researchers[i + 1 :]:
+            for other in sorted_researchers:
                 other_id = other["id"]
                 other_name = other["value"].get("name", "")
-
-                if other_id in processed:
-                    continue
 
                 norm1 = self.normalize_name(researcher_name)
                 norm2 = self.normalize_name(other_name)
 
                 if norm1 == norm2:
-                    duplicates.append(other_id)
-                    processed.add(other_id)
+                    if other_id not in processed:
+                        duplicates.append(other_id)
+                        processed.add(other_id)
+                elif self.is_inverted_name(researcher_name, other_name):
+                    if self.enable_researcher_consolidation:
+                        if other_id not in processed:
+                            duplicates.append(other_id)
+                            processed.add(other_id)
+                    else:
+                        duplicates_relation.append(other_id)
 
-                elif (
-                    self.is_inverted_name(researcher_name, other_name)
-                    and self.enable_researcher_consolidation
-                ):
-                    duplicates.append(other_id)
-                    processed.add(other_id)
-
-                elif (
-                    self.name_similarity(norm1, norm2) >= self.similarity_threshold
-                    and self.enable_researcher_consolidation
-                ):
+                elif self.name_similarity(norm1, norm2) >= self.similarity_threshold:
                     tokens1 = norm1.split()
                     tokens2 = norm2.split()
                     common = set(tokens1) & set(tokens2)
 
                     # restricciones contra falsos positivos
                     if len(common) >= 2 and tokens1 and tokens2 and tokens1[0] == tokens2[0]:
-                        duplicates.append(other_id)
-                        processed.add(other_id)
+                        if self.enable_researcher_consolidation:
+                            if other_id not in processed:
+                                duplicates.append(other_id)
+                                processed.add(other_id)
+                        else:
+                            duplicates_relation.append(other_id)
 
-                elif (
-                    self.is_partial_name(other_name, researcher_name)
-                    and self.enable_researcher_consolidation
+                elif self.is_partial_name(other_name, researcher_name) or self.is_partial_name(
+                    researcher_name, other_name
                 ):
-                    duplicates.append(other_id)
-                    processed.add(other_id)
+                    if self.enable_researcher_consolidation:
+                        if other_id not in processed:
+                            duplicates.append(other_id)
+                            processed.add(other_id)
+                    else:
+                        duplicates_relation.append(other_id)
 
             if duplicates:
                 duplicate_groups[researcher_id] = (researcher_name, duplicates)
 
-        return duplicate_groups
+            if duplicates_relation:
+                duplicate_groups_relation[researcher_id] = (researcher_name, duplicates_relation)
+        return duplicate_groups, duplicate_groups_relation
 
     # -------------------------
     # Evidencias genéricas
@@ -271,13 +275,29 @@ class Postprocessor:
             )
 
         # PASO 3: duplicados
-        duplicate_groups = self.find_researcher_duplicates(researchers)
+        duplicate_groups, duplicate_groups_relation = self.find_researcher_duplicates(researchers)
 
         # PASO 4: mapear IDs
+        updated_relationships: List[dict] = []
         id_mapping: Dict[str, str] = {}
         consolidated: List[dict] = []
         merge_changes: List[dict] = []
         processed_ids: Set[str] = set()
+
+        if not self.enable_researcher_consolidation:
+            for canonical_id, (canonical_name, duplicate_ids) in duplicate_groups_relation.items():
+                for dup_id in duplicate_ids:
+                    dup_r = next(r for r in researchers if r["id"] == dup_id)
+                    updated_relationships.append(
+                        {
+                            "source_id": canonical_id,
+                            "target_id": dup_id,
+                            "type": "POSIBLE_ALIAS",
+                        }
+                    )
+                    print(
+                        f" Creada Relacion Potencial Igualdad entre '{dup_r['value'].get('name')}' y '{canonical_name}'"
+                    )
 
         for canonical_id, (canonical_name, duplicate_ids) in duplicate_groups.items():
             consolidated.append(next(r for r in researchers if r["id"] == canonical_id))
@@ -314,7 +334,6 @@ class Postprocessor:
             )
 
         # PASO 5: actualizar relaciones y filtrar duplicadas / genéricas
-        updated_relationships: List[dict] = []
         seen_relationships = set()
         relationship_updates: List[dict] = []
         duplicate_rels_removed = 0
