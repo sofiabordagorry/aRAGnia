@@ -27,7 +27,6 @@ dependencies = [
     "groq",
     "transformers",
     "huggingface_hub>=0.34,<1.0",
-    "types-requests",
     "pandas>=2.0",
     "odfpy>=1.4",
     "openpyxl>=3.1",
@@ -44,6 +43,8 @@ dev = [
     "black==26.1.0",
     "mypy>=1.5.0",
     "ruff>=0.1.0",
+    "types-requests",
+    "pandas-stubs",  # <-- AGREGADO
 ]
 
 [tool.setuptools]
@@ -70,4 +71,8 @@ python_functions = ["test_*"]
 python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["odf", "odf.*", "ijson", "ijson.*", "tabula", "tabula.*"]
 ignore_missing_imports = true

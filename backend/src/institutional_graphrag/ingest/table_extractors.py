@@ -140,12 +140,12 @@ def fix_merged_header_columns(df: pd.DataFrame) -> pd.DataFrame:
         if _is_auto_col(curr) and prev in {"Primer Responsable", "Segundo Responsable"}:
             left = df[prev].fillna("").astype(str)
             right = df[curr].fillna("").astype(str)
-            df[prev] = (
-                (left + " " + right)
-                .str.replace(r"\s+", " ", regex=True)
-                .str.strip()
-                .replace({"": pd.NA})
-            )
+
+            s = (left + " " + right).str.replace(r"\s+", " ", regex=True).str.strip()
+
+            # 👇 en vez de .replace({"": None})
+            df[prev] = s.mask(s.eq(""), None)
+
             df = df.drop(columns=[curr])
             cols.pop(i)
             continue
