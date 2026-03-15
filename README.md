@@ -149,10 +149,13 @@ Luego:
 python .\scripts\embed_chunks.py
 ```
 
-### Levantar Qdrant local (Vector Store):
+### Levantar servicios con Docker Compose
+
+Desde `backend/docker-compose.yml` se puede levantar Neo4j, Qdrant y Ollama juntos:
 
 ```bash
-docker run -p 6333:6333 qdrant/qdrant
+cd backend
+docker compose up -d
 ```
 
 ### Elegir provedor del modelo (llm)
@@ -161,12 +164,16 @@ Se configura el api/router_rag.py
 
 #### Ollama
 
-- Descargar e instalar Ollama desde ollama.com.
-- desde una terminal descargar el modelo a utilizar:
+- Si usás Docker Compose, el servicio queda expuesto en `http://localhost:11434`.
+- Después de levantar el compose, descargá dentro del contenedor el modelo a utilizar:
 
 ```bash
-ollama pull llama3.2:3b
+cd backend
+docker compose exec ollama ollama pull llama3.2:3b
 ```
+
+- Si no usás Docker, también podés seguir instalando Ollama nativo desde ollama.com.
+- La URL del servicio se puede configurar con `OLLAMA_BASE_URL` en `backend/.env`.
 
 #### Groq
 

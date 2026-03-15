@@ -42,7 +42,33 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-graphrag
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  ollama-init:
+    image: ollama/ollama:latest
+    depends_on:
+      - ollama
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      until OLLAMA_HOST=http://ollama:11434 ollama list >/dev/null 2>&1; do sleep 2; done;
+      OLLAMA_HOST=http://ollama:11434 ollama pull llama3.2:3b;
+      OLLAMA_HOST=http://ollama:11434 ollama pull qwen2.5:3b-instruct;
+      "
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: "no"
+
 volumes:
   neo4j_data:
   qdrant_data:
   postgres_data:
+  ollama_data:
