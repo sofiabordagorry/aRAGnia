@@ -50,6 +50,7 @@ services:
       - "${OLLAMA_PORT:-11434}:11434"
     volumes:
       - ollama_data:/root/.ollama
+    gpus: all
     restart: unless-stopped
 
   ollama-init:
