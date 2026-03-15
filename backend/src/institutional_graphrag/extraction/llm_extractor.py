@@ -844,16 +844,6 @@ If no match:
                         else:
                             name = " ".join(name_in_chunk)
 
-                    # if name_parts and not all(part in chunk_normalized for part in name_parts):
-                    #     errors.append(
-                    #         {
-                    #             "type": "NameNotInChunk",
-                    #             "chunk_id": chunk_id,
-                    #             "message": f"El nombre '{name}' no aparece en el chunk",
-                    #         }
-                    #     )
-                    #     continue
-
                 # Si llegamos hasta acá, pasó todas las validaciones
                 if name and not any(pattern in name.lower() for pattern in invalid_patterns):
                     researchers.append(
