@@ -164,16 +164,20 @@ Se configura el api/router_rag.py
 
 #### Ollama
 
-- Si usás Docker Compose, el servicio queda expuesto en `http://localhost:11434`.
-- Después de levantar el compose, descargá dentro del contenedor el modelo a utilizar:
+- Si usas Docker Compose, el servicio queda disponible en `http://localhost:11434`.
+- El archivo `backend/docker-compose.yml` incluye un servicio auxiliar (`ollama-init`) que descarga automáticamente los modelos requeridos:
+	- `llama3.2:3b`
+	- `qwen2.5:3b-instruct`
+- En el primer inicio, la descarga puede tardar varios minutos.
+- Puedes verificar los modelos instalados con:
 
 ```bash
 cd backend
-docker compose exec ollama ollama pull llama3.2:3b
+docker-compose exec ollama ollama list
 ```
 
-- Si no usás Docker, también podés seguir instalando Ollama nativo desde ollama.com.
-- La URL del servicio se puede configurar con `OLLAMA_BASE_URL` en `backend/.env`.
+- Si no usas Docker, también puedes instalar Ollama de forma nativa desde https://ollama.com/.
+- La URL del servicio se configura con `OLLAMA_BASE_URL` en `backend/.env`.
 
 #### Groq
 
