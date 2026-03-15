@@ -177,35 +177,8 @@ obtener una key en la aplicacion https://console.groq.com/keys y guardarla en el
 
 - Es la mas lenta
 
-### Levantar Servidor backend
+### Levantar Servidor
 
-1. Ubicarse en carpeta
-
-```text
-   institutional-graphrag/backend/src
-```
-
-2. Una vez realizada la instalación de dependencias mencionada anteriormente, ejecutá:
-
-```bash
-uvicorn institutional_graphrag.api.main:app --reload --port 8000
-```
-
-3. El backend quedará disponible en:
-
-```text
-http://localhost:8000
-```
-
-### Levantar Frontend
-
-```bash
-cd institutional-graphrag/frontend/public
-python -m http.server 5500
-```
-
-El Frontend quedará disponible en:
-
-```text
-http://localhost:5500
-```
+- Desde la carpeta raiz ejecutar el archivo run_proyect
+- el frontend se encuentra en http://localhost:5500/
+- neo4j se encuentra en http://localhost:7474/browser/

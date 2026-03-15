@@ -1,0 +1,82 @@
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <img src="/img/logo.png" alt="Logo CSIC" class="topbar-logo" />
+      <span class="app-logo-text">CSIC GRAPH RAG</span>
+    </div>
+
+    <nav class="topbar-nav">
+      <a href="./index.html" class="nav-link" data-page="index">Consultas</a>
+      <a href="./history.html" class="nav-link" data-page="history"
+        >Historial</a
+      >
+
+      <button
+        id="reloadFilesBtn"
+        class="nav-link"
+        type="button"
+        title="Recargar archivos"
+        aria-label="Recargar archivos"
+      >
+        Recargar archivos
+      </button>
+
+      <button
+        id="settingsBtn"
+        class="settings-btn"
+        type="button"
+        title="Configuración"
+        aria-label="Configuración"
+      >
+        <span class="sliders-icon" aria-hidden="true">
+          <span class="line"><span class="knob"></span></span>
+          <span class="line"><span class="knob"></span></span>
+          <span class="line"><span class="knob"></span></span>
+        </span>
+      </button>
+    </nav>
+  </div>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop hidden"></div>
+
+<div
+  id="settingsModal"
+  class="modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Configuración"
+>
+  <button
+    id="closeModalBtn"
+    class="close-modal"
+    type="button"
+    aria-label="Cerrar"
+  >
+    ✕
+  </button>
+
+  <h2>Configuración</h2>
+
+  <label>
+    <input type="checkbox" id="graphToggle" />
+    GraphRAG
+  </label>
+
+  <div class="theme-row">
+    <button id="themeLightBtn" type="button">Light</button>
+    <button id="themeDarkBtn" type="button">Dark</button>
+  </div>
+
+  <label>
+    <input type="checkbox" id="enterToSend" />
+    Enter para enviar
+  </label>
+
+  <div class="modal-actions">
+    <button id="resetBtn" type="button">Reset</button>
+    <button id="saveBtn" type="button">Guardar</button>
+  </div>
+</div>
+
+<div id="topbarToast" class="topbar-toast hidden" aria-live="polite"></div>

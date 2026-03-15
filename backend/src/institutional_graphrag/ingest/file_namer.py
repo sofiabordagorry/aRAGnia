@@ -74,6 +74,7 @@ def generate_new_filename(path_str):
         # Identificar si es un grupo de investigación o un proyecto
         prefix = ""
         root_folder = folders[0].upper() if folders else ""
+        print("PATH", path_str)
         if "GRUPOS" in root_folder:
             prefix = "gi"
         elif "PROYECTOS" in root_folder:

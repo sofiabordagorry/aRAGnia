@@ -77,7 +77,7 @@ class IngestService:
 
         self.corpus_token = os.getenv("FING_TOKEN")
         self.cache_file = data_dir / "cache_paths.csv"
-
+        self.cache_file.touch(exist_ok=True)
         self.tokenizer = EMBED_MODEL_ID
         self.chunker = get_native_chunker(tokenizer=self.tokenizer)
         self.embedder = E5Embedder()
@@ -139,6 +139,9 @@ class IngestService:
         if entity_json_path is not None:
             self._ingest_neo4j(entity_json_path)
 
+        # Guardar en cache los documentos extraidos
+        self.save_cache()
+
         # Cleanup al final
         if not self.keep_debug_artifacts:
             for base in processed:
@@ -162,7 +165,8 @@ class IngestService:
         content = zf.read(zi)
 
         relative_path = Path(zi.filename)
-
+        if relative_path.parts and relative_path.parts[0] == "CSIC VALIDACION INFORMES":
+            relative_path = Path(*relative_path.parts[1:])
         full_cloud_path = "\\" + str(
             Path(unquote(path_encoded).strip("/")) / relative_path
         ).replace("/", "\\")
@@ -175,12 +179,11 @@ class IngestService:
         if prev_size is not None and prev_size != file_size:
             print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
-        self.update_cache(full_cloud_path, file_size)
         self.cache_dict[full_cloud_path] = file_size
-        print(f"Guardado en CSV: {full_cloud_path} ({file_size} bytes)")
 
         # nombre nuevo (idealmente incluye .pdf)
         new_filename = generate_new_filename(full_cloud_path)
+        print("NOMBRE", new_filename)
         base_name = Path(new_filename).stem  # clave: TODO se guarda con base_name
 
         # paths de salida
@@ -315,13 +318,12 @@ class IngestService:
                         paths[row[0]] = int(row[1])
         return paths
 
-    def update_cache(self, path: str, file_size: int) -> None:
-        cache = self.load_cache()
-        cache[path] = file_size
+    def save_cache(self) -> None:
         with open(self.cache_file, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            for r, t in cache.items():
-                writer.writerow([r, t])
+            for path, size in self.cache_dict.items():
+                print(f"Guardado en CSV: {path} ({size} bytes)")
+                writer.writerow([path, size])
 
     def _extract_document_only(
         self,

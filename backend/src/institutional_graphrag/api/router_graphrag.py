@@ -6,6 +6,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+from institutional_graphrag.storage.queries import (
+    insert_graphrag_chunk_entities,
+    insert_graphrag_chunks,
+    insert_query,
+)
 
 load_dotenv()
 
@@ -58,7 +63,9 @@ def graphrag_query(payload: QueryRequest):
         logger.info(
             f"[GraphRAG] Respuesta generada: {len(chunks)} chunks, {len(result.answer)} caracteres"
         )
-
+        query_id = insert_query("graphrag", payload.query, result.answer, result.cypher_query)
+        insert_graphrag_chunks(query_id, chunks)
+        insert_graphrag_chunk_entities(query_id, result.chunk_to_entities)
         return QueryResponse(
             answer=result.answer,
             chunk_to_entities=result.chunk_to_entities,
