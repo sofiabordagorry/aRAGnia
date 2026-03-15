@@ -197,7 +197,9 @@ class OllamaClient:
     def __init__(self, model, base_url: Optional[str] = None):
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
-        resolved_base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        resolved_base_url = base_url if base_url is not None else os.getenv("OLLAMA_BASE_URL")
+        if resolved_base_url is None:
+            resolved_base_url = "http://localhost:11434"
         self.url = f"{resolved_base_url.rstrip('/')}/api/chat"
         self.model = model
 
