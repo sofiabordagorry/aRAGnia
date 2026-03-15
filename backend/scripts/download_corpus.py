@@ -10,6 +10,7 @@ from urllib.parse import quote
 
 from institutional_graphrag.ingest.file_namer import generate_new_filename
 from institutional_graphrag.ingest.table_extractors import extract_table
+from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 from institutional_graphrag.ingest.file_namer import classify_pdf, PdfKind, save_temp_file
 
 
@@ -41,7 +42,7 @@ def main():
                 continue
 
             new_filename = generate_new_filename(line)
-            file_path = Path(output_dir) / new_filename
+            file_path = Path(output_dir) / str(Path(new_filename).with_suffix(".pdf"))
             if file_path.exists():
                 print(
                     "El archivo a descargar ya existe :",
@@ -78,7 +79,13 @@ def main():
             response = requests.get(url, verify=False)
 
             if response.status_code == 200:
-                tmp_path = save_temp_file(response.content, new_filename)
+                bytes_source = response.content
+                _, ext = os.path.splitext(new_filename)
+                if ext == ".odt":
+                    print(f"Convirtiendo archivo odt a pdf: {new_filename}")
+                    bytes_source = odt_bytes_to_pdf(bytes_source)
+                    new_filename = str(Path(new_filename).with_suffix(".pdf"))
+                tmp_path = save_temp_file(bytes_source, new_filename)
                 try:
                     kind = classify_pdf(new_filename)
 
@@ -88,7 +95,7 @@ def main():
                     else:
                         print(f"Descargando: {original_filename} -> Guardando como: {new_filename}")
                         with open(os.path.join(output_dir, new_filename), "wb") as out:
-                            out.write(response.content)
+                            out.write(bytes_source)
                     archive_count += 1
                 finally:
                     if tmp_path.exists():
@@ -99,7 +106,8 @@ def main():
                 print()
 
         print(f"The number of files downloaded was: {archive_count}")
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
         print(f" Error: The file '{input_dir}' was not found.")
 
 

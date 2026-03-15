@@ -106,7 +106,8 @@ def generate_new_filename(path_str):
                 potential_id = match.group(1)
                 if potential_id.isdigit():
                     file_id = potential_id
-                    return f"{prefix}_{year}_{file_id}_{type_suffix}.pdf"
+                    filename_path = Path(filename)
+                    return f"{prefix}_{year}_{file_id}_{type_suffix}{filename_path.suffix}"
                 break
 
         # Rule for 'admin' (Fallback for paths not following the above structure)
