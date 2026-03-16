@@ -3,6 +3,14 @@ import tempfile
 from enum import Enum
 from pathlib import Path
 
+from institutional_graphrag.document_naming import (
+    document_kind_from_name,
+    document_kind_position,
+    is_legacy_root_marker,
+    is_narrative_document,
+    prefix_from_source,
+)
+
 
 class PdfKind(Enum):
     TABULAR = "tabular"
@@ -10,9 +18,7 @@ class PdfKind(Enum):
 
 
 def looks_tabular(fileName: str) -> bool:
-    if any(k in fileName for k in ("informe", "propuesta", "resumen")):
-        return False
-    return True
+    return not is_narrative_document(fileName)
 
 
 def classify_pdf(fileName: str) -> PdfKind:
@@ -52,8 +58,8 @@ def extract_relevant_year(path):
         years_in_folder = year_pattern.findall(folder)
         if len(years_in_folder) == 1:
             pos_year = folder.find(years_in_folder[0])
-            pos_informe = folder.lower().find("informe")
-            if pos_informe > pos_year:
+            pos_kind = document_kind_position(folder)
+            if pos_kind > pos_year:
                 year = years_in_folder[0]
                 break
             alternative_year = years_in_folder[0]
@@ -72,35 +78,25 @@ def generate_new_filename(path_str):
         filename = parts[-1]
 
         # Identificar si es un grupo de investigación o un proyecto
-        prefix = ""
-        root_folder = folders[0].upper() if folders else ""
+        root_folder = folders[0] if folders else ""
         print("PATH", path_str)
-        if "GRUPOS" in root_folder:
-            prefix = "gi"
-        elif "PROYECTOS" in root_folder:
-            prefix = "proy"
+        prefix = prefix_from_source(root_folder)
 
         # Identificar el año correspondiente
         year = "unknown"
 
         year = extract_relevant_year(path_str)
 
-        # Itera del final del path al comienzo para buscar la ID y si es informe o propuesta
+        # Itera del final del path al comienzo para buscar la ID y el tipo del documento
         type_suffix = ""
 
         for i in range(len(folders) - 1, -1, -1):
-            folder_lower = folders[i].lower()
-            if "informe" in folder_lower:
-                type_suffix = "informe"
-            elif "propuesta" in folder_lower:
-                type_suffix = "propuesta"
-            elif "resumen" in folder_lower:
-                type_suffix = "resumen"
+            type_suffix = document_kind_from_name(folders[i]) or type_suffix
 
             if type_suffix != "":
                 potential_id = folders[i - 1].strip()
                 match = re.match(r"(\d+)", potential_id)
-                if "1_GRUPO" in potential_id or "2_PROYECTO" in potential_id or match is None:
+                if is_legacy_root_marker(potential_id) or match is None:
                     filename_path = Path(filename)
                     return f"{prefix}_{year}_table{filename_path.suffix}"
                 potential_id = match.group(1)

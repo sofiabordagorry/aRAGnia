@@ -12,6 +12,8 @@ from odf.opendocument import load
 from odf.table import Table, TableRow
 from odf.text import P
 
+from institutional_graphrag.document_naming import parent_doc_from_stem
+
 TABLE_DIR = Path(__file__).resolve().parents[4] / "data" / "tables"
 CHUNK_DIR = Path(__file__).resolve().parents[4] / "data" / "chunks"
 
@@ -341,8 +343,4 @@ def _row_to_chunk(row: pd.Series) -> tuple[str, dict[str, str]]:
 
 
 def _parent_doc_from_filename(stem: str) -> str:
-    # "gi_124_texto" -> "gi_124"
-    parts = stem.split("_")
-    if len(parts) >= 2:
-        return f"{parts[0]}_{parts[1]}"
-    return stem  # fallback
+    return parent_doc_from_stem(stem)
