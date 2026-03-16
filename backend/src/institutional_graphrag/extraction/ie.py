@@ -89,7 +89,9 @@ class EntityExtractor:
 
         self._extract_documents()
         self._build_doc_indexes()
-        res = self.rule_based.associate_tables_with_documents(self.docs_by_group_year, self.table_dir)
+        res = self.rule_based.associate_tables_with_documents(
+            self.docs_by_group_year, self.table_dir
+        )
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
@@ -269,7 +271,9 @@ class EntityExtractor:
             d: Path, pattern, value_builder, create_year_entity: bool = False
         ) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                res = self.rule_based.extract_document(path, pattern, value_builder, create_year_entity)
+                res = self.rule_based.extract_document(
+                    path, pattern, value_builder, create_year_entity
+                )
                 self.add_entities(res.entities)
                 self.add_relationship(res.relationships)
                 self.res.errors.extend(res.errors)
