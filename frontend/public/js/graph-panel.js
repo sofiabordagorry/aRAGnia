@@ -389,7 +389,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         true,
         state.selectedEntityId
           ? "No hay relaciones para la entidad seleccionada con el filtro actual."
-          : "Grafo vacio: busca y selecciona una entidad para empezar.",
+          : "Grafo vacío: busca y selecciona una entidad para empezar.",
       );
       return;
     }
