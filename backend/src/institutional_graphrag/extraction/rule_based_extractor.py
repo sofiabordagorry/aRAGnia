@@ -57,7 +57,7 @@ TYPE_PRECEDENCIA = {
 }
 
 
-class StaticExtractor:
+class RuleBasedExtractor:
     def __init__(self):
         self.datasets: list[pd.DataFrame] = []
 
@@ -790,7 +790,7 @@ class StaticExtractor:
                         id=candidate_id,
                         value={
                             "name": candidate_in_text,
-                            "source": "static",
+                            "source": "rule_based",
                         },
                     )
                 )

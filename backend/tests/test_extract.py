@@ -93,7 +93,7 @@ def test_extract_documents_invalid_filename_is_error(extractor: EntityExtractor)
 
     extractor._extract_documents()
 
-    # El type exacto depende del StaticExtractor; chequeamos robusto:
+    # El type exacto depende del RuleBasedExtractor; chequeamos robusto:
     assert extractor.res.errors, "Debe registrar al menos 1 error"
     assert any(
         "cualquiercosa" in (e.get("message", "") or "")
@@ -231,7 +231,7 @@ def test_extract_chunks_missing_document_for_chunks_adds_error(extractor: Entity
     )
 
     extractor._extract_chunks()
-    # Esto lo genera StaticExtractor; chequeo por tipo si coincide, sino por mensaje:
+    # Esto lo genera RuleBasedExtractor; chequeo por tipo si coincide, sino por mensaje:
     assert extractor.res.errors
     assert any(
         e.get("type") == "MissingDocumentForChunks"

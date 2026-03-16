@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.extraction.ie import EntityExtractor
-from institutional_graphrag.extraction.static_extractor import StaticExtractor
+from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.docling_parser import parse_single_document
@@ -82,7 +82,7 @@ class IngestService:
         self.chunker = get_native_chunker(tokenizer=self.tokenizer)
         self.embedder = E5Embedder()
 
-        self.static_extractor = StaticExtractor()
+        self.rule_based_extractor = RuleBasedExtractor()
         self.entity_extractor = EntityExtractor()
         self.processed_files: List[str] = []
 
@@ -214,7 +214,7 @@ class IngestService:
                         "type": "tabla",
                     }
 
-                # Para el extractor estático, pasamos un path "representativo".
+                # Para el extractor por reglas, pasamos un path "representativo".
                 # Si tu extractor matchea por nombre, esto funciona.
                 self._extract_document_only(
                     file_path=Path(new_filename),
@@ -333,7 +333,7 @@ class IngestService:
         value_builder: Any,
     ) -> None:
         pattern = PATTERN_TABLE if kind == PdfKind.TABULAR else PATTERN_DOCUMENT
-        res = self.static_extractor.extract_document(
+        res = self.rule_based_extractor.extract_document(
             path=file_path,
             pattern=pattern,
             value_builder=value_builder,
@@ -355,7 +355,7 @@ class IngestService:
     ) -> None:
         pattern = PATTERN_DOCUMENT if kind == PdfKind.NARRATIVE else PATTERN_TABLE
 
-        res = self.static_extractor.extract_document(
+        res = self.rule_based_extractor.extract_document(
             path=file_path,
             pattern=pattern,
             value_builder=value_builder,
@@ -367,7 +367,7 @@ class IngestService:
 
         self.entity_extractor._build_doc_indexes()
 
-        res2 = self.static_extractor.extract_chunk(
+        res2 = self.rule_based_extractor.extract_chunk(
             chunk_file,
             self.entity_extractor.doc_by_basename,
         )
@@ -379,13 +379,13 @@ class IngestService:
 
     def _extract_projects_and_responsibles(self) -> None:
         try:
-            res = self.static_extractor.associate_tables_with_documents(
+            res = self.rule_based_extractor.associate_tables_with_documents(
                 self.entity_extractor.docs_by_group_year,
                 self.tables_dir,
             )
             self.entity_extractor.res.errors.extend(res.errors)
 
-            res = self.static_extractor.extract_projects_and_responsible_from_tables(
+            res = self.rule_based_extractor.extract_projects_and_responsible_from_tables(
                 self.entity_extractor.doc_by_id,
                 self.entity_extractor.chunks_dir,
             )
