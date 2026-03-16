@@ -5,7 +5,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
@@ -606,8 +606,10 @@ class Neo4jGraphBuilder:
 
         degree_by_id: dict[str, int] = {}
         for edge in edges:
-            degree_by_id[edge["source"]] = degree_by_id.get(edge["source"], 0) + 1
-            degree_by_id[edge["target"]] = degree_by_id.get(edge["target"], 0) + 1
+            source_id = str(edge["source"])
+            target_id = str(edge["target"])
+            degree_by_id[source_id] = degree_by_id.get(source_id, 0) + 1
+            degree_by_id[target_id] = degree_by_id.get(target_id, 0) + 1
 
         nodes: list[dict[str, Any]] = []
         node_ids: list[str] = []
@@ -636,14 +638,14 @@ class Neo4jGraphBuilder:
 
         alias_node_ids: set[str] = set()
         for edge in edges:
-            if edge["is_alias"]:
-                alias_node_ids.add(edge["source"])
-                alias_node_ids.add(edge["target"])
+            if bool(edge["is_alias"]):
+                alias_node_ids.add(str(edge["source"]))
+                alias_node_ids.add(str(edge["target"]))
 
         for node in nodes:
             node["is_alias_candidate"] = node["id"] in alias_node_ids
 
-        alias_edge_count = sum(1 for edge in edges if edge["is_alias"])
+        alias_edge_count = sum(1 for edge in edges if bool(edge["is_alias"]))
 
         return {
             "nodes": nodes,
@@ -675,8 +677,7 @@ class Neo4jGraphBuilder:
             RETURN n, labels(n) AS labels, degree
             """
             if alias_only
-            else
-            """
+            else """
             MATCH (n)
                         WHERE NOT n:Chunk
             OPTIONAL MATCH (n)-[r]-()
@@ -853,7 +854,9 @@ class Neo4jGraphBuilder:
 
         return {
             "pairs": pairs,
-            "entities": sorted(alias_entities.values(), key=lambda item: (item["name"], item["id"])),
+            "entities": sorted(
+                alias_entities.values(), key=lambda item: (item["name"], item["id"])
+            ),
             "summary": {
                 "pair_count": len(pairs),
                 "entity_count": len(alias_entities),

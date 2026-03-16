@@ -430,7 +430,6 @@ body {
   font-weight: 700;
 }
 
-
 @media (max-width: 600px) {
   .chat-page {
     padding: 28px 18px 36px;
@@ -505,4 +504,3 @@ body.dark .answer {
   background: rgba(30, 41, 59, 0.7) !important;
   border-color: rgba(148, 163, 184, 0.25) !important;
 }
-

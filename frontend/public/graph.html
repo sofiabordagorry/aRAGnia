@@ -17,7 +17,8 @@
             <span class="graph-kicker">Exploración visual</span>
             <h1 class="graph-title">Grafo de entidades</h1>
             <p class="graph-substatus">
-              El grafo inicia vacío. Busca y selecciona una entidad para cargar su vecindad.
+              El grafo inicia vacío. Busca y selecciona una entidad para cargar
+              su vecindad.
             </p>
           </div>
 
@@ -55,24 +56,47 @@
           </div>
 
           <aside id="aliasPanel" class="alias-panel">
-            <div class="side-tabs" role="tablist" aria-label="Panel lateral del grafo">
-              <button id="tabEntitiesBtn" class="side-tab active" type="button" role="tab" aria-selected="true">
+            <div
+              class="side-tabs"
+              role="tablist"
+              aria-label="Panel lateral del grafo"
+            >
+              <button
+                id="tabEntitiesBtn"
+                class="side-tab active"
+                type="button"
+                role="tab"
+                aria-selected="true"
+              >
                 Entidades
               </button>
-              <button id="tabAliasesBtn" class="side-tab" type="button" role="tab" aria-selected="false">
+              <button
+                id="tabAliasesBtn"
+                class="side-tab"
+                type="button"
+                role="tab"
+                aria-selected="false"
+              >
                 Posibles alias
               </button>
             </div>
 
-            <section id="entityPanel" class="entity-panel side-section active" data-panel="entities">
+            <section
+              id="entityPanel"
+              class="entity-panel side-section active"
+              data-panel="entities"
+            >
               <div class="entity-panel-head">
                 <div>
                   <h2>Explorar entidades</h2>
                   <p id="entityStatus" class="alias-status">
-                    Escribe para buscar y haz click en una entidad para mostrarla en el grafo.
+                    Escribe para buscar y haz click en una entidad para
+                    mostrarla en el grafo.
                   </p>
                 </div>
-                <span id="entityResultCount" class="metric-pill">0 resultados</span>
+                <span id="entityResultCount" class="metric-pill"
+                  >0 resultados</span
+                >
               </div>
 
               <div class="entity-tools">
@@ -96,15 +120,22 @@
               </div>
             </section>
 
-            <section id="aliasSection" class="side-section" data-panel="aliases">
+            <section
+              id="aliasSection"
+              class="side-section"
+              data-panel="aliases"
+            >
               <div class="alias-panel-head">
                 <div>
                   <h2>Posibles alias</h2>
                   <p id="aliasStatus" class="alias-status">
-                    Activa el filtro para centrar el grafo en relaciones POSIBLE_ALIAS.
+                    Activa el filtro para centrar el grafo en relaciones
+                    POSIBLE_ALIAS.
                   </p>
                 </div>
-                <span id="aliasEntityCount" class="metric-pill">0 entidades</span>
+                <span id="aliasEntityCount" class="metric-pill"
+                  >0 entidades</span
+                >
               </div>
 
               <div class="entity-tools alias-tools">

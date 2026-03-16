@@ -38,8 +38,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   };
 
   const state = {
-    snapshot: { nodes: [], edges: [], summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 } },
-    aliasData: { pairs: [], entities: [], summary: { pair_count: 0, entity_count: 0 } },
+    snapshot: {
+      nodes: [],
+      edges: [],
+      summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+    },
+    aliasData: {
+      pairs: [],
+      entities: [],
+      summary: { pair_count: 0, entity_count: 0 },
+    },
     entityCatalog: [],
     aliasOnly: false,
     selectedNodeId: null,
@@ -103,10 +111,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   }
 
   function updateMetrics(summary) {
-    const safeSummary = summary || { node_count: 0, edge_count: 0, alias_edge_count: 0 };
-    if (els.nodeCount) els.nodeCount.textContent = `${safeSummary.node_count} nodos`;
-    if (els.edgeCount) els.edgeCount.textContent = `${safeSummary.edge_count} relaciones`;
-    if (els.aliasCount) els.aliasCount.textContent = `${safeSummary.alias_edge_count} aliases`;
+    const safeSummary = summary || {
+      node_count: 0,
+      edge_count: 0,
+      alias_edge_count: 0,
+    };
+    if (els.nodeCount)
+      els.nodeCount.textContent = `${safeSummary.node_count} nodos`;
+    if (els.edgeCount)
+      els.edgeCount.textContent = `${safeSummary.edge_count} relaciones`;
+    if (els.aliasCount)
+      els.aliasCount.textContent = `${safeSummary.alias_edge_count} aliases`;
   }
 
   function setActiveSidePanel(panelName) {
@@ -124,10 +139,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     els.tabAliasesBtn?.classList.toggle("active", !entityActive);
 
     if (els.tabEntitiesBtn) {
-      els.tabEntitiesBtn.setAttribute("aria-selected", entityActive ? "true" : "false");
+      els.tabEntitiesBtn.setAttribute(
+        "aria-selected",
+        entityActive ? "true" : "false",
+      );
     }
     if (els.tabAliasesBtn) {
-      els.tabAliasesBtn.setAttribute("aria-selected", !entityActive ? "true" : "false");
+      els.tabAliasesBtn.setAttribute(
+        "aria-selected",
+        !entityActive ? "true" : "false",
+      );
     }
 
     if (!entityActive && !state.aliasLoadedOnce) {
@@ -169,7 +190,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const response = await fetch(url);
     if (!response.ok) {
       const text = await response.text().catch(() => "");
-      throw new Error(`HTTP ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`);
+      throw new Error(
+        `HTTP ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`,
+      );
     }
     return response.json();
   }
@@ -186,7 +209,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function buildLegend(nodes) {
     if (!els.legend) return;
     const counts = new Map();
-    nodes.forEach((node) => counts.set(node.label, (counts.get(node.label) || 0) + 1));
+    nodes.forEach((node) =>
+      counts.set(node.label, (counts.get(node.label) || 0) + 1),
+    );
     els.legend.innerHTML = Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(
@@ -220,13 +245,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
     labels.forEach((label, groupIndex) => {
       const groupNodes = grouped.get(label) || [];
-      const radius = labels.length === 1
-        ? maxRadius * 0.65
-        : 54 + (groupIndex * (maxRadius - 54)) / Math.max(labels.length - 1, 1);
+      const radius =
+        labels.length === 1
+          ? maxRadius * 0.65
+          : 54 +
+            (groupIndex * (maxRadius - 54)) / Math.max(labels.length - 1, 1);
       groupNodes.forEach((node, index) => {
         const angleOffset = groupIndex * 0.48;
-        const angle = (2 * Math.PI * index) / Math.max(groupNodes.length, 1) + angleOffset;
-        const jitter = groupNodes.length <= 2 ? 0 : (index % 2 === 0 ? 1 : -1) * 12;
+        const angle =
+          (2 * Math.PI * index) / Math.max(groupNodes.length, 1) + angleOffset;
+        const jitter =
+          groupNodes.length <= 2 ? 0 : (index % 2 === 0 ? 1 : -1) * 12;
         positions.set(node.id, {
           x: centerX + Math.cos(angle) * (radius + jitter),
           y: centerY + Math.sin(angle) * (radius + jitter),
@@ -252,14 +281,21 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function resetTransform() {
     const viewBox = els.svg.viewBox.baseVal;
     state.zoomScale = 1;
-    state.panX = viewBox.width  ? viewBox.width  / 2 * (1 - state.zoomScale) : 0;
-    state.panY = viewBox.height ? viewBox.height / 2 * (1 - state.zoomScale) : 0;
+    state.panX = viewBox.width
+      ? (viewBox.width / 2) * (1 - state.zoomScale)
+      : 0;
+    state.panY = viewBox.height
+      ? (viewBox.height / 2) * (1 - state.zoomScale)
+      : 0;
     applyTransform();
   }
 
   function zoomAtPoint(delta, svgX, svgY) {
     const prevScale = state.zoomScale;
-    const nextScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, prevScale * (delta > 0 ? 1 / 1.12 : 1.12)));
+    const nextScale = Math.min(
+      ZOOM_MAX,
+      Math.max(ZOOM_MIN, prevScale * (delta > 0 ? 1 / 1.12 : 1.12)),
+    );
     if (nextScale === prevScale) return;
     // keep the point under cursor fixed: pan += origin * (prevScale - nextScale)
     state.panX = svgX - (svgX - state.panX) * (nextScale / prevScale);
@@ -307,35 +343,51 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     });
 
     // --- Touch drag ---
-    svg.addEventListener("touchstart", (e) => {
-      if (e.touches.length !== 1) return;
-      if (e.target.closest("[data-node-id]")) return;
-      state.dragging = true;
-      state.dragStartX = e.touches[0].clientX;
-      state.dragStartY = e.touches[0].clientY;
-      state.panStartX = state.panX;
-      state.panStartY = state.panY;
-    }, { passive: true });
+    svg.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches.length !== 1) return;
+        if (e.target.closest("[data-node-id]")) return;
+        state.dragging = true;
+        state.dragStartX = e.touches[0].clientX;
+        state.dragStartY = e.touches[0].clientY;
+        state.panStartX = state.panX;
+        state.panStartY = state.panY;
+      },
+      { passive: true },
+    );
 
-    window.addEventListener("touchmove", (e) => {
-      if (!state.dragging || e.touches.length !== 1) return;
-      state.panX = state.panStartX + (e.touches[0].clientX - state.dragStartX);
-      state.panY = state.panStartY + (e.touches[0].clientY - state.dragStartY);
-      applyTransform();
-    }, { passive: true });
+    window.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!state.dragging || e.touches.length !== 1) return;
+        state.panX =
+          state.panStartX + (e.touches[0].clientX - state.dragStartX);
+        state.panY =
+          state.panStartY + (e.touches[0].clientY - state.dragStartY);
+        applyTransform();
+      },
+      { passive: true },
+    );
 
-    window.addEventListener("touchend", () => { state.dragging = false; });
+    window.addEventListener("touchend", () => {
+      state.dragging = false;
+    });
 
     // --- Wheel zoom (zoom toward cursor) ---
-    svg.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      const rect = svg.getBoundingClientRect();
-      const viewBox = svg.viewBox.baseVal;
-      // convert screen coords -> SVG viewBox coords
-      const svgX = (e.clientX - rect.left) / rect.width  * viewBox.width;
-      const svgY = (e.clientY - rect.top)  / rect.height * viewBox.height;
-      zoomAtPoint(e.deltaY, svgX, svgY);
-    }, { passive: false });
+    svg.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        const rect = svg.getBoundingClientRect();
+        const viewBox = svg.viewBox.baseVal;
+        // convert screen coords -> SVG viewBox coords
+        const svgX = ((e.clientX - rect.left) / rect.width) * viewBox.width;
+        const svgY = ((e.clientY - rect.top) / rect.height) * viewBox.height;
+        zoomAtPoint(e.deltaY, svgX, svgY);
+      },
+      { passive: false },
+    );
   }
 
   function renderSelection(snapshot) {
@@ -347,7 +399,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       return;
     }
 
-    const node = snapshot.nodes.find((item) => item.id === state.selectedNodeId);
+    const node = snapshot.nodes.find(
+      (item) => item.id === state.selectedNodeId,
+    );
     if (!node) {
       state.selectedNodeId = null;
       renderSelection(snapshot);
@@ -380,7 +434,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderGraph() {
     const snapshot = state.snapshot;
-    if (!snapshot || !Array.isArray(snapshot.nodes) || snapshot.nodes.length === 0) {
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.nodes) ||
+      snapshot.nodes.length === 0
+    ) {
       els.svg.innerHTML = "";
       applyZoom();
       buildLegend([]);
@@ -405,8 +463,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     if (state.selectedNodeId) {
       connectedNodeIds.add(state.selectedNodeId);
       snapshot.edges.forEach((edge) => {
-        if (edge.source === state.selectedNodeId) connectedNodeIds.add(edge.target);
-        if (edge.target === state.selectedNodeId) connectedNodeIds.add(edge.source);
+        if (edge.source === state.selectedNodeId)
+          connectedNodeIds.add(edge.target);
+        if (edge.target === state.selectedNodeId)
+          connectedNodeIds.add(edge.source);
       });
     }
 
@@ -415,7 +475,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         const source = positions.get(edge.source);
         const target = positions.get(edge.target);
         if (!source || !target) return "";
-        const highlighted = state.selectedNodeId && (edge.source === state.selectedNodeId || edge.target === state.selectedNodeId);
+        const highlighted =
+          state.selectedNodeId &&
+          (edge.source === state.selectedNodeId ||
+            edge.target === state.selectedNodeId);
         const dimmed = state.selectedNodeId && !highlighted;
         const edgeClasses = ["graph-edge"];
         if (edge.is_alias) edgeClasses.push("alias");
@@ -433,11 +496,15 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       .map((node) => {
         const position = positions.get(node.id);
         if (!position) return "";
-        const radius = Math.max(8, Math.min(18, 8 + Math.round(node.degree / 2)));
+        const radius = Math.max(
+          8,
+          Math.min(18, 8 + Math.round(node.degree / 2)),
+        );
         const nodeClasses = ["graph-node"];
         if (node.is_alias_candidate) nodeClasses.push("alias-candidate");
         if (state.selectedNodeId === node.id) nodeClasses.push("selected");
-        if (state.selectedNodeId && !connectedNodeIds.has(node.id)) nodeClasses.push("dimmed");
+        if (state.selectedNodeId && !connectedNodeIds.has(node.id))
+          nodeClasses.push("dimmed");
         return `
           <g class="${nodeClasses.join(" ")}" data-node-id="${escapeHtml(node.id)}" transform="translate(${position.x.toFixed(2)} ${position.y.toFixed(2)})">
             <circle class="graph-node-circle" r="${radius}" fill="${getLabelColor(node.label)}"></circle>
@@ -465,7 +532,8 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     if (!els.entityList) return;
     const entities = state.entityCatalog || [];
     if (!entities.length) {
-      els.entityList.innerHTML = '<div class="alias-placeholder">No hay entidades para ese filtro.</div>';
+      els.entityList.innerHTML =
+        '<div class="alias-placeholder">No hay entidades para ese filtro.</div>';
       return;
     }
 
@@ -512,8 +580,12 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       renderEntityList();
     } catch (error) {
       state.entityCatalog = [];
-      if (els.entityResultCount) els.entityResultCount.textContent = "0 resultados";
-      setEntityStatus(`No se pudieron cargar entidades: ${error?.message || error}`, true);
+      if (els.entityResultCount)
+        els.entityResultCount.textContent = "0 resultados";
+      setEntityStatus(
+        `No se pudieron cargar entidades: ${error?.message || error}`,
+        true,
+      );
       renderEntityList();
     } finally {
       state.loadingEntities = false;
@@ -524,7 +596,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const groups = new Map();
     (aliasData?.pairs || []).forEach((pair) => {
       if (!groups.has(pair.source_id)) {
-        groups.set(pair.source_id, { id: pair.source_id, name: pair.source_name, pairs: [] });
+        groups.set(pair.source_id, {
+          id: pair.source_id,
+          name: pair.source_name,
+          pairs: [],
+        });
       }
       groups.get(pair.source_id).pairs.push(pair);
     });
@@ -536,9 +612,15 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function renderAliasList() {
     if (!els.aliasList) return;
     const aliasData = state.aliasData;
-    if (!aliasData || !Array.isArray(aliasData.pairs) || aliasData.pairs.length === 0) {
-      els.aliasList.innerHTML = '<div class="alias-placeholder">No hay posibles alias para ese filtro.</div>';
-      if (els.aliasEntityCount) els.aliasEntityCount.textContent = "0 entidades";
+    if (
+      !aliasData ||
+      !Array.isArray(aliasData.pairs) ||
+      aliasData.pairs.length === 0
+    ) {
+      els.aliasList.innerHTML =
+        '<div class="alias-placeholder">No hay posibles alias para ese filtro.</div>';
+      if (els.aliasEntityCount)
+        els.aliasEntityCount.textContent = "0 entidades";
       return;
     }
 
@@ -589,11 +671,20 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         apiUrl("/ui/graph/aliases", { search: state.aliasSearch }),
       );
       state.aliasLoadedOnce = true;
-      setAliasStatus(`${state.aliasData.summary?.pair_count || 0} relaciones POSIBLE_ALIAS encontradas.`);
+      setAliasStatus(
+        `${state.aliasData.summary?.pair_count || 0} relaciones POSIBLE_ALIAS encontradas.`,
+      );
       renderAliasList();
     } catch (error) {
-      state.aliasData = { pairs: [], entities: [], summary: { pair_count: 0, entity_count: 0 } };
-      setAliasStatus(`No se pudieron cargar los posibles alias: ${error?.message || error}`, true);
+      state.aliasData = {
+        pairs: [],
+        entities: [],
+        summary: { pair_count: 0, entity_count: 0 },
+      };
+      setAliasStatus(
+        `No se pudieron cargar los posibles alias: ${error?.message || error}`,
+        true,
+      );
       renderAliasList();
     } finally {
       state.loadingAliases = false;
@@ -629,9 +720,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       renderEntityList();
       renderGraph();
     } catch (error) {
-      state.snapshot = { nodes: [], edges: [], summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 } };
+      state.snapshot = {
+        nodes: [],
+        edges: [],
+        summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+      };
       updateMetrics(state.snapshot.summary);
-      setGraphStatus(`No se pudo cargar la vecindad: ${error?.message || error}`, true);
+      setGraphStatus(
+        `No se pudo cargar la vecindad: ${error?.message || error}`,
+        true,
+      );
       renderGraph();
     } finally {
       state.loadingGraph = false;
@@ -665,8 +763,12 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     });
 
     els.aliasSearchInput?.addEventListener("input", debouncedAliasSearch);
-    els.tabEntitiesBtn?.addEventListener("click", () => setActiveSidePanel("entities"));
-    els.tabAliasesBtn?.addEventListener("click", () => setActiveSidePanel("aliases"));
+    els.tabEntitiesBtn?.addEventListener("click", () =>
+      setActiveSidePanel("entities"),
+    );
+    els.tabAliasesBtn?.addEventListener("click", () =>
+      setActiveSidePanel("aliases"),
+    );
 
     els.refreshBtn?.addEventListener("click", async () => {
       const refreshTasks = [loadEntityCatalog()];
