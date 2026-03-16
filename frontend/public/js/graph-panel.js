@@ -6,8 +6,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     empty: document.getElementById("graphEmptyState"),
     status: document.getElementById("graphStatus"),
     refreshBtn: document.getElementById("refreshGraphBtn"),
-    zoomInBtn: document.getElementById("zoomInBtn"),
-    zoomOutBtn: document.getElementById("zoomOutBtn"),
     nodeCount: document.getElementById("graphNodeCount"),
     edgeCount: document.getElementById("graphEdgeCount"),
     aliasCount: document.getElementById("graphAliasCount"),
@@ -55,11 +53,18 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     entityType: "Investigador",
     aliasSearch: "",
     zoomScale: 1,
+    panX: 0,
+    panY: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    panStartX: 0,
+    panStartY: 0,
   };
 
   const ZOOM_STEP = 0.2;
-  const ZOOM_MIN = 0.6;
-  const ZOOM_MAX = 2.6;
+  const ZOOM_MIN = 0.3;
+  const ZOOM_MAX = 4.0;
 
   function escapeHtml(value) {
     return (value ?? "")
@@ -232,34 +237,105 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     return positions;
   }
 
-  function applyZoom() {
+  function applyTransform() {
     const viewport = els.svg.querySelector("#graphViewport");
-    if (!viewport) {
-      if (els.zoomInBtn) els.zoomInBtn.disabled = true;
-      if (els.zoomOutBtn) els.zoomOutBtn.disabled = true;
-      return;
-    }
-
-    const viewBox = els.svg.viewBox.baseVal;
-    const centerX = viewBox.width / 2;
-    const centerY = viewBox.height / 2;
-    const translateX = centerX * (1 - state.zoomScale);
-    const translateY = centerY * (1 - state.zoomScale);
-
+    if (!viewport) return;
     viewport.setAttribute(
       "transform",
-      `translate(${translateX.toFixed(3)} ${translateY.toFixed(3)}) scale(${state.zoomScale.toFixed(3)})`,
+      `translate(${state.panX.toFixed(3)} ${state.panY.toFixed(3)}) scale(${state.zoomScale.toFixed(3)})`,
     );
-    if (els.zoomInBtn) els.zoomInBtn.disabled = state.zoomScale >= ZOOM_MAX;
-    if (els.zoomOutBtn) els.zoomOutBtn.disabled = state.zoomScale <= ZOOM_MIN;
+  }
+
+  // alias kept for callers that used the old name
+  const applyZoom = applyTransform;
+
+  function resetTransform() {
+    const viewBox = els.svg.viewBox.baseVal;
+    state.zoomScale = 1;
+    state.panX = viewBox.width  ? viewBox.width  / 2 * (1 - state.zoomScale) : 0;
+    state.panY = viewBox.height ? viewBox.height / 2 * (1 - state.zoomScale) : 0;
+    applyTransform();
+  }
+
+  function zoomAtPoint(delta, svgX, svgY) {
+    const prevScale = state.zoomScale;
+    const nextScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, prevScale * (delta > 0 ? 1 / 1.12 : 1.12)));
+    if (nextScale === prevScale) return;
+    // keep the point under cursor fixed: pan += origin * (prevScale - nextScale)
+    state.panX = svgX - (svgX - state.panX) * (nextScale / prevScale);
+    state.panY = svgY - (svgY - state.panY) * (nextScale / prevScale);
+    state.zoomScale = nextScale;
+    applyTransform();
   }
 
   function zoomGraph(direction) {
-    const nextScale = direction === "in"
-      ? state.zoomScale + ZOOM_STEP
-      : state.zoomScale - ZOOM_STEP;
-    state.zoomScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Number(nextScale.toFixed(3))));
-    applyZoom();
+    const viewBox = els.svg.viewBox.baseVal;
+    const cx = viewBox.width / 2;
+    const cy = viewBox.height / 2;
+    zoomAtPoint(direction === "in" ? -1 : 1, cx, cy);
+  }
+
+  function bindPanAndZoom() {
+    const svg = els.svg;
+    if (!svg) return;
+
+    // --- Mouse drag ---
+    svg.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      // don't start pan when clicking a node
+      if (e.target.closest("[data-node-id]")) return;
+      state.dragging = true;
+      state.dragStartX = e.clientX;
+      state.dragStartY = e.clientY;
+      state.panStartX = state.panX;
+      state.panStartY = state.panY;
+      svg.style.cursor = "grabbing";
+      e.preventDefault();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!state.dragging) return;
+      state.panX = state.panStartX + (e.clientX - state.dragStartX);
+      state.panY = state.panStartY + (e.clientY - state.dragStartY);
+      applyTransform();
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!state.dragging) return;
+      state.dragging = false;
+      svg.style.cursor = "grab";
+    });
+
+    // --- Touch drag ---
+    svg.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) return;
+      if (e.target.closest("[data-node-id]")) return;
+      state.dragging = true;
+      state.dragStartX = e.touches[0].clientX;
+      state.dragStartY = e.touches[0].clientY;
+      state.panStartX = state.panX;
+      state.panStartY = state.panY;
+    }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!state.dragging || e.touches.length !== 1) return;
+      state.panX = state.panStartX + (e.touches[0].clientX - state.dragStartX);
+      state.panY = state.panStartY + (e.touches[0].clientY - state.dragStartY);
+      applyTransform();
+    }, { passive: true });
+
+    window.addEventListener("touchend", () => { state.dragging = false; });
+
+    // --- Wheel zoom (zoom toward cursor) ---
+    svg.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      const viewBox = svg.viewBox.baseVal;
+      // convert screen coords -> SVG viewBox coords
+      const svgX = (e.clientX - rect.left) / rect.width  * viewBox.width;
+      const svgY = (e.clientY - rect.top)  / rect.height * viewBox.height;
+      zoomAtPoint(e.deltaY, svgX, svgY);
+    }, { passive: false });
   }
 
   function renderSelection(snapshot) {
@@ -540,6 +616,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       );
       state.snapshot = data;
       state.selectedNodeId = entityId;
+      // reset pan/zoom to center for new entity
+      state.zoomScale = 1;
+      state.panX = 0;
+      state.panY = 0;
       updateMetrics(data.summary);
       setGraphStatus(
         state.aliasOnly
@@ -599,8 +679,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       }
     });
 
-    els.zoomInBtn?.addEventListener("click", () => zoomGraph("in"));
-    els.zoomOutBtn?.addEventListener("click", () => zoomGraph("out"));
+    bindPanAndZoom();
 
     window.addEventListener("resize", () => {
       if (state.snapshot?.nodes?.length) renderGraph();
