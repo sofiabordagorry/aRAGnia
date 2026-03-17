@@ -193,6 +193,93 @@ class Postprocessor:
                 duplicate_groups_relation[researcher_id] = (researcher_name, duplicates_relation)
         return duplicate_groups, duplicate_groups_relation
 
+    def build_possible_alias_relationships(
+        self,
+        db_entities: List[dict],
+        entities_to_save: List[dict],
+    ) -> List[dict]:
+        updated_relationships: List[dict] = []
+        seen_pairs: Set[tuple[str, str]] = set()
+
+        if self.enable_researcher_consolidation:
+            return updated_relationships
+
+        sorted_db_entities = sorted(
+            db_entities,
+            key=lambda x: len(x.get("value", {}).get("name", "")),
+            reverse=True,
+        )
+
+        sorted_entities_to_save = sorted(
+            entities_to_save,
+            key=lambda x: len(x.get("value", {}).get("name", "")),
+            reverse=True,
+        )
+
+        for db_entity in sorted_db_entities:
+            canonical_id = db_entity["id"]
+            canonical_name = db_entity.get("value", {}).get("name", "")
+
+            norm1 = self.normalize_name(canonical_name)
+
+            for other in sorted_entities_to_save:
+                other_id = other["id"]
+                other_name = other.get("value", {}).get("name", "")
+
+                if not canonical_id or not other_id or canonical_id == other_id:
+                    continue
+
+                norm2 = self.normalize_name(other_name)
+                should_create_relation = False
+
+                if norm1 == norm2:
+                    should_create_relation = True
+
+                elif self.is_inverted_name(canonical_name, other_name):
+                    should_create_relation = True
+
+                elif self.name_similarity(norm1, norm2) >= self.similarity_threshold:
+                    tokens1 = norm1.split()
+                    tokens2 = norm2.split()
+                    common = set(tokens1) & set(tokens2)
+
+                    if len(common) >= 2 and tokens1 and tokens2 and tokens1[0] == tokens2[0]:
+                        should_create_relation = True
+
+                elif self.is_partial_name(other_name, canonical_name) or self.is_partial_name(
+                    canonical_name, other_name
+                ):
+                    should_create_relation = True
+
+                if not should_create_relation:
+                    continue
+
+                pair_key = (canonical_id, other_id)
+                reverse_pair_key = (other_id, canonical_id)
+
+                if pair_key in seen_pairs or reverse_pair_key in seen_pairs:
+                    continue
+
+                seen_pairs.add(pair_key)
+
+                updated_relationships.append(
+                    {
+                        "source_id": canonical_id,
+                        "target_id": other_id,
+                        "type": "POSIBLE_ALIAS",
+                    }
+                )
+                updated_relationships.append(
+                    {
+                        "source_id": other_id,
+                        "target_id": canonical_id,
+                        "type": "POSIBLE_ALIAS",
+                    }
+                )
+                print(f"Creada relación POSIBLE_ALIAS entre '{canonical_name}' y '{other_name}'")
+
+        return updated_relationships
+
     # -------------------------
     # Evidencias genéricas
     # -------------------------

@@ -5,8 +5,9 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple, TypeVar
 
+import ijson
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
 
@@ -20,12 +21,12 @@ from institutional_graphrag.graph.schema import (
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
 logging.getLogger("neo4j").setLevel(logging.WARNING)
 logger = logging.getLogger("graph_ingest")
-ENABLE_NON_EQUAL_NAME_UNIFICATION = False
+
+T = TypeVar("T")
+IMPUT_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "entity_documents.json"
+OUTPUT_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "export_graph.json"
 
 
-# ============================================================
-# Neo4j backend
-# ============================================================
 @dataclass
 class Neo4jStats:
     nodes_created: int = 0
@@ -36,13 +37,12 @@ class Neo4jStats:
     labels_added: int = 0
     labels_removed: int = 0
 
-    # IDs (opcionales / sample)
-    node_ids: List[str] = field(default_factory=list)  # tus ids lógicos (row.id)
-    node_eids: List[str] = field(default_factory=list)  # elementId(e)
-    rel_eids: List[str] = field(default_factory=list)  # elementId(r)
-    rel_pairs: List[Tuple[str, str]] = field(default_factory=list)  # (source_id, target_id)
+    node_ids: List[str] = field(default_factory=list)
+    node_eids: List[str] = field(default_factory=list)
+    rel_eids: List[str] = field(default_factory=list)
+    rel_pairs: List[Tuple[str, str]] = field(default_factory=list)
 
-    def add_counters(self, counters) -> None:
+    def add_counters(self, counters: Any) -> None:
         self.nodes_created += counters.nodes_created
         self.nodes_deleted += counters.nodes_deleted
         self.relationships_created += counters.relationships_created
@@ -52,7 +52,7 @@ class Neo4jStats:
         self.labels_removed += counters.labels_removed
 
 
-class Neo4jGraphBuilder:
+class GraphBuilder:
     """
     Builder de grafo usando Neo4j como backend.
 
@@ -64,20 +64,25 @@ class Neo4jGraphBuilder:
     def __init__(self, uri: str, user: str, password: str, batch_size: int = 500):
         try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
+            self.batch_size = batch_size
             self._ping(max_attempts=6, sleep_s=2)
-        except AuthError:
+            self._create_constraints(max_attempts=5, sleep_s=2)
+        except AuthError as exc:
             logger.error("Neo4j: credenciales inválidas")
-            raise RuntimeError("No se pudo autenticar con Neo4j. Verificá usuario y contraseña.")
-
-        except ServiceUnavailable:
+            raise RuntimeError(
+                "No se pudo autenticar con Neo4j. Verificá usuario y contraseña."
+            ) from exc
+        except ServiceUnavailable as exc:
             logger.error("Neo4j: servidor no disponible en %s", uri)
-            raise RuntimeError("No se pudo conectar a Neo4j. ¿Está el contenedor corriendo?")
-
-        except SessionExpired:
+            raise RuntimeError(
+                "No se pudo conectar a Neo4j. ¿Está el contenedor corriendo?"
+            ) from exc
+        except SessionExpired as exc:
             logger.error("Neo4j: conexión expirada durante el handshake")
-            raise RuntimeError("La conexión con Neo4j falló durante la inicialización.")
-        self.batch_size = batch_size
-        self._create_constraints()
+            raise RuntimeError("La conexión con Neo4j falló durante la inicialización.") from exc
+
+    def close(self) -> None:
+        self.driver.close()
 
     def _ping(self, max_attempts: int = 2, sleep_s: int = 2) -> None:
         last_err = None
@@ -133,9 +138,8 @@ class Neo4jGraphBuilder:
     # -------------------------
 
     @staticmethod
-    def _chunks(iterable: Iterable, size: int):
-        """Yield successive chunks of size `size` from iterable."""
-        chunk = []
+    def _chunks(iterable: Iterable[Any], size: int) -> Iterable[List[Any]]:
+        chunk: List[Any] = []
         for item in iterable:
             chunk.append(item)
             if len(chunk) == size:
@@ -144,40 +148,47 @@ class Neo4jGraphBuilder:
         if chunk:
             yield chunk
 
-    # -------------------------
-    # Nodos
-    # -------------------------
+    @staticmethod
+    def _extend_sample(dst: List[Any], src: List[Any], sample_ids: int) -> None:
+        if sample_ids <= 0:
+            return
+        remaining = sample_ids - len(dst)
+        if remaining <= 0:
+            return
+        dst.extend(src[:remaining])
 
+    @staticmethod
+    def _entity_to_row(entity: Entity) -> dict[str, Any]:
+        props: dict[str, Any] = {"id": entity.id}
+        if isinstance(entity.value, dict):
+            props.update(entity.value)
+        else:
+            props["value"] = entity.value
+        return props
+
+    # -------------------------
+    # Entidades
+    # -------------------------
     def upsert_entities(self, entities: Iterable[Entity], *, sample_ids: int = 50) -> Neo4jStats:
-        """Upsert entities usando batching correcto, por label. Devuelve stats + sample de IDs."""
         stats = Neo4jStats()
 
         entities_by_label: dict[str, list[Entity]] = {}
-        for e in entities:
-            entities_by_label.setdefault(e.label, []).append(e)
+        for entity in entities:
+            entities_by_label.setdefault(entity.label, []).append(entity)
 
         for label, entities_label in entities_by_label.items():
             for batch in self._chunks(entities_label, self.batch_size):
-                rows: list[dict] = []
-                for e in batch:
-                    props = {"id": e.id}
-                    if isinstance(e.value, dict):
-                        props.update(e.value)
-                    else:
-                        props["value"] = e.value
-                    rows.append(props)
-
+                rows = [self._entity_to_row(entity) for entity in batch]
                 if not rows:
                     continue
 
-                # Devuelve ids procesados (lógicos + elementId)
                 query = f"""
                 UNWIND $rows AS row
                 MERGE (e:{label} {{id: row.id}})
                 ON CREATE SET e.__created__ = true
                 SET e += row
                 RETURN collect(row.id) AS ids,
-                    collect(elementId(e)) AS eids
+                       collect(elementId(e)) AS eids
                 """
 
                 with self.driver.session() as session:
@@ -185,32 +196,32 @@ class Neo4jGraphBuilder:
                     record = result.single()
                     summary = result.consume()
 
-                    stats.add_counters(summary.counters)
+                stats.add_counters(summary.counters)
 
-                    if record is not None:
-                        self._extend_sample(stats.node_ids, record["ids"] or [], sample_ids)
-                        self._extend_sample(stats.node_eids, record["eids"] or [], sample_ids)
+                if record is not None:
+                    self._extend_sample(stats.node_ids, record["ids"] or [], sample_ids)
+                    self._extend_sample(stats.node_eids, record["eids"] or [], sample_ids)
 
         return stats
 
     # -------------------------
     # Relaciones
     # -------------------------
-    def upsert_relationships(
+
+    def _prepare_relationships(
         self,
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
-        *,
-        sample_ids: int = 50,
-    ) -> Neo4jStats:
-        stats = Neo4jStats()
-
+    ) -> list[Tuple[Relationship, Entity, Entity]]:
         seen: set[tuple[str, str, str]] = set()
         deduped: list[Tuple[Relationship, Entity, Entity]] = []
 
         for rel, src, tgt in relationships:
             if src.id == tgt.id:
                 logger.warning(
-                    "Relación inválida (self-loop) se omite: %s %s -> %s", rel.type, src.id, tgt.id
+                    "Relación inválida (self-loop) se omite: %s %s -> %s",
+                    rel.type,
+                    src.id,
+                    tgt.id,
                 )
                 continue
 
@@ -236,19 +247,37 @@ class Neo4jGraphBuilder:
             seen.add(key)
             deduped.append((rel, src, tgt))
 
-        # 2) batching + agrupación por (rel_type, src_label, tgt_label)
-        for batch in self._chunks(deduped, self.batch_size):
-            groups: Dict[Tuple[str, str, str], List[Dict]] = {}
+        return deduped
 
-            for rel, src, tgt in batch:
-                gkey = (rel.type, src.label, tgt.label)
-                groups.setdefault(gkey, []).append(
-                    {
-                        "source_id": src.id,
-                        "target_id": tgt.id,
-                        "properties": rel.properties or {},
-                    }
-                )
+    @staticmethod
+    def _group_relationship_batch(
+        batch: list[Tuple[Relationship, Entity, Entity]],
+    ) -> Dict[Tuple[str, str, str], List[Dict[str, Any]]]:
+        groups: Dict[Tuple[str, str, str], List[Dict[str, Any]]] = {}
+
+        for rel, src, tgt in batch:
+            gkey = (rel.type, src.label, tgt.label)
+            groups.setdefault(gkey, []).append(
+                {
+                    "source_id": src.id,
+                    "target_id": tgt.id,
+                    "properties": rel.properties or {},
+                }
+            )
+
+        return groups
+
+    def upsert_relationships(
+        self,
+        relationships: Iterable[Tuple[Relationship, Entity, Entity]],
+        *,
+        sample_ids: int = 50,
+    ) -> Neo4jStats:
+        stats = Neo4jStats()
+        deduped = self._prepare_relationships(relationships)
+
+        for batch in self._chunks(deduped, self.batch_size):
+            groups = self._group_relationship_batch(batch)
 
             with self.driver.session() as session:
                 for (rel_type, src_label, tgt_label), rows in groups.items():
@@ -260,7 +289,7 @@ class Neo4jGraphBuilder:
                     ON CREATE SET r.__created__ = true
                     SET r += row.properties
                     RETURN collect(elementId(r)) AS rel_eids,
-                        collect([row.source_id, row.target_id]) AS pairs
+                           collect([row.source_id, row.target_id]) AS pairs
                     """
 
                     result = session.run(query, rows=rows)
@@ -271,17 +300,18 @@ class Neo4jGraphBuilder:
 
                     if record is not None:
                         self._extend_sample(stats.rel_eids, record["rel_eids"] or [], sample_ids)
-                        pairs = record["pairs"] or []
-                        pairs = [(p[0], p[1]) for p in pairs if isinstance(p, list) and len(p) == 2]
+
+                        pairs_raw = record["pairs"] or []
+                        pairs: list[tuple[str, str]] = [
+                            (pair[0], pair[1])
+                            for pair in pairs_raw
+                            if isinstance(pair, list) and len(pair) == 2
+                        ]
                         self._extend_sample(stats.rel_pairs, pairs, sample_ids)
 
         return stats
 
-    def clear_graph(self):
-        """
-        Borra **todos los nodos y relaciones** del grafo.
-        Úsalo con cuidado, es irreversible.
-        """
+    def clear_graph(self) -> None:
         query = "MATCH (n) DETACH DELETE n"
         with self.driver.session() as session:
             session.run(query)
@@ -291,7 +321,27 @@ class Neo4jGraphBuilder:
         query = "MATCH (i:Investigador) RETURN i.id AS id"
         with self.driver.session() as session:
             rows = session.run(query).data()
-        return [r["id"] for r in rows if r.get("id")]
+        return [row["id"] for row in rows if row.get("id")]
+
+    def fetch_researchers(self) -> list[dict]:
+        query = "MATCH (i:Investigador) RETURN i"
+        with self.driver.session() as session:
+            result = session.run(query)
+
+            entities = []
+            for record in result:
+                node = record["i"]
+                props = dict(node)
+
+                entities.append(
+                    {
+                        "id": props.get("id"),
+                        "label": "Investigador",
+                        "value": {k: v for k, v in props.items() if k not in {"id", "__created__"}},
+                    }
+                )
+
+        return entities
 
     def merge_node_id(
         self,
@@ -301,14 +351,12 @@ class Neo4jGraphBuilder:
         new_id: str,
         sample_ids: int = 50,
     ) -> Neo4jStats:
-        if old_id == new_id:
-            return Neo4jStats()
-
         stats = Neo4jStats()
+        if old_id == new_id:
+            return stats
 
         with self.driver.session() as session:
-            # 0) asegurar A y B
-            r = session.run(
+            result = session.run(
                 f"""
                 MATCH (a:{label} {{id: $old_id}})
                 MERGE (b:{label} {{id: $new_id}})
@@ -317,14 +365,18 @@ class Neo4jGraphBuilder:
                 old_id=old_id,
                 new_id=new_id,
             )
-            rec = r.single()
-            summ = r.consume()
-            stats.add_counters(summ.counters)
-            if rec:
-                self._extend_sample(stats.node_eids, [rec["a_eid"], rec["b_eid"]], sample_ids)
+            record = result.single()
+            summary = result.consume()
+            stats.add_counters(summary.counters)
 
-            # merge props
-            r = session.run(
+            if record is not None:
+                self._extend_sample(
+                    stats.node_eids,
+                    [record["a_eid"], record["b_eid"]],
+                    sample_ids,
+                )
+
+            result = session.run(
                 f"""
                 MATCH (a:{label} {{id: $old_id}})
                 MATCH (b:{label} {{id: $new_id}})
@@ -333,7 +385,7 @@ class Neo4jGraphBuilder:
                 old_id=old_id,
                 new_id=new_id,
             )
-            stats.add_counters(r.consume().counters)
+            stats.add_counters(result.consume().counters)
 
             rel_types = [
                 row["type"]
@@ -342,33 +394,36 @@ class Neo4jGraphBuilder:
                 ).data()
             ]
 
-            for t in rel_types:
-                # salientes
-                r = session.run(
+            for rel_type in rel_types:
+                result = session.run(
                     f"""
-                    MATCH (a:{label} {{id: $old_id}})-[r:{t}]->(x)
+                    MATCH (a:{label} {{id: $old_id}})-[r:{rel_type}]->(x)
                     MATCH (b:{label} {{id: $new_id}})
-                    MERGE (b)-[r2:{t}]->(x)
+                    MERGE (b)-[r2':{rel_type}]->(x)
                     SET r2 += properties(r)
                     DELETE r
                     RETURN collect(elementId(r2)) AS moved_rel_eids,
-                        collect([b.id, x.id]) AS pairs
+                           collect([b.id, x.id]) AS pairs
                     """,
                     old_id=old_id,
                     new_id=new_id,
                 )
-                rec = r.single()
-                summ = r.consume()
-                stats.add_counters(summ.counters)
-                if rec:
-                    self._extend_sample(stats.rel_eids, rec["moved_rel_eids"] or [], sample_ids)
+                record = result.single()
+                summary = result.consume()
+                stats.add_counters(summary.counters)
 
-                # entrantes
-                r = session.run(
+                if record is not None:
+                    self._extend_sample(
+                        stats.rel_eids,
+                        record["moved_rel_eids"] or [],
+                        sample_ids,
+                    )
+
+                result = session.run(
                     f"""
-                    MATCH (y)-[r:{t}]->(a:{label} {{id: $old_id}})
+                    MATCH (y)-[r:{rel_type}]->(a:{label} {{id: $old_id}})
                     MATCH (b:{label} {{id: $new_id}})
-                    MERGE (y)-[r2:{t}]->(b)
+                    MERGE (y)-[r2:{rel_type}]->(b)
                     SET r2 += properties(r)
                     DELETE r
                     RETURN collect(elementId(r2)) AS moved_rel_eids
@@ -376,37 +431,29 @@ class Neo4jGraphBuilder:
                     old_id=old_id,
                     new_id=new_id,
                 )
-                rec = r.single()
-                summ = r.consume()
-                stats.add_counters(summ.counters)
-                if rec:
-                    self._extend_sample(stats.rel_eids, rec["moved_rel_eids"] or [], sample_ids)
+                record = result.single()
+                summary = result.consume()
+                stats.add_counters(summary.counters)
 
-            # borrar A
-            r = session.run(
+                if record is not None:
+                    self._extend_sample(
+                        stats.rel_eids,
+                        record["moved_rel_eids"] or [],
+                        sample_ids,
+                    )
+
+            result = session.run(
                 f"""
                 MATCH (a:{label} {{id: $old_id}})
                 DETACH DELETE a
                 """,
                 old_id=old_id,
             )
-            stats.add_counters(r.consume().counters)
+            stats.add_counters(result.consume().counters)
 
         return stats
 
-    def _extend_sample(self, dst: List[Any], src: List[Any], sample_ids: int) -> None:
-        if sample_ids <= 0:
-            return
-        remaining = sample_ids - len(dst)
-        if remaining <= 0:
-            return
-        dst.extend(src[:remaining])
-
     def fetch_entity_by_id(self, entity_id: str) -> list[Entity]:
-        """
-        Busca un nodo por id en todos los labels del schema y devuelve entidades mínimas.
-        (Si hay más de un label con el mismo id, devuelve varias.)
-        """
         query = """
         MATCH (n {id: $id})
         RETURN labels(n) AS labels
@@ -420,46 +467,27 @@ class Neo4jGraphBuilder:
 
         labels = rows[0]["labels"] or []
         out: list[Entity] = []
-        for lab in labels:
-            if lab in GraphSchema.ENTITIES:
-                cls = GraphSchema.get_entity_class(lab)
-                out.append(cls(id=entity_id, value={}))  # value vacío (o {"source":"db"} si querés)
+
+        for label in labels:
+            if label in GraphSchema.ENTITIES:
+                entity_cls = GraphSchema.get_entity_class(label)
+                out.append(entity_cls(id=entity_id, value={}))
+
         return out
-
-
-# ============================================================
-# Fachada unificada
-# ============================================================
-
-
-class GraphBuilder:
-    def __init__(
-        self,
-        neo4j_uri: str,
-        neo4j_user: str,
-        neo4j_password: str,
-    ):
-        if not all([neo4j_uri, neo4j_user, neo4j_password]):
-            raise ValueError("Faltan credenciales de Neo4j (uri/user/password)")
-
-        self.backend = Neo4jGraphBuilder(neo4j_uri, neo4j_user, neo4j_password)
-
-    def close(self):
-        if hasattr(self.backend, "close"):
-            self.backend.close()
-
-    def clear_graph(self):
-        self.backend.clear_graph()
 
     def ingest(
         self,
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
-    ):
-        """Inserta entidades y relaciones usando batching genérico."""
-        ent_stats = self.backend.upsert_entities(entities, sample_ids=15)
-        rel_stats = self.backend.upsert_relationships(relationships, sample_ids=15)
+    ) -> None:
+        ent_stats = self.upsert_entities(entities, sample_ids=15)
+        rel_stats = self.upsert_relationships(relationships, sample_ids=15)
+        self.export_errors_and_graph(IMPUT_PATH, OUTPUT_PATH)
+        self._print_stats(ent_stats, rel_stats)
+        self.close()
 
+    @staticmethod
+    def _print_stats(ent_stats: Neo4jStats, rel_stats: Neo4jStats) -> None:
         print(
             "ENTIDADES:",
             "nodes_created=",
@@ -483,210 +511,114 @@ class GraphBuilder:
             "sample_pairs=",
             rel_stats.rel_pairs[:10],
         )
-        self.backend.close()
 
+    def export_errors_and_graph(
+        self,
+        input_json_path: str | Path,
+        output_json_path: str | Path,
+    ) -> Dict[str, Any]:
+        input_json_path = Path(input_json_path)
+        output_json_path = Path(output_json_path)
 
-# ============================================================
-# Funciones auxiliares
-# ============================================================
+        with open(input_json_path, "r", encoding="utf-8") as f:
+            errors = list(ijson.items(f, "errors.item"))
 
+        # -----------------------------
+        # 2) Extracción desde Neo4j
+        # -----------------------------
 
-def load_graph_json(
-    json_path: str | Path,
-    neo4j_uri: str,
-    neo4j_user: str,
-    neo4j_password: str,
-    enable_non_equal_name_unification: bool = ENABLE_NON_EQUAL_NAME_UNIFICATION,
-) -> Tuple[list[Entity], list[Tuple[Relationship, Entity, Entity]], List[Tuple[str, str]]]:
-    json_path = Path(json_path).resolve()
-    if not json_path.exists():
-        raise FileNotFoundError(f"No existe el archivo: {json_path}")
+        neo4j_entities: List[Dict[str, Any]] = []
+        neo4j_relationships: List[Dict[str, Any]] = []
+        entity_type_counts: Dict[str, int] = {}
+        relationship_type_counts: Dict[str, int] = {}
+        try:
+            with self.driver.session() as session:
+                # Entidades
+                node_query = """
+                MATCH (n)
+                RETURN
+                coalesce(n.id, elementId(n)) AS id,
+                head(labels(n)) AS label,
+                properties(n) AS value
+                ORDER BY id
+                """
+                node_result = session.run(node_query)
 
-    with json_path.open(encoding="utf-8") as f:
-        payload = json.load(f)
+                for record in node_result:
+                    label = record["label"] or "SinLabel"
+                    entity_id = record["id"]
+                    value = dict(record["value"]) if record["value"] is not None else {}
 
-    entities_by_id: dict[str, Entity] = {}
-    seen_labels_by_id: dict[str, set[str]] = {}
+                    # eliminar propiedades que no querés duplicadas o internas
+                    value.pop("__created__", None)
+                    value.pop("id", None)
 
-    for raw in payload.get("entities", []):
-        entity_label = raw["label"]
-        entity_id = raw["id"]
-        value = raw.get("value")
+                    neo4j_entities.append(
+                        {
+                            "id": entity_id,
+                            "label": label,
+                            "value": value,
+                        }
+                    )
 
-        seen_labels_by_id.setdefault(entity_id, set()).add(entity_label)
+                    entity_type_counts[label] = entity_type_counts.get(label, 0) + 1
 
-        # Si ya existe, no reemplazamos: nos quedamos con 1 sola entidad
-        if entity_id in entities_by_id:
-            prev = entities_by_id[entity_id]
-            if prev.label != entity_label:
-                logger.error(
-                    "ID duplicado con distinto label: id=%s (keep=%s, drop=%s)",
-                    entity_id,
-                    prev.label,
-                    entity_label,
-                )
-            else:
-                logger.warning(
-                    "Entidad duplicada: id=%s label=%s (se ignora la repetida)",
-                    entity_id,
-                    entity_label,
-                )
-            continue
+                # Relaciones
+                rel_query = """
+                MATCH (a)-[r]->(b)
+                RETURN
+                type(r) AS type,
+                coalesce(a.id, elementId(a)) AS source_id,
+                coalesce(b.id, elementId(b)) AS target_id,
+                properties(r) AS properties
+                ORDER BY type, source_id, target_id
+                """
+                rel_result = session.run(rel_query)
 
-        entity_cls = GraphSchema.get_entity_class(entity_label)
-        entities_by_id[entity_id] = entity_cls(id=entity_id, value=value)
+                for record in rel_result:
+                    rel_type = record["type"]
+                    properties = (
+                        dict(record["properties"]) if record["properties"] is not None else {}
+                    )
 
-    # (Opcional) resumen final de duplicados
-    dup_diff = {eid: labels for eid, labels in seen_labels_by_id.items() if len(labels) > 1}
-    if dup_diff:
-        logger.error(
-            "Se detectaron %d IDs con múltiples labels. Se guardó solo 1 entidad por id.",
-            len(dup_diff),
-        )
+                    # eliminar propiedad
+                    properties.pop("__created__", None)
 
-    database = Neo4jGraphBuilder(neo4j_uri, neo4j_user, neo4j_password)
-    common_remap: Dict[str, str] = {}
+                    neo4j_relationships.append(
+                        {
+                            "type": rel_type,
+                            "source_id": record["source_id"],
+                            "target_id": record["target_id"],
+                            "properties": properties,
+                        }
+                    )
 
-    if enable_non_equal_name_unification:
-        inv_ids_db = database.fetch_investigador_ids()
-        inv_ids = [eid for eid, e in entities_by_id.items() if e.label == "Investigador"]
-        inv_remap, db_merge, _ = build_containment_plan(
-            inv_ids_batch=inv_ids,
-            inv_ids_db=inv_ids_db,
-        )
-        if inv_remap:
-            # Eliminamos las entidades Investigador "contenidas"
-            for drop_id in inv_remap.keys():
-                # por seguridad, solo borramos si sigue siendo Investigador
-                e = entities_by_id.get(drop_id)
-                if e is not None and e.label == "Investigador":
-                    del entities_by_id[drop_id]
+                    relationship_type_counts[rel_type] = (
+                        relationship_type_counts.get(rel_type, 0) + 1
+                    )
 
-            logger.warning(
-                "Investigador containment: eliminados=%d (se redirigen relaciones)", len(inv_remap)
-            )
-        common_remap = {**inv_remap, **dict(db_merge)}
-    else:
-        inv_remap, db_merge = {}, []
-    # Relationships
-    relationships: list[Tuple[Relationship, Entity, Entity]] = []
-    for raw in payload.get("relationships", []):
-        rel_type = raw["type"]
-        source_id = common_remap.get(raw["source_id"], raw["source_id"])
-        target_id = common_remap.get(raw["target_id"], raw["target_id"])
+        finally:
+            self.driver.close()
 
-        properties = raw.get("properties") or {}
+        # -----------------------------
+        # 3) Guardado final
+        # -----------------------------
+        output_data = {
+            "entities": neo4j_entities,
+            "relationships": neo4j_relationships,
+            "errors": errors,
+            "source_summary": {
+                "neo4j_entities": len(neo4j_entities),
+                "neo4j_relationships": len(neo4j_relationships),
+                "error_count": len(errors),
+                "entity_type_counts": entity_type_counts,
+                "relationship_type_counts": relationship_type_counts,
+            },
+        }
+        print("Resumen:")
+        print(output_data["source_summary"])
+        output_json_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_json_path.open("w", encoding="utf-8") as f:
+            json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-        rel_factory = GraphSchema.get_relationship_factory(rel_type)
-        rel = rel_factory(source_id, target_id, properties)
-
-        src = entities_by_id.get(source_id)
-        if src is None:
-            db_candidates = database.fetch_entity_by_id(source_id)
-            if len(db_candidates) == 1:
-                src = db_candidates[0]
-            else:
-                logger.error(
-                    "Relación %s: source_id no existe en batch y en DB es %s: %s (se omite)",
-                    rel_type,
-                    "inexistente" if not db_candidates else "ambiguo",
-                    source_id,
-                )
-                continue
-
-        tgt = entities_by_id.get(target_id)
-        if tgt is None:
-            db_candidates = database.fetch_entity_by_id(target_id)
-            if len(db_candidates) == 1:
-                tgt = db_candidates[0]
-            else:
-                logger.error(
-                    "Relación %s: target_id no existe en batch y en DB es %s: %s (se omite)",
-                    rel_type,
-                    "inexistente" if not db_candidates else "ambiguo",
-                    target_id,
-                )
-                continue
-
-        relationships.append((rel, src, tgt))
-
-    raw_errors = payload.get("errors", [])
-    errors: list[dict[str, Any]] = raw_errors if isinstance(raw_errors, list) else []
-    errors = [e for e in errors if isinstance(e, dict)]
-
-    # Logs de conteos
-    raw_entities_n = len(payload.get("entities", []))
-    raw_rels_n = len(payload.get("relationships", []))
-
-    logger.info("JSON: entidades leídas=%d", raw_entities_n)
-    logger.info("JSON: relaciones leídas=%d", raw_rels_n)
-    logger.info("JSON: errores leídos=%d", len(errors))
-
-    logger.info("Post-dedupe: entidades finales=%d", len(entities_by_id))
-    logger.info("Post-dedupe/remap: relaciones finales=%d", len(relationships))
-    database.close()
-    return list(entities_by_id.values()), relationships, db_merge
-
-
-def build_containment_plan(
-    *,
-    inv_ids_batch: List[str],
-    inv_ids_db: List[str],
-    enable_non_equal_name_unification: bool = ENABLE_NON_EQUAL_NAME_UNIFICATION,
-) -> Tuple[Dict[str, str], List[Tuple[str, str]], List[str]]:
-    """
-    Devuelve:
-      1) batch_remap: drop->keep donde drop NO está en la DB (se arregla en el batch)
-      2) db_merge: [(old_id, new_id), ...] donde old_id SÍ está en la DB y debe migrar a new_id
-      3) kept: lista de ids canónicos (los que "quedan")
-    """
-    kept: List[str] = []
-    if not enable_non_equal_name_unification:
-        # Sin remapeos, sin merges, "kept" = ids únicos
-        kept = sorted(set(inv_ids_batch) | set(inv_ids_db))
-        return {}, [], kept
-
-    db_set = set(inv_ids_db)
-    batch_set = set(inv_ids_batch)
-
-    # Ordenamos por largo DESC y sin repetidos
-    all_ids_sorted = sorted(set(inv_ids_batch) | set(inv_ids_db), key=len, reverse=True)
-
-    remap_all: Dict[str, str] = {}
-
-    # 1) Remap global (misma lógica que tenías)
-    for cand in all_ids_sorted:
-        container = next((k for k in kept if cand != k and cand in k), None)
-        if container:
-            remap_all[cand] = container
-        else:
-            kept.append(cand)
-
-    # 2) Clasificación en dos “salidas”
-    batch_remap: Dict[str, str] = {}
-    db_merge: List[Tuple[str, str]] = []
-
-    for drop, keep in remap_all.items():
-        drop_in_db = drop in db_set
-        keep_in_db = keep in db_set
-        drop_in_batch = drop in batch_set
-        keep_in_batch = keep in batch_set
-
-        if drop_in_db:
-            # Caso DB: el ID viejo existe en la DB.
-            # Querés que sus relaciones pasen al "nuevo".
-            if keep_in_db or keep_in_batch:
-                db_merge.append((drop, keep))
-                logger.warning("DB merge plan: old=%s -> new=%s", drop, keep)
-            else:
-                # keep no existe ni en DB ni en batch (raro)
-                logger.warning("DB merge skip (keep inexistente): old=%s keep=%s", drop, keep)
-
-        else:
-            # Caso batch: drop no está en DB
-            # Solo tiene sentido si drop viene en batch (si no, ni aparece)
-            if drop_in_batch:
-                batch_remap[drop] = keep
-                logger.warning("Batch remap: drop=%s -> keep=%s", drop, keep)
-
-    return batch_remap, db_merge, kept
+        return output_data
