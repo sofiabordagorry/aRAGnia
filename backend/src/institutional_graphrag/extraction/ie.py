@@ -11,13 +11,13 @@ from typing import Any, Dict, List, Optional, cast
 
 import ijson
 
+from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,

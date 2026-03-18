@@ -9,11 +9,11 @@ from typing import Any, Dict, List, Optional, cast
 import pandas as pd
 
 from institutional_graphrag.document_naming import (
-    build_project_id,
-    build_table_chunk_id,
     DOCUMENT_KIND_PRIORITY,
     PATTERN_TABLE,
     PROJECT_KEY_RE,
+    build_project_id,
+    build_table_chunk_id,
 )
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,

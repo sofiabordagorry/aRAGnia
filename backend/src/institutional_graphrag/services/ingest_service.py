@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.document_naming import (
     PATTERN_DOCUMENT_WITH_OPTIONAL_PDF as PATTERN_DOCUMENT,
+)
+from institutional_graphrag.document_naming import (
     PATTERN_TABLE,
 )
 from institutional_graphrag.extraction.ie import EntityExtractor
@@ -34,6 +36,7 @@ from institutional_graphrag.ingest.file_namer import (
 )
 from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
+
 
 class IngestService:
     def __init__(
