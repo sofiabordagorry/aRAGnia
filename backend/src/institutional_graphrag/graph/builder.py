@@ -98,7 +98,7 @@ class GraphBuilder:
                 time.sleep(sleep_s)
             except AuthError:
                 raise
-        raise last_err  
+        raise last_err
 
     # -------------------------
     # Constraints
