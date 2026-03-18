@@ -98,10 +98,7 @@ class GraphBuilder:
                 time.sleep(sleep_s)
             except AuthError:
                 raise
-        raise last_err  # type: ignore[misc]
-
-    def close(self):
-        self.driver.close()
+        raise last_err  
 
     # -------------------------
     # Constraints
