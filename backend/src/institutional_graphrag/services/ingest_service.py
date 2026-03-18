@@ -460,9 +460,14 @@ class IngestService:
 
     def _ingest_neo4j(self, entity_json_path: Path) -> None:
         try:
+            if self.user is None or self.password is None:
+                raise ValueError("Faltan credenciales de Neo4j: user/password")
 
             entities, relationships = load_graph_json(
-                entity_json_path, self.neo4j_uri, self.user, self.password
+                entity_json_path,
+                self.neo4j_uri,
+                self.user,
+                self.password,
             )
             self.builder.ingest(entities=entities, relationships=relationships)
 

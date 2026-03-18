@@ -85,7 +85,6 @@ class GraphBuilder:
         self.driver.close()
 
     def _ping(self, max_attempts: int = 2, sleep_s: int = 2) -> None:
-        last_err = None
         for attempt in range(1, max_attempts + 1):
             try:
                 with self.driver.session() as session:
@@ -93,12 +92,11 @@ class GraphBuilder:
                 logger.info("Neo4j listo (ping OK)")
                 return
             except (ServiceUnavailable, SessionExpired, OSError) as e:
-                last_err = e
                 logger.warning("Neo4j no listo (ping %d/%d): %s", attempt, max_attempts, e)
                 time.sleep(sleep_s)
             except AuthError:
                 raise
-        raise last_err
+        raise ValueError("No se pudo conectar a Neo4j")
 
     # -------------------------
     # Constraints
