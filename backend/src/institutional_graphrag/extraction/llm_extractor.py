@@ -5,9 +5,10 @@ from __future__ import annotations
 import json
 import logging
 import re
-import regex
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
+import regex
 
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,

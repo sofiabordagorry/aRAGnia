@@ -5,7 +5,6 @@ import csv
 import io
 import json
 import os
-import re
 import zipfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -17,6 +16,12 @@ from docling_core.types.doc import DoclingDocument
 from dotenv import load_dotenv
 
 from institutional_graphrag.config import EMBED_MODEL_ID
+from institutional_graphrag.document_naming import (
+    PATTERN_DOCUMENT_WITH_OPTIONAL_PDF as PATTERN_DOCUMENT,
+)
+from institutional_graphrag.document_naming import (
+    PATTERN_TABLE,
+)
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
@@ -31,16 +36,6 @@ from institutional_graphrag.ingest.file_namer import (
 )
 from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
-
-PATTERN_DOCUMENT = re.compile(
-    r"^(?P<group>[A-Za-z]+)_(?P<year>\d{4})_(?P<doc_id>\d+)_(?P<kind>informe|propuesta|resumen)(?:\.pdf)?$",
-    re.IGNORECASE,
-)
-
-PATTERN_TABLE = re.compile(
-    r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$",
-    re.IGNORECASE,
-)
 
 
 class IngestService:

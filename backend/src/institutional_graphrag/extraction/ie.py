@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +11,7 @@ from typing import Any, Dict, List, Optional, cast
 
 import ijson
 
+from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
@@ -28,13 +28,6 @@ from institutional_graphrag.graph.schema import (
 logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
-
-PATTERN_DOCUMENT = re.compile(
-    r"^(?P<group>[A-Za-z]+)_(?P<year>\d{4})_(?P<doc_id>\d+)_(?P<kind>informe|propuesta|resumen)$",
-    re.IGNORECASE,
-)
-
-PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
