@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Grafo de Entidades - GraphRAG</title>
+    <link rel="stylesheet" href="/css/graph.css" />
+    <link rel="stylesheet" href="/css/topbar.css" />
+  </head>
+  <body data-page="graph">
+    <div id="topbar"></div>
+
+    <main class="app">
+      <section class="graph-page">
+        <header class="graph-top">
+          <div>
+            <span class="graph-kicker">Exploración visual</span>
+            <h1 class="graph-title">Grafo de entidades</h1>
+            <p class="graph-substatus">
+              El grafo inicia vacío. Busca y selecciona una entidad para cargar
+              su vecindad.
+            </p>
+          </div>
+
+          <div class="graph-actions">
+            <button id="refreshGraphBtn" class="secondary-btn" type="button">
+              Actualizar grafo
+            </button>
+          </div>
+        </header>
+
+        <div class="graph-metrics">
+          <span id="graphNodeCount" class="metric-pill">0 nodos</span>
+          <span id="graphEdgeCount" class="metric-pill">0 relaciones</span>
+          <span id="graphAliasCount" class="metric-pill">0 aliases</span>
+        </div>
+
+        <section class="graph-shell">
+          <div class="graph-stage">
+            <div class="graph-canvas-shell">
+              <svg
+                id="graphSvg"
+                class="graph-svg"
+                viewBox="0 0 720 520"
+                aria-label="Grafo de entidades"
+              ></svg>
+              <div id="graphEmptyState" class="graph-empty-state">
+                Preparando visualizacion...
+              </div>
+            </div>
+
+            <div id="graphLegend" class="graph-legend"></div>
+            <div id="graphSelection" class="graph-selection">
+              Selecciona un nodo para ver sus relaciones mas cercanas.
+            </div>
+          </div>
+
+          <aside id="aliasPanel" class="alias-panel">
+            <div
+              class="side-tabs"
+              role="tablist"
+              aria-label="Panel lateral del grafo"
+            >
+              <button
+                id="tabEntitiesBtn"
+                class="side-tab active"
+                type="button"
+                role="tab"
+                aria-selected="true"
+              >
+                Entidades
+              </button>
+              <button
+                id="tabAliasesBtn"
+                class="side-tab"
+                type="button"
+                role="tab"
+                aria-selected="false"
+              >
+                Posibles alias
+              </button>
+            </div>
+
+            <section
+              id="entityPanel"
+              class="entity-panel side-section active"
+              data-panel="entities"
+            >
+              <div class="entity-panel-head">
+                <div>
+                  <h2>Explorar entidades</h2>
+                  <p id="entityStatus" class="alias-status">
+                    Escribe para buscar y haz click en una entidad para
+                    mostrarla en el grafo.
+                  </p>
+                </div>
+                <span id="entityResultCount" class="metric-pill"
+                  >0 resultados</span
+                >
+              </div>
+
+              <div class="entity-tools">
+                <input
+                  id="entitySearchInput"
+                  class="entity-input"
+                  type="search"
+                  placeholder="Buscar entidad..."
+                />
+                <select id="entityTypeSelect" class="entity-select">
+                  <option value="Investigador" selected>Investigador</option>
+                  <option value="Proyecto">Proyecto</option>
+                  <option value="Topico">Tópico</option>
+                  <option value="Documento">Documento</option>
+                  <option value="Anio">Año</option>
+                </select>
+              </div>
+
+              <div id="entityList" class="entity-list">
+                <div class="alias-placeholder">Cargando entidades...</div>
+              </div>
+            </section>
+
+            <section
+              id="aliasSection"
+              class="side-section"
+              data-panel="aliases"
+            >
+              <div class="alias-panel-head">
+                <div>
+                  <h2>Posibles alias</h2>
+                  <p id="aliasStatus" class="alias-status">
+                    Activa el filtro para centrar el grafo en relaciones
+                    POSIBLE_ALIAS.
+                  </p>
+                </div>
+                <span id="aliasEntityCount" class="metric-pill"
+                  >0 entidades</span
+                >
+              </div>
+
+              <div class="entity-tools alias-tools">
+                <input
+                  id="aliasSearchInput"
+                  class="entity-input"
+                  type="search"
+                  placeholder="Buscar posibles alias..."
+                />
+              </div>
+
+              <div id="aliasList" class="alias-list">
+                <div class="alias-placeholder">
+                  Todavia no se solicitaron posibles alias.
+                </div>
+              </div>
+            </section>
+          </aside>
+        </section>
+      </section>
+    </main>
+
+    <script src="/js/settings.js"></script>
+    <script src="/js/topbar.js"></script>
+    <script src="/js/graph-panel.js"></script>
+  </body>
+</html>

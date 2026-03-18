@@ -5,7 +5,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple, TypeVar
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar
 
 import ijson
 from neo4j import GraphDatabase
@@ -474,6 +474,443 @@ class GraphBuilder:
                 out.append(entity_cls(id=entity_id, value={}))
 
         return out
+
+    @staticmethod
+    def _pick_primary_label(labels: list[str]) -> str:
+        for label in labels:
+            if label in GraphSchema.ENTITIES:
+                return label
+        return labels[0] if labels else "Entidad"
+
+    @staticmethod
+    def _display_value(label: str, props: dict[str, Any]) -> str:
+        if label == "Investigador":
+            return str(props.get("name") or props.get("id") or "Investigador")
+        if label == "Proyecto":
+            return str(props.get("title") or props.get("id") or "Proyecto")
+        if label == "Topico":
+            return str(props.get("value") or props.get("id") or "Topico")
+        if label == "Anio":
+            return str(props.get("year") or props.get("id") or "Anio")
+        return str(props.get("id") or props.get("value") or label)
+
+    @staticmethod
+    def _normalized_search(value: Optional[str]) -> str:
+        return (value or "").strip().lower()
+
+    def fetch_entities_catalog(
+        self,
+        *,
+        search: Optional[str] = None,
+        entity_label: Optional[str] = None,
+        limit: int = 30,
+    ) -> dict[str, Any]:
+        safe_limit = max(1, min(limit, 100))
+        search_text = self._normalized_search(search)
+
+        allowed_labels = {label for label in GraphSchema.ENTITIES if label != "Chunk"}
+        selected_label = (entity_label or "").strip()
+        if selected_label and selected_label not in allowed_labels:
+            raise ValueError(f"Tipo de entidad no soportado: {selected_label}")
+
+        label_filter = ""
+        params: dict[str, Any] = {"search": search_text, "limit": safe_limit}
+        if selected_label:
+            label_filter = "AND $label IN labels(n)"
+            params["label"] = selected_label
+
+        query = f"""
+        MATCH (n)
+        WHERE NOT n:Chunk
+          {label_filter}
+          AND (
+              $search = ''
+              OR toLower(coalesce(n.id, '')) CONTAINS $search
+              OR toLower(coalesce(n.name, '')) CONTAINS $search
+              OR toLower(coalesce(n.value, '')) CONTAINS $search
+              OR toLower(coalesce(n.title, '')) CONTAINS $search
+              OR toLower(coalesce(toString(n.year), '')) CONTAINS $search
+          )
+        RETURN n, labels(n) AS labels
+        ORDER BY coalesce(n.name, n.value, n.title, n.id, '') ASC
+        LIMIT $limit
+        """
+
+        with self.driver.session() as session:
+            rows = session.run(query, **params).data()
+
+        entities: list[dict[str, Any]] = []
+        for row in rows:
+            node = row.get("n")
+            if node is None:
+                continue
+            props = dict(node)
+            node_id = str(props.get("id") or "").strip()
+            if not node_id:
+                continue
+            labels = [str(label) for label in (row.get("labels") or [])]
+            primary_label = self._pick_primary_label(labels)
+            if primary_label == "Chunk":
+                continue
+            entities.append(
+                {
+                    "id": node_id,
+                    "label": primary_label,
+                    "display": self._display_value(primary_label, props),
+                }
+            )
+
+        return {
+            "entities": entities,
+            "summary": {
+                "result_count": len(entities),
+            },
+        }
+
+    def fetch_graph_neighborhood(
+        self,
+        *,
+        entity_id: str,
+        relationship_limit: int = 320,
+        alias_only: bool = False,
+    ) -> dict[str, Any]:
+        safe_relationship_limit = max(1, min(relationship_limit, 1200))
+        entity_id = entity_id.strip()
+        if not entity_id:
+            return {
+                "nodes": [],
+                "edges": [],
+                "summary": {
+                    "node_count": 0,
+                    "edge_count": 0,
+                    "alias_edge_count": 0,
+                },
+            }
+
+        with self.driver.session() as session:
+            source_check = session.run(
+                """
+                MATCH (n {id: $entity_id})
+                WHERE NOT n:Chunk
+                RETURN n, labels(n) AS labels
+                LIMIT 1
+                """,
+                entity_id=entity_id,
+            ).data()
+            if not source_check:
+                return {
+                    "nodes": [],
+                    "edges": [],
+                    "summary": {
+                        "node_count": 0,
+                        "edge_count": 0,
+                        "alias_edge_count": 0,
+                    },
+                }
+
+            edge_rows = session.run(
+                """
+                MATCH (n {id: $entity_id})-[r]-(m)
+                WHERE NOT n:Chunk
+                  AND NOT m:Chunk
+                  AND ($alias_only = false OR type(r) = 'POSIBLE_ALIAS')
+                RETURN startNode(r).id AS source_id,
+                       endNode(r).id AS target_id,
+                       type(r) AS type,
+                       properties(r) AS properties
+                LIMIT $relationship_limit
+                """,
+                entity_id=entity_id,
+                alias_only=alias_only,
+                relationship_limit=safe_relationship_limit,
+            ).data()
+
+            node_rows = session.run(
+                """
+                MATCH (n {id: $entity_id})
+                WHERE NOT n:Chunk
+                OPTIONAL MATCH (n)-[r]-(m)
+                WHERE NOT m:Chunk
+                  AND ($alias_only = false OR type(r) = 'POSIBLE_ALIAS')
+                WITH collect(DISTINCT n) + collect(DISTINCT m) AS node_list
+                UNWIND node_list AS node
+                WITH DISTINCT node
+                RETURN node, labels(node) AS labels
+                """,
+                entity_id=entity_id,
+                alias_only=alias_only,
+            ).data()
+
+        edges = [
+            {
+                "source": str(row.get("source_id") or ""),
+                "target": str(row.get("target_id") or ""),
+                "type": str(row.get("type") or "RELACION"),
+                "is_alias": str(row.get("type") or "") == "POSIBLE_ALIAS",
+                "properties": row.get("properties") or {},
+            }
+            for row in edge_rows
+            if row.get("source_id") and row.get("target_id")
+        ]
+
+        degree_by_id: dict[str, int] = {}
+        for edge in edges:
+            source_id = str(edge["source"])
+            target_id = str(edge["target"])
+            degree_by_id[source_id] = degree_by_id.get(source_id, 0) + 1
+            degree_by_id[target_id] = degree_by_id.get(target_id, 0) + 1
+
+        nodes: list[dict[str, Any]] = []
+        node_ids: list[str] = []
+        for row in node_rows:
+            node = row.get("node")
+            if node is None:
+                continue
+            props = dict(node)
+            node_id = str(props.get("id") or "").strip()
+            if not node_id:
+                continue
+            labels = [str(label) for label in (row.get("labels") or [])]
+            primary_label = self._pick_primary_label(labels)
+            if primary_label == "Chunk":
+                continue
+            nodes.append(
+                {
+                    "id": node_id,
+                    "label": primary_label,
+                    "display": self._display_value(primary_label, props),
+                    "degree": degree_by_id.get(node_id, 0),
+                    "is_alias_candidate": False,
+                }
+            )
+            node_ids.append(node_id)
+
+        alias_node_ids: set[str] = set()
+        for edge in edges:
+            if bool(edge["is_alias"]):
+                alias_node_ids.add(str(edge["source"]))
+                alias_node_ids.add(str(edge["target"]))
+
+        for node in nodes:
+            node["is_alias_candidate"] = node["id"] in alias_node_ids
+
+        alias_edge_count = sum(1 for edge in edges if bool(edge["is_alias"]))
+
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "summary": {
+                "node_count": len(nodes),
+                "edge_count": len(edges),
+                "alias_edge_count": alias_edge_count,
+            },
+        }
+
+    def fetch_graph_snapshot(
+        self,
+        *,
+        node_limit: int = 160,
+        relationship_limit: int = 320,
+        alias_only: bool = False,
+    ) -> dict[str, Any]:
+        safe_node_limit = max(1, min(node_limit, 500))
+        safe_relationship_limit = max(1, min(relationship_limit, 1200))
+
+        node_query = (
+            """
+            MATCH (n:Investigador)-[:POSIBLE_ALIAS]-()
+            OPTIONAL MATCH (n)-[r]-()
+            WITH DISTINCT n, count(r) AS degree
+            ORDER BY degree DESC, coalesce(n.id, "") ASC
+            LIMIT $node_limit
+            RETURN n, labels(n) AS labels, degree
+            """
+            if alias_only
+            else """
+            MATCH (n)
+                        WHERE NOT n:Chunk
+            OPTIONAL MATCH (n)-[r]-()
+                        WHERE NOT startNode(r):Chunk
+                            AND NOT endNode(r):Chunk
+            WITH n, count(r) AS degree
+            ORDER BY degree DESC, coalesce(n.id, "") ASC
+            LIMIT $node_limit
+            RETURN n, labels(n) AS labels, degree
+            """
+        )
+
+        with self.driver.session() as session:
+            node_rows = session.run(node_query, node_limit=safe_node_limit).data()
+
+            if not node_rows:
+                return {
+                    "nodes": [],
+                    "edges": [],
+                    "summary": {
+                        "node_count": 0,
+                        "edge_count": 0,
+                        "alias_edge_count": 0,
+                    },
+                }
+
+            node_ids: list[str] = []
+            nodes: list[dict[str, Any]] = []
+            seen_node_ids: set[str] = set()
+
+            for row in node_rows:
+                node = row.get("n")
+                if node is None:
+                    continue
+
+                props = dict(node)
+                node_id = str(props.get("id") or "").strip()
+                if not node_id or node_id in seen_node_ids:
+                    continue
+
+                labels = [str(label) for label in (row.get("labels") or [])]
+                primary_label = self._pick_primary_label(labels)
+                degree = int(row.get("degree") or 0)
+
+                nodes.append(
+                    {
+                        "id": node_id,
+                        "label": primary_label,
+                        "display": self._display_value(primary_label, props),
+                        "degree": degree,
+                        "is_alias_candidate": False,
+                    }
+                )
+                node_ids.append(node_id)
+                seen_node_ids.add(node_id)
+
+            edge_filter = "AND type(r) = 'POSIBLE_ALIAS'" if alias_only else ""
+            edge_query = f"""
+            MATCH (source)-[r]->(target)
+                        WHERE source.id IN $node_ids AND target.id IN $node_ids
+                            AND NOT source:Chunk
+                            AND NOT target:Chunk
+            {edge_filter}
+            RETURN source.id AS source_id,
+                   target.id AS target_id,
+                   type(r) AS type,
+                   properties(r) AS properties
+            ORDER BY type, source_id, target_id
+            LIMIT $relationship_limit
+            """
+
+            edge_rows = session.run(
+                edge_query,
+                node_ids=node_ids,
+                relationship_limit=safe_relationship_limit,
+            ).data()
+
+            alias_rows = session.run(
+                """
+                MATCH (source:Investigador)-[r:POSIBLE_ALIAS]->(target:Investigador)
+                WHERE source.id IN $node_ids AND target.id IN $node_ids
+                RETURN DISTINCT source.id AS source_id, target.id AS target_id
+                """,
+                node_ids=node_ids,
+            ).data()
+
+        alias_node_ids: set[str] = set()
+        for row in alias_rows:
+            source_id = str(row.get("source_id") or "")
+            target_id = str(row.get("target_id") or "")
+            if source_id:
+                alias_node_ids.add(source_id)
+            if target_id:
+                alias_node_ids.add(target_id)
+
+        for node in nodes:
+            node["is_alias_candidate"] = node["id"] in alias_node_ids
+
+        edges = [
+            {
+                "source": str(row.get("source_id") or ""),
+                "target": str(row.get("target_id") or ""),
+                "type": str(row.get("type") or "RELACION"),
+                "is_alias": str(row.get("type") or "") == "POSIBLE_ALIAS",
+                "properties": row.get("properties") or {},
+            }
+            for row in edge_rows
+            if row.get("source_id") and row.get("target_id")
+        ]
+
+        alias_edge_count = sum(1 for edge in edges if edge["is_alias"])
+
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "summary": {
+                "node_count": len(nodes),
+                "edge_count": len(edges),
+                "alias_edge_count": alias_edge_count,
+            },
+        }
+
+    def fetch_alias_candidates(self, *, search: Optional[str] = None) -> dict[str, Any]:
+        search_text = self._normalized_search(search)
+        query = """
+        MATCH (source:Investigador)-[r:POSIBLE_ALIAS]->(target:Investigador)
+        WHERE $search = ''
+           OR toLower(coalesce(source.id, '')) CONTAINS $search
+           OR toLower(coalesce(source.name, '')) CONTAINS $search
+           OR toLower(coalesce(target.id, '')) CONTAINS $search
+           OR toLower(coalesce(target.name, '')) CONTAINS $search
+        RETURN DISTINCT
+            source.id AS source_id,
+            coalesce(source.name, source.id) AS source_name,
+            target.id AS target_id,
+            coalesce(target.name, target.id) AS target_name,
+            properties(r) AS relationship_properties
+        ORDER BY source_name, target_name
+        """
+
+        with self.driver.session() as session:
+            rows = session.run(query, search=search_text).data()
+
+        alias_entities: dict[str, dict[str, Any]] = {}
+        pairs: list[dict[str, Any]] = []
+
+        for row in rows:
+            source_id = str(row.get("source_id") or "").strip()
+            target_id = str(row.get("target_id") or "").strip()
+            source_name = str(row.get("source_name") or source_id)
+            target_name = str(row.get("target_name") or target_id)
+            if not source_id or not target_id:
+                continue
+
+            alias_entities[source_id] = {
+                "id": source_id,
+                "name": source_name,
+                "label": "Investigador",
+            }
+            alias_entities[target_id] = {
+                "id": target_id,
+                "name": target_name,
+                "label": "Investigador",
+            }
+            pairs.append(
+                {
+                    "source_id": source_id,
+                    "source_name": source_name,
+                    "target_id": target_id,
+                    "target_name": target_name,
+                    "relationship_properties": row.get("relationship_properties") or {},
+                }
+            )
+
+        return {
+            "pairs": pairs,
+            "entities": sorted(
+                alias_entities.values(), key=lambda item: (item["name"], item["id"])
+            ),
+            "summary": {
+                "pair_count": len(pairs),
+                "entity_count": len(alias_entities),
+            },
+        }
 
     def ingest(
         self,

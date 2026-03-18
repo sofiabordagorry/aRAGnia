@@ -2,17 +2,21 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+import os
 import threading
 import traceback
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from typing_extensions import TypedDict
 
+from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.services.ingest_service import IngestService
 from institutional_graphrag.storage.queries import (
     delete_all_queries,
@@ -25,6 +29,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[4] / "backend"
 ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class ChunkEntityItem(TypedDict):
@@ -48,6 +53,74 @@ class HistoryItem(TypedDict, total=False):
     response: str
     created_at: datetime
     chunks: List[ChunkItem]
+
+
+class GraphNodeResponse(BaseModel):
+    id: str
+    label: str
+    display: str
+    degree: int
+    is_alias_candidate: bool
+
+
+class GraphEdgeResponse(BaseModel):
+    source: str
+    target: str
+    type: str
+    is_alias: bool
+    properties: dict[str, Any] = {}
+
+
+class GraphSummaryResponse(BaseModel):
+    node_count: int
+    edge_count: int
+    alias_edge_count: int
+
+
+class GraphSnapshotResponse(BaseModel):
+    nodes: list[GraphNodeResponse]
+    edges: list[GraphEdgeResponse]
+    summary: GraphSummaryResponse
+
+
+class GraphEntityItemResponse(BaseModel):
+    id: str
+    label: str
+    display: str
+
+
+class GraphEntityCatalogSummaryResponse(BaseModel):
+    result_count: int
+
+
+class GraphEntityCatalogResponse(BaseModel):
+    entities: list[GraphEntityItemResponse]
+    summary: GraphEntityCatalogSummaryResponse
+
+
+class AliasEntityResponse(BaseModel):
+    id: str
+    name: str
+    label: str
+
+
+class AliasPairResponse(BaseModel):
+    source_id: str
+    source_name: str
+    target_id: str
+    target_name: str
+    relationship_properties: dict[str, Any] = {}
+
+
+class AliasSummaryResponse(BaseModel):
+    pair_count: int
+    entity_count: int
+
+
+class AliasCandidatesResponse(BaseModel):
+    pairs: list[AliasPairResponse]
+    entities: list[AliasEntityResponse]
+    summary: AliasSummaryResponse
 
 
 # =========================================================
@@ -80,6 +153,20 @@ def _get_latest_job() -> Optional[dict]:
             key=lambda job: job.get("created_at", ""),
         )
         return dict(latest)
+
+
+def _build_neo4j_uri() -> str:
+    neo4j_host = os.getenv("HOST", "localhost")
+    neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
+    return f"bolt://{neo4j_host}:{neo4j_port}"
+
+
+def _get_graph_reader() -> GraphBuilder:
+    return GraphBuilder(
+        _build_neo4j_uri(),
+        os.getenv("NEO4J_USER", "neo4j"),
+        os.getenv("NEO4J_PASSWORD", "password"),
+    )
 
 
 def _run_ingest_job(job_id: str) -> None:
@@ -183,6 +270,88 @@ def get_history():
         normalized.append(normalized_item)
 
     return normalized
+
+
+@router.get("/graph", response_model=GraphSnapshotResponse)
+def get_graph_snapshot(
+    node_limit: int = Query(default=160, ge=1, le=500),
+    relationship_limit: int = Query(default=320, ge=1, le=1200),
+    alias_only: bool = Query(default=False),
+):
+    reader: Optional[GraphBuilder] = None
+    try:
+        reader = _get_graph_reader()
+        return reader.fetch_graph_snapshot(
+            node_limit=node_limit,
+            relationship_limit=relationship_limit,
+            alias_only=alias_only,
+        )
+    except Exception as e:
+        logger.error("No se pudo obtener el snapshot del grafo", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error leyendo grafo: {e}")
+    finally:
+        if reader is not None:
+            reader.close()
+
+
+@router.get("/graph/entities", response_model=GraphEntityCatalogResponse)
+def get_graph_entities(
+    search: str = Query(default=""),
+    entity_label: str = Query(default=""),
+    limit: int = Query(default=30, ge=1, le=100),
+):
+    reader: Optional[GraphBuilder] = None
+    try:
+        reader = _get_graph_reader()
+        return reader.fetch_entities_catalog(
+            search=search,
+            entity_label=entity_label or None,
+            limit=limit,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("No se pudo obtener el catálogo de entidades", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error leyendo entidades: {e}")
+    finally:
+        if reader is not None:
+            reader.close()
+
+
+@router.get("/graph/neighborhood", response_model=GraphSnapshotResponse)
+def get_graph_neighborhood(
+    entity_id: str = Query(..., min_length=1),
+    relationship_limit: int = Query(default=320, ge=1, le=1200),
+    alias_only: bool = Query(default=False),
+):
+    reader: Optional[GraphBuilder] = None
+    try:
+        reader = _get_graph_reader()
+        return reader.fetch_graph_neighborhood(
+            entity_id=entity_id,
+            relationship_limit=relationship_limit,
+            alias_only=alias_only,
+        )
+    except Exception as e:
+        logger.error("No se pudo obtener la vecindad de la entidad", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error leyendo vecindad: {e}")
+    finally:
+        if reader is not None:
+            reader.close()
+
+
+@router.get("/graph/aliases", response_model=AliasCandidatesResponse)
+def get_alias_candidates(search: str = Query(default="")):
+    reader: Optional[GraphBuilder] = None
+    try:
+        reader = _get_graph_reader()
+        return reader.fetch_alias_candidates(search=search)
+    except Exception as e:
+        logger.error("No se pudieron obtener los posibles alias", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error leyendo alias: {e}")
+    finally:
+        if reader is not None:
+            reader.close()
 
 
 @router.delete("/history")

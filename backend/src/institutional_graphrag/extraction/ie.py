@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,12 +11,13 @@ from typing import Any, Dict, List, Optional, cast
 
 import ijson
 
+from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )
-from institutional_graphrag.extraction.static_extractor import StaticExtractor
+from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -28,13 +28,6 @@ from institutional_graphrag.graph.schema import (
 logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
-
-PATTERN_DOCUMENT = re.compile(
-    r"^(?P<group>[A-Za-z]+)_(?P<year>\d{4})_(?P<doc_id>\d+)_(?P<kind>informe|propuesta|resumen)$",
-    re.IGNORECASE,
-)
-
-PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
 
@@ -58,7 +51,7 @@ class EntityExtractor:
         self.table_dir = DATA_DIR / "tables"
         self.input_dir = DATA_DIR / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
-        self.static = StaticExtractor()
+        self.rule_based = RuleBasedExtractor()
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -89,7 +82,9 @@ class EntityExtractor:
 
         self._extract_documents()
         self._build_doc_indexes()
-        res = self.static.associate_tables_with_documents(self.docs_by_group_year, self.table_dir)
+        res = self.rule_based.associate_tables_with_documents(
+            self.docs_by_group_year, self.table_dir
+        )
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
@@ -269,7 +264,9 @@ class EntityExtractor:
             d: Path, pattern, value_builder, create_year_entity: bool = False
         ) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                res = self.static.extract_document(path, pattern, value_builder, create_year_entity)
+                res = self.rule_based.extract_document(
+                    path, pattern, value_builder, create_year_entity
+                )
                 self.add_entities(res.entities)
                 self.add_relationship(res.relationships)
                 self.res.errors.extend(res.errors)
@@ -313,13 +310,13 @@ class EntityExtractor:
         )
 
         for path in all_paths:
-            res = self.static.extract_chunk(path, self.doc_by_basename)
+            res = self.rule_based.extract_chunk(path, self.doc_by_basename)
             self.add_entities(res.entities)
             self.add_relationship(res.relationships)
             self.res.errors.extend(res.errors)
 
     def _extract_projects_and_responsible(self) -> None:
-        res = self.static.extract_projects_and_responsible_from_tables(
+        res = self.rule_based.extract_projects_and_responsible_from_tables(
             self.doc_by_id, self.chunks_dir
         )
         self.add_entities(res.entities)

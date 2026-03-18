@@ -26,7 +26,7 @@ class DocumentoValue(TypedDict):
 
 class InvestigadorValue(TypedDict):
     name: str
-    source: Literal["static", "llm"]
+    source: Literal["rule_based", "llm"]
 
 
 @dataclass

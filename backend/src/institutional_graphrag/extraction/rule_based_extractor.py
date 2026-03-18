@@ -8,6 +8,13 @@ from typing import Any, Dict, List, Optional, cast
 
 import pandas as pd
 
+from institutional_graphrag.document_naming import (
+    DOCUMENT_KIND_PRIORITY,
+    PATTERN_TABLE,
+    PROJECT_KEY_RE,
+    build_project_id,
+    build_table_chunk_id,
+)
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
@@ -41,7 +48,6 @@ class ReadJsonResult:
 
 
 ALLOWED_SUFFIXES = {".parquet", ".pdf"}
-PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
 
 TYPE_TABLE_NAME = {
     "APELLIDO",
@@ -57,7 +63,7 @@ TYPE_PRECEDENCIA = {
 }
 
 
-class StaticExtractor:
+class RuleBasedExtractor:
     def __init__(self):
         self.datasets: list[pd.DataFrame] = []
 
@@ -356,11 +362,15 @@ class StaticExtractor:
                 )
                 continue
 
-            project_id = (
-                f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
+            project_id = build_project_id(
+                str(doc.value["is_group"]),
+                str(doc.value["year_publisher"]),
+                str(doc.value["sub_id"]),
             )
-            table_chunk_id = (
-                f"{doc.value['is_group']}_{doc.value['year_publisher']}_table_{doc.value['sub_id']}"
+            table_chunk_id = build_table_chunk_id(
+                str(doc.value["is_group"]),
+                str(doc.value["year_publisher"]),
+                str(doc.value["sub_id"]),
             )
 
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
@@ -477,7 +487,7 @@ class StaticExtractor:
         def _score(x: dict[str, Any]) -> tuple[int, int]:
             # menor = mejor
             grado = int(x.get("best_grade", 99))
-            tipo = TYPE_PRECEDENCIA.get(str(x.get("type", "")).lower(), 99)
+            tipo = DOCUMENT_KIND_PRIORITY.get(str(x.get("type", "")).lower(), 99)
             return (grado, tipo)
 
         return min(candidatos, key=_score)
@@ -532,8 +542,10 @@ class StaticExtractor:
             if not fallback_result:
                 continue
 
-            project_id = (
-                f"{doc.value['is_group']}_{doc.value['year_publisher']}_{doc.value['sub_id']}"
+            project_id = build_project_id(
+                str(doc.value["is_group"]),
+                str(doc.value["year_publisher"]),
+                str(doc.value["sub_id"]),
             )
 
             # misma relación que tenías
@@ -587,15 +599,13 @@ class StaticExtractor:
             )
 
     def _link_table_docs_to_projects(self, unrelated_docs: list[str]) -> None:
-        key_re = re.compile(r"((?:gi|proy)_\d{4})_\d+")
-
         projects_table: list[Proyecto] = [
             cast(Proyecto, e) for e in self.res.entities if e.label == "Proyecto"
         ]
 
         projects_by_key: defaultdict[str, list[Proyecto]] = defaultdict(list)
         for p in projects_table:
-            m = key_re.search(p.id)
+            m = PROJECT_KEY_RE.search(p.id)
             if m:
                 projects_by_key[m.group(1)].append(p)
 
@@ -790,7 +800,7 @@ class StaticExtractor:
                         id=candidate_id,
                         value={
                             "name": candidate_in_text,
-                            "source": "static",
+                            "source": "rule_based",
                         },
                     )
                 )
