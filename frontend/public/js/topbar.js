@@ -486,7 +486,7 @@
   }
 
   async function loadTopbar() {
-    const response = await fetch(TOPBAR_HTML_URL);
+    const response = await fetch(TOPBAR_HTML_URL, { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`GET ${TOPBAR_HTML_URL} -> ${response.status}`);
     }
