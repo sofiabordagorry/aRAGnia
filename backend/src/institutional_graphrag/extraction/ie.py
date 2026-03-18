@@ -17,7 +17,7 @@ from institutional_graphrag.extraction.llm_extractor import (
     create_entities_and_relationships_from_llm_extraction,
     create_topics_from_llm_extraction,
 )
-from institutional_graphrag.extraction.static_extractor import StaticExtractor
+from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -58,7 +58,7 @@ class EntityExtractor:
         self.table_dir = DATA_DIR / "tables"
         self.input_dir = DATA_DIR / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
-        self.static = StaticExtractor()
+        self.rule_based = RuleBasedExtractor()
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -89,7 +89,9 @@ class EntityExtractor:
 
         self._extract_documents()
         self._build_doc_indexes()
-        res = self.static.associate_tables_with_documents(self.docs_by_group_year, self.table_dir)
+        res = self.rule_based.associate_tables_with_documents(
+            self.docs_by_group_year, self.table_dir
+        )
         self.res.errors.extend(res.errors)
 
         self._extract_chunks()
@@ -269,7 +271,9 @@ class EntityExtractor:
             d: Path, pattern, value_builder, create_year_entity: bool = False
         ) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                res = self.static.extract_document(path, pattern, value_builder, create_year_entity)
+                res = self.rule_based.extract_document(
+                    path, pattern, value_builder, create_year_entity
+                )
                 self.add_entities(res.entities)
                 self.add_relationship(res.relationships)
                 self.res.errors.extend(res.errors)
@@ -313,13 +317,13 @@ class EntityExtractor:
         )
 
         for path in all_paths:
-            res = self.static.extract_chunk(path, self.doc_by_basename)
+            res = self.rule_based.extract_chunk(path, self.doc_by_basename)
             self.add_entities(res.entities)
             self.add_relationship(res.relationships)
             self.res.errors.extend(res.errors)
 
     def _extract_projects_and_responsible(self) -> None:
-        res = self.static.extract_projects_and_responsible_from_tables(
+        res = self.rule_based.extract_projects_and_responsible_from_tables(
             self.doc_by_id, self.chunks_dir
         )
         self.add_entities(res.entities)
