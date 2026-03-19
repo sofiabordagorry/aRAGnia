@@ -421,16 +421,44 @@ class IngestService:
         first_key = next(iter(self.entity_extractor.doc_by_id.keys()))
         filename = f"entity_extraction_web_{first_key}.json"
         path = self.entities_dir / filename
+
+        new_data = {
+            "entities": entities,
+            "relationships": rels,
+            "errors": self.entity_extractor.res.errors,
+        }
+
+        if path.exists():
+            try:
+                existing_data = json.loads(path.read_text(encoding="utf-8"))
+
+                if not isinstance(existing_data, dict):
+                    existing_data = {}
+
+            except (json.JSONDecodeError, OSError):
+                existing_data = {}
+
+            existing_entities = existing_data.get("entities", [])
+            existing_relationships = existing_data.get("relationships", [])
+            existing_errors = existing_data.get("errors", [])
+
+            if not isinstance(existing_entities, list):
+                existing_entities = []
+            if not isinstance(existing_relationships, list):
+                existing_relationships = []
+            if not isinstance(existing_errors, list):
+                existing_errors = []
+
+            merged_data = {
+                "entities": existing_entities + new_data["entities"],
+                "relationships": existing_relationships + new_data["relationships"],
+                "errors": existing_errors + new_data["errors"],
+            }
+        else:
+            merged_data = new_data
+
         path.write_text(
-            json.dumps(
-                {
-                    "entities": entities,
-                    "relationships": rels,
-                    "errors": self.entity_extractor.res.errors,
-                },
-                ensure_ascii=False,
-                indent=2,
-            ),
+            json.dumps(merged_data, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         return path
