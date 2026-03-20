@@ -758,8 +758,10 @@ class RuleBasedExtractor:
                 continue
 
             # Validar que no sea un valor inválido
-            invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
-            if any(inv in candidate_in_text.lower() for inv in invalid_values):
+            invalid_values = ["--", "n/a", "na", "s/d"]
+            invalid_contains = ["unnamed:"]
+            candidate_lower = candidate_in_text.lower()
+            if candidate_lower in invalid_values or invalid_contains in candidate_lower:
                 continue
 
             current = inv_ids_by_project.get(project_id, set())
