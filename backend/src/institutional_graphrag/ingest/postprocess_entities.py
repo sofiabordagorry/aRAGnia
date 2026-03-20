@@ -300,6 +300,7 @@ class Postprocessor:
                     )
 
         for canonical_id, (canonical_name, duplicate_ids) in duplicate_groups.items():
+            canonical_r = next(r for r in researchers if r["id"] == canonical_id)
             consolidated.append(next(r for r in researchers if r["id"] == canonical_id))
             processed_ids.add(canonical_id)
 
@@ -307,6 +308,13 @@ class Postprocessor:
                 dup_r = next(r for r in researchers if r["id"] == dup_id)
                 id_mapping[dup_id] = canonical_id
                 processed_ids.add(dup_id)
+                # Si el investigador canonico y el duplicado tienen diferentes fuentes, se mantienen ambas
+                old_source = dup_r["value"].get("source")
+                new_source = canonical_r["value"].get("source")
+
+                if isinstance(old_source, list) or isinstance(new_source, list) or (old_source and new_source and old_source != new_source):
+                    canonical_r["value"]["source"] = ["rule_based", "llm"]
+
 
                 merge_changes.append(
                     {

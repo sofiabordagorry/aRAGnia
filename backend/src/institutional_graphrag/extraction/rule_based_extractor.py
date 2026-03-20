@@ -21,6 +21,7 @@ from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     INICIO_EN,
     PARTICIPO_EN,
+    RESPONSABLE_DE,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
     TITULO_EXTRAIDO_DE,
@@ -632,7 +633,7 @@ class RuleBasedExtractor:
         }
 
         for r in self.res.relationships:
-            if r.type != "PARTICIPO_EN":
+            if r.type not in ["PARTICIPO_EN","RESPONSABLE_DE"]:
                 continue
 
             inv_id = str(r.source_id)
@@ -804,7 +805,7 @@ class RuleBasedExtractor:
                         },
                     )
                 )
-                self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
+                self.res.relationships.append(RESPONSABLE_DE(candidate_id, project_id))
                 self.res.relationships.append(
                     EXTRAIDO_DE(
                         table_chunk_id,
