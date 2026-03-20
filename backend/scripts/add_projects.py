@@ -37,13 +37,14 @@ async def main():
         url_encoded_paths.append(path_encoded)
 
     # Imprimir los paths codificados
+    service = IngestService(
+        data_dir=DATA_DIR,
+        env_path=ENV_PATH,
+        enable_researcher_consolidation=False,
+        keep_debug_artifacts=True,
+    )
     for encoded_path in url_encoded_paths:
-        service = IngestService(
-            data_dir=DATA_DIR,
-            env_path=ENV_PATH,
-            enable_researcher_consolidation=False,
-            keep_debug_artifacts=True,
-        )
+        service.cleanup()
         result = await service.ingest_items(encoded_path)
         print("Resultados del path ", encoded_path, ":")
         print(result)

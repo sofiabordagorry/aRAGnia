@@ -83,6 +83,12 @@ class IngestService:
 
         self.cache_dict: Dict[str, int] = {}
 
+    def cleanup(self):
+        self.rule_based_extractor.cleanup()
+        self.entity_extractor.cleanup()
+        self.processed_files = []
+        self.cache_dict = {}
+
     async def ingest_items(self, path: str) -> Dict[str, Any]:
         """
         Descarga una carpeta/archivo desde la nube (zip o archivo individual),

@@ -65,6 +65,16 @@ class EntityExtractor:
         self._seen_rels: set[tuple[str, str, str, str]] = set()
         self._rel_index: dict[tuple[str, str, str], int] = {}
 
+    def cleanup(self):
+        self._seen_entities = set()
+        self._seen_rels = set()
+        self._rel_index = {}
+        self.res = ExtractionResult(entities=[], relationships=[], errors=[])
+        self.rule_based.cleanup()
+        self.doc_by_basename = {}
+        self.doc_by_id = {}
+        self.docs_by_group_year = defaultdict(list)
+
     def run(
         self,
         max_docs: int | None = None,
