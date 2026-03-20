@@ -39,6 +39,10 @@ from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
 
 
+class MissingNeo4jCredentialsError(Exception):
+    pass
+
+
 class IngestService:
     def __init__(
         self,
@@ -91,13 +95,12 @@ class IngestService:
         self.user = os.getenv("NEO4J_USER")
         self.password = os.getenv("NEO4J_PASSWORD")
         if not self.user or not self.password:
-            self.entity_extractor.res.errors.append(
-                {
-                    "type": "MissingNeo4jCredentials",
-                    "message": "Faltan NEO4J_USER o NEO4J_PASSWORD en el entorno.",
-                }
-            )
-            return
+            error = {
+                "type": "MissingNeo4jCredentials",
+                "message": "Faltan NEO4J_USER o NEO4J_PASSWORD en el entorno.",
+            }
+            self.entity_extractor.res.errors.append(error)
+            raise MissingNeo4jCredentialsError(error["message"])
         self.builder = GraphBuilder(self.neo4j_uri, self.user, self.password)
 
     async def ingest_items(self, path: str) -> Dict[str, Any]:

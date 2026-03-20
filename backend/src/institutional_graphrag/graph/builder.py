@@ -916,7 +916,6 @@ class GraphBuilder:
         rel_stats = self.upsert_relationships(relationships, sample_ids=15)
         self.export_errors_and_graph(IMPUT_PATH, OUTPUT_PATH)
         self._print_stats(ent_stats, rel_stats)
-        self.close()
 
     @staticmethod
     def _print_stats(ent_stats: Neo4jStats, rel_stats: Neo4jStats) -> None:
@@ -1030,7 +1029,7 @@ class GraphBuilder:
                     )
 
         finally:
-            self.driver.close()
+            self.close()
 
         # -----------------------------
         # 3) Guardado final

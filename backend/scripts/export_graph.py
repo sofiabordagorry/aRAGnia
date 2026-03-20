@@ -6,7 +6,7 @@ from institutional_graphrag.graph.builder import GraphBuilder
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)
-IMPUT_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
+INPUT_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
 OUTPUT_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "export_graph.json"
 
 def main():
@@ -21,7 +21,7 @@ def main():
         neo4j_password,
     )
     graph.export_errors_and_graph(
-        input_json_path=IMPUT_PATH,
+        input_json_path=INPUT_PATH,
         output_json_path=OUTPUT_PATH,
         neo4j_uri=neo4j_uri,
         neo4j_user=neo4j_user,
