@@ -560,3 +560,175 @@ def test_llm_researchers_and_topics_and_project_aggregation(
     rel_p2 = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_391")
     assert rel_p1.properties.get("mention_count") == 2, "Proyecto 152 tiene 2 menciones (2 chunks)"
     assert rel_p2.properties.get("mention_count") == 1, "Proyecto 391 tiene 1 mención (1 chunk)"
+
+# -------------------------
+# Relación RESPONSABLE_DE (Extracción de Tablas)
+# -------------------------
+import pandas as pd
+from institutional_graphrag.ingest.postprocess_entities import Postprocessor
+
+def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_path: Path):
+    """
+    Border Case: Una fila de tabla tiene múltiples responsables (ej. titular y co-titular).
+    Verifica que se generen múltiples relaciones RESPONSABLE_DE hacia el mismo proyecto.
+    """
+    extractor.documents_dir.mkdir(parents=True, exist_ok=True)
+    extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
+    extractor.table_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Setup Documento y Chunks
+    doc = Documento(
+        id="doc1",
+        value={"base_name": "gi_2010_152_informe", "is_group": "gi", "year_publisher": "2010", "sub_id": "152", "type": "informe"}
+    )
+    extractor.add_entities([doc])
+    extractor._build_doc_indexes()
+
+    write_chunks_file(
+        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
+        source="C:/tmp/gi_2010_152_informe.pdf",
+        chunks=[{"chunk_id": "gi_2010_152_informe_chunk0", "text": "Titulo: Proyecto Gamma", "metadata": {}}]
+    )
+
+    # 2. Setup Tabla con múltiples columnas de responsables
+    df = pd.DataFrame({
+        "ID": ["152"],
+        "TITULO": ["Proyecto Gamma"],
+        "NOMBRE RESPONSABLE": ["Ema"],
+        "APELLIDO RESPONSABLE": ["García"],
+        "NOMBRE RESPONSABLE_2": ["Carlos"],
+        "APELLIDO RESPONSABLE_2": ["López"]
+    })
+    df.to_parquet(extractor.table_dir / "gi_2010_table.parquet")
+
+    # 3. Ejecutar extracción
+    extractor.rule_based.associate_tables_with_documents(extractor.docs_by_group_year, extractor.table_dir)
+    extractor._extract_projects_and_responsible()
+
+    # 4. Validar
+    responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
+    
+    assert len(responsable_rels) == 2, "Deben existir 2 relaciones RESPONSABLE_DE"
+    
+    source_ids = {r.source_id for r in responsable_rels}
+    assert "ema_garcia" in source_ids
+    assert "carlos_lopez" in source_ids
+    assert all(r.target_id == "gi_2010_152" for r in responsable_rels)
+
+
+def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtractor, tmp_path: Path):
+    """
+    Border Case: La tabla contiene valores basura o vacíos explícitos ("N/A", "--").
+    Verifica que NO se creen investigadores basura ni relaciones RESPONSABLE_DE.
+    """
+    extractor.documents_dir.mkdir(parents=True, exist_ok=True)
+    extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
+    extractor.table_dir.mkdir(parents=True, exist_ok=True)
+
+    doc = Documento(
+        id="doc1",
+        value={"base_name": "gi_2010_152_informe", "is_group": "gi", "year_publisher": "2010", "sub_id": "152", "type": "informe"}
+    )
+    extractor.add_entities([doc])
+    extractor._build_doc_indexes()
+
+    write_chunks_file(
+        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
+        source="doc",
+        chunks=[{"chunk_id": "chunk0", "text": "Titulo: Proyecto X", "metadata": {}}]
+    )
+
+    # Tabla con valores explícitamente ignorados en rule_based_extractor
+    df = pd.DataFrame({
+        "ID": ["152"],
+        "TITULO": ["Proyecto X"],
+        "RESPONSABLE": ["--"],
+        "NOMBRE": ["N/A"]
+    })
+    df.to_parquet(extractor.table_dir / "gi_2010_table.parquet")
+
+    extractor.rule_based.associate_tables_with_documents(extractor.docs_by_group_year, extractor.table_dir)
+    extractor._extract_projects_and_responsible()
+
+    responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
+    assert len(responsable_rels) == 0, "No se deben crear relaciones para nombres inválidos"
+
+
+# -------------------------
+# Preservación de Propiedad 'source' (Reglas + LLM)
+# -------------------------
+
+def test_ie_add_entities_source_merging_border_cases(extractor: EntityExtractor):
+    """
+    Border Cases: Prueba la lógica de add_entities de ie.py para la propiedad 'source'.
+    Verifica que:
+    1. Distintos -> ["rule_based", "llm"]
+    2. Iguales -> se mantiene como string ("llm" o "rule_based")
+    """
+    
+    # CASO 1: rule_based + llm -> lista
+    inv1 = Investigador(id="juan_perez", value={"name": "Juan Perez", "source": "rule_based"})
+    extractor.add_entities([inv1])
+    
+    inv2 = Investigador(id="juan_perez", value={"name": "Juan Pérez", "source": "llm"})
+    extractor.add_entities([inv2]) # Sobrescribe y fusiona
+    
+    merged = next(e for e in extractor.res.entities if e.id == "juan_perez")
+    assert merged.value["source"] == ["rule_based", "llm"]
+    assert merged.value["name"] == "Juan Pérez" # Mantiene el nombre del último (LLM)
+
+    # CASO 2: llm + llm -> se mantiene como string
+    inv3 = Investigador(id="maria_gomez", value={"name": "Maria", "source": "llm"})
+    extractor.add_entities([inv3])
+    
+    inv4 = Investigador(id="maria_gomez", value={"name": "María Gómez", "source": "llm"})
+    extractor.add_entities([inv4])
+    
+    merged_maria = next(e for e in extractor.res.entities if e.id == "maria_gomez")
+    assert merged_maria.value["source"] == "llm", "Fuentes iguales no deben crear lista"
+
+
+def test_postprocess_preserves_dual_source_on_merge():
+    """
+    Border Case en postprocess_entities.py: 
+    Si hay dos nodos idénticos extraídos por canales separados (uno llm, otro rule_based)
+    y tienen distintos IDs al inicio, pero se fusionan porque el nombre normalizado es exacto,
+    ¿se preservan ambas fuentes en el nodo canónico?
+    """
+    postprocessor = Postprocessor(enable_researcher_consolidation=True)
+    
+    payload = {
+        "entities": [
+            {
+                "id": "inv_1", 
+                "label": "Investigador", 
+                "value": {"name": "JUAN PEREZ", "source": "rule_based"}
+            },
+            {
+                "id": "inv_2", 
+                "label": "Investigador", 
+                "value": {"name": "Juan Perez", "source": "llm"}
+            }
+        ],
+        "relationships": [
+            {
+                "type": "EXTRAIDO_DE",
+                "source_id": "chunk_001",
+                "target_id": "inv_1", # El postprocesador renombrará esto al fusionar
+                "properties": {"evidence_text": "responsable valido extraido"}
+            }
+        ]
+    }
+
+    # Procesar
+    data, log = postprocessor.postprocess_payload(payload)
+    
+    entities = data["entities"]
+    
+    # Deben haberse consolidado en 1 solo investigador
+    assert len(entities) == 1
+    
+    # La fuente debe haber heredado el array ["rule_based", "llm"]
+    final_source = entities[0]["value"].get("source")
+    assert isinstance(final_source, list), "El source en postprocess debe ser lista tras merge"
+    assert set(final_source) == {"rule_based", "llm"}
