@@ -312,9 +312,12 @@ class Postprocessor:
                 old_source = dup_r["value"].get("source")
                 new_source = canonical_r["value"].get("source")
 
-                if isinstance(old_source, list) or isinstance(new_source, list) or (old_source and new_source and old_source != new_source):
+                if (
+                    isinstance(old_source, list)
+                    or isinstance(new_source, list)
+                    or (old_source and new_source and old_source != new_source)
+                ):
                     canonical_r["value"]["source"] = ["rule_based", "llm"]
-
 
                 merge_changes.append(
                     {

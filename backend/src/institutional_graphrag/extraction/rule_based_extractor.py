@@ -306,7 +306,7 @@ class RuleBasedExtractor:
         by_sub: dict[str, pd.DataFrame] = {}
         s = df[id_col].astype(str)
         # eliminar .0 al final de la id en la tabla (agregado automaticamente por pd)
-        s = s.str.replace(r'\.0$','', regex=True).str.strip()
+        s = s.str.replace(r"\.0$", "", regex=True).str.strip()
 
         for sub_id, _ in id_to_document:
             if sub_id not in by_sub:
@@ -635,7 +635,7 @@ class RuleBasedExtractor:
         }
 
         for r in self.res.relationships:
-            if r.type not in ["PARTICIPO_EN","RESPONSABLE_DE"]:
+            if r.type not in ["PARTICIPO_EN", "RESPONSABLE_DE"]:
                 continue
 
             inv_id = str(r.source_id)
@@ -763,7 +763,9 @@ class RuleBasedExtractor:
             invalid_values = ["--", "n/a", "na", "s/d"]
             invalid_contains = ["unnamed:"]
             candidate_lower = candidate_in_text.lower()
-            if candidate_lower in invalid_values or any(sub in candidate_lower for sub in invalid_contains):
+            if candidate_lower in invalid_values or any(
+                sub in candidate_lower for sub in invalid_contains
+            ):
                 continue
 
             current = inv_ids_by_project.get(project_id, set())
@@ -783,7 +785,7 @@ class RuleBasedExtractor:
 
                     for candidate_to_remove in to_remove:
                         inv_id = candidate_to_remove[0]
-                        
+
                         self.res.entities = [
                             e
                             for e in self.res.entities
@@ -792,12 +794,12 @@ class RuleBasedExtractor:
                         self.res.relationships = [
                             r
                             for r in self.res.relationships
-                            if not(r.source_id == inv_id and r.target_id == project_id)
+                            if not (r.source_id == inv_id and r.target_id == project_id)
                         ]
                         self.res.relationships = [
                             r
                             for r in self.res.relationships
-                            if not(r.source_id == table_chunk_id and r.target_id == inv_id)
+                            if not (r.source_id == table_chunk_id and r.target_id == inv_id)
                         ]
 
             candidate_id = self.make_candidate_id(candidate_in_text)

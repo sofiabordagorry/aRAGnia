@@ -43,6 +43,7 @@ def normalize_result(res: ExtractionResult) -> dict:
         ),
     }
 
+
 def main(
     max_docs: int | None = None,
     llm_researchers: bool = True,

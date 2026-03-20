@@ -129,7 +129,7 @@ class EntityExtractor:
                         for k, expected in value_filter.items():
                             val = v.get(k)
 
-                            if k == "source" and isinstance(val,list):
+                            if k == "source" and isinstance(val, list):
                                 # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
                                 if expected not in val:
                                     match = False
@@ -139,7 +139,7 @@ class EntityExtractor:
                                 break
 
                         if not match:
-                            continue                          
+                            continue
 
                     entity_id = raw.get("id")
                     if not isinstance(entity_id, str) or not entity_id:
@@ -241,11 +241,19 @@ class EntityExtractor:
                 for i, existing in enumerate(self.res.entities):
                     if existing.label == e.label and str(existing.id) == str(e.id):
                         # Si un investigador es extraido por tabla y por llm mantiene ambas fuentes
-                        if e.label == "Investigador" and isinstance(existing.value, dict) and isinstance(e.value, dict):
+                        if (
+                            e.label == "Investigador"
+                            and isinstance(existing.value, dict)
+                            and isinstance(e.value, dict)
+                        ):
                             old_source = existing.value.get("source")
                             new_source = e.value.get("source")
 
-                            if isinstance(old_source, list) or isinstance(new_source, list) or (old_source and new_source and old_source != new_source):
+                            if (
+                                isinstance(old_source, list)
+                                or isinstance(new_source, list)
+                                or (old_source and new_source and old_source != new_source)
+                            ):
                                 e.value["source"] = ["rule_based", "llm"]
                         self.res.entities[i] = e
                         continue
