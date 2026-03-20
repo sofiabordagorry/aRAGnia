@@ -120,12 +120,26 @@ class EntityExtractor:
                     if raw.get("label") != label:
                         continue
 
+                    match = True
+
                     v = raw.get("value")
                     if value_filter is not None:
                         if not isinstance(v, dict):
                             continue
-                        if not all(v.get(k) == expected for k, expected in value_filter.items()):
-                            continue
+                        for k, expected in value_filter.items():
+                            val = v.get(k)
+
+                            if k == "source" and isinstance(val,list):
+                                # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
+                                if expected not in val:
+                                    match = False
+                                    break
+                            elif val != expected:
+                                match = False
+                                break
+
+                        if not match:
+                            continue                          
 
                     entity_id = raw.get("id")
                     if not isinstance(entity_id, str) or not entity_id:
