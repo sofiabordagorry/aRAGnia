@@ -20,7 +20,6 @@ from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
     INICIO_EN,
-    PARTICIPO_EN,
     RESPONSABLE_DE,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,

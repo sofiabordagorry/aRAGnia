@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
@@ -25,6 +26,7 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     Topico,
 )
+from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 # -------------------------
 # Helpers
@@ -565,8 +567,6 @@ def test_llm_researchers_and_topics_and_project_aggregation(
 # -------------------------
 # Relación RESPONSABLE_DE (Extracción de Tablas)
 # -------------------------
-import pandas as pd
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 
 def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_path: Path):
