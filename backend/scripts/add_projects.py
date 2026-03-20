@@ -27,9 +27,9 @@ paths = [
 # ==============================
 
 async def main():
-    print("🚀 Inicializando IngestService...")
+    print("Inicializando IngestService...")
 
-    print("📥 Ejecutando ingest...")
+    print("Ejecutando ingest...")
     url_encoded_paths = []
     for path in paths:
         path_normalized = path.replace("\\", "/")
@@ -45,7 +45,7 @@ async def main():
             keep_debug_artifacts=True,
         )
         result = await service.ingest_items(encoded_path)
-        print("✅ Resultados del path ", encoded_path, ":")
+        print("Resultados del path ", encoded_path, ":")
         print(result)
     
     
