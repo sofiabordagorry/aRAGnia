@@ -20,13 +20,7 @@ def main():
         neo4j_user,
         neo4j_password,
     )
-    graph.export_errors_and_graph(
-        input_json_path=INPUT_PATH,
-        output_json_path=OUTPUT_PATH,
-        neo4j_uri=neo4j_uri,
-        neo4j_user=neo4j_user,
-        neo4j_password=neo4j_password,
-    )
+    graph.export_graph(output_json_path=OUTPUT_PATH)
 
 
 

@@ -23,7 +23,6 @@ logging.getLogger("neo4j").setLevel(logging.WARNING)
 logger = logging.getLogger("graph_ingest")
 
 T = TypeVar("T")
-IMPUT_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "entity_documents.json"
 OUTPUT_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "export_graph.json"
 
 
@@ -394,7 +393,7 @@ class GraphBuilder:
                     f"""
                     MATCH (a:{label} {{id: $old_id}})-[r:{rel_type}]->(x)
                     MATCH (b:{label} {{id: $new_id}})
-                    MERGE (b)-[r2':{rel_type}]->(x)
+                    MERGE (b)-[r2:{rel_type}]->(x)
                     SET r2 += properties(r)
                     DELETE r
                     RETURN collect(elementId(r2)) AS moved_rel_eids,
@@ -914,7 +913,7 @@ class GraphBuilder:
     ) -> None:
         ent_stats = self.upsert_entities(entities, sample_ids=15)
         rel_stats = self.upsert_relationships(relationships, sample_ids=15)
-        self.export_errors_and_graph(IMPUT_PATH, OUTPUT_PATH)
+        self.export_graph(OUTPUT_PATH)
         self._print_stats(ent_stats, rel_stats)
 
     @staticmethod
@@ -943,16 +942,11 @@ class GraphBuilder:
             rel_stats.rel_pairs[:10],
         )
 
-    def export_errors_and_graph(
+    def export_graph(
         self,
-        input_json_path: str | Path,
         output_json_path: str | Path,
     ) -> Dict[str, Any]:
-        input_json_path = Path(input_json_path)
         output_json_path = Path(output_json_path)
-
-        with open(input_json_path, "r", encoding="utf-8") as f:
-            errors = list(ijson.items(f, "errors.item"))
 
         # -----------------------------
         # 2) Extracción desde Neo4j
@@ -1037,11 +1031,9 @@ class GraphBuilder:
         output_data = {
             "entities": neo4j_entities,
             "relationships": neo4j_relationships,
-            "errors": errors,
             "source_summary": {
                 "neo4j_entities": len(neo4j_entities),
                 "neo4j_relationships": len(neo4j_relationships),
-                "error_count": len(errors),
                 "entity_type_counts": entity_type_counts,
                 "relationship_type_counts": relationship_type_counts,
             },
