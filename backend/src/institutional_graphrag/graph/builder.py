@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar
 
-import ijson
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
 
