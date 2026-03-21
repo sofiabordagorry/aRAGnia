@@ -24,7 +24,8 @@ from institutional_graphrag.document_naming import (
 )
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
+from institutional_graphrag.graph.builder import GraphBuilder
+from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.docling_parser import parse_single_document
 from institutional_graphrag.ingest.embedder import E5Embedder
@@ -36,6 +37,10 @@ from institutional_graphrag.ingest.file_namer import (
 )
 from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
+
+
+class MissingNeo4jCredentialsError(Exception):
+    pass
 
 
 class IngestService:
@@ -82,6 +87,21 @@ class IngestService:
         self.processed_files: List[str] = []
 
         self.cache_dict: Dict[str, int] = {}
+
+        neo4j_host = os.getenv("HOST", "localhost")
+        neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
+        self.neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
+
+        self.user = os.getenv("NEO4J_USER")
+        self.password = os.getenv("NEO4J_PASSWORD")
+        if not self.user or not self.password:
+            error = {
+                "type": "MissingNeo4jCredentials",
+                "message": "Faltan NEO4J_USER o NEO4J_PASSWORD en el entorno.",
+            }
+            self.entity_extractor.res.errors.append(error)
+            raise MissingNeo4jCredentialsError(error["message"])
+        self.builder = GraphBuilder(self.neo4j_uri, self.user, self.password)
 
     def cleanup(self):
         self.rule_based_extractor.cleanup()
@@ -409,7 +429,13 @@ class IngestService:
             enable_researcher_consolidation=self.enable_researcher_consolidation,
             similarity_threshold=0.85,
         )
+
         entity_dicts, rel_dicts, _ = post_processor.consolidate_researchers(entity_dicts, rel_dicts)
+        entities_db = self.builder.fetch_researchers()
+        rel_dicts.extend(
+            post_processor.build_possible_alias_relationships(entities_db, entity_dicts)
+        )
+
         rel_dicts, _ = post_processor.add_missing_evidence_text(rel_dicts)
         return entity_dicts, rel_dicts
 
@@ -471,47 +497,16 @@ class IngestService:
 
     def _ingest_neo4j(self, entity_json_path: Path) -> None:
         try:
-            neo4j_host = os.getenv("HOST", "localhost")
-            neo4j_port = os.getenv("NEO4J_BOLT_PORT", "7687")
-            neo4j_uri = f"bolt://{neo4j_host}:{neo4j_port}"
+            if self.user is None or self.password is None:
+                raise ValueError("Faltan credenciales de Neo4j: user/password")
 
-            user = os.getenv("NEO4J_USER")
-            password = os.getenv("NEO4J_PASSWORD")
-            if not user or not password:
-                self.entity_extractor.res.errors.append(
-                    {
-                        "type": "MissingNeo4jCredentials",
-                        "message": "Faltan NEO4J_USER o NEO4J_PASSWORD en el entorno.",
-                    }
-                )
-                return
-            builder = GraphBuilder(neo4j_uri, user, password)
-            entities, relationships, merge_plan = load_graph_json(
-                entity_json_path, neo4j_uri, user, password, self.enable_researcher_consolidation
+            entities, relationships = load_graph_json(
+                entity_json_path,
+                self.neo4j_uri,
+                self.user,
+                self.password,
             )
-            builder.ingest(entities=entities, relationships=relationships)
-
-            for old_id, new_id in merge_plan:
-                stats = builder.backend.merge_node_id(
-                    label="Investigador",
-                    old_id=old_id,
-                    new_id=new_id,
-                    sample_ids=10,
-                )
-                print(
-                    "MERGE Investigador:",
-                    f"{old_id} -> {new_id}",
-                    "nodes_created=",
-                    stats.nodes_created,
-                    "nodes_deleted=",
-                    stats.nodes_deleted,
-                    "rels_created=",
-                    stats.relationships_created,
-                    "rels_deleted=",
-                    stats.relationships_deleted,
-                    "props_set=",
-                    stats.properties_set,
-                )
+            self.builder.ingest(entities=entities, relationships=relationships)
 
             print("\n" + "=" * 80)
             print("PIPELINE FINALIZADO")

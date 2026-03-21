@@ -19,21 +19,23 @@ INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_
 # ==============================
 
 async def main(keep_debug_artifacts: bool, enable_researcher_consolidation: bool):
-    print("🚀 Inicializando IngestService...")
+    print("Inicializando IngestService...")
+    try:
+        service = IngestService(
+            data_dir=DATA_DIR,
+            env_path=ENV_PATH,
+            enable_researcher_consolidation=enable_researcher_consolidation,
+            keep_debug_artifacts=keep_debug_artifacts,
+        )
 
-    service = IngestService(
-        data_dir=DATA_DIR,
-        env_path=ENV_PATH,
-        enable_researcher_consolidation=enable_researcher_consolidation,
-        keep_debug_artifacts=keep_debug_artifacts,
-    )
+        print("Ejecutando ingest...")
 
-    print("📥 Ejecutando ingest...")
-
-    result = await service.ingest_items(INPUT_PATH)
-
-    print("✅ Resultado:")
-    print(result)
+        result = await service.ingest_items(INPUT_PATH)
+        print("Resultado:")
+        print(result)
+    except Exception as e:
+        print(f"Error durante el ingest: {e}")
+    
 
 
 # ==============================
