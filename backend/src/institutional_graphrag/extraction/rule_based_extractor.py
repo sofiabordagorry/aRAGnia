@@ -67,6 +67,9 @@ class RuleBasedExtractor:
     def __init__(self):
         self.datasets: list[pd.DataFrame] = []
 
+    def cleanup(self):
+        self.datasets = []
+
     def extract_document(
         self, path: Path, pattern, value_builder, create_year_entity: bool = False
     ) -> ExtractionResult:
