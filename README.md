@@ -1,195 +1,212 @@
 # Institutional GraphRAG
 
-Proyecto de grado de Ingeniería en Computación (FIng – Udelar) 2025-2026.
+Proyecto de grado de Ingeniería en Computación (FIng - Udelar, 2025-2026).
 
-Este repositorio contiene el código de un pipeline incremental de GraphRAG para trabajar con informes de proyectos institucionales y permitir consultas longitudinales sobre los mismos.
+Este repositorio implementa un pipeline de GraphRAG para documentos de proyectos institucionales. El objetivo es poder procesar informes/propuestas, construir conocimiento estructurado y hacer consultas sobre la evolución de los proyectos.
+
+## Stack del proyecto
+
+- Backend: FastAPI + Python
+- Frontend: HTML/CSS/JS estático
+- Base de grafo: Neo4j
+- Base vectorial: Qdrant
+- Base relacional: PostgreSQL
+- LLM local/opcional: Ollama
+
+## Estructura general
+
+- `backend/`: API, lógica de ingestión/retrieval, tests y scripts
+- `frontend/`: interfaz web estática
+- `data/`: corpus, outputs intermedios (docling, chunks, embeddings, etc.)
+- `run_proyect.bat`: arranque rápido en Windows
+- `run_proyect.sh`: arranque rápido en Linux/macOS
 
 ## Requisitos
 
 - Python 3.11
-- pip
+- Docker + Docker Compose
 
-## Instalación
+## Configuración inicial
 
-Se recomienda usar un entorno virtual.
+1. Clonar el repo y ubicarse en la raíz del proyecto.
+2. Crear entorno virtual:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # En Windows: .venv/Scripts/activate
 ```
 
-### Backend
+3. Activar entorno virtual:
+
+Windows (PowerShell):
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+4. Instalar dependencias del backend:
 
 ```bash
 cd backend
 pip install -e ".[dev]"
+cd ..
 ```
 
-### Frontend
+5. Instalar dependencias del frontend (Prettier):
 
 ```bash
 cd frontend
-npm init -y
-npm config set strict-ssl false
-npm install -D prettier
+npm install
+cd ..
 ```
 
-## Ejecución
+6. Configurar variables de entorno:
 
-### Formatear código
+- Copiar `backend/.env.example` a `backend/.env`.
+- Completar al menos:
+	- `NEO4J_USER`
+	- `NEO4J_PASSWORD`
+	- `POSTGRES_USER`
+	- `POSTGRES_PASSWORD`
+	- `FING_TOKEN` (si se va a descargar corpus)
+	- `GROQ_API_KEY` (si se va a usar Groq)
 
-#### Backend
+## Levantar el proyecto (modo recomendado)
 
-ubicacion /backend/
+Desde la raíz, usar el script `run_proyect`:
+
+Windows:
+
+```powershell
+.\run_proyect.bat
+```
+
+Linux/macOS:
 
 ```bash
-./scripts/format.sh
+chmod +x run_proyect.sh
+./run_proyect.sh
 ```
 
-#### Frontend
+El script realiza lo siguiente:
 
-ubicacion /frontend/
+1. Levanta contenedores con `backend/docker-compose.yml`.
+2. Inicia el backend con `uvicorn` en puerto 8000.
+3. Inicia el frontend estático en puerto 5500.
+
+Accesos útiles:
+
+- Frontend: http://localhost:5500/
+- API (health): http://localhost:8000/health
+- Docs FastAPI: http://localhost:8000/docs
+- Neo4j Browser: http://localhost:7474/browser/
+- Qdrant: http://localhost:6333/
+
+## Proveedor de modelo (LLM)
+
+El backend soporta dos opciones principales:
+
+- Ollama (local): usa `OLLAMA_BASE_URL` (por defecto `http://localhost:11434`).
+- Groq (API): requiere `GROQ_API_KEY` en `backend/.env`.
+
+Si se levanta el proyecto con Docker Compose, el servicio `ollama-init` descarga automáticamente modelos base (`llama3.2:3b` y `qwen2.5:3b-instruct`).
+
+Para verificar modelos en Ollama:
 
 ```bash
-./scripts/format.sh
+cd backend
+docker compose exec ollama ollama list
 ```
 
-### Ejecutar tests y verificaciones
+## Pipeline de datos (scripts)
 
-#### Backend
+Todos estos comandos se ejecutan desde `backend/` con el entorno virtual activo.
 
-ubicacion /backend/
+1. Descargar corpus (requiere `FING_TOKEN` en `.env`):
 
-```bash
-./scripts/check.sh
-```
-
-#### Frontend
-
-ubicacion /frontend/
-
-```bash
-./scripts/check.sh
-```
-
-Este comando ejecuta:
-
-- Linter (ruff)
-- Verificación de formato (black)
-- Type checking (mypy)
-- Tests con cobertura (pytest)
-
-### Descargar corpus de PDFs
-
-El proyecto incluye un script (en la carpeta backend) para descargar los PDF de la nube institucional a partir de una lista de URLs, las cuales corresponden a pares de documentos (Informe Final y Propuesta de Postulación). Además, se incorporaron tres documentos adicionales que contienen resultados o conclusiones de varios proyectos correspondientes a un año determinado.
-
-- La lista de URLs se encuentra en data/downloads_list.txt.
-
-- Los PDFs descargados se guardan en la carpeta data/corpus.
-
-- El acceso a la nube se realiza mediante un enlace público de Nextcloud, cuyo token debe configurarse a través de una variable de entorno.
-
-#### Configuración del token
-
-Antes de ejecutar el script, es necesario crear un archivo `.env` en la carpeta backend del proyecto con una variable de entorno llamada **FING_TOKEN**
-
-#### Ejecutar el script de descarga
+- La lista de URLs está en `data/downloads_list.txt`.
+- Si quieren cambiar qué PDFs se descargan, editen ese archivo (agregar/quitar URLs).
+- Los archivos descargados se guardan en `data/corpus/`.
 
 ```bash
 python .\scripts\download_corpus.py
 ```
 
-### Convertir PDFs en Documentos Estructurados Utilizando Dockling
+2. Convertir PDFs con Docling:
 
-Ubicarse en la ruta /institutional-graphrag/backend
-
-#### Procesar un PDF individual:
+Un archivo:
 
 ```bash
 python .\scripts\docling_manual.py corpus\13.pdf
 ```
 
-#### Procesar todo el corpus:
+Corpus completo:
 
 ```bash
 python .\scripts\docling_manual.py corpus
 ```
 
-Los archivos Json se generan en /institutional-graphrag/data/docling.
-
-### Generar chunks usando los archivos Json
-
-Se transforman los Json de /institutional-graphrag/data/docling en chunks ubicados en
-/institutional-graphrag/data/chunks.
+3. Generar chunks:
 
 ```bash
 python .\scripts\chunk_corpus.py
 ```
 
-### Crear embeddings de los chunks
-
-Se transforman los Json de /institutional-graphrag/data/chunks en chunks ubicados en
-/institutional-graphrag/data/embeddings.
-
-Para Windows: antes correr en consola el siguiente comando para poder usar cuda (en GPUs NVIDIA):
-
-```bash
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-```
-
-Para MAC: antes correr el siguiente comando para prevenir fallos en caso de funcionalidades aún no implementadas para MPS
-
-```bash
-export PYTORCH_ENABLE_MPS_FALLBACK=1
-```
-
-Luego:
+4. Generar embeddings:
 
 ```bash
 python .\scripts\embed_chunks.py
 ```
 
-### Levantar servicios con Docker Compose
-
-Desde `backend/docker-compose.yml` se puede levantar Neo4j, Qdrant y Ollama juntos:
+5. Ejecutar extracción end-to-end:
 
 ```bash
-cd backend
-docker compose up -d
+python .\scripts\extract_end_to_end.py
 ```
 
-### Elegir provedor del modelo (llm)
+Outputs esperados en `data/`: `docling/`, `chunks/`, `embeddings/`, `entities_relations/`.
 
-Se configura el api/router_rag.py
+## Checks y formato
 
-#### Ollama
+### Backend
 
-- Si usas Docker Compose, el servicio queda disponible en `http://localhost:11434`.
-- El archivo `backend/docker-compose.yml` incluye un servicio auxiliar (`ollama-init`) que descarga automáticamente los modelos requeridos:
-	- `llama3.2:3b`
-	- `qwen2.5:3b-instruct`
-- En el primer inicio, la descarga puede tardar varios minutos.
-- Puedes verificar los modelos instalados con:
+Desde `backend/`:
 
 ```bash
-cd backend
-docker-compose exec ollama ollama list
+./scripts/format.sh
+./scripts/check.sh
 ```
 
-- Si no usas Docker, también puedes instalar Ollama de forma nativa desde https://ollama.com/.
-- La URL del servicio se configura con `OLLAMA_BASE_URL` en `backend/.env`.
+`check.sh` ejecuta:
 
-#### Groq
+- ruff
+- black --check
+- mypy
+- pytest con cobertura
 
-Para pruebas, no es gratis pero va rapido.
-obtener una key en la aplicacion https://console.groq.com/keys y guardarla en el .env "GROQ_API_KEY"
+### Frontend
 
-#### Local
+Desde `frontend/`:
 
-- Es la mas lenta
+Linux/macOS:
 
-### Levantar Servidor
+```bash
+./scripts/format.sh
+./scripts/check.sh
+```
 
-- Desde la carpeta raiz ejecutar el archivo run_proyect
-- el frontend se encuentra en http://localhost:5500/
-- neo4j se encuentra en http://localhost:7474/browser/
+Windows:
+
+```bat
+scripts\format.bat
+scripts\check.bat
+```
+
+## Notas rápidas
+
+- En el primer arranque, `ollama-init` puede demorar porque descarga modelos.
