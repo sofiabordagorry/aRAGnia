@@ -1,0 +1,63 @@
+name: PR Version 2 Label
+
+on:
+  pull_request:
+    branches: [main, dev]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  add-version-2-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Add "versión 2" label to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const labelName = "versión 2";
+
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: "0E8A16",
+                description: "Pull request para versión 2",
+              });
+            }
+
+            const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const alreadyExists = labels.some((label) => label.name === labelName);
+            if (alreadyExists) {
+              core.info(`Label '${labelName}' already exists on PR #${prNumber}.`);
+              return;
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: [labelName],
+            });
+
+            core.info(`Added label '${labelName}' to PR #${prNumber}.`);
