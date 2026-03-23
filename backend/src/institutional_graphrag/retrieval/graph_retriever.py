@@ -88,7 +88,6 @@ class GraphRAGRetriever:
         load_dotenv(backend_dir / ".env")
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
         answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
-        print("hhhhhhhhhhhhhhh", cypher_model)
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
         # LLM para clasificación y Cypher
         self.cypher_llm_client = get_llm_client(model=cypher_model)
