@@ -17,7 +17,7 @@ Este repositorio implementa un pipeline de GraphRAG para documentos de proyectos
 
 - `backend/`: API, lógica de ingestión/retrieval, tests y scripts
 - `frontend/`: interfaz web estática
-- `data/`: corpus, outputs intermedios (docling, chunks, embeddings, etc.)
+- `data/`: corpus, outputs intermedios (docling, chunks, etc.)
 - `run_proyect.bat`: arranque rápido en Windows
 - `run_proyect.sh`: arranque rápido en Linux/macOS
 
@@ -157,19 +157,13 @@ python .\scripts\docling_manual.py corpus
 python .\scripts\chunk_corpus.py
 ```
 
-4. Generar embeddings:
-
-```bash
-python .\scripts\embed_chunks.py
-```
-
-5. Ejecutar extracción end-to-end:
+4. Ejecutar extracción end-to-end:
 
 ```bash
 python .\scripts\extract_end_to_end.py
 ```
 
-Outputs esperados en `data/`: `docling/`, `chunks/`, `embeddings/`, `entities_relations/`.
+Outputs esperados en `data/`: `docling/`, `chunks/`, `entities_relations/`.
 
 ## Checks y formato
 
