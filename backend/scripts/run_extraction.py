@@ -20,8 +20,6 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-LLM_PROVIDER = "ollama"  # "ollama", "groq", o "local"
-LLM_MODEL = None  # None usa el default del provider
 
 # Los tópicos disponibles están definidos en llm_extractor.py (DEFAULT_TOPICS)
 # Para modificarlos, editá: backend/src/institutional_graphrag/extraction/llm_extractor.py
@@ -49,10 +47,7 @@ def main(
     llm_topics: bool = True,
     enable_researcher_consolidation: bool = False,
 ) -> int:
-    extractor = EntityExtractor(
-        llm_provider=LLM_PROVIDER,
-        llm_model=LLM_MODEL,
-    )
+    extractor = EntityExtractor()
 
     # 1) Ejecutar extracción
     res = extractor.run(max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics)
