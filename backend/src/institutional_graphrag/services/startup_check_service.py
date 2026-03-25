@@ -35,10 +35,12 @@ def wait_for_postgres(max_retries: int = 15, delay: int = 2) -> None:
             )
             conn.close()
             return
-        except psycopg2.OperationalError:
+        except psycopg2.OperationalError as e:
+            # Add this print statement to see the REAL error
+            print(f"Intento de conexión fallido. Razón: {e}")
             time.sleep(delay)
 
-    raise RuntimeError("Postgres no estuvo listo a tiempo")
+    raise RuntimeError(f"Postgres no estuvo listo a tiempo, puerto usado {port}")
 
 
 def wait_for_neo4j(max_retries: int = 15, delay: int = 2) -> None:
