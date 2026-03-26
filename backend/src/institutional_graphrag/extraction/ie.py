@@ -637,7 +637,7 @@ class EntityExtractor:
                         # Agregar errores
                         self.res.errors.extend(llm_result_topic.errors)
                         # Crear entidades y relaciones chunk->topico
-                        new_entities, new_relationships = create_topics_from_llm_extraction(
+                        new_entities, new_relationships = self.create_topics_from_llm_extraction(
                             llm_result_topic, existing_topic_ids
                         )
                         # Agregar al resultado

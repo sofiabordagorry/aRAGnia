@@ -105,6 +105,11 @@ class Topico(Entity):
 
 
 @dataclass
+class Dominio(Entity):
+    value: str
+
+
+@dataclass
 class Documento(Entity):
     value: DocumentoValue
 
@@ -142,6 +147,22 @@ def TIENE_TOPICO(
         type="TIENE_TOPICO",
         source_id=proyecto_id,
         target_id=topico_id,
+        properties=properties or {},
+    )
+
+
+def PERTENECE_A(
+    topico_id: str, dominio_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación PERTENECE_A.
+
+    (Topico)-[PERTENECE_A]->(Dominio)
+    """
+    return Relationship(
+        type="PERTENECE_A",
+        source_id=topico_id,
+        target_id=dominio_id,
         properties=properties or {},
     )
 
@@ -248,7 +269,7 @@ def POSIBLE_ALIAS(
     """
     Crear una relación POSIBLE_ALIAS.
 
-    (Investigador)-[POSIBLE_ALIAS]->(PInvestigador)
+    (Investigador)-[POSIBLE_ALIAS]->(Investigador)
     """
     return Relationship(
         type="POSIBLE_ALIAS",
@@ -281,6 +302,7 @@ class GraphSchema:
         "Anio": Anio,
         "Investigador": Investigador,
         "Topico": Topico,
+        "Dominio": Dominio,
         "Documento": Documento,
         "Chunk": Chunk,
     }
@@ -289,6 +311,7 @@ class GraphSchema:
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
         "TIENE_TOPICO": TIENE_TOPICO,
+        "PERTENECE_A": PERTENECE_A,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
         "INICIO_EN": INICIO_EN,
         "PRIMER_CHUNK": PRIMER_CHUNK,
@@ -338,6 +361,7 @@ def validate_relationship_endpoints(
     valid_combinations = {
         "PARTICIPO_EN": ("Investigador", "Proyecto"),
         "TIENE_TOPICO": ("Proyecto", "Topico"),
+        "PERTENECE_A": ("Topico", "Dominio"),
         "ES_DESCRITO_POR": ("Proyecto", "Documento"),
         "INICIO_EN": ("Proyecto", "Anio"),
         "PRIMER_CHUNK": ("Documento", "Chunk"),
