@@ -1,0 +1,377 @@
+{
+  "Engineering": {
+    "id": "https://openalex.org/fields/22",
+    "subfields": [
+      "General Engineering",
+      "Aerospace Engineering",
+      "Automotive Engineering",
+      "Biomedical Engineering",
+      "Civil and Structural Engineering",
+      "Computational Mechanics",
+      "Control and Systems Engineering",
+      "Electrical and Electronic Engineering",
+      "Industrial and Manufacturing Engineering",
+      "Mechanical Engineering",
+      "Mechanics of Materials",
+      "Ocean Engineering",
+      "Safety, Risk, Reliability and Quality",
+      "Media Technology",
+      "Building and Construction",
+      "Architecture"
+    ]
+  },
+  "Social Sciences": {
+    "id": "https://openalex.org/fields/33",
+    "subfields": [
+      "General Social Sciences",
+      "Archeology",
+      "Development",
+      "Education",
+      "Geography, Planning and Development",
+      "Health",
+      "Human Factors and Ergonomics",
+      "Law",
+      "Library and Information Sciences",
+      "Linguistics and Language",
+      "Safety Research",
+      "Sociology and Political Science",
+      "Transportation",
+      "Anthropology",
+      "Communication",
+      "Cultural Studies",
+      "Demography",
+      "Gender Studies",
+      "Life-span and Life-course Studies",
+      "Political Science and International Relations",
+      "Public Administration",
+      "Urban Studies"
+    ]
+  },
+  "Medicine": {
+    "id": "https://openalex.org/fields/27",
+    "subfields": [
+      "Anatomy",
+      "Anesthesiology and Pain Medicine",
+      "Biochemistry",
+      "Cardiology and Cardiovascular Medicine",
+      "Critical Care and Intensive Care Medicine",
+      "Complementary and alternative medicine",
+      "Dermatology",
+      "Emergency Medicine",
+      "Endocrinology, Diabetes and Metabolism",
+      "Epidemiology",
+      "Family Practice",
+      "Gastroenterology",
+      "Genetics",
+      "Geriatrics and Gerontology",
+      "Health Informatics",
+      "Hematology",
+      "Hepatology",
+      "Immunology and Allergy",
+      "Internal Medicine",
+      "Infectious Diseases",
+      "Microbiology",
+      "Nephrology",
+      "Neurology",
+      "Obstetrics and Gynecology",
+      "Oncology",
+      "Ophthalmology",
+      "Orthopedics and Sports Medicine",
+      "Otorhinolaryngology",
+      "Pathology and Forensic Medicine",
+      "Pediatrics, Perinatology and Child Health",
+      "Pharmacology",
+      "Physiology",
+      "Psychiatry and Mental health",
+      "Public Health, Environmental and Occupational Health",
+      "Pulmonary and Respiratory Medicine",
+      "Radiology, Nuclear Medicine and Imaging",
+      "Rehabilitation",
+      "Reproductive Medicine",
+      "Rheumatology",
+      "Surgery",
+      "Transplantation",
+      "Urology"
+    ]
+  },
+  "Arts and Humanities": {
+    "id": "https://openalex.org/fields/12",
+    "subfields": [
+      "General Arts and Humanities",
+      "History",
+      "Language and Linguistics",
+      "Archeology",
+      "Classics",
+      "Conservation",
+      "History and Philosophy of Science",
+      "Literature and Literary Theory",
+      "Museology",
+      "Music",
+      "Philosophy",
+      "Religious studies",
+      "Visual Arts and Performing Arts"
+    ]
+  },
+  "Physics and Astronomy": {
+    "id": "https://openalex.org/fields/31",
+    "subfields": [
+      "Acoustics and Ultrasonics",
+      "Astronomy and Astrophysics",
+      "Condensed Matter Physics",
+      "Instrumentation",
+      "Nuclear and High Energy Physics",
+      "Atomic and Molecular Physics, and Optics",
+      "Radiation",
+      "Statistical and Nonlinear Physics"
+    ]
+  },
+  "Computer Science": {
+    "id": "https://openalex.org/fields/17",
+    "subfields": [
+      "Artificial Intelligence",
+      "Computational Theory and Mathematics",
+      "Computer Graphics and Computer-Aided Design",
+      "Computer Networks and Communications",
+      "Computer Science Applications",
+      "Computer Vision and Pattern Recognition",
+      "Hardware and Architecture",
+      "Human-Computer Interaction",
+      "Information Systems",
+      "Signal Processing",
+      "Software"
+    ]
+  },
+  "Agricultural and Biological Sciences": {
+    "id": "https://openalex.org/fields/11",
+    "subfields": [
+      "General Agricultural and Biological Sciences",
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Aquatic Science",
+      "Ecology, Evolution, Behavior and Systematics",
+      "Food Science",
+      "Forestry",
+      "Horticulture",
+      "Insect Science",
+      "Plant Science",
+      "Soil Science"
+    ]
+  },
+  "Biochemistry, Genetics and Molecular Biology": {
+    "id": "https://openalex.org/fields/13",
+    "subfields": [
+      "Aging",
+      "Biochemistry",
+      "Biophysics",
+      "Biotechnology",
+      "Cancer Research",
+      "Cell Biology",
+      "Clinical Biochemistry",
+      "Developmental Biology",
+      "Endocrinology",
+      "Genetics",
+      "Molecular Biology",
+      "Molecular Medicine",
+      "Physiology",
+      "Structural Biology"
+    ]
+  },
+  "Environmental Science": {
+    "id": "https://openalex.org/fields/23",
+    "subfields": [
+      "Ecological Modeling",
+      "Ecology",
+      "Environmental Chemistry",
+      "Environmental Engineering",
+      "Global and Planetary Change",
+      "Health, Toxicology and Mutagenesis",
+      "Management, Monitoring, Policy and Law",
+      "Nature and Landscape Conservation",
+      "Pollution",
+      "Industrial and Manufacturing Engineering",
+      "Water Science and Technology"
+    ]
+  },
+  "Economics, Econometrics and Finance": {
+    "id": "https://openalex.org/fields/20",
+    "subfields": [
+      "General Economics, Econometrics and Finance",
+      "Economics and Econometrics",
+      "Finance"
+    ]
+  },
+  "Materials Science": {
+    "id": "https://openalex.org/fields/25",
+    "subfields": [
+      "General Materials Science",
+      "Biomaterials",
+      "Ceramics and Composites",
+      "Electronic, Optical and Magnetic Materials",
+      "Materials Chemistry",
+      "Metals and Alloys",
+      "Polymers and Plastics",
+      "Surfaces, Coatings and Films"
+    ]
+  },
+  "Business, Management and Accounting": {
+    "id": "https://openalex.org/fields/14",
+    "subfields": [
+      "Accounting",
+      "Business and International Management",
+      "Management Information Systems",
+      "Management of Technology and Innovation",
+      "Marketing",
+      "Organizational Behavior and Human Resource Management",
+      "Strategy and Management",
+      "Tourism, Leisure and Hospitality Management",
+      "Industrial relations"
+    ]
+  },
+  "Psychology": {
+    "id": "https://openalex.org/fields/32",
+    "subfields": [
+      "General Psychology",
+      "Applied Psychology",
+      "Clinical Psychology",
+      "Developmental and Educational Psychology",
+      "Experimental and Cognitive Psychology",
+      "Neuropsychology and Physiological Psychology",
+      "Social Psychology"
+    ]
+  },
+  "Health Professions": {
+    "id": "https://openalex.org/fields/36",
+    "subfields": [
+      "General Health Professions",
+      "Complementary and Manual Therapy",
+      "Emergency Medical Services",
+      "Health Information Management",
+      "Medical Laboratory Technology",
+      "Medical Terminology",
+      "Occupational Therapy",
+      "Pharmacy",
+      "Physical Therapy, Sports Therapy and Rehabilitation",
+      "Radiological and Ultrasound Technology",
+      "Speech and Hearing"
+    ]
+  },
+  "Earth and Planetary Sciences": {
+    "id": "https://openalex.org/fields/19",
+    "subfields": [
+      "Atmospheric Science",
+      "Earth-Surface Processes",
+      "Geochemistry and Petrology",
+      "Geology",
+      "Geophysics",
+      "Oceanography",
+      "Paleontology",
+      "Space and Planetary Science"
+    ]
+  },
+  "Chemistry": {
+    "id": "https://openalex.org/fields/16",
+    "subfields": [
+      "Analytical Chemistry",
+      "Electrochemistry",
+      "Inorganic Chemistry",
+      "Organic Chemistry",
+      "Physical and Theoretical Chemistry",
+      "Spectroscopy"
+    ]
+  },
+  "Mathematics": {
+    "id": "https://openalex.org/fields/26",
+    "subfields": [
+      "Algebra and Number Theory",
+      "Applied Mathematics",
+      "Computational Mathematics",
+      "Discrete Mathematics and Combinatorics",
+      "Geometry and Topology",
+      "Mathematical Physics",
+      "Modeling and Simulation",
+      "Numerical Analysis",
+      "Statistics and Probability",
+      "Theoretical Computer Science"
+    ]
+  },
+  "Neuroscience": {
+    "id": "https://openalex.org/fields/28",
+    "subfields": [
+      "Behavioral Neuroscience",
+      "Biological Psychiatry",
+      "Cellular and Molecular Neuroscience",
+      "Cognitive Neuroscience",
+      "Developmental Neuroscience",
+      "Endocrine and Autonomic Systems",
+      "Neurology",
+      "Sensory Systems"
+    ]
+  },
+  "Decision Sciences": {
+    "id": "https://openalex.org/fields/18",
+    "subfields": [
+      "General Decision Sciences",
+      "Information Systems and Management",
+      "Management Science and Operations Research",
+      "Statistics, Probability and Uncertainty"
+    ]
+  },
+  "Immunology and Microbiology": {
+    "id": "https://openalex.org/fields/24",
+    "subfields": [
+      "Applied Microbiology and Biotechnology",
+      "Immunology",
+      "Microbiology",
+      "Parasitology",
+      "Virology"
+    ]
+  },
+  "Energy": {
+    "id": "https://openalex.org/fields/21",
+    "subfields": [
+      "General Energy",
+      "Energy Engineering and Power Technology",
+      "Fuel Technology",
+      "Nuclear Energy and Engineering",
+      "Renewable Energy, Sustainability and the Environment"
+    ]
+  },
+  "Nursing": {
+    "id": "https://openalex.org/fields/29",
+    "subfields": [
+      "Issues, ethics and legal aspects",
+      "Leadership and Management",
+      "Nutrition and Dietetics",
+      "Research and Theory"
+    ]
+  },
+  "Pharmacology, Toxicology and Pharmaceutics": {
+    "id": "https://openalex.org/fields/30",
+    "subfields": [
+      "Drug Discovery",
+      "Pharmaceutical Science",
+      "Pharmacology",
+      "Toxicology"
+    ]
+  },
+  "Dentistry": {
+    "id": "https://openalex.org/fields/35",
+    "subfields": [
+      "General Dentistry",
+      "Oral Surgery",
+      "Orthodontics",
+      "Periodontics"
+    ]
+  },
+  "Chemical Engineering": {
+    "id": "https://openalex.org/fields/15",
+    "subfields": [
+      "Bioengineering",
+      "Catalysis",
+      "Chemical Health and Safety",
+      "Filtration and Separation",
+      "Fluid Flow and Transfer Processes",
+      "Process Chemistry and Technology"
+    ]
+  }
+}
