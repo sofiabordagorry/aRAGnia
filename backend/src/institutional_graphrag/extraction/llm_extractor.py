@@ -18,7 +18,7 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     Topico,
 )
-from institutional_graphrag.rag.generate import get_llm_client
+from institutional_graphrag.llm.llm_provider import get_llm_client
 
 logger = logging.getLogger(__name__)
 
@@ -312,7 +312,6 @@ class LLMEntityExtractor:
     def __init__(
         self,
         *,
-        llm_provider: str = "ollama",
         llm_model: Optional[str] = None,
         temperature: float = 0.1,
         max_tokens: int = 1024,
@@ -320,7 +319,7 @@ class LLMEntityExtractor:
     ):
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.llm_client = get_llm_client(provider=llm_provider, model=llm_model)
+        self.llm_client = get_llm_client(model=llm_model)
         self.available_topics = (
             available_topics if available_topics is not None else OPENALEX_TOPICS
         )

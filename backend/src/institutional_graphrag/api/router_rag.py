@@ -18,8 +18,7 @@ class QueryResponse(BaseModel):
 
 @router.post("/query", response_model=QueryResponse)
 def rag_query(payload: QueryRequest):
-    # llm provider = [groq, ollama, local]
-    rag = RAG(top_k=3, llm_provider="ollama")
+    rag = RAG(top_k=3)
     query = payload.query
     result = rag.generate(query)
     chunks = [
