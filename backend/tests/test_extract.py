@@ -678,8 +678,12 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
     responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
     participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
 
-    assert len(responsable_rels) == 0, "No se deben crear relaciones RESPONSABLE_DE para nombres inválidos"
-    assert len(participo_rels) == 0, "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"
+    assert (
+        len(responsable_rels) == 0
+    ), "No se deben crear relaciones RESPONSABLE_DE para nombres inválidos"
+    assert (
+        len(participo_rels) == 0
+    ), "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"
 
 
 # -------------------------
