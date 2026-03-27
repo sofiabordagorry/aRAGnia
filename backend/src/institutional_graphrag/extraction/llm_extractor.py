@@ -68,10 +68,6 @@ class LLMEntityExtractor:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.llm_client = get_llm_client(model=llm_model)
-        self.available_topics = (
-            available_topics if available_topics is not None else OPENALEX_TOPICS
-        )
-        self.llm_client = get_llm_client(provider=llm_provider, model=llm_model)
         subfields, subfields_map = self.get_topics(TOPICS_PATH)
         self.subfields_map = subfields_map
         if available_topics is None:
@@ -864,7 +860,7 @@ If no match:
                 field_normalized = field_name.lower().strip()
                 field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
                 entities.append(Dominio(field_id, field_name))
-                relationships.append(PERTENECE_A(topic_id, field_id))
+                relationships.append(PERTENECE_A_DOMINIO(topic_id, field_id))
             relationships.append(
                 EXTRAIDO_DE(
                     mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
