@@ -14,7 +14,7 @@ import regex
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PARTICIPO_EN,
-    PERTENECE_A,
+    PERTENECE_A_DOMINIO,
     Dominio,
     Entity,
     Investigador,
