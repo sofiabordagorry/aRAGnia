@@ -175,6 +175,7 @@ def check_neo4j_not_empty() -> None:
             )
             graph.clear_graph()
             graph.ingest(entities=entities, relationships=relationships)
+            graph.close()
         except Exception as e:
             print("No se pudo crear el grafo:", e)
 

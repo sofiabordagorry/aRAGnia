@@ -71,7 +71,7 @@ class LLMEntityExtractor:
         self.llm_client = get_llm_client(provider=llm_provider, model=llm_model)
         subfields, subfields_map = self.get_topics(TOPICS_PATH)
         self.subfields_map = subfields_map
-        if available_topics is not None:
+        if available_topics is None:
             available_topics = subfields
 
         self.available_topics = available_topics
@@ -82,10 +82,10 @@ class LLMEntityExtractor:
         """Crea un mapeo de fields y subfields para búsqueda rápida."""
         subfield_to_field = {}  # Mapeo de subfields a fields
         subfields_list = []  # Lista de subfields
-
         for field, details in fields_dict.items():
             for subfield in details.get("subfields", []):
-                subfield_to_field[subfield] = field  # Mapear subfield a field
+                subfield_normalized = subfield.lower().strip()
+                subfield_to_field[subfield_normalized] = field  # Mapear subfield a field
                 subfields_list.append(subfield)  # Agregar subfield a la lista
         return subfields_list, subfield_to_field
 
@@ -855,12 +855,13 @@ If no match:
                     )
                 )
                 continue
-
             entities.append(Topico(id=topic_id, value=mention.topic))
-            field_name = self.subfields_map.get(topic_id)
+            field_name = self.subfields_map.get(topic_normalized)
             if field_name:
-                entities.append(Dominio(topic_id, topic_id))
-                relationships.append(PERTENECE_A(topic_id, field_name))
+                field_normalized = field_name.lower().strip()
+                field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
+                entities.append(Dominio(field_id, field_name))
+                relationships.append(PERTENECE_A(topic_id, field_id))
             relationships.append(
                 EXTRAIDO_DE(
                     mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}

@@ -21,7 +21,7 @@ def main():
         neo4j_password,
     )
     graph.export_graph(output_json_path=OUTPUT_PATH)
-
+    graph.close()
 
 
 

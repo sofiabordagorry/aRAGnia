@@ -104,6 +104,7 @@ class IngestService:
         self.builder = GraphBuilder(self.neo4j_uri, self.user, self.password)
 
     def cleanup(self):
+        self.builder = GraphBuilder(self.neo4j_uri, self.user, self.password)
         self.rule_based_extractor.cleanup()
         self.entity_extractor.cleanup()
         self.processed_files = []
@@ -171,6 +172,7 @@ class IngestService:
             if entity_json_path is not None:
                 entity_json_path.unlink(missing_ok=True)
 
+        self.builder.close()
         return {"processed": processed, "errors": self.entity_extractor.res.errors}
 
     async def _process_one(
