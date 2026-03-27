@@ -41,7 +41,6 @@ class ExtractionResult:
 class EntityExtractor:
     def __init__(
         self,
-        llm_provider: str = "ollama",
         llm_model: Optional[str] = None,
     ):
         self.data_dir = DATA_DIR
@@ -57,7 +56,6 @@ class EntityExtractor:
         self.docs_by_group_year: dict[tuple[str, str], list[Documento]] = defaultdict(list)
 
         # Configuración LLM
-        self.llm_provider = llm_provider
         self.llm_model = llm_model
 
         self._seen_entities: set[tuple[str, str]] = set()
@@ -520,7 +518,6 @@ class EntityExtractor:
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
         llm_extractor = LLMEntityExtractor(
-            llm_provider=self.llm_provider,
             llm_model=self.llm_model,
             temperature=0.1,
             max_tokens=1024,

@@ -69,12 +69,11 @@ cd ..
 
 - Copiar `backend/.env.example` a `backend/.env`.
 - Completar al menos:
-	- `NEO4J_USER`
-	- `NEO4J_PASSWORD`
-	- `POSTGRES_USER`
-	- `POSTGRES_PASSWORD`
-	- `FING_TOKEN` (si se va a descargar corpus)
-	- `GROQ_API_KEY` (si se va a usar Groq)
+  - `NEO4J_USER`
+  - `NEO4J_PASSWORD`
+  - `POSTGRES_USER`
+  - `POSTGRES_PASSWORD`
+  - `FING_TOKEN` (si se va a descargar corpus)
 
 ## Levantar el proyecto (modo recomendado)
 
@@ -109,10 +108,7 @@ Accesos útiles:
 
 ## Proveedor de modelo (LLM)
 
-El backend soporta dos opciones principales:
-
 - Ollama (local): usa `OLLAMA_BASE_URL` (por defecto `http://localhost:11434`).
-- Groq (API): requiere `GROQ_API_KEY` en `backend/.env`.
 
 Si se levanta el proyecto con Docker Compose, el servicio `ollama-init` descarga automáticamente modelos base (`llama3.2:3b` y `qwen2.5:3b-instruct`).
 

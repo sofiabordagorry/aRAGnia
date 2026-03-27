@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
@@ -76,18 +79,20 @@ class GraphRAGRetriever:
         neo4j_uri: str,
         neo4j_user: str,
         neo4j_password: str,
-        llm_provider: str = "ollama",
-        llm_model: Optional[str] = None,
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ):
-        from institutional_graphrag.rag.generate import get_llm_client
+        from institutional_graphrag.llm.llm_provider import get_llm_client
 
+        backend_dir = Path(__file__).resolve().parents[3]
+        load_dotenv(backend_dir / ".env")
+        cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
+        answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
         # LLM para clasificación y Cypher
-        self.cypher_llm_client = get_llm_client(provider=llm_provider, model="qwen2.5:3b-instruct")
+        self.cypher_llm_client = get_llm_client(model=cypher_model)
         # LLM para respuestas finales
-        self.answer_llm_client = get_llm_client(provider=llm_provider, model="llama3.2:3b")
+        self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
 

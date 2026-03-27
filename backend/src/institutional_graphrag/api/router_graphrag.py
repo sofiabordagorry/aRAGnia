@@ -42,7 +42,6 @@ def graphrag_query(payload: QueryRequest):
             neo4j_uri=neo4j_uri,
             neo4j_user=os.getenv("NEO4J_USER", "neo4j"),
             neo4j_password=os.getenv("NEO4J_PASSWORD", "password"),
-            llm_provider="ollama",
             temperature=0.3,
             max_tokens=1024,
         )
