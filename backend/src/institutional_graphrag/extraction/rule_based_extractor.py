@@ -21,6 +21,7 @@ from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     INICIO_EN,
     RESPONSABLE_DE,
+    PARTICIPO_EN,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
     TITULO_EXTRAIDO_DE,
@@ -812,6 +813,7 @@ class RuleBasedExtractor:
                         },
                     )
                 )
+                self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
                 self.res.relationships.append(RESPONSABLE_DE(candidate_id, project_id))
                 self.res.relationships.append(
                     EXTRAIDO_DE(

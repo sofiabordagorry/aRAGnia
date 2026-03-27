@@ -572,7 +572,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
 def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_path: Path):
     """
     Border Case: Una fila de tabla tiene múltiples responsables (ej. titular y co-titular).
-    Verifica que se generen múltiples relaciones RESPONSABLE_DE hacia el mismo proyecto.
+    Verifica que se generen múltiples relaciones RESPONSABLE_DE y PARTICIPO_EN hacia el mismo proyecto.
     """
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
     extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -625,8 +625,10 @@ def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_
 
     # 4. Validar
     responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
+    participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
 
     assert len(responsable_rels) == 2, "Deben existir 2 relaciones RESPONSABLE_DE"
+    assert len(participo_rels) == 2, "Deben existir 2 relaciones PARTICIPO_EN"
 
     source_ids = {r.source_id for r in responsable_rels}
     assert "ema_garcia" in source_ids
@@ -637,7 +639,7 @@ def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_
 def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtractor, tmp_path: Path):
     """
     Border Case: La tabla contiene valores basura o vacíos explícitos ("N/A", "--").
-    Verifica que NO se creen investigadores basura ni relaciones RESPONSABLE_DE.
+    Verifica que NO se creen investigadores basura ni relaciones RESPONSABLE_DE ni PARTICIPO_EN.
     """
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
     extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -674,7 +676,10 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
     extractor._extract_projects_and_responsible()
 
     responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
-    assert len(responsable_rels) == 0, "No se deben crear relaciones para nombres inválidos"
+    participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
+
+    assert len(responsable_rels) == 0, "No se deben crear relaciones RESPONSABLE_DE para nombres inválidos"
+    assert len(participo_rels) == 0, "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"
 
 
 # -------------------------
