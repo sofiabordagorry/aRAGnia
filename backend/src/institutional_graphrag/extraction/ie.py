@@ -15,7 +15,6 @@ from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TAB
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
-    create_topics_from_llm_extraction,
 )
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.schema import (
@@ -634,8 +633,10 @@ class EntityExtractor:
                         # Agregar errores
                         self.res.errors.extend(llm_result_topic.errors)
                         # Crear entidades y relaciones chunk->topico
-                        new_entities, new_relationships = create_topics_from_llm_extraction(
-                            llm_result_topic, existing_topic_ids
+                        new_entities, new_relationships = (
+                            llm_extractor.create_topics_from_llm_extraction(
+                                llm_result_topic, existing_topic_ids
+                            )
                         )
                         # Agregar al resultado
                         self.add_entities(new_entities)

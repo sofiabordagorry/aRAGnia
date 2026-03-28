@@ -955,74 +955,66 @@ class GraphBuilder:
         neo4j_relationships: List[Dict[str, Any]] = []
         entity_type_counts: Dict[str, int] = {}
         relationship_type_counts: Dict[str, int] = {}
-        try:
-            with self.driver.session() as session:
-                # Entidades
-                node_query = """
-                MATCH (n)
-                RETURN
-                coalesce(n.id, elementId(n)) AS id,
-                head(labels(n)) AS label,
-                properties(n) AS value
-                ORDER BY id
-                """
-                node_result = session.run(node_query)
+        with self.driver.session() as session:
+            # Entidades
+            node_query = """
+            MATCH (n)
+            RETURN
+            coalesce(n.id, elementId(n)) AS id,
+            head(labels(n)) AS label,
+            properties(n) AS value
+            ORDER BY id
+            """
+            node_result = session.run(node_query)
 
-                for record in node_result:
-                    label = record["label"] or "SinLabel"
-                    entity_id = record["id"]
-                    value = dict(record["value"]) if record["value"] is not None else {}
+            for record in node_result:
+                label = record["label"] or "SinLabel"
+                entity_id = record["id"]
+                value = dict(record["value"]) if record["value"] is not None else {}
 
-                    # eliminar propiedades que no querés duplicadas o internas
-                    value.pop("__created__", None)
-                    value.pop("id", None)
+                # eliminar propiedades que no querés duplicadas o internas
+                value.pop("__created__", None)
+                value.pop("id", None)
 
-                    neo4j_entities.append(
-                        {
-                            "id": entity_id,
-                            "label": label,
-                            "value": value,
-                        }
-                    )
+                neo4j_entities.append(
+                    {
+                        "id": entity_id,
+                        "label": label,
+                        "value": value,
+                    }
+                )
 
-                    entity_type_counts[label] = entity_type_counts.get(label, 0) + 1
+                entity_type_counts[label] = entity_type_counts.get(label, 0) + 1
 
-                # Relaciones
-                rel_query = """
-                MATCH (a)-[r]->(b)
-                RETURN
-                type(r) AS type,
-                coalesce(a.id, elementId(a)) AS source_id,
-                coalesce(b.id, elementId(b)) AS target_id,
-                properties(r) AS properties
-                ORDER BY type, source_id, target_id
-                """
-                rel_result = session.run(rel_query)
+            # Relaciones
+            rel_query = """
+            MATCH (a)-[r]->(b)
+            RETURN
+            type(r) AS type,
+            coalesce(a.id, elementId(a)) AS source_id,
+            coalesce(b.id, elementId(b)) AS target_id,
+            properties(r) AS properties
+            ORDER BY type, source_id, target_id
+            """
+            rel_result = session.run(rel_query)
 
-                for record in rel_result:
-                    rel_type = record["type"]
-                    properties = (
-                        dict(record["properties"]) if record["properties"] is not None else {}
-                    )
+            for record in rel_result:
+                rel_type = record["type"]
+                properties = dict(record["properties"]) if record["properties"] is not None else {}
 
-                    # eliminar propiedad
-                    properties.pop("__created__", None)
+                # eliminar propiedad
+                properties.pop("__created__", None)
 
-                    neo4j_relationships.append(
-                        {
-                            "type": rel_type,
-                            "source_id": record["source_id"],
-                            "target_id": record["target_id"],
-                            "properties": properties,
-                        }
-                    )
+                neo4j_relationships.append(
+                    {
+                        "type": rel_type,
+                        "source_id": record["source_id"],
+                        "target_id": record["target_id"],
+                        "properties": properties,
+                    }
+                )
 
-                    relationship_type_counts[rel_type] = (
-                        relationship_type_counts.get(rel_type, 0) + 1
-                    )
-
-        finally:
-            self.close()
+                relationship_type_counts[rel_type] = relationship_type_counts.get(rel_type, 0) + 1
 
         # -----------------------------
         # 3) Guardado final

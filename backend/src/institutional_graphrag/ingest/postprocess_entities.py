@@ -203,13 +203,13 @@ class Postprocessor:
 
         if self.enable_researcher_consolidation:
             return updated_relationships
-
+        db_entities = [e for e in db_entities if e.get("label") == "Investigador"]
+        entities_to_save = [e for e in entities_to_save if e.get("label") == "Investigador"]
         sorted_db_entities = sorted(
             db_entities,
             key=lambda x: len(x.get("value", {}).get("name", "")),
             reverse=True,
         )
-
         sorted_entities_to_save = sorted(
             entities_to_save,
             key=lambda x: len(x.get("value", {}).get("name", "")),

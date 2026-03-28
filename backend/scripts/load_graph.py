@@ -26,7 +26,7 @@ def main():
     )
     graph.clear_graph()
     graph.ingest(entities=entities, relationships=relationships)
-
+    graph.close()
 
 if __name__ == "__main__":
     main()
