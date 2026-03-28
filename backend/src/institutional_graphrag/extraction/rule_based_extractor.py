@@ -20,6 +20,7 @@ from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
     INICIO_EN,
+    RESPONSABLE_DE,
     PARTICIPO_EN,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
@@ -307,6 +308,8 @@ class RuleBasedExtractor:
 
         by_sub: dict[str, pd.DataFrame] = {}
         s = df[id_col].astype(str)
+        # eliminar .0 al final de la id en la tabla (agregado automaticamente por pd)
+        s = s.str.replace(r"\.0$", "", regex=True).str.strip()
 
         for sub_id, _ in id_to_document:
             if sub_id not in by_sub:
@@ -349,11 +352,11 @@ class RuleBasedExtractor:
         """
         projects: dict[str, list[dict[str, Any]]] = defaultdict(list)
         id_col = df.columns[0]
-        small = df[[id_col, title_col] + responsible_cols].dropna(subset=[id_col, title_col])
+        small = df[[id_col, title_col] + responsible_cols].dropna(subset=[id_col])
         cols = list(small.columns)
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
-            frac_title = str(row[title_col]).strip()
+            frac_title = self.cell_str(row.get(title_col))
 
             doc = self.doc_by_id.get(doc_id)
             if doc is None:
@@ -635,7 +638,7 @@ class RuleBasedExtractor:
         }
 
         for r in self.res.relationships:
-            if r.type != "PARTICIPO_EN":
+            if r.type not in ["PARTICIPO_EN", "RESPONSABLE_DE"]:
                 continue
 
             inv_id = str(r.source_id)
@@ -706,7 +709,7 @@ class RuleBasedExtractor:
 
     def is_name_col(self, col: str) -> bool:
         c = self._normalize_col(col).upper()
-        return "NOMBRE" in c or "NOMBRES" in c
+        return "NOMBRE" in c
 
     def is_lastname_col(self, col: str) -> bool:
         c = self._normalize_col(col).upper()
@@ -760,8 +763,12 @@ class RuleBasedExtractor:
                 continue
 
             # Validar que no sea un valor inválido
-            invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
-            if any(inv in candidate_in_text.lower() for inv in invalid_values):
+            invalid_values = ["--", "n/a", "na", "s/d"]
+            invalid_contains = ["unnamed:"]
+            candidate_lower = candidate_in_text.lower()
+            if candidate_lower in invalid_values or any(
+                sub in candidate_lower for sub in invalid_contains
+            ):
                 continue
 
             current = inv_ids_by_project.get(project_id, set())
@@ -778,9 +785,10 @@ class RuleBasedExtractor:
                 to_remove = {item for item in current if item[1] == fallback}
                 if to_remove:
                     inv_ids_by_project[project_id] -= to_remove
-                    candidate_to_remove = next(iter(to_remove), None)
-                    if candidate_to_remove is not None:
+
+                    for candidate_to_remove in to_remove:
                         inv_id = candidate_to_remove[0]
+
                         self.res.entities = [
                             e
                             for e in self.res.entities
@@ -789,13 +797,14 @@ class RuleBasedExtractor:
                         self.res.relationships = [
                             r
                             for r in self.res.relationships
-                            if r.source_id != inv_id and r.target_id != project_id
+                            if not (r.source_id == inv_id and r.target_id == project_id)
                         ]
                         self.res.relationships = [
                             r
                             for r in self.res.relationships
-                            if r.source_id != table_chunk_id and r.target_id != inv_id
+                            if not (r.source_id == table_chunk_id and r.target_id == inv_id)
                         ]
+
             candidate_id = self.make_candidate_id(candidate_in_text)
             if candidate_id:
                 self.res.entities.append(
@@ -808,6 +817,7 @@ class RuleBasedExtractor:
                     )
                 )
                 self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
+                self.res.relationships.append(RESPONSABLE_DE(candidate_id, project_id))
                 self.res.relationships.append(
                     EXTRAIDO_DE(
                         table_chunk_id,

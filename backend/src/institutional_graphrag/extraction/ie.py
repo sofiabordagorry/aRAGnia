@@ -127,11 +127,25 @@ class EntityExtractor:
                     if raw.get("label") != label:
                         continue
 
+                    match = True
+
                     v = raw.get("value")
                     if value_filter is not None:
                         if not isinstance(v, dict):
                             continue
-                        if not all(v.get(k) == expected for k, expected in value_filter.items()):
+                        for k, expected in value_filter.items():
+                            val = v.get(k)
+
+                            if k == "source" and isinstance(val, list):
+                                # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
+                                if expected not in val:
+                                    match = False
+                                    break
+                            elif val != expected:
+                                match = False
+                                break
+
+                        if not match:
                             continue
 
                     entity_id = raw.get("id")
@@ -233,6 +247,21 @@ class EntityExtractor:
                 # reemplazar la entidad existente
                 for i, existing in enumerate(self.res.entities):
                     if existing.label == e.label and str(existing.id) == str(e.id):
+                        # Si un investigador es extraido por tabla y por llm mantiene ambas fuentes
+                        if (
+                            e.label == "Investigador"
+                            and isinstance(existing.value, dict)
+                            and isinstance(e.value, dict)
+                        ):
+                            old_source = existing.value.get("source")
+                            new_source = e.value.get("source")
+
+                            if (
+                                isinstance(old_source, list)
+                                or isinstance(new_source, list)
+                                or (old_source and new_source and old_source != new_source)
+                            ):
+                                e.value["source"] = ["rule_based", "llm"]
                         self.res.entities[i] = e
                         continue
                 continue
