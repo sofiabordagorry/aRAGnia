@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import logging
+import re
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_response import parse_researcher_response, parse_topic_response, LLMExtractionResult
@@ -10,270 +13,18 @@ from institutional_graphrag.extraction.parse_response import parse_researcher_re
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PARTICIPO_EN,
+    PERTENECE_A_DOMINIO,
+    Dominio,
     Entity,
     Investigador,
     Relationship,
     Topico,
 )
-from institutional_graphrag.rag.generate import get_llm_client
+from institutional_graphrag.llm.llm_provider import get_llm_client
 
 logger = logging.getLogger(__name__)
+TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 
-# Lista de subfields de OpenAlex para guiar la extracción de tópicos
-OPENALEX_TOPICS = [
-    "Sociology and Political Science",
-    "Nuclear and High Energy Physics",
-    "Plant Science",
-    "Molecular Biology",
-    "Electrical and Electronic Engineering",
-    "Artificial Intelligence",
-    "Political Science and International Reations",
-    "Economics and Econometrics",
-    "Education",
-    "Aerospace Engineering",
-    "Surgery",
-    "Materials Chemistry",
-    "History",
-    "Astronomy and Astrophysics",
-    "Biomedical Engineering",
-    "General Health Professions",
-    "Atomic and Molecular Physics, and Optics",
-    "Philosophy",
-    "Mechanical Engineering",
-    "Information Systems",
-    "Public Health, Environmental and Occupational Health",
-    "Literature and Literary Theory",
-    "Ecology, Evolution, Behavior and Systematics",
-    "Pediatrics, Perinatology and Child Health",
-    "Genetics",
-    "Epidemiology",
-    "Pulmonary and Respiratory Medicine",
-    "Ecology",
-    "Organic Chemistry",
-    "Archeology",
-    "Clinical Psychology",
-    "Civil and Structural Engineering",
-    "Control and Systems Engineering",
-    "Computer Networks and Communications",
-    "Strategy and Management",
-    "Law",
-    "Language and Linguistics",
-    "Anthropology",
-    "Social Psychology",
-    "Management, Monitoring, Policy and Law",
-    "Oncology",
-    "Physiology",
-    "Cardiology and Cardiovascular Medicine",
-    "Computer Vision and Pattern Recognition",
-    "Global and Planetary Change",
-    "Radiology, Nuclear Medicine and Imaging",
-    "Cultural Studies",
-    "Mechanics of Materials",
-    "Computational Mechanics",
-    "Food Science",
-    "Pharmacology",
-    "Cognitive Neuroscience",
-    "Accounting",
-    "Geophysics",
-    "Atmospheric Science",
-    "Ocean Engineering",
-    "Infectious Diseases",
-    "Immunology",
-    "Demography",
-    "Water Science and Technology",
-    "Renewable Energy, Sustainability and the Environment",
-    "Computational Theory and Mathematics",
-    "Biophysics",
-    "Religious studies",
-    "Endocrinology, Diabetes and Metabolism",
-    "Oceanography",
-    "Pathology and Forensic Medicine",
-    "Paleontology",
-    "Condensed Matter Physics",
-    "Management Science and Operations Research",
-    "Environmental Engineering",
-    "History and Philosophy of Science",
-    "Building and Construction",
-    "Insect Science",
-    "Finance",
-    "Information Systems and Management",
-    "Organizational Behavior and Human Resource Management",
-    "Neurology",
-    "Experimental and Cognitive Psychology",
-    "Biomaterials",
-    "Psychiatry and Mental health",
-    "Nature and Landscape Conservation",
-    "Urban Studies",
-    "Visual Arts and Performing Arts",
-    "Developmental and Educational Psychology",
-    "Industrial and Manufacturing Engineering",
-    "Health, Toxicology and Mutagenesis",
-    "Rheumatology",
-    "Cell Biology",
-    "Reproductive Medicine",
-    "Spectroscopy",
-    "Museology",
-    "Gender Studies",
-    "Nutrition and Dietetics",
-    "Ecological Modeling",
-    "General Agricultural and Biological Sciences",
-    "Cancer Research",
-    "Statistical and Nonlinear Physics",
-    "Cellular and Molecular Neuroscience",
-    "Environmental Chemistry",
-    "Management Information Systems",
-    "Marketing",
-    "Electronic, Optical and Magnetic Materials",
-    "General Economics, Econometrics and Finance",
-    "Music",
-    "Statistics and Probability",
-    "Classics",
-    "Geography, Planning and Development",
-    "Communication",
-    "Inorganic Chemistry",
-    "Safety Research",
-    "Polymers and Plastics",
-    "Applied Mathematics",
-    "Physical and Theoretical Chemistry",
-    "Complementary and alternative medicine",
-    "Hematology",
-    "Agronomy and Crop Science",
-    "Management of Technology and Innovation",
-    "Obstetrics and Gynecology",
-    "Geometry and Topology",
-    "Computer Science Applications",
-    "Automotive Engineering",
-    "Pollution",
-    "Radiation",
-    "Soil Science",
-    "Ophthalmology",
-    "Dermatology",
-    "Health",
-    "Safety, Risk, Reliability and Quality",
-    "Transportation",
-    "Media Technology",
-    "Animal Science and Zoology",
-    "Neurology",
-    "Genetics",
-    "Mathematical Physics",
-    "Emergency Medicine",
-    "Statistics, Probability and Uncertainty",
-    "Industrial and Manufacturing Engineering",
-    "General Social Sciences",
-    "Signal Processing",
-    "Pharmacology",
-    "Conservation",
-    "Speech and Hearing",
-    "Aquatic Science",
-    "Orthopedics and Sports Medicine",
-    "Emergency Medical Services",
-    "Biotechnology",
-    "Nephrology",
-    "Analytical Chemistry",
-    "Hepatology",
-    "Geology",
-    "Linguistics and Language",
-    "Physical Therapy, Sports Therapy and Rehabilitation",
-    "Health Information Management",
-    "Parasitology",
-    "Geochemistry and Petrology",
-    "Earth-Surface Processes",
-    "Hardware and Architecture",
-    "Small Animals",
-    "Development",
-    "Forestry",
-    "Microbiology",
-    "Rehabilitation",
-    "Surfaces, Coatings and Films",
-    "Biochemistry",
-    "Instrumentation",
-    "Oral Surgery",
-    "Endocrinology",
-    "Occupational Therapy",
-    "Pharmaceutical Science",
-    "Human-Computer Interaction",
-    "Public Administration",
-    "Urology",
-    "Clinical Biochemistry",
-    "Pharmacy",
-    "Gastroenterology",
-    "General Materials Science",
-    "Anesthesiology and Pain Medicine",
-    "Periodontics",
-    "Library and Information Sciences",
-    "Architecture",
-    "Immunology and Allergy",
-    "Applied Psychology",
-    "Modeling and Simulation",
-    "Fluid Flow and Transfer Processes",
-    "Radiological and Ultrasound Technology",
-    "Algebra and Number Theory",
-    "Catalysis",
-    "Ceramics and Composites",
-    "Otorhinolaryngology",
-    "Computer Graphics and Computer-Aided Design",
-    "Endocrine and Autonomic Systems",
-    "Physiology",
-    "Software",
-    "Critical Care and Intensive Care Medicine",
-    "Numerical Analysis",
-    "Virology",
-    "General Arts and Humanities",
-    "Orthodontics",
-    "Theoretical Computer Science",
-    "Molecular Medicine",
-    "Geriatrics and Gerontology",
-    "Anatomy",
-    "Sensory Systems",
-    "Biochemistry",
-    "Structural Biology",
-    "Bioengineering",
-    "Human Factors and Ergonomics",
-    "Internal Medicine",
-    "Energy Engineering and Power Technology",
-    "Electrochemistry",
-    "Discrete Mathematics and Combinatorics",
-    "Issues, ethics and legal aspects",
-    "Archeology",
-    "Developmental Neuroscience",
-    "General Psychology",
-    "Toxicology",
-    "Industrial relations",
-    "Business and International Management",
-    "Complementary and Manual Therapy",
-    "General Energy",
-    "Neuropsychology and Physiological Psychology",
-    "Medical Laboratory Technology",
-    "Behavioral Neuroscience",
-    "Transplantation",
-    "Health Informatics",
-    "Space and Planetary Science",
-    "Tourism, Leisure and Hospitality Management",
-    "Developmental Biology",
-    "Applied Microbiology and Biotechnology",
-    "Life-span and Life-course Studies",
-    "Process Chemistry and Technology",
-    "Aging",
-    "General Engineering",
-    "Family Practice",
-    "Metals and Alloys",
-    "General Decision Sciences",
-    "Biological Psychiatry",
-    "Equine",
-    "Microbiology",
-    "Filtration and Separation",
-    "General Dentistry",
-    "Leadership and Management",
-    "Fuel Technology",
-    "Chemical Health and Safety",
-    "Horticulture",
-    "Medical Terminology",
-    "Research and Theory",
-    "Acoustics and Ultrasonics",
-    "Computational Mathematics",
-    "Drug Discovery",
-    "Nuclear Energy and Engineering",
-]
 
 class LLMEntityExtractor:
     """Extractor de investigadores usando LLMs."""
@@ -281,7 +32,6 @@ class LLMEntityExtractor:
     def __init__(
         self,
         *,
-        llm_provider: str = "ollama",
         llm_model: Optional[str] = None,
         temperature: float = 0.1,
         max_tokens: int = 1024,
@@ -289,10 +39,26 @@ class LLMEntityExtractor:
     ):
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.llm_client = get_llm_client(provider=llm_provider, model=llm_model)
-        self.available_topics = (
-            available_topics if available_topics is not None else OPENALEX_TOPICS
-        )
+        self.llm_client = get_llm_client(model=llm_model)
+        subfields, subfields_map = self.get_topics(TOPICS_PATH)
+        self.subfields_map = subfields_map
+        if available_topics is None:
+            available_topics = subfields
+
+        self.available_topics = available_topics
+
+    def get_topics(self, file_path: Path) -> tuple[list, dict]:
+        with open(file_path, "r", encoding="utf-8") as f:
+            fields_dict = json.load(f)
+        """Crea un mapeo de fields y subfields para búsqueda rápida."""
+        subfield_to_field = {}  # Mapeo de subfields a fields
+        subfields_list = []  # Lista de subfields
+        for field, details in fields_dict.items():
+            for subfield in details.get("subfields", []):
+                subfield_normalized = subfield.lower().strip()
+                subfield_to_field[subfield_normalized] = field  # Mapear subfield a field
+                subfields_list.append(subfield)  # Agregar subfield a la lista
+        return subfields_list, subfield_to_field
 
     def extract_researchers_from_chunk(self, chunk_text: str, chunk_id: str) -> LLMExtractionResult:
         """Extraer investigadores de un chunk."""
@@ -495,6 +261,68 @@ If no match:
 
         return LLMExtractionResult(researchers=[], topics=all_topics, errors=all_errors)
 
+    def create_topics_from_llm_extraction(
+        self,
+        llm_result: LLMExtractionResult,
+        existing_topic_ids: Optional[set[str]] = None,
+    ) -> tuple[List[Entity], List[Relationship]]:
+        """Crear entidades y relaciones de tópicos con deduplicación global.
+
+        Solo crea entidades Topico y relaciones EXTRAIDO_DE desde chunks.
+        Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
+        """
+        entities: list[Entity] = []
+        relationships: list[Relationship] = []
+        existing_ids = existing_topic_ids or set()
+        topics_by_name: dict[str, str] = {}
+
+        for mention in llm_result.topics:
+            topic_normalized = mention.topic.lower().strip()
+            topic_id = topic_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
+
+            # El tópico ya existe globalmente
+            if topic_id in existing_ids:
+                relationships.append(
+                    EXTRAIDO_DE(
+                        mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
+                    )
+                )
+                continue
+
+            # El tópico ya fue creado en esta misma llamada
+            if topic_normalized in topics_by_name:
+                existing_topic_id = topics_by_name[topic_normalized]
+                relationships.append(
+                    EXTRAIDO_DE(
+                        mention.chunk_id,
+                        existing_topic_id,
+                        properties={"evidence_text": mention.evidence},
+                    )
+                )
+                continue
+            entities.append(Topico(id=topic_id, value=mention.topic))
+            field_name = self.subfields_map.get(topic_normalized)
+            if field_name:
+                field_normalized = field_name.lower().strip()
+                field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
+                entities.append(Dominio(field_id, field_name))
+                relationships.append(PERTENECE_A_DOMINIO(topic_id, field_id))
+            relationships.append(
+                EXTRAIDO_DE(
+                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
+                )
+            )
+            relationships.append(
+                EXTRAIDO_DE(
+                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
+                )
+            )
+
+            topics_by_name[topic_normalized] = topic_id
+            existing_ids.add(topic_id)
+
+        return entities, relationships
+
 
 def create_entities_and_relationships_from_llm_extraction(
     llm_result: LLMExtractionResult,
@@ -533,55 +361,5 @@ def create_entities_and_relationships_from_llm_extraction(
 
         researchers_by_name[name_normalized] = researcher_id
         existing_ids.add(researcher_id)
-
-    return entities, relationships
-
-
-def create_topics_from_llm_extraction(
-    llm_result: LLMExtractionResult,
-    existing_topic_ids: Optional[set[str]] = None,
-) -> tuple[List[Entity], List[Relationship]]:
-    """Crear entidades y relaciones de tópicos con deduplicación global.
-
-    Solo crea entidades Topico y relaciones EXTRAIDO_DE desde chunks.
-    Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
-    """
-    entities: list[Entity] = []
-    relationships: list[Relationship] = []
-    existing_ids = existing_topic_ids or set()
-    topics_by_name: dict[str, str] = {}
-
-    for mention in llm_result.topics:
-        topic_normalized = mention.topic.lower().strip()
-        topic_id = topic_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-
-        # El tópico ya existe globalmente
-        if topic_id in existing_ids:
-            relationships.append(
-                EXTRAIDO_DE(
-                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
-                )
-            )
-            continue
-
-        # El tópico ya fue creado en esta misma llamada
-        if topic_normalized in topics_by_name:
-            existing_topic_id = topics_by_name[topic_normalized]
-            relationships.append(
-                EXTRAIDO_DE(
-                    mention.chunk_id,
-                    existing_topic_id,
-                    properties={"evidence_text": mention.evidence},
-                )
-            )
-            continue
-
-        entities.append(Topico(id=topic_id, value=mention.topic))
-        relationships.append(
-            EXTRAIDO_DE(mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence})
-        )
-
-        topics_by_name[topic_normalized] = topic_id
-        existing_ids.add(topic_id)
 
     return entities, relationships

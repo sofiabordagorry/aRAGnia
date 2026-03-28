@@ -359,7 +359,7 @@ class TestValidation:
         proyecto = Proyecto(id="proj_1", value="Proyecto A")
         rel = TITULO_EXTRAIDO_DE("proj_1", "chunk_1")
 
-        assert validate_relationship_endpoints(rel, chunk, proyecto) is True
+        assert validate_relationship_endpoints(rel, proyecto, chunk) is True
 
     def test_validate_extraido_de_topico(self):
         """Test validating EXTRAIDO_DE relationship with Topico."""

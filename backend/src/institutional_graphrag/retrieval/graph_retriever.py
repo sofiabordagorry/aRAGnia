@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
@@ -76,18 +79,20 @@ class GraphRAGRetriever:
         neo4j_uri: str,
         neo4j_user: str,
         neo4j_password: str,
-        llm_provider: str = "ollama",
-        llm_model: Optional[str] = None,
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ):
-        from institutional_graphrag.rag.generate import get_llm_client
+        from institutional_graphrag.llm.llm_provider import get_llm_client
 
+        backend_dir = Path(__file__).resolve().parents[3]
+        load_dotenv(backend_dir / ".env")
+        cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
+        answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
         # LLM para clasificación y Cypher
-        self.cypher_llm_client = get_llm_client(provider=llm_provider, model="qwen2.5:3b-instruct")
+        self.cypher_llm_client = get_llm_client(model=cypher_model)
         # LLM para respuestas finales
-        self.answer_llm_client = get_llm_client(provider=llm_provider, model="llama3.2:3b")
+        self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
 
@@ -250,6 +255,7 @@ Nodes and their key properties:
 
 Relationships:
 - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
 - (Proyecto)-[:TIENE_TOPICO]->(Topico)
 - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
 - (Proyecto)-[:INICIO_EN]->(Anio)
@@ -282,6 +288,11 @@ MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
 MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
 RETURN count(p) AS total
 
+Count projects by investigator responsable (e.g., "de cuántos proyectos fue responsable X?"):
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
+RETURN count(p) AS total
+
 Count projects by year (e.g., "cuántos proyectos en 2018?"):
 MATCH (a:Anio {{year: '2018'}})
 MATCH (p:Proyecto)-[:INICIO_EN]->(a)
@@ -310,6 +321,18 @@ OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
 RETURN i, COLLECT(DISTINCT c) AS chunks
 -- CRITICAL: RETURN the investigators (i), NOT the project (p)
 
+List researchers responsible for a project (WHO was IN CHARGE):
+MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto {{id: 'gi_2014_133'}})
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+RETURN i, COLLECT(DISTINCT c) AS chunks
+-- CRITICAL: RETURN the researchers (i), NOT the project (p)
+
+Projects by name of researcher in charge — note direction: Investigador -> Proyecto:
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+RETURN p, i, COLLECT(c) AS chunks
+
 Projects by researcher name — note direction: Investigador -> Proyecto:
 MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
 MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
@@ -336,9 +359,10 @@ Describe / full info about a specific project (name, year, topics, investigators
 MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
 OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, a LIMIT 1
+RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1
 
 Projects by a specific year (LIST):
 MATCH (a:Anio {{year: 'year_value'}})
@@ -405,6 +429,7 @@ CRITICAL SYNTAX:
         Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
         Schema correcto:
         - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+        - (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
         - (Proyecto)-[:TIENE_TOPICO]->(Topico)
         - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto)-[:INICIO_EN]->(Anio)
@@ -417,6 +442,7 @@ CRITICAL SYNTAX:
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
             ("Investigador", "PARTICIPO_EN", "Proyecto"),
+            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),
             ("Proyecto", "INICIO_EN", "Anio"),
@@ -469,6 +495,7 @@ SCHEMA:
 Nodes: Proyecto(id, value), Investigador(id, name), Topico(value), Documento(id, base_name, type, year_publisher, is_group), Chunk(id, text), Anio(year)
 Relationships:
 - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
+- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
 - (Proyecto)-[:TIENE_TOPICO]->(Topico)
 - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
 - (Proyecto)-[:INICIO_EN]->(Anio)

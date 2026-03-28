@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
-from institutional_graphrag.graph.builder import Neo4jGraphBuilder
+from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.services.ingest_service import IngestService
 from institutional_graphrag.storage.queries import (
     delete_all_queries,
@@ -161,8 +161,8 @@ def _build_neo4j_uri() -> str:
     return f"bolt://{neo4j_host}:{neo4j_port}"
 
 
-def _get_graph_reader() -> Neo4jGraphBuilder:
-    return Neo4jGraphBuilder(
+def _get_graph_reader() -> GraphBuilder:
+    return GraphBuilder(
         _build_neo4j_uri(),
         os.getenv("NEO4J_USER", "neo4j"),
         os.getenv("NEO4J_PASSWORD", "password"),
@@ -278,7 +278,7 @@ def get_graph_snapshot(
     relationship_limit: int = Query(default=320, ge=1, le=1200),
     alias_only: bool = Query(default=False),
 ):
-    reader: Optional[Neo4jGraphBuilder] = None
+    reader: Optional[GraphBuilder] = None
     try:
         reader = _get_graph_reader()
         return reader.fetch_graph_snapshot(
@@ -300,7 +300,7 @@ def get_graph_entities(
     entity_label: str = Query(default=""),
     limit: int = Query(default=30, ge=1, le=100),
 ):
-    reader: Optional[Neo4jGraphBuilder] = None
+    reader: Optional[GraphBuilder] = None
     try:
         reader = _get_graph_reader()
         return reader.fetch_entities_catalog(
@@ -324,7 +324,7 @@ def get_graph_neighborhood(
     relationship_limit: int = Query(default=320, ge=1, le=1200),
     alias_only: bool = Query(default=False),
 ):
-    reader: Optional[Neo4jGraphBuilder] = None
+    reader: Optional[GraphBuilder] = None
     try:
         reader = _get_graph_reader()
         return reader.fetch_graph_neighborhood(
@@ -342,7 +342,7 @@ def get_graph_neighborhood(
 
 @router.get("/graph/aliases", response_model=AliasCandidatesResponse)
 def get_alias_candidates(search: str = Query(default="")):
-    reader: Optional[Neo4jGraphBuilder] = None
+    reader: Optional[GraphBuilder] = None
     try:
         reader = _get_graph_reader()
         return reader.fetch_alias_candidates(search=search)

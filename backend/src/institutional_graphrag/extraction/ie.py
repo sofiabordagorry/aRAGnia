@@ -15,7 +15,6 @@ from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TAB
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     create_entities_and_relationships_from_llm_extraction,
-    create_topics_from_llm_extraction,
 )
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.schema import (
@@ -42,7 +41,6 @@ class ExtractionResult:
 class EntityExtractor:
     def __init__(
         self,
-        llm_provider: str = "ollama",
         llm_model: Optional[str] = None,
     ):
         self.data_dir = DATA_DIR
@@ -58,12 +56,21 @@ class EntityExtractor:
         self.docs_by_group_year: dict[tuple[str, str], list[Documento]] = defaultdict(list)
 
         # Configuración LLM
-        self.llm_provider = llm_provider
         self.llm_model = llm_model
 
         self._seen_entities: set[tuple[str, str]] = set()
         self._seen_rels: set[tuple[str, str, str, str]] = set()
         self._rel_index: dict[tuple[str, str, str], int] = {}
+
+    def cleanup(self):
+        self._seen_entities = set()
+        self._seen_rels = set()
+        self._rel_index = {}
+        self.res = ExtractionResult(entities=[], relationships=[], errors=[])
+        self.rule_based.cleanup()
+        self.doc_by_basename = {}
+        self.doc_by_id = {}
+        self.docs_by_group_year = defaultdict(list)
 
     def run(
         self,
@@ -120,11 +127,25 @@ class EntityExtractor:
                     if raw.get("label") != label:
                         continue
 
+                    match = True
+
                     v = raw.get("value")
                     if value_filter is not None:
                         if not isinstance(v, dict):
                             continue
-                        if not all(v.get(k) == expected for k, expected in value_filter.items()):
+                        for k, expected in value_filter.items():
+                            val = v.get(k)
+
+                            if k == "source" and isinstance(val, list):
+                                # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
+                                if expected not in val:
+                                    match = False
+                                    break
+                            elif val != expected:
+                                match = False
+                                break
+
+                        if not match:
                             continue
 
                     entity_id = raw.get("id")
@@ -226,6 +247,21 @@ class EntityExtractor:
                 # reemplazar la entidad existente
                 for i, existing in enumerate(self.res.entities):
                     if existing.label == e.label and str(existing.id) == str(e.id):
+                        # Si un investigador es extraido por tabla y por llm mantiene ambas fuentes
+                        if (
+                            e.label == "Investigador"
+                            and isinstance(existing.value, dict)
+                            and isinstance(e.value, dict)
+                        ):
+                            old_source = existing.value.get("source")
+                            new_source = e.value.get("source")
+
+                            if (
+                                isinstance(old_source, list)
+                                or isinstance(new_source, list)
+                                or (old_source and new_source and old_source != new_source)
+                            ):
+                                e.value["source"] = ["rule_based", "llm"]
                         self.res.entities[i] = e
                         continue
                 continue
@@ -511,7 +547,6 @@ class EntityExtractor:
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
         llm_extractor = LLMEntityExtractor(
-            llm_provider=self.llm_provider,
             llm_model=self.llm_model,
             temperature=0.1,
             max_tokens=1024,
@@ -627,8 +662,10 @@ class EntityExtractor:
                         # Agregar errores
                         self.res.errors.extend(llm_result_topic.errors)
                         # Crear entidades y relaciones chunk->topico
-                        new_entities, new_relationships = create_topics_from_llm_extraction(
-                            llm_result_topic, existing_topic_ids
+                        new_entities, new_relationships = (
+                            llm_extractor.create_topics_from_llm_extraction(
+                                llm_result_topic, existing_topic_ids
+                            )
                         )
                         # Agregar al resultado
                         self.add_entities(new_entities)

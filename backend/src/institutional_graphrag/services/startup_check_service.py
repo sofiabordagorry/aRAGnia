@@ -7,14 +7,20 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
 
-from institutional_graphrag.graph.builder import GraphBuilder, load_graph_json
+from institutional_graphrag.graph.builder import GraphBuilder
+from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.persist_embeddings import persist_all_embeddings_and_metadata
 from institutional_graphrag.retrieval.vector_store import VectorStore
 from institutional_graphrag.storage.database import create_tables
 
 env_path = Path(__file__).parents[3] / ".env"
 load_dotenv(env_path)
-JSON_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "entity_documents.json"
+JSON_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "export_graph.json"
+FALLBACK_JSON_PATH = (
+    Path(__file__).parents[4] / "data" / "entities_relations" / "entity_documents.json"
+)
+if not JSON_PATH.exists():
+    JSON_PATH = FALLBACK_JSON_PATH
 
 
 def wait_for_postgres(max_retries: int = 15, delay: int = 2) -> None:
@@ -35,10 +41,12 @@ def wait_for_postgres(max_retries: int = 15, delay: int = 2) -> None:
             )
             conn.close()
             return
-        except psycopg2.OperationalError:
+        except psycopg2.OperationalError as e:
+            # Add this print statement to see the REAL error
+            print(f"Intento de conexión fallido. Razón: {e}")
             time.sleep(delay)
 
-    raise RuntimeError("Postgres no estuvo listo a tiempo")
+    raise RuntimeError(f"Postgres no estuvo listo a tiempo, puerto usado {port}")
 
 
 def wait_for_neo4j(max_retries: int = 15, delay: int = 2) -> None:
@@ -161,9 +169,7 @@ def check_neo4j_not_empty() -> None:
     print("Estado Neo4j:", neo4j_status)
     if neo4j_status["is_empty"]:
         try:
-            entities, relationships, _ = load_graph_json(
-                JSON_PATH, uri, user, password, enable_non_equal_name_unification=False
-            )
+            entities, relationships = load_graph_json(JSON_PATH, uri, user, password)
             graph = GraphBuilder(
                 uri,
                 user,
@@ -171,6 +177,7 @@ def check_neo4j_not_empty() -> None:
             )
             graph.clear_graph()
             graph.ingest(entities=entities, relationships=relationships)
+            graph.close()
         except Exception as e:
             print("No se pudo crear el grafo:", e)
 
