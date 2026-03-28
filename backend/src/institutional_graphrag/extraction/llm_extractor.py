@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-import json
 import logging
-import re
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.extraction.parse_response import parse_researcher_response, parse_topic_response
-import regex
+from institutional_graphrag.extraction.parse_response import parse_researcher_response, parse_topic_response, LLMExtractionResult
 
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
@@ -279,34 +275,6 @@ OPENALEX_TOPICS = [
     "Nuclear Energy and Engineering",
 ]
 
-
-@dataclass
-class ResearcherMention:
-    """Mención de investigador en un chunk."""
-
-    name: str
-    evidence: str
-    chunk_id: str
-
-
-@dataclass
-class TopicMention:
-    """Mención de tópico en un chunk."""
-
-    topic: str
-    evidence: str
-    chunk_id: str
-
-
-@dataclass
-class LLMExtractionResult:
-    """Resultado de extracción LLM."""
-
-    researchers: List[ResearcherMention]
-    topics: List[TopicMention]
-    errors: List[Dict[str, Any]]
-
-
 class LLMEntityExtractor:
     """Extractor de investigadores usando LLMs."""
 
@@ -368,7 +336,7 @@ class LLMEntityExtractor:
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
             )
-            return parse_topic_response(response, chunk_id, chunk_text)
+            return parse_topic_response(response, self.available_topics, chunk_id, chunk_text)
 
         except Exception as e:
             logger.error(f"Error en chunk {chunk_id}: {e}")

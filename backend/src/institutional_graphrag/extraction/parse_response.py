@@ -1,9 +1,36 @@
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
+from dataclasses import dataclass
 
-from institutional_graphrag.extraction.llm_extractor import LLMExtractionResult, ResearcherMention, TopicMention
 import re 
 import json
 import unicodedata
+
+@dataclass
+class ResearcherMention:
+    """Mención de investigador en un chunk."""
+
+    name: str
+    evidence: str
+    chunk_id: str
+
+
+@dataclass
+class TopicMention:
+    """Mención de tópico en un chunk."""
+
+    topic: str
+    evidence: str
+    chunk_id: str
+
+
+@dataclass
+class LLMExtractionResult:
+    """Resultado de extracción LLM."""
+
+    researchers: List[ResearcherMention]
+    topics: List[TopicMention]
+    errors: List[Dict[str, Any]]
+
 
 
 def _extract_json(response: str, chunk_id: str) -> tuple[Any, list]:
@@ -79,6 +106,7 @@ def _generic_name_validation(name: str) -> bool:
         "nuestro grupo",
         "grupo del proyecto",
         "casos similares",
+        "contratar",
     ]
     return any(pattern in name.lower() for pattern in invalid_patterns)
             
@@ -105,6 +133,21 @@ def _bibliographic_reference_validation(name: str) -> bool:
             break
     
     return is_bibliographic 
+
+def _short_parts_only_validation(name: str) -> bool:
+
+    parts = [part for part in name.split() if part.strip()]
+    if not parts:
+        return False
+
+    # Sacar conectores comunes para no contar "de", "la", etc.
+    stopwords = {"de", "del", "la", "las", "los", "y", "e", "da", "di", "von", "van"}
+    meaningful_parts = [p for p in parts if p.lower() not in stopwords]
+
+    if not meaningful_parts:
+        return False
+
+    return bool(all(len(p) <= 2 for p in meaningful_parts))
    
 def _surname_only_validation(name: str) -> bool:
     # Detectar: "DEL PUERTO GARCÍA", "NOBOA ALDECOA", etc.
@@ -197,6 +240,10 @@ def _statistic_or_data_validation(name: str) -> bool:
 def _multiple_names_in_one_validation(name: str) -> bool:
     return bool(";" in name or " and " in name.lower())
 
+def _numbers_in_name_validation(name: str) -> bool:
+    parts = name.split()
+    return any(re.search(r"\d", part) for part in parts)
+
 def validate_name(name: str, chunk_id: str) -> List[dict]:
     errors = []
     
@@ -212,6 +259,8 @@ def validate_name(name: str, chunk_id: str) -> List[dict]:
         _technique_or_section_validation: ("TechniqueError", "Título de sección o técnica, no investigador"),
         _statistic_or_data_validation: ("StatisticError", "Dato estadístico, no investigador"),
         _date_validation: ("DateError", "Mes/fecha, no investigador"),
+        _short_parts_only_validation: ("ShortPartsOnlyError", "Nombre inválido: todas sus partes tienen 2 letras o menos"),
+        _numbers_in_name_validation: ("NumbersInNameError", "Nombre inválido: contiene números"),
     }
 
     for validate, (error_type, message) in validation_rules.items():
@@ -384,7 +433,7 @@ def parse_researcher_response(
 
         return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
 
-def _list_topic_validation(topic: str, available_topics: list[str], chunk_id: str) -> bool:
+def _list_topic_validation(topic: str, available_topics: list[str]) -> bool:
     # Validar que el tópico esté en la lista permitida
     # Comparación case-insensitive
     topic_lower = topic.lower()
@@ -442,7 +491,7 @@ def parse_topic_response(
                 return LLMExtractionResult(researchers=[], topics=[], errors=errors)
             
             for item in topics_data:
-                topic, evidence, errors_aux = _validate_json_sub_structure(item, "name", chunk_id)
+                topic, evidence, errors_aux = _validate_json_sub_structure(item, "topic", chunk_id)
                 if errors_aux != []:
                     errors.extend(errors_aux)
                     continue
@@ -458,7 +507,7 @@ def parse_topic_response(
                     continue
                 
                 # Validar que el tópico esté en la lista permitida
-                if _list_topic_validation(topic, available_topics, chunk_id):
+                if _list_topic_validation(topic, available_topics):
                     errors.append(
                         {
                             "type": "InvalidTopic",
@@ -469,7 +518,7 @@ def parse_topic_response(
                     continue
 
                 # VALIDACIÓN: La evidencia debe estar en el chunk original
-                match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 1)
+                match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 15)
                 if match_ratio is not None:
                     errors.append(
                         {
@@ -479,7 +528,6 @@ def parse_topic_response(
                         }
                     )
                     continue
-
                 topics.append(TopicMention(topic=topic, evidence=evidence, chunk_id=chunk_id))
 
         except json.JSONDecodeError as e:

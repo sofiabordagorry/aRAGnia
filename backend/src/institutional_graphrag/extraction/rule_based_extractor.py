@@ -225,7 +225,6 @@ class RuleBasedExtractor:
 
             id_to_doc = [(str(d.value["sub_id"]), str(d.id)) for d in docs if "sub_id" in d.value]
             self.datasets.append(self._expand_rows_by_id_mapping(df, id_to_doc))
-
         return ExtractionResult(entities, relationships, errors)
 
     # def extract_projects(self) -> ExtractionResult:
@@ -244,6 +243,7 @@ class RuleBasedExtractor:
             )
             if not title_col:
                 continue
+            
             responsible_cols = [
                 c
                 for c in df.columns
@@ -251,7 +251,7 @@ class RuleBasedExtractor:
             ]
             if not responsible_cols:
                 continue
-
+            
             chunk = self._collect_candidates_from_table_df(
                 df, title_col, responsible_cols, chunk_dir, inv_ids_by_project
             )
@@ -333,8 +333,8 @@ class RuleBasedExtractor:
     def _collect_candidates_from_table_df(
         self,
         df: pd.DataFrame,
-        title_col: str,
-        responsible_cols: List[str],
+        title_col: Optional[str],
+        responsible_cols: Optional[List[str]],
         chunk_dir: Path,
         inv_ids_by_project: dict[str, set[tuple[str, str]]],
     ) -> dict[str, list[dict[str, Any]]]:
@@ -346,11 +346,13 @@ class RuleBasedExtractor:
         """
         projects: dict[str, list[dict[str, Any]]] = defaultdict(list)
         id_col = df.columns[0]
-        small = df[[id_col, title_col] + responsible_cols].dropna(subset=[id_col, title_col])
+        small = df[[id_col, title_col] + responsible_cols].dropna(subset=[id_col])
         cols = list(small.columns)
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
-            frac_title = str(row[title_col]).strip()
+            frac_title = None
+            if title_col:
+                frac_title = str(row[title_col]).strip()
 
             doc = self.doc_by_id.get(doc_id)
             if doc is None:
@@ -361,7 +363,7 @@ class RuleBasedExtractor:
                     }
                 )
                 continue
-
+            print("fila",row)
             project_id = build_project_id(
                 str(doc.value["is_group"]),
                 str(doc.value["year_publisher"]),
@@ -660,7 +662,6 @@ class RuleBasedExtractor:
 
             v1 = self.cell_str(row.get(c1))
             v2 = self.cell_str(row.get(c2)) if c2 else None
-
             # Nombre + Apellido (orden normal)
             if c2 and self.is_name_col(c1) and self.is_lastname_col(c2):
                 full = f"{v1} {v2}" if (v1 and v2) else None
@@ -687,8 +688,7 @@ class RuleBasedExtractor:
 
         # eliminar pares vacíos y duplicados básicos
         out = [(a, b) for (a, b) in out if a or b]
-
-        return out
+        return out  
 
     def _normalize_col(self, name: str) -> str:
         # mayúsculas + sin acentos + espacios simples
@@ -755,10 +755,12 @@ class RuleBasedExtractor:
 
             if not candidate_in_text:
                 continue
-
+            
             # Validar que no sea un valor inválido
             invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
-            if any(inv in candidate_in_text.lower() for inv in invalid_values):
+            words = candidate_in_text.lower().split()
+            if any(inv in words for inv in invalid_values):
+
                 continue
 
             current = inv_ids_by_project.get(project_id, set())
@@ -768,7 +770,7 @@ class RuleBasedExtractor:
                 and candidate_in_text == fallback
             ) or (full_name and any(name == full_name for _, name in current)):
                 continue
-
+                
             # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
             if fallback:
                 current = inv_ids_by_project.setdefault(project_id, set())
