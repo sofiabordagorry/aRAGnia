@@ -20,9 +20,9 @@ from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
     INICIO_EN,
-    RESPONSABLE_DE,
     PARTICIPO_EN,
     PRIMER_CHUNK,
+    RESPONSABLE_DE,
     SIGUIENTE_CHUNK,
     TITULO_EXTRAIDO_DE,
     Anio,
@@ -247,7 +247,7 @@ class RuleBasedExtractor:
             )
             if not title_col:
                 continue
-            
+
             responsible_cols = [
                 c
                 for c in df.columns
@@ -255,7 +255,7 @@ class RuleBasedExtractor:
             ]
             if not responsible_cols:
                 continue
-            
+
             chunk = self._collect_candidates_from_table_df(
                 df, title_col, responsible_cols, chunk_dir, inv_ids_by_project
             )
@@ -369,7 +369,6 @@ class RuleBasedExtractor:
                     }
                 )
                 continue
-            print("fila",row)
             project_id = build_project_id(
                 str(doc.value["is_group"]),
                 str(doc.value["year_publisher"]),
@@ -694,7 +693,7 @@ class RuleBasedExtractor:
 
         # eliminar pares vacíos y duplicados básicos
         out = [(a, b) for (a, b) in out if a or b]
-        return out  
+        return out
 
     def _normalize_col(self, name: str) -> str:
         # mayúsculas + sin acentos + espacios simples
@@ -761,7 +760,7 @@ class RuleBasedExtractor:
 
             if not candidate_in_text:
                 continue
-            
+
             # Validar que no sea un valor inválido
             invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
             words = candidate_in_text.lower().split()
@@ -776,7 +775,7 @@ class RuleBasedExtractor:
                 and candidate_in_text == fallback
             ) or (full_name and any(name == full_name for _, name in current)):
                 continue
-                
+
             # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
             if fallback:
                 current = inv_ids_by_project.setdefault(project_id, set())
