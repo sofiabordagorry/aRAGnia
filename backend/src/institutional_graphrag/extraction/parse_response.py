@@ -1,9 +1,9 @@
-from typing import List, Optional, Any, Dict
-from dataclasses import dataclass
-
-import re 
 import json
+import re
 import unicodedata
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
 
 @dataclass
 class ResearcherMention:
@@ -30,7 +30,6 @@ class LLMExtractionResult:
     researchers: List[ResearcherMention]
     topics: List[TopicMention]
     errors: List[Dict[str, Any]]
-
 
 
 def _extract_json(response: str, chunk_id: str) -> tuple[Any, list]:
@@ -83,6 +82,7 @@ def _extract_json(response: str, chunk_id: str) -> tuple[Any, list]:
         )
     return data, errors
 
+
 def _generic_name_validation(name: str) -> bool:
     # Validar que el nombre no sea genérico o sin sentido
     invalid_patterns = [
@@ -109,8 +109,9 @@ def _generic_name_validation(name: str) -> bool:
         "contratar",
     ]
     return any(pattern in name.lower() for pattern in invalid_patterns)
-            
-def _bibliographic_reference_validation(name: str) -> bool:            
+
+
+def _bibliographic_reference_validation(name: str) -> bool:
     bibliographic_patterns = [
         (r"\bet al\b", 0),  # et al.
         (r"\d{4}\)", 0),  # año entre paréntesis como (2020)
@@ -131,8 +132,9 @@ def _bibliographic_reference_validation(name: str) -> bool:
         if re.search(pattern, name, flags):
             is_bibliographic = True
             break
-    
-    return is_bibliographic 
+
+    return is_bibliographic
+
 
 def _short_parts_only_validation(name: str) -> bool:
 
@@ -148,7 +150,8 @@ def _short_parts_only_validation(name: str) -> bool:
         return False
 
     return bool(all(len(p) <= 2 for p in meaningful_parts))
-   
+
+
 def _surname_only_validation(name: str) -> bool:
     # Detectar: "DEL PUERTO GARCÍA", "NOBOA ALDECOA", etc.
     name_parts = name.split()
@@ -171,15 +174,18 @@ def _surname_only_validation(name: str) -> bool:
         non_prep_parts = [p for p in name_parts if p not in prepositions]
 
         # Si solo hay 2 partes no-preposición, probablemente son solo apellidos
-        return (len(non_prep_parts) == 2 and len(name_parts) <= 3)
+        return len(non_prep_parts) == 2 and len(name_parts) <= 3
     return False
+
 
 def _corrupted_characters_validation(name: str) -> bool:
     return bool(re.search(r"[\{\}\[\]\u51fd\u9601\ufffd]", name))
 
+
 def _biological_species_validation(name: str) -> bool:
     # Patrón: letra mayúscula + punto + palabra (C. elegans, E. granulosus)
     return bool(re.match(r"^[A-Z]\.[\s]?[a-z]+", name))
+
 
 def _quimical_compound_validation(name: str) -> bool:
     # Patrones: termina con letra mayúscula sola, contiene números/símbolos químicos
@@ -193,6 +199,7 @@ def _quimical_compound_validation(name: str) -> bool:
         # Excepción: si contiene espacios y palabras normales, podría ser nombre real
         return not (len(name_parts) >= 2 and any(len(p) > 3 for p in name_parts))
     return False
+
 
 def _date_validation(name: str) -> bool:
     # Validar que no sea una fecha o mes
@@ -211,7 +218,8 @@ def _date_validation(name: str) -> bool:
         "DICIEMBRE",
     }
     return bool(name.upper() in months)
-     
+
+
 def _institution_or_organization_validation(name: str) -> bool:
     institution_keywords = [
         "CSIC",
@@ -231,62 +239,92 @@ def _institution_or_organization_validation(name: str) -> bool:
     ]
     return any(keyword in name.upper() for keyword in institution_keywords)
 
+
 def _technique_or_section_validation(name: str) -> bool:
     return bool(len(name) > 30 or ("DE " in name.upper() and name.count(" ") > 5))
+
 
 def _statistic_or_data_validation(name: str) -> bool:
     return bool(re.search(r"\d+\s*%|^[A-Z]\.\s*\d+", name))
 
+
 def _multiple_names_in_one_validation(name: str) -> bool:
     return bool(";" in name or " and " in name.lower())
+
 
 def _numbers_in_name_validation(name: str) -> bool:
     parts = name.split()
     return any(re.search(r"\d", part) for part in parts)
 
+
 def validate_name(name: str, chunk_id: str) -> List[dict]:
     errors = []
-    
+
     validation_rules = {
-        _multiple_names_in_one_validation: ("MultipleNamesInOne", "Múltiples nombres en una entidad"),
+        _multiple_names_in_one_validation: (
+            "MultipleNamesInOne",
+            "Múltiples nombres en una entidad",
+        ),
         _generic_name_validation: ("GenericNameError", "Nombre genérico o sin sentido"),
-        _bibliographic_reference_validation: ("BibliographicReferenceError", "Posible referencia bibliográfica, no participante"),
+        _bibliographic_reference_validation: (
+            "BibliographicReferenceError",
+            "Posible referencia bibliográfica, no participante",
+        ),
         _surname_only_validation: ("SurnameOnlyError", "Nombre incompleto (solo apellidos)"),
-        _corrupted_characters_validation: ("CorruptedCharactersError", "Nombre con caracteres corruptos"),
-        _biological_species_validation: ("BiologicalSpeciesError", "Especie biológica, no investigador"),
+        _corrupted_characters_validation: (
+            "CorruptedCharactersError",
+            "Nombre con caracteres corruptos",
+        ),
+        _biological_species_validation: (
+            "BiologicalSpeciesError",
+            "Especie biológica, no investigador",
+        ),
         _quimical_compound_validation: ("ChemicalCompoundError", "Nombre inválido"),
-        _institution_or_organization_validation: ("InstitutionError", "Institución u organización, no investigador"),
-        _technique_or_section_validation: ("TechniqueError", "Título de sección o técnica, no investigador"),
+        _institution_or_organization_validation: (
+            "InstitutionError",
+            "Institución u organización, no investigador",
+        ),
+        _technique_or_section_validation: (
+            "TechniqueError",
+            "Título de sección o técnica, no investigador",
+        ),
         _statistic_or_data_validation: ("StatisticError", "Dato estadístico, no investigador"),
         _date_validation: ("DateError", "Mes/fecha, no investigador"),
-        _short_parts_only_validation: ("ShortPartsOnlyError", "Nombre inválido: todas sus partes tienen 2 letras o menos"),
+        _short_parts_only_validation: (
+            "ShortPartsOnlyError",
+            "Nombre inválido: todas sus partes tienen 2 letras o menos",
+        ),
         _numbers_in_name_validation: ("NumbersInNameError", "Nombre inválido: contiene números"),
     }
 
     for validate, (error_type, message) in validation_rules.items():
         if validate(name):
-            errors.append({"type": error_type, "chunk_id": chunk_id, "message": f"{message}: '{name}'."})
+            errors.append(
+                {"type": error_type, "chunk_id": chunk_id, "message": f"{message}: '{name}'."}
+            )
 
     return errors
 
-def _evidence_not_in_chunk_validation(evidence: str, chunk_text: str, lenght: int) -> Optional[float]:
+
+def _evidence_not_in_chunk_validation(
+    evidence: str, chunk_text: str, lenght: int
+) -> Optional[float]:
     if chunk_text and evidence and "Mencionado en" not in evidence and len(evidence) > lenght:
         # Normalizar texto: minúsculas y limpiar caracteres de control
-        chunk_normalized= _normalize_text(chunk_text)
+        chunk_normalized = _normalize_text(chunk_text)
         evidence_normalized = _normalize_text(evidence)
         # 1. Verificar que la evidencia esté en el chunk
         evidence_words = [
-            w
-            for w in re.findall(r"\b\w+\b", evidence_normalized)
-            if len(w) > 3 and not w.isdigit()
+            w for w in re.findall(r"\b\w+\b", evidence_normalized) if len(w) > 3 and not w.isdigit()
         ]
         if len(evidence_words) >= 3:
             words_in_chunk = sum(1 for w in evidence_words if w in chunk_normalized)
             match_ratio = words_in_chunk / len(evidence_words)
 
-            if  match_ratio < 0.7:
-                return match_ratio 
+            if match_ratio < 0.7:
+                return match_ratio
     return None
+
 
 def _levenshtein_distance(s1: str, s2: str) -> int:
     # Tabla para almacenar las distancias
@@ -308,12 +346,16 @@ def _levenshtein_distance(s1: str, s2: str) -> int:
 
     return previous_row[-1]
 
+
 def _normalize_string(s: str) -> str:
     # Normaliza una cadena eliminando acentos
-    normalized = unicodedata.normalize('NFD', s)
-    return ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+    normalized = unicodedata.normalize("NFD", s)
+    return "".join(c for c in normalized if unicodedata.category(c) != "Mn")
 
-def _match_name(name_words: list[str], words_in_chunk: list[str], allowed_errors: int) -> Optional[list[str]]:
+
+def _match_name(
+    name_words: list[str], words_in_chunk: list[str], allowed_errors: int
+) -> Optional[list[str]]:
     for i in range(len(words_in_chunk)):
         errors_used = 0  # Contador de errores utilizados
         matched_words = []  # Lista para almacenar las palabras coincidentes
@@ -322,11 +364,15 @@ def _match_name(name_words: list[str], words_in_chunk: list[str], allowed_errors
         for name_word in name_words:
             if i >= len(words_in_chunk):  # Si no hay más palabras en el chunk
                 break
-            
-            allowed_errors_name = max(1, len(name_word) // 3)  # Por ejemplo, 1 error por cada 3 caracteres
+
+            allowed_errors_name = max(
+                1, len(name_word) // 3
+            )  # Por ejemplo, 1 error por cada 3 caracteres
             name_normalized = _normalize_string(name_word.strip().lower())
             chunk_word = words_in_chunk[i]
-            if len(chunk_word) < 3 and len(real_name) > 0:  # Si la palabra del chunk es muy corta, permitir omitirla
+            if (
+                len(chunk_word) < 3 and len(real_name) > 0
+            ):  # Si la palabra del chunk es muy corta, permitir omitirla
                 while i < len(words_in_chunk) and len(chunk_word) < 3:
                     real_name.append(chunk_word)
                     i += 1  # Omitir esta palabra y seguir con la siguiente
@@ -334,25 +380,26 @@ def _match_name(name_words: list[str], words_in_chunk: list[str], allowed_errors
                         chunk_word = words_in_chunk[i]
                     else:
                         break
-                    
+
             chunk_normalized = _normalize_string(chunk_word.strip().lower())
             distance = _levenshtein_distance(name_normalized, chunk_normalized)
             if distance <= min(allowed_errors_name, allowed_errors - errors_used):
                 matched_words.append(chunk_word)
                 real_name.append(chunk_word)
                 errors_used += distance
-                i += 1  
+                i += 1
             else:
-                break 
+                break
 
         if len(matched_words) == len(name_words) and errors_used <= allowed_errors:
             return real_name
 
-    return None  
+    return None
+
 
 def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     # Cantidad de errores permitidos totales
-    allowed_errors = max(1, len(name) // 3)  
+    allowed_errors = max(1, len(name) // 3)
 
     # Dividir el chunk en palabras y el nombre
     words_in_chunk = chunk.split()
@@ -361,77 +408,77 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     # Intentar hacer coincidir todas las palabras del nombre
     name_true = _match_name(name_words, words_in_chunk, allowed_errors)
     if name_true:
-        return ' '.join(name_true)
+        return " ".join(name_true)
 
     # Si no se encuentra el nombre, intentar sin palabras de menos de 3 caracteres
     filtered_name_words = [word for word in name_words if len(word) >= 3]
     name_true = _match_name(filtered_name_words, words_in_chunk, allowed_errors)
     if name_true:
-        return ' '.join(name_true)
+        return " ".join(name_true)
 
     return None  # No se encontró ninguna coincidencia
 
+
 def parse_researcher_response(
-        response: str, chunk_id: str, chunk_text: str = ""
-    ) -> LLMExtractionResult:
-        """Parsear respuesta del LLM."""
-        errors = []
-        researchers = []
-        data, errors = _extract_json(response, chunk_id)
+    response: str, chunk_id: str, chunk_text: str = ""
+) -> LLMExtractionResult:
+    """Parsear respuesta del LLM."""
+    errors = []
+    researchers = []
+    data, errors = _extract_json(response, chunk_id)
+    if errors != []:
+        return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+    try:
+        researchers_data, errors = _valid_json_structure(data, "researchers", chunk_id)
         if errors != []:
             return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-        try:
-            researchers_data, errors = _valid_json_structure(data, "researchers", chunk_id)
-            if errors != []:
-                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-        
-            for item in researchers_data:
-                name, evidence, errors_aux = _validate_json_sub_structure(item, "name", chunk_id)
-                if errors_aux != []:
-                    errors.extend(errors_aux)
-                    continue
 
-                if not name:
-                    errors.append(
-                        {
-                            "type": "MissingName",
-                            "chunk_id": chunk_id,
-                            "message": "Falta el campo 'name' o está vacío",
-                        }
-                    )
-                    continue
-                
-                # 2. Verificar que el nombre esté en el chunk
-                real_name = _name_in_chunk_validation(name, chunk_text)
-                if real_name:
-                    name = real_name
-                
-                errors_aux = validate_name(name, chunk_id)
-                if errors_aux:
-                    errors.extend(errors_aux)
-                    continue
-                
-                # VALIDACIÓN: Verificar que evidencia y nombre estén en el chunk
-                match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 1)
-                if match_ratio is not None:
-                    errors.append(
-                        {
-                            "type": "EvidenceNotInChunk",
-                            "chunk_id": chunk_id,
-                            "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
-                        }
-                    )
-                    continue
+        for item in researchers_data:
+            name, evidence, errors_aux = _validate_json_sub_structure(item, "name", chunk_id)
+            if errors_aux != []:
+                errors.extend(errors_aux)
+                continue
 
-                # Si llegamos hasta acá, pasó todas las validaciones
-                researchers.append(
-                    ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id)
+            if not name:
+                errors.append(
+                    {
+                        "type": "MissingName",
+                        "chunk_id": chunk_id,
+                        "message": "Falta el campo 'name' o está vacío",
+                    }
                 )
+                continue
 
-        except json.JSONDecodeError as e:
-            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
+            # 2. Verificar que el nombre esté en el chunk
+            real_name = _name_in_chunk_validation(name, chunk_text)
+            if real_name:
+                name = real_name
 
-        return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
+            errors_aux = validate_name(name, chunk_id)
+            if errors_aux:
+                errors.extend(errors_aux)
+                continue
+
+            # VALIDACIÓN: Verificar que evidencia y nombre estén en el chunk
+            match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 1)
+            if match_ratio is not None:
+                errors.append(
+                    {
+                        "type": "EvidenceNotInChunk",
+                        "chunk_id": chunk_id,
+                        "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
+                    }
+                )
+                continue
+
+            # Si llegamos hasta acá, pasó todas las validaciones
+            researchers.append(ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id))
+
+    except json.JSONDecodeError as e:
+        errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
+
+    return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
+
 
 def _list_topic_validation(topic: str, available_topics: list[str]) -> bool:
     # Validar que el tópico esté en la lista permitida
@@ -441,8 +488,10 @@ def _list_topic_validation(topic: str, available_topics: list[str]) -> bool:
 
     return topic_lower not in available_lower
 
+
 def _normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[\t\r\n]+", " ", text.lower()))
+
 
 def _valid_json_structure(data: Any, info, chunk_id: str) -> tuple[list, list]:
     info_data = data.get(info, [])
@@ -453,12 +502,19 @@ def _valid_json_structure(data: Any, info, chunk_id: str) -> tuple[list, list]:
         )
     return info_data, errors
 
+
 def _validate_json_sub_structure(item: Any, value: str, chunk_id: str) -> tuple[str, str, list]:
     errors = []
     raw_value = ""
     evidence = ""
     if not isinstance(item, dict):
-        errors.append({"type": "InvalidJSON", "chunk_id": chunk_id, "message": "Elemento de 'topics' no es un objeto"})
+        errors.append(
+            {
+                "type": "InvalidJSON",
+                "chunk_id": chunk_id,
+                "message": "Elemento de 'topics' no es un objeto",
+            }
+        )
         return raw_value, evidence, errors
     # Manejar casos donde el valor puede ser lista, None, u otro tipo
     raw = item.get(value, "")
@@ -469,68 +525,67 @@ def _validate_json_sub_structure(item: Any, value: str, chunk_id: str) -> tuple[
     raw_evidence = item.get("evidence", "")
     if isinstance(raw_evidence, list):
         raw_evidence = raw_evidence[0] if raw_evidence else ""
-    evidence = (
-        str(raw_evidence).strip() if raw_evidence else f"Mencionado en {chunk_id}"
-    )
+    evidence = str(raw_evidence).strip() if raw_evidence else f"Mencionado en {chunk_id}"
     return raw_value, evidence, errors
-        
-def parse_topic_response(
-        response: str, available_topics: list[str], chunk_id: str, chunk_text: str = ""
-    ) -> LLMExtractionResult:
-        """Parsear respuesta del LLM para tópicos."""
-        errors = []
-        topics = []
 
-        data, errors = _extract_json(response, chunk_id)
+
+def parse_topic_response(
+    response: str, available_topics: list[str], chunk_id: str, chunk_text: str = ""
+) -> LLMExtractionResult:
+    """Parsear respuesta del LLM para tópicos."""
+    errors = []
+    topics = []
+
+    data, errors = _extract_json(response, chunk_id)
+    if errors != []:
+        return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+
+    try:
+        topics_data, errors = _valid_json_structure(data, "topics", chunk_id)
         if errors != []:
             return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-        
-        try:
-            topics_data, errors = _valid_json_structure(data, "topics", chunk_id)
-            if errors != []:
-                return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-            
-            for item in topics_data:
-                topic, evidence, errors_aux = _validate_json_sub_structure(item, "topic", chunk_id)
-                if errors_aux != []:
-                    errors.extend(errors_aux)
-                    continue
 
-                if topic is None:
-                    errors.append(
-                        {
-                            "type": "MissingTopic",
-                            "chunk_id": chunk_id,
-                            "message": "Falta el campo 'topic' o está vacío",
-                        }
-                    )
-                    continue
-                
-                # Validar que el tópico esté en la lista permitida
-                if _list_topic_validation(topic, available_topics):
-                    errors.append(
-                        {
-                            "type": "InvalidTopic",
-                            "chunk_id": chunk_id,
-                            "message": f"Tópico '{topic}' no está en la lista permitida (inventado por LLM)",
-                        }
-                    )
-                    continue
+        for item in topics_data:
+            topic, evidence, errors_aux = _validate_json_sub_structure(item, "topic", chunk_id)
+            if errors_aux != []:
+                errors.extend(errors_aux)
+                continue
 
-                # VALIDACIÓN: La evidencia debe estar en el chunk original
-                match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 15)
-                if match_ratio is not None:
-                    errors.append(
-                        {
-                            "type": "EvidenceNotInChunk",
-                            "chunk_id": chunk_id,
-                            "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
-                        }
-                    )
-                    continue
-                topics.append(TopicMention(topic=topic, evidence=evidence, chunk_id=chunk_id))
+            if topic is None:
+                errors.append(
+                    {
+                        "type": "MissingTopic",
+                        "chunk_id": chunk_id,
+                        "message": "Falta el campo 'topic' o está vacío",
+                    }
+                )
+                continue
 
-        except json.JSONDecodeError as e:
-            errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
+            # Validar que el tópico esté en la lista permitida
+            if _list_topic_validation(topic, available_topics):
+                errors.append(
+                    {
+                        "type": "InvalidTopic",
+                        "chunk_id": chunk_id,
+                        "message": f"Tópico '{topic}' no está en la lista permitida (inventado por LLM)",
+                    }
+                )
+                continue
 
-        return LLMExtractionResult(researchers=[], topics=topics, errors=errors)
+            # VALIDACIÓN: La evidencia debe estar en el chunk original
+            match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 15)
+            if match_ratio is not None:
+                errors.append(
+                    {
+                        "type": "EvidenceNotInChunk",
+                        "chunk_id": chunk_id,
+                        "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
+                    }
+                )
+                continue
+            topics.append(TopicMention(topic=topic, evidence=evidence, chunk_id=chunk_id))
+
+    except json.JSONDecodeError as e:
+        errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
+
+    return LLMExtractionResult(researchers=[], topics=topics, errors=errors)

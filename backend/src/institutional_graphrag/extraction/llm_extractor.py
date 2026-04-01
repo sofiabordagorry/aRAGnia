@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import json
 import logging
-import re
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.extraction.parse_response import parse_researcher_response, parse_topic_response, LLMExtractionResult
-
+from institutional_graphrag.extraction.parse_response import (
+    LLMExtractionResult,
+    parse_researcher_response,
+    parse_topic_response,
+)
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PARTICIPO_EN,
