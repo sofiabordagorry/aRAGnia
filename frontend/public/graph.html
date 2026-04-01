@@ -148,7 +148,11 @@
                   type="search"
                   placeholder="Buscar posibles alias..."
                 />
-                <select id="aliasSortSelect" class="entity-select" aria-label="Ordenar posibles alias">
+                <select
+                  id="aliasSortSelect"
+                  class="entity-select"
+                  aria-label="Ordenar posibles alias"
+                >
                   <option value="stable" selected>Orden por id</option>
                   <option value="connections">Orden por conexiones</option>
                 </select>
@@ -165,13 +169,27 @@
       </section>
     </main>
 
-    <div id="mergeModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mergeModalTitle">
+    <div
+      id="mergeModal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mergeModalTitle"
+    >
       <div class="modal-box">
         <h3 id="mergeModalTitle" class="modal-title">Confirmar unificación</h3>
         <p id="mergeModalText" class="modal-text"></p>
         <div class="modal-actions">
-          <button id="mergeModalCancel" class="secondary-btn" type="button">Cancelar</button>
-          <button id="mergeModalConfirm" class="primary-btn danger-btn" type="button">Confirmar unificación</button>
+          <button id="mergeModalCancel" class="secondary-btn" type="button">
+            Cancelar
+          </button>
+          <button
+            id="mergeModalConfirm"
+            class="primary-btn danger-btn"
+            type="button"
+          >
+            Confirmar unificación
+          </button>
         </div>
       </div>
     </div>

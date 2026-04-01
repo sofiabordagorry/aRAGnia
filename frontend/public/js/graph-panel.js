@@ -428,7 +428,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         ]),
       ).values(),
     ).sort((a, b) => {
-      const byLabel = String(a.label || "").localeCompare(String(b.label || ""));
+      const byLabel = String(a.label || "").localeCompare(
+        String(b.label || ""),
+      );
       if (byLabel !== 0) return byLabel;
       return String(a.display || "").localeCompare(String(b.display || ""));
     });
@@ -472,7 +474,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderRelationFilters(snapshot) {
     if (!els.relationFilters) return;
-    if (!snapshot || !Array.isArray(snapshot.edges) || snapshot.edges.length === 0) {
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.edges) ||
+      snapshot.edges.length === 0
+    ) {
       els.relationFilters.textContent =
         "Selecciona una entidad para filtrar tipos de relación.";
       return;
@@ -575,10 +581,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     }
 
     toggleEmptyState(false);
-  syncEdgeTypeVisibility(snapshot.edges);
-  const visibleEdges = getVisibleEdges(snapshot);
+    syncEdgeTypeVisibility(snapshot.edges);
+    const visibleEdges = getVisibleEdges(snapshot);
     buildLegend(snapshot.nodes);
-  renderRelationFilters(snapshot);
+    renderRelationFilters(snapshot);
     const width = Math.max(720, Math.round(els.svg.clientWidth || 720));
     const height = Math.max(520, Math.round(els.svg.clientHeight || 520));
     els.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
@@ -1023,7 +1029,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       els.aliasSortSelect.value = state.aliasSortMode;
       els.aliasSortSelect.addEventListener("change", () => {
         const nextMode =
-          els.aliasSortSelect?.value === "connections" ? "connections" : "stable";
+          els.aliasSortSelect?.value === "connections"
+            ? "connections"
+            : "stable";
         state.aliasSortMode = nextMode;
         renderAliasList();
       });
