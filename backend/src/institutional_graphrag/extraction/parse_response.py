@@ -33,7 +33,7 @@ class LLMExtractionResult:
 
 
 def _extract_json(response: str, chunk_id: str) -> tuple[Any, list]:
-    errors = []
+    errors: list = []
     # Intentar extraer JSON de tags <JSON>...</JSON>
     json_match = re.search(r"<JSON>\s*(\{.*?\})\s*</JSON>", response, re.DOTALL)
     data = None
@@ -358,8 +358,8 @@ def _match_name(
 ) -> Optional[list[str]]:
     for i in range(len(words_in_chunk)):
         errors_used = 0  # Contador de errores utilizados
-        matched_words = []  # Lista para almacenar las palabras coincidentes
-        real_name = []
+        matched_words: list = []  # Lista para almacenar las palabras coincidentes
+        real_name: list = []
         # Intentar hacer coincidir las palabras del nombre
         for name_word in name_words:
             if i >= len(words_in_chunk):  # Si no hay más palabras en el chunk
@@ -423,8 +423,8 @@ def parse_researcher_response(
     response: str, chunk_id: str, chunk_text: str = ""
 ) -> LLMExtractionResult:
     """Parsear respuesta del LLM."""
-    errors = []
-    researchers = []
+    errors: list = []
+    researchers: list = []
     data, errors = _extract_json(response, chunk_id)
     if errors != []:
         return LLMExtractionResult(researchers=[], topics=[], errors=errors)
@@ -533,8 +533,8 @@ def parse_topic_response(
     response: str, available_topics: list[str], chunk_id: str, chunk_text: str = ""
 ) -> LLMExtractionResult:
     """Parsear respuesta del LLM para tópicos."""
-    errors = []
-    topics = []
+    errors: list = []
+    topics: list = []
 
     data, errors = _extract_json(response, chunk_id)
     if errors != []:

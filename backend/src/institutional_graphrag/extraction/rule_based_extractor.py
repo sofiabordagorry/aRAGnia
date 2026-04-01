@@ -352,7 +352,15 @@ class RuleBasedExtractor:
         """
         projects: dict[str, list[dict[str, Any]]] = defaultdict(list)
         id_col = df.columns[0]
-        small = df[[id_col, title_col] + responsible_cols].dropna(subset=[id_col])
+        cols: list[str] = [id_col]
+
+        if title_col is not None:
+            cols.append(title_col)
+
+        if responsible_cols is not None:
+            cols.extend(responsible_cols)
+
+        small = df[cols].dropna(subset=[id_col])
         cols = list(small.columns)
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
