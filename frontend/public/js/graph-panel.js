@@ -952,7 +952,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     if (!mergeModal.overlay) return;
     mergeModal.pending = { sourceId, targetId };
     if (mergeModal.text) {
-      mergeModal.text.innerHTML = `¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br><span class="merge-modal-warning">Se conservará <strong>${escapeHtml(targetName)}</strong> y esta acción no se puede deshacer.</span>`;
+      mergeModal.text.innerHTML = `¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br><span class="merge-modal-warning">Se conservará <strong>${escapeHtml(targetName)}</strong>, se transferirán todas las relaciones del investigador origen al destino y esta acción no se puede deshacer.</span>`;
     }
     mergeModal.overlay.classList.remove("hidden");
   }
