@@ -77,6 +77,7 @@ class EntityExtractor:
         max_docs: int | None = None,
         llm_researchers: bool = True,
         llm_topics: bool = True,
+        include_headings: bool = True,
     ) -> ExtractionResult:
         entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
@@ -97,7 +98,7 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_responsible()
         self._extract_with_llm(
-            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics
+            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics, include_headings=include_headings
         )
         return self.res
 
@@ -538,7 +539,7 @@ class EntityExtractor:
             self.atomic_write(path)
 
     def _extract_with_llm(
-        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True
+        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True, include_headings: bool = True,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
         Args:
@@ -622,7 +623,7 @@ class EntityExtractor:
                             f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
                         )
                         llm_result_researcher = llm_extractor.extract_researchers_from_chunks(
-                            chunks, max_chunks=None
+                            chunks, max_chunks=None, include_headings=include_headings
                         )
                         # Agregar errores
                         self.res.errors.extend(llm_result_researcher.errors)
@@ -657,7 +658,7 @@ class EntityExtractor:
                             f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
                         llm_result_topic = llm_extractor.extract_topics_from_chunks(
-                            chunks, max_chunks=None
+                            chunks, max_chunks=None, include_headings=include_headings
                         )
                         # Agregar errores
                         self.res.errors.extend(llm_result_topic.errors)

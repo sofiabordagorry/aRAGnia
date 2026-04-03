@@ -51,6 +51,7 @@ class IngestService:
         env_path: Optional[Path] = None,
         enable_researcher_consolidation: bool,
         keep_debug_artifacts: bool,
+        include_headings: bool = True,
     ):
         self.enable_researcher_consolidation = enable_researcher_consolidation
         self.keep_debug_artifacts = keep_debug_artifacts
@@ -149,7 +150,7 @@ class IngestService:
         self._extract_projects_and_responsibles()
 
         # Extracción con LLM (si tu EntityExtractor lo soporta)
-        self.entity_extractor._extract_with_llm()
+        self.entity_extractor._extract_with_llm(include_headings=self.include_headings)
 
         # Normalización
         entity_dicts, rel_dicts = self._postprocess_entities()

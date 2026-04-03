@@ -47,11 +47,12 @@ def main(
     llm_researchers: bool = True,
     llm_topics: bool = True,
     enable_researcher_consolidation: bool = False,
+    include_headings: bool = True,
 ) -> int:
     extractor = EntityExtractor()
 
     # 1) Ejecutar extracción
-    res = extractor.run(max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics)
+    res = extractor.run(max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics, include_headings=include_headings)
 
     # 2) Guardar resultado
     filename = "entity_documents.json"
@@ -123,6 +124,12 @@ if __name__ == "__main__":
         help="Activa la unificacion de Investigadores",
     )
 
+    parser.add_argument(
+        "--no-headings",
+        action="store_true",
+        help="Desactiva la inclusión de encabezados en el texto del LLM",
+    )
+
     args = parser.parse_args()
 
     if args.max_docs is not None:
@@ -133,9 +140,11 @@ if __name__ == "__main__":
     llm_researchers = not args.no_llm_researchers
     llm_topics = not args.no_llm_topics
     enable_researcher_consolidation = args.enable_researcher_consolidation
+    include_headings = not args.no_headings
     print(f"[CONFIG] LLM investigadores: {'ACTIVO' if llm_researchers else 'DESACTIVADO'}")
     print(f"[CONFIG] LLM tópicos: {'ACTIVO' if llm_topics else 'DESACTIVADO'}")
     print(f"[CONFIG] Unificacion de Investigadores: {'ACTIVO' if enable_researcher_consolidation else 'DESACTIVADO'}")
+    print(f"[CONFIG] Incluir encabezados: {'ACTIVO' if include_headings else 'DESACTIVADO'}")
 
     # -------------------------------------------------
 
@@ -145,5 +154,6 @@ if __name__ == "__main__":
             llm_researchers=llm_researchers,
             llm_topics=llm_topics,
             enable_researcher_consolidation=enable_researcher_consolidation,
+            include_headings=include_headings,
         )
     )
