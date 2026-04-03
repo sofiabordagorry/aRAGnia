@@ -100,7 +100,9 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_responsible()
         self._extract_with_llm(
-            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics,
+            max_docs=max_docs,
+            llm_researchers=llm_researchers,
+            llm_topics=llm_topics,
             checkpoint_every=checkpoint_every,
         )
         return self.res
@@ -547,7 +549,10 @@ class EntityExtractor:
         logger.info("[Checkpoint] Guardado intermedio en %s", filename)
 
     def _extract_with_llm(
-        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True,
+        self,
+        max_docs: int | None = None,
+        llm_researchers: bool = True,
+        llm_topics: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
@@ -684,9 +689,7 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
-                        self.mark_success(
-                            self.input_dir / "llm_registry.json", doc_id, "Topico"
-                        )
+                        self.mark_success(self.input_dir / "llm_registry.json", doc_id, "Topico")
 
                         logger.info(
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
