@@ -21,7 +21,7 @@ def chunk_document(doc: DoclingDocument, chunker: HybridChunker) -> list[dict]:
         chunk_any = cast(Any, chunk)  # BaseChunk -> Any (por typing de docling)
         meta = cast(Any, chunk_any.meta)  # BaseMeta  -> Any
 
-        text_with_context = chunker.contextualize(chunk_any)
+        text = chunk_any.text
 
         doc_items = list(getattr(meta, "doc_items", []) or [])
         headings = list(getattr(meta, "headings", []) or [])
@@ -45,7 +45,7 @@ def chunk_document(doc: DoclingDocument, chunker: HybridChunker) -> list[dict]:
         processed_chunks.append(
             {
                 "chunk_id": f"{doc_name}#chunk{i}",
-                "text": text_with_context,
+                "text": text,
                 "metadata": {
                     "headings": headings,
                     "page_numbers": page_numbers,
