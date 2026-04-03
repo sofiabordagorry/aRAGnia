@@ -36,16 +36,78 @@ class OllamaClient:
         return str(r.json()["message"]["content"])
 
 
+class HuggingFaceClient:
+    """Cliente que carga un modelo de HuggingFace localmente con transformers.
+
+    Variables de entorno:
+        HF_MODEL      - model ID en HuggingFace Hub (default: Qwen/Qwen2.5-3B-Instruct)
+        HF_CACHE_DIR  - directorio de caché para modelos descargados (opcional)
+    """
+
+    _instances: dict[str, "HuggingFaceClient"] = {}
+
+    def __init__(self, model_id: str):
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
+        self.model_id = model_id
+        cache_dir = os.getenv("HF_CACHE_DIR") or None
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=cache_dir)
+
+        device_map = "auto" if torch.cuda.is_available() else "cpu"
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            device_map=device_map,
+            torch_dtype="auto",
+            cache_dir=cache_dir,
+        )
+
+        self.pipe = pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+        )
+
+    def generate(
+        self,
+        *,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        outputs = self.pipe(
+            messages,
+            max_new_tokens=max_tokens,
+            temperature=temperature,
+            do_sample=temperature > 0,
+            return_full_text=False,
+        )
+        return str(outputs[0]["generated_text"])
+
+
 _ollama_instances: dict[str, OllamaClient] = {}
 
 
-def get_llm_client(*, model: Optional[str] = None) -> OllamaClient:
+def get_llm_client(*, model: Optional[str] = None) -> OllamaClient | HuggingFaceClient:
+    """Devuelve un cliente LLM según la variable de entorno LLM_BACKEND.
+
+    LLM_BACKEND=ollama      → OllamaClient (default local)
+    LLM_BACKEND=huggingface → HuggingFaceClient con modelo de HF Hub
+    """
     backend_dir = Path(__file__).resolve().parents[3]
     load_dotenv(backend_dir / ".env")
 
-    resolved_model = model or os.getenv("OLLAMA_MODEL") or "qwen2.5:3b-instruct"
+    backend = os.getenv("LLM_BACKEND", "ollama").lower()
 
+    if backend == "huggingface":
+        model_id = model or os.getenv("HF_MODEL") or "Qwen/Qwen2.5-3B-Instruct"
+        if model_id not in HuggingFaceClient._instances:
+            HuggingFaceClient._instances[model_id] = HuggingFaceClient(model_id)
+        return HuggingFaceClient._instances[model_id]
+
+    # Default: Ollama
+    resolved_model = model or os.getenv("OLLAMA_MODEL") or "qwen2.5:3b-instruct"
     if resolved_model not in _ollama_instances:
         _ollama_instances[resolved_model] = OllamaClient(model=resolved_model)
-
     return _ollama_instances[resolved_model]
