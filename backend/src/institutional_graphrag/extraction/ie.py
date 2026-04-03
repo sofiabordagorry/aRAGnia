@@ -77,6 +77,7 @@ class EntityExtractor:
         max_docs: int | None = None,
         llm_researchers: bool = True,
         llm_topics: bool = True,
+        checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
         if entities_json.exists():
@@ -97,7 +98,8 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_responsible()
         self._extract_with_llm(
-            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics
+            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics,
+            checkpoint_every=checkpoint_every,
         )
         return self.res
 
@@ -537,12 +539,19 @@ class EntityExtractor:
             self.reg[doc_id].sort()
             self.atomic_write(path)
 
+    def _save_checkpoint(self, filename: str = "entity_documents.json") -> None:
+        """Guarda el estado actual a disco (checkpoint intermedio)."""
+        self.save_in_file(filename)
+        logger.info("[Checkpoint] Guardado intermedio en %s", filename)
+
     def _extract_with_llm(
-        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True
+        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True,
+        checkpoint_every: int = 5,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
         Args:
             max_docs: Límite opcional de documentos a procesar.
+            checkpoint_every: Guardar a disco cada N documentos procesados.
         """
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
@@ -683,6 +692,11 @@ class EntityExtractor:
 
                     # Incrementar contador de documentos procesados
                     docs_processed += 1
+
+                    # Checkpoint periódico para no perder progreso
+                    if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
+                        self._save_checkpoint()
+
                 except Exception as e:
                     self.res.errors.append(
                         {
@@ -693,6 +707,11 @@ class EntityExtractor:
                     )
                     docs_processed += 1
             self._aggregate_topics_for_project(project_id)
+
+        # Checkpoint final tras toda la extracción LLM
+        if docs_processed > 0:
+            self._save_checkpoint()
+            logger.info("[LLM] Extracción completada — %d documentos procesados", docs_processed)
 
     def _aggregate_topics_for_project(self, project_id: str) -> None:
         """Agregar tópicos a nivel de proyecto basándose en los chunks.

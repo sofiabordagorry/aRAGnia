@@ -147,6 +147,7 @@ def step_extraction(
     llm_researchers: bool,
     llm_topics: bool,
     researcher_consolidation: bool,
+    checkpoint_every: int = 5,
 ) -> None:
     """Extrae entidades y relaciones (reglas + LLM) y las postprocesa."""
     log.info("Etapa 3: Extracción")
@@ -159,6 +160,7 @@ def step_extraction(
         max_docs=max_docs,
         llm_researchers=llm_researchers,
         llm_topics=llm_topics,
+        checkpoint_every=checkpoint_every,
     )
 
     filename = "entity_documents.json"
@@ -213,6 +215,8 @@ def parse_args() -> argparse.Namespace:
                         help="Activar consolidación de investigadores")
     parser.add_argument("--max-docs", type=int, default=None,
                         help="Límite de documentos (None = todos)")
+    parser.add_argument("--checkpoint-every", type=int, default=5,
+                        help="Guardar checkpoint cada N documentos en extracción LLM (default: 5)")
 
     return parser.parse_args()
 
@@ -247,6 +251,7 @@ def main() -> None:
             llm_researchers=not args.no_llm_researchers,
             llm_topics=not args.no_llm_topics,
             researcher_consolidation=args.researcher_consolidation,
+            checkpoint_every=args.checkpoint_every,
         )
     else:
         log.info("Etapa 3 (Extracción) salteada.")
