@@ -23,8 +23,9 @@
 #SBATCH --time=3-00:00:00        # Tiempo máximo: 3 días (máximo permitido para GPU)
 #SBATCH --mem=32G                # RAM total
 #SBATCH --cpus-per-task=8        # CPUs para Docling y embeddings
-#SBATCH --gres=gpu:1             # GPU para embeddings y LLM inference
-                                 # Opciones: gpu:p100:1 (12GB), gpu:a100:1 (40GB), gpu:a40:1 (48GB)
+#SBATCH --gres=gpu:a40:1         # GPU A40 (48GB) — más disponibles que A100
+                                 # Alternativas: gpu:a100:1 (40GB, solo 2 en el cluster)
+                                 #               gpu:1 (cualquier GPU, si el modelo entra en 12GB)
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=${USER}@fing.edu.uy
 
