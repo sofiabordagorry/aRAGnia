@@ -1,0 +1,100 @@
+{
+    "entities": [
+        {
+            "id": "PENDING",
+            "label": "Topico",
+            "value": "PENDING"
+        },
+        {
+            "id": "proy_2018_413",
+            "label": "Proyecto",
+            "value": "Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos"
+        },
+        {
+            "id": "álvaro_martín",
+            "label": "Investigador",
+            "value": {
+                "name": "ÁLVARO MARTÍN",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "gadiel_seroussi",
+            "label": "Investigador",
+            "value": {
+                "name": "GADIEL SEROUSSI",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "idoia_ochoa",
+            "label": "Investigador",
+            "value": {
+                "name": "IDOIA OCHOA",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "guillermo_dufort_y_álvarez",
+            "label": "Investigador",
+            "value": {
+                "name": "GUILLERMO DUFORT Y ÁLVAREZ",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "josé_sotelo_silveira",
+            "label": "Investigador",
+            "value": {
+                "name": "JOSÉ SOTELO SILVEIRA",
+                "source": "llm"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "álvaro_martín",
+            "target_id": "proy_2016_729",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "gadiel_seroussi",
+            "target_id": "proy_2016_729",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "idoia_ochoa",
+            "target_id": "proy_2016_729",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "guillermo_dufort_y_álvarez",
+            "target_id": "proy_2016_729",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "josé_sotelo_silveira",
+            "target_id": "proy_2016_729",
+            "properties": {}
+        },
+        {
+            "type": "TIENE_TOPICO",
+            "source_id": "gi_2018_413",
+            "target_id": "PENDING",
+            "properties": {
+                "mention_count": "na"
+            }
+        },
+        {
+            "type": "RESPONSABLE_DE",
+            "source_id": "álvaro_martín",
+            "target_id": "gi_2020_513",
+            "properties": {}
+        }
+    ]
+}
