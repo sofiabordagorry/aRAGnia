@@ -42,12 +42,14 @@ class EntityExtractor:
     def __init__(
         self,
         llm_model: Optional[str] = None,
+        data_dir: Path | None = None,
     ):
-        self.data_dir = DATA_DIR
-        self.documents_dir = DATA_DIR / "corpus"
-        self.chunks_dir = DATA_DIR / "chunks"
-        self.table_dir = DATA_DIR / "tables"
-        self.input_dir = DATA_DIR / "entities_relations"
+        base = data_dir if data_dir is not None else DATA_DIR
+        self.data_dir = base
+        self.documents_dir = base / "corpus"
+        self.chunks_dir = base / "chunks"
+        self.table_dir = base / "tables"
+        self.input_dir = base / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
 
@@ -79,7 +81,7 @@ class EntityExtractor:
         llm_topics: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
-        entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
+        entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
             self.load_subset_from_graph_json(
                 entities_json,
@@ -597,11 +599,11 @@ class EntityExtractor:
                 if doc is None:
                     continue
                 researcher_cache = self.already_run(
-                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"
+                    self.input_dir / "llm_registry.json", doc_id, "Investigador"
                 )
                 # logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 topic_cache = self.already_run(
-                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                    self.input_dir / "llm_registry.json", doc_id, "Topico"
                 )
 
                 # Cargar chunks del documento
@@ -651,7 +653,7 @@ class EntityExtractor:
                         # Actualizar el set de IDs existentes para este proyecto
                         existing_researcher_ids.update(e.id for e in new_entities)
                         self.mark_success(
-                            DATA_DIR / "entities_relations" / "llm_registry.json",
+                            self.input_dir / "llm_registry.json",
                             doc_id,
                             "Investigador",
                         )
@@ -683,7 +685,7 @@ class EntityExtractor:
                         # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
                         self.mark_success(
-                            DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
+                            self.input_dir / "llm_registry.json", doc_id, "Topico"
                         )
 
                         logger.info(

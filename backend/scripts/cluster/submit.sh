@@ -18,33 +18,59 @@
 #SBATCH --job-name=graphrag-pipeline
 #SBATCH --output=logs/pipeline_%j.log
 #SBATCH --error=logs/pipeline_%j.log
-#SBATCH --partition=normal
-#SBATCH --qos=gpu
+#SBATCH --partition=besteffort
+#SBATCH --qos=besteffort_gpu
 #SBATCH --time=3-00:00:00        # Tiempo máximo: 3 días (máximo permitido para GPU)
+#SBATCH --ntasks=1               # Un proceso principal
 #SBATCH --mem=32G                # RAM total
 #SBATCH --cpus-per-task=8        # CPUs para Docling y embeddings
 #SBATCH --gres=gpu:a40:1         # GPU A40 (48GB) — más disponibles que A100
                                  # Alternativas: gpu:a100:1 (40GB, solo 2 en el cluster)
                                  #               gpu:1 (cualquier GPU, si el modelo entra en 12GB)
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=${USER}@fing.edu.uy
+# Descomentar y poner tu email para recibir notificaciones:
+# #SBATCH --mail-user=tu_email@fing.edu.uy
 
 # =============================================================================
 
 set -e
 
+# CUDA (requerido por la documentación de cluster.uy para jobs GPU)
+export PATH=$PATH:/usr/local/cuda/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/local/cuda/lib64
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 ENV_NAME="graphrag"
+
+# --- Almacenamiento de alta velocidad (scratch) ---
+# El home es NFS (lento para muchos archivos). /scratch es SSD local (300 GB).
+# Copiamos los datos a scratch para leer/escribir rápido durante el job.
+SCRATCH_DATA="/scratch/${USER}/graphrag_data"
 
 echo "============================================================"
 echo "  Job ID:     $SLURM_JOB_ID"
 echo "  Nodo:       $SLURMD_NODENAME"
 echo "  Inicio:     $(date)"
 echo "  Repo:       $REPO_ROOT"
+echo "  Scratch:    $SCRATCH_DATA"
 echo "============================================================"
 
 # Crear directorio de logs si no existe
 mkdir -p "$REPO_ROOT/logs"
+
+# Copiar datos del corpus a scratch (solo lo que no esté ya copiado)
+mkdir -p "$SCRATCH_DATA"
+echo "[INFO] Copiando datos a scratch..."
+rsync -a --info=progress2 "$REPO_ROOT/data/" "$SCRATCH_DATA/"
+echo "[INFO] Datos copiados a scratch"
+
+# Función para copiar resultados de vuelta al home al terminar (o si falla)
+cleanup() {
+    echo "[INFO] Copiando resultados de scratch a home..."
+    rsync -a "$SCRATCH_DATA/" "$REPO_ROOT/data/"
+    echo "[INFO] Resultados copiados a home"
+}
+trap cleanup EXIT
 
 # Activar conda
 # En cluster.uy suele estar en ~/.conda o ~/miniconda3
@@ -87,7 +113,7 @@ echo "============================================================"
 
 # Correr el pipeline completo
 python "$REPO_ROOT/backend/scripts/cluster/pipeline.py" \
-    --data-dir "$REPO_ROOT/data" \
+    --data-dir "$SCRATCH_DATA" \
     --env-file "$REPO_ROOT/backend/.env"
 
 # Para saltear etapas ya procesadas, agregar flags:

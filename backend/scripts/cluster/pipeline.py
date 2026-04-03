@@ -142,6 +142,7 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
     log.info("Etapa 2 completada — total=%d procesados=%d salteados=%d errores=%d", len(json_files), processed, skipped, errors)
 
 def step_extraction(
+    data_dir: Path,
     entities_dir: Path,
     max_docs: int | None,
     llm_researchers: bool,
@@ -155,7 +156,7 @@ def step_extraction(
     from institutional_graphrag.extraction.ie import EntityExtractor
     from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
-    extractor = EntityExtractor()
+    extractor = EntityExtractor(data_dir=data_dir)
     res = extractor.run(
         max_docs=max_docs,
         llm_researchers=llm_researchers,
@@ -246,6 +247,7 @@ def main() -> None:
 
     if not args.skip_extraction:
         step_extraction(
+            data_dir=data_dir,
             entities_dir=entities_dir,
             max_docs=args.max_docs,
             llm_researchers=not args.no_llm_researchers,
