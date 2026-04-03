@@ -5,7 +5,7 @@
 # Ejecutar UNA SOLA VEZ antes de usar submit.sh.
 #
 # Uso:
-#   bash cluster/setup_env.sh
+#   bash backend/scripts/cluster/setup_env.sh
 #
 # Prerrequisito: tener conda/miniconda instalado.
 # Ver: https://cluster.uy/ayuda/conda/
@@ -13,8 +13,8 @@
 
 set -e
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ENV_FILE="$REPO_ROOT/cluster/environment.yml"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+ENV_FILE="$REPO_ROOT/backend/scripts/cluster/environment.yml"
 ENV_NAME="graphrag"
 
 echo "============================================================"
@@ -44,5 +44,5 @@ echo "  Para activar manualmente:"
 echo "    conda activate $ENV_NAME"
 echo ""
 echo "  Para enviar el job al cluster:"
-echo "    sbatch cluster/submit.sh"
+echo "    sbatch backend/scripts/cluster/submit.sh"
 echo "============================================================"

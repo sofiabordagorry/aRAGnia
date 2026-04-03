@@ -4,7 +4,7 @@
 # Script SLURM para correr el pipeline en el cluster.uy
 #
 # Uso:
-#   sbatch cluster/submit.sh
+#   sbatch backend/scripts/cluster/submit.sh
 #
 # Para monitorear:
 #   squeue -u $USER
@@ -18,20 +18,21 @@
 #SBATCH --job-name=graphrag-pipeline
 #SBATCH --output=logs/pipeline_%j.log
 #SBATCH --error=logs/pipeline_%j.log
-#SBATCH --time=08:00:00          # Tiempo máximo (HH:MM:SS) — ajustar según corpus
+#SBATCH --partition=normal
+#SBATCH --qos=gpu
+#SBATCH --time=3-00:00:00        # Tiempo máximo: 3 días (máximo permitido para GPU)
 #SBATCH --mem=32G                # RAM total
 #SBATCH --cpus-per-task=8        # CPUs para Docling y embeddings
-#SBATCH --gres=gpu:1             # GPU para embeddings con sentence-transformers
-                                 # Quitar esta línea si no hay GPU disponible
-
-# Descomentar para especificar partición/cola:
-# #SBATCH --partition=gpu
+#SBATCH --gres=gpu:1             # GPU para embeddings y LLM inference
+                                 # Opciones: gpu:p100:1 (12GB), gpu:a100:1 (40GB), gpu:a40:1 (48GB)
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=${USER}@fing.edu.uy
 
 # =============================================================================
 
 set -e
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 ENV_NAME="graphrag"
 
 echo "============================================================"
@@ -84,9 +85,9 @@ echo "[INFO] Iniciando pipeline..."
 echo "============================================================"
 
 # Correr el pipeline completo
-python "$REPO_ROOT/cluster/pipeline.py" \
+python "$REPO_ROOT/backend/scripts/cluster/pipeline.py" \
     --data-dir "$REPO_ROOT/data" \
-    --env-file "$REPO_ROOT/.env"
+    --env-file "$REPO_ROOT/backend/.env"
 
 # Para saltear etapas ya procesadas, agregar flags:
 #   --skip-docling
