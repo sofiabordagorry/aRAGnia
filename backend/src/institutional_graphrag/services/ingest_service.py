@@ -55,6 +55,8 @@ class IngestService:
     ):
         self.enable_researcher_consolidation = enable_researcher_consolidation
         self.keep_debug_artifacts = keep_debug_artifacts
+        self.include_headings = include_headings
+
         self.data_dir = data_dir
         self.tables_dir = data_dir / "tables"
         self.output_dir = data_dir / "corpus"
