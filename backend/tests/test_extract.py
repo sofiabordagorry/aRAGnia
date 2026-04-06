@@ -455,7 +455,9 @@ def test_llm_researchers_and_topics_and_project_aggregation(
 
     monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_researchers_from_chunks",
-        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_researchers(chunks, max_chunks),
+        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_researchers(
+            chunks, max_chunks
+        ),
     )
     monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_topics_from_chunks",
@@ -765,13 +767,14 @@ def test_postprocess_preserves_dual_source_on_merge():
     assert isinstance(final_source, list), "El source en postprocess debe ser lista tras merge"
     assert set(final_source) == {"rule_based", "llm"}
 
+
 def test_llm_extractor_include_headings_flag(monkeypatch):
     """
-    Verifica que el flag include_headings formatee correctamente el texto 
+    Verifica que el flag include_headings formatee correctamente el texto
     aislando la jerarquía de encabezados antes de enviarlo al LLM.
     """
     extractor = LLMEntityExtractor.__new__(LLMEntityExtractor)
-    
+
     # Lista para capturar el string exacto enviado al método singular
     captured_texts = []
 
@@ -786,16 +789,18 @@ def test_llm_extractor_include_headings_flag(monkeypatch):
     chunk_normal = {
         "chunk_id": "c1",
         "text": "Este es el contenido principal de la sección.",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]}
+        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
     }
-    
+
     extractor.extract_researchers_from_chunks([chunk_normal], include_headings=True)
-    
-    assert captured_texts[-1] == "Capítulo 1\nSección A\nEste es el contenido principal de la sección."
+
+    assert (
+        captured_texts[-1] == "Capítulo 1\nSección A\nEste es el contenido principal de la sección."
+    )
 
     # --- Escenario 2: include_headings = False ---
     extractor.extract_researchers_from_chunks([chunk_normal], include_headings=False)
-    
+
     # Solo debe contener el texto puro
     assert captured_texts[-1] == "Este es el contenido principal de la sección."
 
@@ -803,9 +808,9 @@ def test_llm_extractor_include_headings_flag(monkeypatch):
     chunk_header = {
         "chunk_id": "c2",
         "text": "Sección A",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]}
+        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
     }
     extractor.extract_researchers_from_chunks([chunk_header], include_headings=True)
-    
+
     # Debe retornar la jerarquía sin duplicar "Sección A" al final
     assert captured_texts[-1] == "Capítulo 1\nSección A"

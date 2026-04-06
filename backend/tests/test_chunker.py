@@ -83,7 +83,7 @@ class TestNativeDoclingChunker:
             headings = chunk_with_headings["metadata"]["headings"]
             assert isinstance(headings, list)
             assert len(headings) > 0
-            
+
             # Verificamos que el texto exista independientemente de los encabezados
             assert isinstance(chunk_with_headings["text"], str)
             assert len(chunk_with_headings["text"]) > 0
@@ -92,21 +92,21 @@ class TestNativeDoclingChunker:
 
     def test_verify_reconstruction_fidelity(self, sample_doc):
         """
-        Verifica que la reconstrucción manual del texto (headings + raw_text) 
+        Verifica que la reconstrucción manual del texto (headings + raw_text)
         no pierda información ni duplique texto en comparación con contextualize() de Docling.
         """
         chunker = get_native_chunker()
-        
+
         # Necesitamos iterar sobre los chunks originales de Docling para usar contextualize()
         chunk_iter = chunker.chunk(dl_doc=sample_doc)
-        
+
         def smart_reconstruct(raw_text: str, headings: list) -> str:
             clean_text = raw_text.strip()
             if not headings:
                 return clean_text
-            
+
             last_heading = headings[-1].strip()
-            
+
             # Evitar duplicación si el chunk ES el encabezado
             if clean_text == last_heading:
                 return "\n".join(headings)
@@ -119,14 +119,14 @@ class TestNativeDoclingChunker:
         for chunk in chunk_iter:
             # 1. Obtener el string contextualizado nativo
             native_context = chunker.contextualize(chunk)
-            
+
             # 2. Obtener los componentes crudos
             raw_text = chunk.text
             headings = chunk.meta.headings if chunk.meta and chunk.meta.headings else []
-            
+
             # 3. Aplicar nuestra lógica
             my_reconstructed_text = smart_reconstruct(raw_text, headings)
-            
+
             # 4. Comparar (ignorando espacios en blanco al inicio/final)
             if native_context.strip() != my_reconstructed_text.strip():
                 diffs_found += 1
@@ -138,6 +138,8 @@ class TestNativeDoclingChunker:
                 print("--- MINE (Reconstructed) ---")
                 print(repr(my_reconstructed_text.strip()))
                 print("-" * 40)
-        
+
         # El test fallará si encuentra diferencias, permitiéndote ver los prints en la consola
-        assert diffs_found == 0, f"Se encontraron {diffs_found} diferencias entre Docling nativo y la reconstrucción."
+        assert (
+            diffs_found == 0
+        ), f"Se encontraron {diffs_found} diferencias entre Docling nativo y la reconstrucción."

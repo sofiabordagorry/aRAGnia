@@ -98,7 +98,10 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_responsible()
         self._extract_with_llm(
-            max_docs=max_docs, llm_researchers=llm_researchers, llm_topics=llm_topics, include_headings=include_headings
+            max_docs=max_docs,
+            llm_researchers=llm_researchers,
+            llm_topics=llm_topics,
+            include_headings=include_headings,
         )
         return self.res
 
@@ -539,7 +542,11 @@ class EntityExtractor:
             self.atomic_write(path)
 
     def _extract_with_llm(
-        self, max_docs: int | None = None, llm_researchers: bool = True, llm_topics: bool = True, include_headings: bool = True,
+        self,
+        max_docs: int | None = None,
+        llm_researchers: bool = True,
+        llm_topics: bool = True,
+        include_headings: bool = True,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
         Args:

@@ -764,7 +764,10 @@ If no match:
         return LLMExtractionResult(researchers=[], topics=topics, errors=errors)
 
     def extract_researchers_from_chunks(
-        self, chunks: List[Dict[str, Any]], max_chunks: Optional[int] = None, include_headings: bool = True
+        self,
+        chunks: List[Dict[str, Any]],
+        max_chunks: Optional[int] = None,
+        include_headings: bool = True,
     ) -> LLMExtractionResult:
         """Extraer investigadores desde lista de chunks."""
         all_researchers = []
@@ -802,7 +805,10 @@ If no match:
         return LLMExtractionResult(researchers=all_researchers, topics=[], errors=all_errors)
 
     def extract_topics_from_chunks(
-        self, chunks: List[Dict[str, Any]], max_chunks: Optional[int] = None, include_headings: bool = True
+        self,
+        chunks: List[Dict[str, Any]],
+        max_chunks: Optional[int] = None,
+        include_headings: bool = True,
     ) -> LLMExtractionResult:
         """Extraer tópicos desde lista de chunks."""
         all_topics = []
