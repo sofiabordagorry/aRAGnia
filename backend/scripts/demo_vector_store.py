@@ -34,7 +34,7 @@ def main():
     print(f"Usando JSON: {json_path.name}")
 
     # 2. Generar chunks
-    print(f"\nGenerando chunks...")
+    print("\nGenerando chunks...")
 
     # Definir tokenizer a utilizar
     tokenizer = EMBED_MODEL_ID
@@ -55,13 +55,13 @@ def main():
 
     # Mostrar ejemplo
     if chunks:
-        print(f"\nEjemplo de chunk:")
+        print("\nEjemplo de chunk:")
         print(f"  ID: {chunks[0]['chunk_id']}")
         print(f"  Texto (primeros 100 chars): {chunks[0]['text'][:100]}...")
         print(f"  Metadata: {chunks[0]['metadata']}")
 
     # 3. Generar embeddings
-    print(f"\nGenerando embeddings con E5-large-v2...")
+    print("\nGenerando embeddings con E5-large-v2...")
     embedder = E5Embedder()
     texts = [chunk["text"] for chunk in chunks]
     embeddings_array = embedder.embed_passages(texts, batch_size=8)
@@ -91,7 +91,7 @@ def main():
         metadata_list.append(meta)
 
     # 5. Crear vector store y agregar chunks
-    print(f"\nAlmacenando en Qdrant...")
+    print("\nAlmacenando en Qdrant...")
     store = VectorStore(collection_name="demo_collection", embedding_dim=1024)  # E5-large-v2
 
     # Limpiar colección si existe
@@ -107,7 +107,7 @@ def main():
     print(f"Chunks en colección: {count}")
 
     # 6. Buscar chunks similares
-    print(f"\nProbando búsqueda...")
+    print("\nProbando búsqueda...")
     query = "¿Cuáles son los objetivos del proyecto?"
     print(f"  Query: '{query}'")
 
@@ -118,7 +118,7 @@ def main():
     # Buscar
     results = store.search(query_embedding, top_k=3)
 
-    print(f"\nTop 3 resultados:")
+    print("\nTop 3 resultados:")
     for i, (doc_id, score, meta) in enumerate(results, 1):
         print(f"\n  {i}. Score: {score:.4f}")
         print(f"     UUID: {doc_id}")
@@ -131,11 +131,11 @@ def main():
             chunk = chunks[chunk_index]
             print(f"     Texto (primeros 150 chars): {chunk['text'][:150]}...")
         else:
-            print(f"     Texto: (no encontrado)")
+            print("     Texto: (no encontrado)")
 
     # 7. Buscar con filtros
     if metadata_list and metadata_list[0]:
-        print(f"\n Probando búsqueda con filtros...")
+        print("\n Probando búsqueda con filtros...")
         # Usar el primer valor de metadata como filtro
         filter_key = list(metadata_list[0].keys())[0]
         filter_value = metadata_list[0][filter_key]
@@ -148,7 +148,7 @@ def main():
 
     # 8. Cerrar conexión
     store.close()
-    print(f"\n Demo completada!")
+    print("\n Demo completada!")
 
 
 if __name__ == "__main__":

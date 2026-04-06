@@ -88,7 +88,7 @@ def main():
 
     convert_table_to_chunks()
     print("=" * 60)
-    print(f"Resumen:")
+    print("Resumen:")
     print(f"   Archivos procesados: {processed}")
     print(f"   Errores: {errors}")
     print(f"   Chunks generados: {total_chunks}")

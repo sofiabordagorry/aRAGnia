@@ -130,12 +130,12 @@ class TestNativeDoclingChunker:
             # 4. Comparar (ignorando espacios en blanco al inicio/final)
             if native_context.strip() != my_reconstructed_text.strip():
                 diffs_found += 1
-                print(f"\n--- DIFF DETECTED in Chunk ---")
+                print("\n--- DIFF DETECTED in Chunk ---")
                 print(f"RAW TEXT: {raw_text[:50]}...")
                 print(f"HEADINGS: {headings}")
-                print(f"--- NATIVE (Docling) ---")
+                print("--- NATIVE (Docling) ---")
                 print(repr(native_context.strip()))
-                print(f"--- MINE (Reconstructed) ---")
+                print("--- MINE (Reconstructed) ---")
                 print(repr(my_reconstructed_text.strip()))
                 print("-" * 40)
         
