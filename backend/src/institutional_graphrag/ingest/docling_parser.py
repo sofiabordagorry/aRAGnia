@@ -242,7 +242,7 @@ def parse_corpus(
     def _iter_docs() -> Iterator[dict[str, Any]]:
         converter = DocumentConverter()
         for i in range(0, len(paths), batch_size):
-            batch = paths[i:i + batch_size]
+            batch = paths[i : i + batch_size]
             results = converter.convert_all(source=batch, raises_on_error=not skip_errors)
             for res in results:
                 doc_dict = cast(dict[str, Any], res.document.export_to_dict())
