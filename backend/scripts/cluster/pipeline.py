@@ -143,7 +143,6 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
 
 def step_extraction(
     data_dir: Path,
-    entities_dir: Path,
     max_docs: int | None,
     llm_researchers: bool,
     llm_topics: bool,
@@ -229,7 +228,6 @@ def main() -> None:
     corpus_dir = data_dir / "corpus"
     docling_dir = data_dir / "docling"
     chunks_dir = data_dir / "chunks"
-    entities_dir = data_dir / "entities_relations"
 
     log.info("Pipeline iniciado — data dir: %s", data_dir)
 
@@ -248,7 +246,6 @@ def main() -> None:
     if not args.skip_extraction:
         step_extraction(
             data_dir=data_dir,
-            entities_dir=entities_dir,
             max_docs=args.max_docs,
             llm_researchers=not args.no_llm_researchers,
             llm_topics=not args.no_llm_topics,
