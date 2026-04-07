@@ -65,7 +65,7 @@ def _require_dir(path: Path, name: str) -> None:
 # Etapas del pipeline
 # ---------------------------------------------------------------------------
 
-def step_docling(corpus_dir: Path, docling_dir: Path) -> None:
+def step_docling(corpus_dir: Path, docling_dir: Path, batch_size: int = 10) -> None:
     """Parsea los PDFs del corpus con Docling y guarda JSONs estructurados."""
     log.info("Etapa 1: Docling")
 
@@ -78,7 +78,7 @@ def step_docling(corpus_dir: Path, docling_dir: Path) -> None:
 
     saved = 0
 
-    for doc_dict in parse_corpus(corpus_dir):
+    for doc_dict in parse_corpus(corpus_dir, batch_size=batch_size):
         filename = doc_dict.get("name", "sin_nombre")
         output_path = docling_dir / f"{filename}.json"
         with open(output_path, "w", encoding="utf-8") as f:
@@ -205,6 +205,8 @@ def parse_args() -> argparse.Namespace:
                         help="Saltear etapa de chunking")
     parser.add_argument("--skip-extraction", action="store_true",
                         help="Saltear etapa de extracción")
+    parser.add_argument("--docling-batch-size", type=int, default=10,
+                        help="Cantidad de documentos por lote en Docling (default: 10)")
 
     # Opciones de extracción
     parser.add_argument("--no-llm-researchers", action="store_true",
@@ -234,7 +236,7 @@ def main() -> None:
     _load_env(args.env_file)
 
     if not args.skip_docling:
-        step_docling(corpus_dir, docling_dir)
+        step_docling(corpus_dir, docling_dir, batch_size=args.docling_batch_size)
     else:
         log.info("Etapa 1 (Docling) salteada.")
 

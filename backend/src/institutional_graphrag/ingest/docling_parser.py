@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Optional, cast
 
@@ -229,17 +230,22 @@ def parse_corpus(
     corpus_dir: Path = DEFAULT_CORPUS_DIR,
     recursive: bool = False,
     skip_errors: bool = True,
-) -> list[dict[str, Any]]:
+    batch_size: int = 10,
+) -> Iterator[dict[str, Any]]:
+    if batch_size < 1:
+        raise ValueError("batch_size debe ser >= 1")
+
     paths = filter_unprocessed(get_input_paths(corpus_dir, recursive))
     if not paths:
-        return []
+        return iter(())
 
-    converter = DocumentConverter()
-    results = converter.convert_all(source=paths, raises_on_error=not skip_errors)
+    def _iter_docs() -> Iterator[dict[str, Any]]:
+        converter = DocumentConverter()
+        for i in range(0, len(paths), batch_size):
+            batch = paths[i:i + batch_size]
+            results = converter.convert_all(source=batch, raises_on_error=not skip_errors)
+            for res in results:
+                doc_dict = cast(dict[str, Any], res.document.export_to_dict())
+                yield _postprocess_doc_dict(doc_dict)
 
-    docs: list[dict[str, Any]] = []
-    for res in results:
-        doc_dict = cast(dict[str, Any], res.document.export_to_dict())
-        docs.append(_postprocess_doc_dict(doc_dict))
-
-    return docs
+    return _iter_docs()
