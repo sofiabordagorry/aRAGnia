@@ -340,6 +340,30 @@ def get_graph_neighborhood(
             reader.close()
 
 
+class MergeResearchersRequest(BaseModel):
+    source_id: str
+    target_id: str
+
+
+@router.post("/graph/merge")
+def merge_researchers(body: MergeResearchersRequest):
+    if not body.source_id or not body.target_id:
+        raise HTTPException(status_code=400, detail="source_id y target_id son requeridos")
+    reader: Optional[GraphBuilder] = None
+    try:
+        reader = _get_graph_reader()
+        reader.merge_researchers(source_id=body.source_id, target_id=body.target_id)
+        return {"ok": True, "message": "Entidades unificadas correctamente."}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("No se pudo unificar entidades", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error unificando entidades: {e}")
+    finally:
+        if reader is not None:
+            reader.close()
+
+
 @router.get("/graph/aliases", response_model=AliasCandidatesResponse)
 def get_alias_candidates(search: str = Query(default="")):
     reader: Optional[GraphBuilder] = None

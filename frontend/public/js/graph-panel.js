@@ -10,11 +10,13 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     edgeCount: document.getElementById("graphEdgeCount"),
     aliasCount: document.getElementById("graphAliasCount"),
     legend: document.getElementById("graphLegend"),
+    relationFilters: document.getElementById("graphRelationFilters"),
     selection: document.getElementById("graphSelection"),
     aliasStatus: document.getElementById("aliasStatus"),
     aliasEntityCount: document.getElementById("aliasEntityCount"),
     aliasList: document.getElementById("aliasList"),
     aliasSearchInput: document.getElementById("aliasSearchInput"),
+    aliasSortSelect: document.getElementById("aliasSortSelect"),
     aliasSection: document.getElementById("aliasSection"),
     entityStatus: document.getElementById("entityStatus"),
     entityResultCount: document.getElementById("entityResultCount"),
@@ -60,6 +62,8 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     entitySearch: "",
     entityType: "Investigador",
     aliasSearch: "",
+    aliasSortMode: "stable",
+    edgeTypeVisibility: {},
     zoomScale: 1,
     panX: 0,
     panY: 0,
@@ -416,9 +420,29 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         return { display: peer?.display || peerId, label: edge.type };
       });
 
-    const relationMarkup = related.length
-      ? `<div class="selection-relations">${related
-          .slice(0, 12)
+    const uniqueRelated = Array.from(
+      new Map(
+        related.map((item) => [
+          `${item.label || ""}|${item.display || ""}`,
+          item,
+        ]),
+      ).values(),
+    ).sort((a, b) => {
+      const byLabel = String(a.label || "").localeCompare(
+        String(b.label || ""),
+      );
+      if (byLabel !== 0) return byLabel;
+      return String(a.display || "").localeCompare(String(b.display || ""));
+    });
+
+    const visibleConnectionCount = uniqueRelated.length;
+
+    const relationCount = visibleConnectionCount
+      ? `<div class="selection-summary">${visibleConnectionCount} conexiones visibles</div>`
+      : "";
+
+    const relationPillsMarkup = uniqueRelated.length
+      ? `<div class="selection-relations">${uniqueRelated
           .map(
             (item) =>
               `<span class="selection-pill"><span class="selection-pill-label">${escapeHtml(item.label)}</span><span class="selection-pill-target">${escapeHtml(item.display)}</span></span>`,
@@ -427,9 +451,112 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       : "";
 
     els.selection.innerHTML = `
-      <strong>${escapeHtml(node.display)}</strong> · ${escapeHtml(node.label)} · ${node.degree} conexiones
-      ${relationMarkup}
+      <strong>${escapeHtml(node.display)}</strong> · ${escapeHtml(node.label)} · ${visibleConnectionCount} conexiones
+      ${relationCount}
+      ${relationPillsMarkup}
     `;
+  }
+
+  function syncEdgeTypeVisibility(edges) {
+    const edgeTypes = new Set((edges || []).map((edge) => edge.type || ""));
+    const nextVisibility = {};
+    edgeTypes.forEach((type) => {
+      nextVisibility[type] = state.edgeTypeVisibility[type] !== false;
+    });
+    state.edgeTypeVisibility = nextVisibility;
+  }
+
+  function getVisibleEdges(snapshot) {
+    return (snapshot.edges || []).filter(
+      (edge) => state.edgeTypeVisibility[edge.type || ""] !== false,
+    );
+  }
+
+  function renderRelationFilters(snapshot) {
+    if (!els.relationFilters) return;
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.edges) ||
+      snapshot.edges.length === 0
+    ) {
+      els.relationFilters.textContent =
+        "Selecciona una entidad para filtrar tipos de relación.";
+      return;
+    }
+
+    const typeCount = new Map();
+    const seenByType = new Map();
+    snapshot.edges.forEach((edge) => {
+      const type = edge.type || "SIN_TIPO";
+      if (!seenByType.has(type)) {
+        seenByType.set(type, new Set());
+      }
+
+      const source = String(edge.source || "").trim();
+      const target = String(edge.target || "").trim();
+      if (!source || !target) return;
+
+      const pairKey =
+        source.localeCompare(target) <= 0
+          ? `${source}|${target}`
+          : `${target}|${source}`;
+
+      const seenPairs = seenByType.get(type);
+      if (seenPairs.has(pairKey)) return;
+      seenPairs.add(pairKey);
+
+      typeCount.set(type, (typeCount.get(type) || 0) + 1);
+    });
+    const orderedTypes = Array.from(typeCount.keys()).sort((a, b) =>
+      a.localeCompare(b),
+    );
+
+    els.relationFilters.innerHTML = `
+      <div class="relation-filter-head">
+        <span class="relation-filter-title">Tipos de relación visibles</span>
+        <span class="relation-filter-actions">
+          <button class="relation-filter-btn" type="button" data-filter-action="all">Todas</button>
+          <button class="relation-filter-btn" type="button" data-filter-action="none">Ninguna</button>
+        </span>
+      </div>
+      <div class="relation-filter-list">
+        ${orderedTypes
+          .map(
+            (type) => `
+              <label class="relation-filter-item">
+                <input type="checkbox" data-rel-type="${escapeHtml(type)}" ${
+                  state.edgeTypeVisibility[type] !== false ? "checked" : ""
+                } />
+                <span>${escapeHtml(type)} · ${typeCount.get(type)}</span>
+              </label>
+            `,
+          )
+          .join("")}
+      </div>
+    `;
+
+    els.relationFilters
+      .querySelectorAll("[data-rel-type]")
+      .forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const type = checkbox.getAttribute("data-rel-type") || "";
+          state.edgeTypeVisibility[type] = checkbox.checked;
+          renderGraph();
+        });
+      });
+
+    els.relationFilters
+      .querySelectorAll("[data-filter-action]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.getAttribute("data-filter-action") || "";
+          const checked = action === "all";
+          orderedTypes.forEach((type) => {
+            state.edgeTypeVisibility[type] = checked;
+          });
+          renderGraph();
+        });
+      });
   }
 
   function renderGraph() {
@@ -442,6 +569,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       els.svg.innerHTML = "";
       applyZoom();
       buildLegend([]);
+      renderRelationFilters({ edges: [] });
       renderSelection({ nodes: [], edges: [] });
       toggleEmptyState(
         true,
@@ -453,7 +581,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     }
 
     toggleEmptyState(false);
+    syncEdgeTypeVisibility(snapshot.edges);
+    const visibleEdges = getVisibleEdges(snapshot);
     buildLegend(snapshot.nodes);
+    renderRelationFilters(snapshot);
     const width = Math.max(720, Math.round(els.svg.clientWidth || 720));
     const height = Math.max(520, Math.round(els.svg.clientHeight || 520));
     els.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
@@ -462,7 +593,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const connectedNodeIds = new Set();
     if (state.selectedNodeId) {
       connectedNodeIds.add(state.selectedNodeId);
-      snapshot.edges.forEach((edge) => {
+      visibleEdges.forEach((edge) => {
         if (edge.source === state.selectedNodeId)
           connectedNodeIds.add(edge.target);
         if (edge.target === state.selectedNodeId)
@@ -470,7 +601,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       });
     }
 
-    const edgeMarkup = snapshot.edges
+    const edgeMarkup = visibleEdges
       .map((edge) => {
         const source = positions.get(edge.source);
         const target = positions.get(edge.target);
@@ -479,11 +610,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           state.selectedNodeId &&
           (edge.source === state.selectedNodeId ||
             edge.target === state.selectedNodeId);
-        const dimmed = state.selectedNodeId && !highlighted;
+        if (state.selectedNodeId && !highlighted) return "";
         const edgeClasses = ["graph-edge"];
         if (edge.is_alias) edgeClasses.push("alias");
         if (highlighted) edgeClasses.push("highlighted");
-        if (dimmed) edgeClasses.push("dimmed");
         return `
           <line class="${edgeClasses.join(" ")}" x1="${source.x.toFixed(2)}" y1="${source.y.toFixed(2)}" x2="${target.x.toFixed(2)}" y2="${target.y.toFixed(2)}">
             <title>${escapeHtml(edge.type)}: ${escapeHtml(edge.source)} -> ${escapeHtml(edge.target)}</title>
@@ -496,6 +626,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       .map((node) => {
         const position = positions.get(node.id);
         if (!position) return "";
+        if (state.selectedNodeId && !connectedNodeIds.has(node.id)) return "";
         const radius = Math.max(
           8,
           Math.min(18, 8 + Math.round(node.degree / 2)),
@@ -503,8 +634,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         const nodeClasses = ["graph-node"];
         if (node.is_alias_candidate) nodeClasses.push("alias-candidate");
         if (state.selectedNodeId === node.id) nodeClasses.push("selected");
-        if (state.selectedNodeId && !connectedNodeIds.has(node.id))
-          nodeClasses.push("dimmed");
         return `
           <g class="${nodeClasses.join(" ")}" data-node-id="${escapeHtml(node.id)}" transform="translate(${position.x.toFixed(2)} ${position.y.toFixed(2)})">
             <circle class="graph-node-circle" r="${radius}" fill="${getLabelColor(node.label)}"></circle>
@@ -525,7 +654,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       });
     });
 
-    renderSelection(snapshot);
+    renderSelection({ ...snapshot, edges: visibleEdges });
   }
 
   function renderEntityList() {
@@ -593,20 +722,77 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   }
 
   function groupAliasPairs(aliasData) {
+    const sortKey = (text) =>
+      String(text || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
     const groups = new Map();
-    (aliasData?.pairs || []).forEach((pair) => {
-      if (!groups.has(pair.source_id)) {
-        groups.set(pair.source_id, {
-          id: pair.source_id,
-          name: pair.source_name,
+    const ensureGroup = (id, name) => {
+      if (!groups.has(id)) {
+        groups.set(id, {
+          id,
+          name,
           pairs: [],
+          _seenTargets: new Set(),
         });
       }
-      groups.get(pair.source_id).pairs.push(pair);
+      return groups.get(id);
+    };
+
+    const addDirectionalPair = (sourceId, sourceName, targetId, targetName) => {
+      if (!sourceId || !targetId || sourceId === targetId) return;
+      const group = ensureGroup(sourceId, sourceName || sourceId);
+      const dedupeKey = `${targetId}`;
+      if (group._seenTargets.has(dedupeKey)) return;
+      group._seenTargets.add(dedupeKey);
+      group.pairs.push({
+        source_id: sourceId,
+        source_name: sourceName || sourceId,
+        target_id: targetId,
+        target_name: targetName || targetId,
+      });
+    };
+
+    (aliasData?.pairs || []).forEach((pair) => {
+      const sourceId = pair?.source_id || "";
+      const sourceName = pair?.source_name || sourceId;
+      const targetId = pair?.target_id || "";
+      const targetName = pair?.target_name || targetId;
+
+      addDirectionalPair(sourceId, sourceName, targetId, targetName);
+      addDirectionalPair(targetId, targetName, sourceId, sourceName);
     });
-    return Array.from(groups.values()).sort(
-      (a, b) => b.pairs.length - a.pairs.length || a.name.localeCompare(b.name),
-    );
+
+    const grouped = Array.from(groups.values()).map((group) => ({
+      id: group.id,
+      name: group.name,
+      pairs: group.pairs,
+    }));
+    grouped.forEach((group) => {
+      group.pairs.sort((a, b) => {
+        const byId = sortKey(a.target_id).localeCompare(sortKey(b.target_id));
+        if (byId !== 0) return byId;
+        return sortKey(a.target_name).localeCompare(sortKey(b.target_name));
+      });
+    });
+
+    if (state.aliasSortMode === "connections") {
+      return grouped.sort((a, b) => {
+        const byConnections = b.pairs.length - a.pairs.length;
+        if (byConnections !== 0) return byConnections;
+        const byName = sortKey(a.name).localeCompare(sortKey(b.name));
+        if (byName !== 0) return byName;
+        return sortKey(a.id).localeCompare(sortKey(b.id));
+      });
+    }
+
+    return grouped.sort((a, b) => {
+      const byId = sortKey(a.id).localeCompare(sortKey(b.id));
+      if (byId !== 0) return byId;
+      return sortKey(a.name).localeCompare(sortKey(b.name));
+    });
   }
 
   function renderAliasList() {
@@ -643,8 +829,15 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
             <div class="alias-pair-list">
               ${group.pairs
                 .map(
-                  (pair) =>
-                    `<button class="alias-pair-pill" type="button" data-node-id="${escapeHtml(pair.target_id)}">${escapeHtml(pair.target_name)}</button>`,
+                  (pair) => `
+                    <span class="alias-pair-item">
+                      <button class="alias-pair-pill" type="button" data-node-id="${escapeHtml(pair.target_id)}">${escapeHtml(pair.target_name)}</button>
+                      <button class="alias-merge-btn" type="button"
+                        data-source-id="${escapeHtml(pair.target_id)}"
+                        data-source-name="${escapeHtml(pair.target_name)}"
+                        data-target-id="${escapeHtml(pair.source_id)}"
+                        data-target-name="${escapeHtml(pair.source_name)}">Unificar</button>
+                    </span>`,
                 )
                 .join("")}
             </div>
@@ -657,6 +850,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       button.addEventListener("click", () => {
         const entityId = button.getAttribute("data-node-id") || "";
         selectEntity(entityId);
+      });
+    });
+
+    els.aliasList.querySelectorAll(".alias-merge-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        showMergeConfirm({
+          sourceId: button.getAttribute("data-source-id") || "",
+          sourceName: button.getAttribute("data-source-name") || "",
+          targetId: button.getAttribute("data-target-id") || "",
+          targetName: button.getAttribute("data-target-name") || "",
+        });
       });
     });
   }
@@ -742,6 +946,64 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     await loadNeighborhood(entityId);
   }
 
+  const mergeModal = {
+    overlay: document.getElementById("mergeModal"),
+    text: document.getElementById("mergeModalText"),
+    confirmBtn: document.getElementById("mergeModalConfirm"),
+    cancelBtn: document.getElementById("mergeModalCancel"),
+    pending: null,
+  };
+
+  function showMergeConfirm({ sourceId, sourceName, targetId, targetName }) {
+    if (!mergeModal.overlay) return;
+    mergeModal.pending = { sourceId, targetId };
+    if (mergeModal.text) {
+      mergeModal.text.innerHTML = `¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br><span class="merge-modal-warning">Se conservará <strong>${escapeHtml(targetName)}</strong>, se transferirán todas las relaciones del investigador origen al destino y esta acción no se puede deshacer.</span>`;
+    }
+    mergeModal.overlay.classList.remove("hidden");
+  }
+
+  function hideMergeConfirm() {
+    if (!mergeModal.overlay) return;
+    mergeModal.overlay.classList.add("hidden");
+    mergeModal.pending = null;
+  }
+
+  async function executeMerge() {
+    if (!mergeModal.pending) return;
+    const { sourceId, targetId } = mergeModal.pending;
+    hideMergeConfirm();
+
+    setAliasStatus("Unificando entidades...");
+    try {
+      const response = await fetch(apiUrl("/ui/graph/merge"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source_id: sourceId, target_id: targetId }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${response.status}`);
+      }
+      setAliasStatus("Unificación exitosa. Recargando alias...");
+      state.aliasLoadedOnce = false;
+      await loadAliases();
+      if (state.selectedEntityId) {
+        await loadNeighborhood(state.selectedEntityId);
+      }
+    } catch (error) {
+      setAliasStatus(`Error al unificar: ${error?.message || error}`, true);
+    }
+  }
+
+  function bindMergeModal() {
+    mergeModal.cancelBtn?.addEventListener("click", hideMergeConfirm);
+    mergeModal.confirmBtn?.addEventListener("click", executeMerge);
+    mergeModal.overlay?.addEventListener("click", (e) => {
+      if (e.target === mergeModal.overlay) hideMergeConfirm();
+    });
+  }
+
   function bindEvents() {
     const debouncedEntitySearch = debounce(() => {
       state.entitySearch = (els.entitySearchInput?.value || "").trim();
@@ -763,6 +1025,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     });
 
     els.aliasSearchInput?.addEventListener("input", debouncedAliasSearch);
+    if (els.aliasSortSelect) {
+      els.aliasSortSelect.value = state.aliasSortMode;
+      els.aliasSortSelect.addEventListener("change", () => {
+        const nextMode =
+          els.aliasSortSelect?.value === "connections"
+            ? "connections"
+            : "stable";
+        state.aliasSortMode = nextMode;
+        renderAliasList();
+      });
+    }
     els.tabEntitiesBtn?.addEventListener("click", () =>
       setActiveSidePanel("entities"),
     );
@@ -789,6 +1062,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   }
 
   bindEvents();
+  bindMergeModal();
   setActiveSidePanel("entities");
   renderGraph();
   loadEntityCatalog();
