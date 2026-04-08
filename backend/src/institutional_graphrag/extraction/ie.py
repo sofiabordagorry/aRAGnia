@@ -535,10 +535,10 @@ class EntityExtractor:
         tmp.write_text(json.dumps(self.reg, ensure_ascii=False, indent=2), encoding="utf-8")
         os.replace(tmp, path)
 
-    def already_run(self, path: Path, doc_id: str, entity_label: str) -> bool:
+    def already_run(self, doc_id: str, entity_label: str) -> bool:
         return entity_label in self.reg.get(doc_id, [])
 
-    def mark_success(self, path: Path, doc_id: str, entity_label: str) -> None:
+    def mark_success(self, doc_id: str, entity_label: str) -> None:
         self.reg.setdefault(doc_id, [])
         if entity_label not in self.reg[doc_id]:
             self.reg[doc_id].append(entity_label)
@@ -619,9 +619,9 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                researcher_cache = self.already_run(registry_path, doc_id, "Investigador")
+                researcher_cache = self.already_run(doc_id, "Investigador")
                 # logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
-                topic_cache = self.already_run(registry_path, doc_id, "Topico")
+                topic_cache = self.already_run(doc_id, "Topico")
 
                 # Cargar chunks del documento
                 base_name = doc.value.get("base_name", "")
@@ -669,11 +669,7 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs existentes para este proyecto
                         existing_researcher_ids.update(e.id for e in new_entities)
-                        self.mark_success(
-                            registry_path,
-                            doc_id,
-                            "Investigador",
-                        )
+                        self.mark_success(doc_id, "Investigador")
                         logger.info(
                             f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
                         )
@@ -701,7 +697,7 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
-                        self.mark_success(registry_path, doc_id, "Topico")
+                        self.mark_success(doc_id, "Topico")
 
                         logger.info(
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
