@@ -351,6 +351,16 @@ def _normalize_string(s: str) -> str:
     return "".join(c for c in normalized if unicodedata.category(c) != "Mn")
 
 
+def _clean_name_edges(name: str) -> str:
+    if not name:
+        return ""
+    name = re.sub(r"\s+", " ", name).strip()
+    name = re.sub(r"^[^\wÀ-ÿ'’-]+", "", name)
+    name = re.sub(r"[^\wÀ-ÿ'’-]+$", "", name)
+    name = name.strip("_")
+    return name
+
+
 def _match_name(
     name_words: list[str], words_in_chunk: list[str], allowed_errors: int
 ) -> Optional[list[str]]:
@@ -388,7 +398,7 @@ def _match_name(
                 break
 
         if len(matched_words) == len(name_words) and errors_used <= allowed_errors:
-            return real_name
+            return _clean_name_edges(real_name)
 
     return None
 
