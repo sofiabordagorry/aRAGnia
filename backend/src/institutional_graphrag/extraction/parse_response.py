@@ -257,7 +257,7 @@ def _numbers_in_name_validation(name: str) -> bool:
     return any(re.search(r"\d", part) for part in parts)
 
 
-def validate_name(name: str, chunk_id: str) -> List[dict]:
+def _validate_name(name: str, chunk_id: str) -> List[dict]:
     errors = []
 
     validation_rules = {
@@ -327,7 +327,6 @@ def _evidence_not_in_chunk_validation(
 
 
 def _levenshtein_distance(s1: str, s2: str) -> int:
-    # Tabla para almacenar las distancias
     if len(s1) < len(s2):
         return _levenshtein_distance(s2, s1)
 
@@ -348,7 +347,6 @@ def _levenshtein_distance(s1: str, s2: str) -> int:
 
 
 def _normalize_string(s: str) -> str:
-    # Normaliza una cadena eliminando acentos
     normalized = unicodedata.normalize("NFD", s)
     return "".join(c for c in normalized if unicodedata.category(c) != "Mn")
 
@@ -356,26 +354,24 @@ def _normalize_string(s: str) -> str:
 def _match_name(
     name_words: list[str], words_in_chunk: list[str], allowed_errors: int
 ) -> Optional[list[str]]:
+    # recorro todas las palabras del chunk
     for i in range(len(words_in_chunk)):
-        errors_used = 0  # Contador de errores utilizados
-        matched_words: list = []  # Lista para almacenar las palabras coincidentes
+        errors_used = 0
+        matched_words: list = []
         real_name: list = []
-        # Intentar hacer coincidir las palabras del nombre
+        # recorro todas las palabras del nombre
         for name_word in name_words:
-            if i >= len(words_in_chunk):  # Si no hay más palabras en el chunk
+            if i >= len(words_in_chunk):
                 break
-
-            allowed_errors_name = max(
-                1, len(name_word) // 3
-            )  # Por ejemplo, 1 error por cada 3 caracteres
+            # cantidad de errores permitidos en la palabra
+            allowed_errors_name = max(1, len(name_word) // 3)
             name_normalized = _normalize_string(name_word.strip().lower())
             chunk_word = words_in_chunk[i]
-            if (
-                len(chunk_word) < 3 and len(real_name) > 0
-            ):  # Si la palabra del chunk es muy corta, permitir omitirla
+            # Si la palabra del chunk es muy corta, permitir omitirla
+            if len(chunk_word) < 3 and len(real_name) > 0:
                 while i < len(words_in_chunk) and len(chunk_word) < 3:
                     real_name.append(chunk_word)
-                    i += 1  # Omitir esta palabra y seguir con la siguiente
+                    i += 1
                     if i < len(words_in_chunk):
                         chunk_word = words_in_chunk[i]
                     else:
@@ -416,7 +412,7 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     if name_true:
         return " ".join(name_true)
 
-    return None  # No se encontró ninguna coincidencia
+    return None
 
 
 def parse_researcher_response(
@@ -454,7 +450,7 @@ def parse_researcher_response(
             if real_name:
                 name = real_name
 
-            errors_aux = validate_name(name, chunk_id)
+            errors_aux = _validate_name(name, chunk_id)
             if errors_aux:
                 errors.extend(errors_aux)
                 continue
