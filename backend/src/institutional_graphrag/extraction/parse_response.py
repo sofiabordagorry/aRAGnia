@@ -398,7 +398,7 @@ def _match_name(
                 break
 
         if len(matched_words) == len(name_words) and errors_used <= allowed_errors:
-            return _clean_name_edges(real_name)
+            return real_name
 
     return None
 
@@ -414,13 +414,13 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     # Intentar hacer coincidir todas las palabras del nombre
     name_true = _match_name(name_words, words_in_chunk, allowed_errors)
     if name_true:
-        return " ".join(name_true)
+        return _clean_name_edges(" ".join(name_true))
 
     # Si no se encuentra el nombre, intentar sin palabras de menos de 3 caracteres
     filtered_name_words = [word for word in name_words if len(word) >= 3]
     name_true = _match_name(filtered_name_words, words_in_chunk, allowed_errors)
     if name_true:
-        return " ".join(name_true)
+        return _clean_name_edges(" ".join(name_true))
 
     return None
 
