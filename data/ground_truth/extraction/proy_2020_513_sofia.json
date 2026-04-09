@@ -6,29 +6,29 @@
       "value": "Co-simulación en Sistemas Ciber Físicos"
     },
     {
-      "id": "anio_2020",
+      "id": "2020",
       "label": "Anio",
       "value": {
         "year": "2020"
       }
     },
     {
-      "id": "dominio_computer_science",
+      "id": "computer_science",
       "label": "Dominio",
       "value": "Computer Science"
     },
     {
-      "id": "topico_computer_networks_and_communications",
+      "id": "computer_networks_and_communications",
       "label": "Topico",
       "value": "Computer Networks and Communications"
     },
     {
-      "id": "topico_software",
+      "id": "software",
       "label": "Topico",
       "value": "Software"
     },
     {
-      "id": "topico_computer_science_applications",
+      "id": "computer_science_applications",
       "label": "Topico",
       "value": "Computer Science Applications"
     },
@@ -55,7 +55,7 @@
       }
     },
     {
-      "id": "investigador_javier_baliosian",
+      "id": "javier_baliosian",
       "label": "Investigador",
       "value": {
         "name": "Javier Baliosian",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "id": "investigador_matias_richart",
+      "id": "matias_richart",
       "label": "Investigador",
       "value": {
         "name": "Matías Richart",
@@ -71,7 +71,7 @@
       }
     },
     {
-      "id": "investigador_gonzalo_tejera",
+      "id": "gonzalo_tejera",
       "label": "Investigador",
       "value": {
         "name": "Gonzalo Tejera",
@@ -79,7 +79,7 @@
       }
     },
     {
-      "id": "investigador_facundo_benavides",
+      "id": "facundo_benavides",
       "label": "Investigador",
       "value": {
         "name": "Facundo Benavides",
@@ -87,7 +87,7 @@
       }
     },
     {
-      "id": "investigador_antonio_mauttone",
+      "id": "antonio_mauttone",
       "label": "Investigador",
       "value": {
         "name": "Antonio Mauttone",
@@ -95,7 +95,7 @@
       }
     },
     {
-      "id": "investigador_guillermo_amorin",
+      "id": "guillermo_amorin",
       "label": "Investigador",
       "value": {
         "name": "Guillermo Amorín",
@@ -103,7 +103,7 @@
       }
     },
     {
-      "id": "investigador_federico_andrade",
+      "id": "federico_andrade",
       "label": "Investigador",
       "value": {
         "name": "Federico Andrade",
@@ -111,7 +111,7 @@
       }
     },
     {
-      "id": "investigador_eduardo_grampin",
+      "id": "eduardo_grampin",
       "label": "Investigador",
       "value": {
         "name": "Eduardo Grampín",
@@ -119,7 +119,7 @@
       }
     },
     {
-      "id": "investigador_jorge_visca",
+      "id": "jorge_visca",
       "label": "Investigador",
       "value": {
         "name": "Jorge Visca",
@@ -127,7 +127,7 @@
       }
     },
     {
-      "id": "investigador_mercedes_marzoa",
+      "id": "mercedes_marzoa",
       "label": "Investigador",
       "value": {
         "name": "Mercedes Marzoa",
@@ -135,7 +135,7 @@
       }
     },
     {
-      "id": "investigador_ewelina_bakala",
+      "id": "ewelina_bakala",
       "label": "Investigador",
       "value": {
         "name": "Ewelina Bakala",
@@ -143,7 +143,7 @@
       }
     },
     {
-      "id": "investigador_martin_llofriu",
+      "id": "martin_llofriu",
       "label": "Investigador",
       "value": {
         "name": "Martín Llofriu",
@@ -151,7 +151,7 @@
       }
     },
     {
-      "id": "investigador_guillermo_trinidad",
+      "id": "guillermo_trinidad",
       "label": "Investigador",
       "value": {
         "name": "Guillermo Trinidad",
@@ -159,7 +159,7 @@
       }
     },
     {
-      "id": "investigador_alberto_castro",
+      "id": "alberto_castro",
       "label": "Investigador",
       "value": {
         "name": "Alberto Castro",
@@ -171,43 +171,43 @@
     {
       "type": "INICIO_EN",
       "source_id": "proy_2020_513",
-      "target_id": "anio_2020",
+      "target_id": "2020",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2020_513",
-      "target_id": "topico_computer_networks_and_communications",
+      "target_id": "computer_networks_and_communications",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2020_513",
-      "target_id": "topico_software",
+      "target_id": "software",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2020_513",
-      "target_id": "topico_computer_science_applications",
+      "target_id": "computer_science_applications",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_computer_networks_and_communications",
-      "target_id": "dominio_computer_science",
+      "source_id": "computer_networks_and_communications",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_software",
-      "target_id": "dominio_computer_science",
+      "source_id": "software",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_computer_science_applications",
-      "target_id": "dominio_computer_science",
+      "source_id": "computer_science_applications",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
@@ -224,13 +224,13 @@
     },
     {
       "type": "RESPONSABLE_DE",
-      "source_id": "investigador_javier_baliosian",
+      "source_id": "javier_baliosian",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "RESPONSABLE_DE",
-      "source_id": "investigador_matias_richart",
+      "source_id": "matias_richart",
       "target_id": "proy_2020_513",
       "properties": {
         "rol": "co_direccion"
@@ -238,73 +238,73 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_gonzalo_tejera",
+      "source_id": "gonzalo_tejera",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_facundo_benavides",
+      "source_id": "facundo_benavides",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_antonio_mauttone",
+      "source_id": "antonio_mauttone",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_guillermo_amorin",
+      "source_id": "guillermo_amorin",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_federico_andrade",
+      "source_id": "federico_andrade",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_eduardo_grampin",
+      "source_id": "eduardo_grampin",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_jorge_visca",
+      "source_id": "jorge_visca",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_mercedes_marzoa",
+      "source_id": "mercedes_marzoa",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_ewelina_bakala",
+      "source_id": "ewelina_bakala",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_martin_llofriu",
+      "source_id": "martin_llofriu",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_guillermo_trinidad",
+      "source_id": "guillermo_trinidad",
       "target_id": "proy_2020_513",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_alberto_castro",
+      "source_id": "alberto_castro",
       "target_id": "proy_2020_513",
       "properties": {}
     }
