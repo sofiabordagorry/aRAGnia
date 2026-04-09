@@ -6,29 +6,29 @@
       "value": "Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos"
     },
     {
-      "id": "anio_2016",
+      "id": "2016",
       "label": "Anio",
       "value": {
         "year": "2016"
       }
     },
     {
-      "id": "dominio_computer_science",
+      "id": "computer_science",
       "label": "Dominio",
       "value": "Computer Science"
     },
     {
-      "id": "topico_computational_theory_and_mathematics",
+      "id": "computational_theory_and_mathematics",
       "label": "Topico",
       "value": "Computational Theory and Mathematics"
     },
     {
-      "id": "topico_computer_science_applications",
+      "id": "computer_science_applications",
       "label": "Topico",
       "value": "Computer Science Applications"
     },
     {
-      "id": "topico_signal_processing",
+      "id": "signal_processing",
       "label": "Topico",
       "value": "Signal Processing"
     },
@@ -55,7 +55,7 @@
       }
     },
     {
-      "id": "investigador_alvaro_martin",
+      "id": "alvaro_martin",
       "label": "Investigador",
       "value": {
         "name": "Álvaro Martín",
@@ -63,7 +63,7 @@
       }
     },
     {
-      "id": "investigador_gadiel_seroussi",
+      "id": "gadiel_seroussi",
       "label": "Investigador",
       "value": {
         "name": "Gadiel Seroussi",
@@ -71,7 +71,7 @@
       }
     },
     {
-      "id": "investigador_jose_sotelo_silveira",
+      "id": "jose_sotelo_silveira",
       "label": "Investigador",
       "value": {
         "name": "José Sotelo Silveira",
@@ -79,7 +79,7 @@
       }
     },
     {
-      "id":"investigador_guillermo_dufort",
+      "id":"guillermo_dufort",
       "label":"Investigador",
       "value":{
         "name":"Guillermo Dufort",
@@ -97,37 +97,37 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "topico_computational_theory_and_mathematics",
+      "target_id": "computational_theory_and_mathematics",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "topico_computer_science_applications",
+      "target_id": "computer_science_applications",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "topico_signal_processing",
+      "target_id": "signal_processing",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_computational_theory_and_mathematics",
-      "target_id": "dominio_computer_science",
+      "source_id": "computational_theory_and_mathematics",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_computer_science_applications",
-      "target_id": "dominio_computer_science",
+      "source_id": "computer_science_applications",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "topico_signal_processing",
-      "target_id": "dominio_computer_science",
+      "source_id": "signal_processing",
+      "target_id": "computer_science",
       "properties": {}
     },
     {
@@ -144,25 +144,25 @@
     },
     {
       "type": "RESPONSABLE_DE",
-      "source_id": "investigador_alvaro_martin",
+      "source_id": "alvaro_martin",
       "target_id": "proy_2016_729",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_gadiel_seroussi",
+      "source_id": "gadiel_seroussi",
       "target_id": "proy_2016_729",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_jose_sotelo_silveira",
+      "source_id": "jose_sotelo_silveira",
       "target_id": "proy_2016_729",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "investigador_guillermo_dufort",
+      "source_id": "guillermo_dufort",
       "target_id": "proy_2016_729",
       "properties": {}
     }
