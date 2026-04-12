@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_response import (
     LLMExtractionResult,
+    ResearcherMention,
+    TopicMention,
     parse_researcher_response,
     parse_topic_response,
 )
@@ -122,6 +124,8 @@ RULES:
 - Extract ONLY project team members (NOT cited authors from references)
 - One person per entry
 - Evidence must be actual text containing the person's name
+- If a cedula (ID number), email, or institutional affiliation is mentioned for the researcher, include it
+- Only include cedula/mail/afiliacion if they are EXPLICITLY mentioned in the text for that person
 
 TEXT:
 {chunk_text}
@@ -132,7 +136,7 @@ OUTPUT FORMAT:
 <JSON>
 {{
   "researchers": [
-    {{"name": "Person Name", "evidence": "actual text mentioning Person Name"}}
+    {{"name": "Person Name", "evidence": "actual text mentioning Person Name", "cedula": "ID number or null", "mail": "email or null", "afiliacion": "institutional affiliation or null"}}
   ]
 }}
 </JSON>
@@ -379,9 +383,15 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        entities.append(
-            Investigador(id=researcher_id, value={"name": mention.name, "source": "llm"})
-        )
+        inv_value: dict[str, Any] = {"name": mention.name, "source": "llm"}
+        if mention.cedula:
+            inv_value["cedula"] = mention.cedula
+        if mention.mail:
+            inv_value["mail"] = mention.mail
+        if mention.afiliacion:
+            inv_value["afiliacion"] = mention.afiliacion
+
+        entities.append(Investigador(id=researcher_id, value=inv_value))
         relationships.append(PARTICIPO_EN(researcher_id, project_id))
         relationships.append(
             EXTRAIDO_DE(

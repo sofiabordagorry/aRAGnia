@@ -12,6 +12,9 @@ class ResearcherMention:
     name: str
     evidence: str
     chunk_id: str
+    cedula: Optional[str] = None
+    mail: Optional[str] = None
+    afiliacion: Optional[str] = None
 
 
 @dataclass
@@ -477,8 +480,36 @@ def parse_researcher_response(
                 )
                 continue
 
+            # Extraer propiedades opcionales
+            cedula = item.get("cedula")
+            if isinstance(cedula, str):
+                cedula = cedula.strip() or None
+            else:
+                cedula = None
+
+            mail = item.get("mail")
+            if isinstance(mail, str):
+                mail = mail.strip() or None
+            else:
+                mail = None
+
+            afiliacion = item.get("afiliacion")
+            if isinstance(afiliacion, str):
+                afiliacion = afiliacion.strip() or None
+            else:
+                afiliacion = None
+
             # Si llegamos hasta acá, pasó todas las validaciones
-            researchers.append(ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id))
+            researchers.append(
+                ResearcherMention(
+                    name=name,
+                    evidence=evidence,
+                    chunk_id=chunk_id,
+                    cedula=cedula,
+                    mail=mail,
+                    afiliacion=afiliacion,
+                )
+            )
 
     except json.JSONDecodeError as e:
         errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})

@@ -274,6 +274,10 @@ class EntityExtractor:
                                 or (old_source and new_source and old_source != new_source)
                             ):
                                 e.value["source"] = ["rule_based", "llm"]
+
+                            for prop in ("cedula", "mail", "afiliacion"):
+                                if not e.value.get(prop) and existing.value.get(prop):
+                                    e.value[prop] = existing.value[prop]
                         self.res.entities[i] = e
                         continue
                 continue
