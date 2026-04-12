@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(rag_router, prefix="/rag", tags=["rag"])
+app.include_router(rag_router, prefix="/rag", tags=["rag"], include_in_schema=False)
 app.include_router(graphrag_router, prefix="/graphrag", tags=["graphrag"])
 app.include_router(ui_router, prefix="/ui", tags=["ui"])
 
