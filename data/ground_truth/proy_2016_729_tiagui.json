@@ -1,9 +1,34 @@
 {
     "entities": [
         {
-            "id": "PENDING",
+            "id": "genetics",
             "label": "Topico",
-            "value": "PENDING"
+            "value": "Genetics"
+        },
+        {
+            "id": "medicine",
+            "label": "Dominio",
+            "value": "Medicine"
+        },
+        {
+            "id": "biotechnology",
+            "label": "Topico",
+            "value": "Biotechnology"
+        },
+        {
+            "id": "biochemistry_genetics_and_molecular_biology",
+            "label": "Dominio",
+            "value": "Biochemistry, Genetics and Molecular Biology"
+        },
+        {
+            "id": "signal_processing",
+            "label": "Topico",
+            "value": "Signal Processing"
+        },
+        {
+            "id": "computer_science",
+            "label": "Dominio",
+            "value": "Computer Science"
         },
         {
             "id": "proy_2016_729",
@@ -52,6 +77,24 @@
         }
     ],
     "relationships": [
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "genetics",
+            "target_id": "medicine",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "biotechnology",
+            "target_id": "biochemistry_genetics_and_molecular_biology",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "signal_processing",
+            "target_id": "computer_science",
+            "properties": {}
+        },
         {
             "type": "PARTICIPO_EN",
             "source_id": "álvaro_martín",

@@ -6,10 +6,20 @@
             "value": "Control and Systems Engineering"
         },
         {
+            "id": "engineering",
+            "label": "Dominio",
+            "value": "Engineering"
+        },
+        {
             "id": "software",
             "label": "Topico",
             "value": "Software"
         }, 
+        {
+            "id": "computer_science",
+            "label": "Dominio",
+            "value": "Computer Science"
+        },
         {
             "id": "computer_networks_and_communications",
             "label": "Topico",
@@ -134,6 +144,24 @@
         }
     ],
     "relationships": [
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "software",
+            "target_id": "computer_science",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "control_and_systems_engineering",
+            "target_id": "engineering",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "computer_networks_and_communications",
+            "target_id": "computer_science",
+            "properties": {}
+        },
         {
             "type": "PARTICIPO_EN",
             "source_id": "antonio_mauttone",

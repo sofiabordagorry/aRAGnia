@@ -1,9 +1,34 @@
 {
     "entities": [
         {
-            "id": "PENDING",
+            "id": "agronomy_and_crop_science",
             "label": "Topico",
-            "value": "PENDING"
+            "value": "Agronomy and Crop Science"
+        },
+        {
+            "id": "agricultural_and_biological_sciences",
+            "label": "Dominio",
+            "value": "Agricultural and Biological Sciences"
+        },
+        {
+            "id": "artificial_intelligence",
+            "label": "Topico",
+            "value": "Artificial Intelligence"
+        },
+        {
+            "id": "computer_science",
+            "label": "Dominio",
+            "value": "Computer Science"
+        },
+        {
+            "id": "management_science_and_operations_research",
+            "label": "Topico",
+            "value": "Management Science and Operations Research"
+        },
+        {
+            "id": "decision_sciences",
+            "label": "Dominio",
+            "value": "Decision Sciences"
         },
         {
             "id": "proy_2018_413",
@@ -68,7 +93,25 @@
         }
     ],
     "relationships": [
-         {
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "agronomy_and_crop_science",
+            "target_id": "agricultural_and_biological_sciences",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "artificial_intelligence",
+            "target_id": "computer_science",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "management_science_and_operations_research",
+            "target_id": "decision_sciences",
+            "properties": {}
+        },
+        {
             "type": "PARTICIPO_EN",
             "source_id": "guillermo_ettlin",
             "target_id": "proy_2018_413",
