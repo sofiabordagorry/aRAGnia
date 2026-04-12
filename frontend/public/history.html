@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Historial - RAG / GraphRAG</title>
+    <title>Historial</title>
     <link rel="stylesheet" href="/css/history.css" />
     <link rel="stylesheet" href="/css/topbar.css" />
   </head>
@@ -23,7 +23,7 @@
               class="query-input"
               placeholder="Buscar en el historial..."
             />
-            <div class="history-filters">
+            <!-- <div class="history-filters">
               <button id="filterAll" class="seg-btn active" type="button">
                 Todo
               </button>
@@ -31,7 +31,7 @@
               <button id="filterGraph" class="seg-btn" type="button">
                 GraphRAG
               </button>
-            </div>
+            </div> -->
           </div>
 
           <button id="clearHistoryBtn" class="danger-btn" type="button">
@@ -74,7 +74,8 @@
 
         <div class="drawer-body">
           <div class="drawer-meta">
-            <span id="drawerMode" class="history-pill">RAG</span>
+            <!-- RAG mode is hidden -->
+            <span id="drawerMode" class="history-pill" hidden>RAG</span>
             <span id="drawerDate" class="drawer-date"></span>
           </div>
 

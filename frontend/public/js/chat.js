@@ -8,7 +8,7 @@ const els = {
   queryInput: document.getElementById("queryInput"),
   askBtn: document.getElementById("askBtn"),
   chat: document.getElementById("chat"),
-  modeBadge: document.getElementById("modeBadge"),
+  //modeBadge: document.getElementById("modeBadge"),
 };
 
 let settings = getSettings();
@@ -17,8 +17,12 @@ function getSettings() {
   return { ...DEFAULTS, ...(window.SettingsUI?.getSettings?.() || {}) };
 }
 
-function modeLabel(currentSettings) {
-  return currentSettings.graphrag_enabled ? "Modo: GraphRAG" : "Modo: RAG";
+// function modeLabel(currentSettings) {
+//   return currentSettings.graphrag_enabled ? "Modo: GraphRAG" : "Modo: RAG";
+// }
+
+function modeLabel() {
+  return "Modo: GraphRAG";
 }
 
 function escapeHtml(value) {
@@ -132,7 +136,7 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
 
     const entities = chunkToEntities[chunk.id] || [];
     const tags =
-      entities.length > 0 && settings.graphrag_enabled
+      entities.length > 0 // && settings.graphrag_enabled
         ? `<div class="source-entities">${entities
             .map(
               ([id, label]) =>
@@ -160,8 +164,12 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
   scrollChatToBottom();
 }
 
+// function currentEndpoint() {
+//   return `${API_BASE}${settings.graphrag_enabled ? "/graphrag/query" : "/rag/query"}`;
+// }
+
 function currentEndpoint() {
-  return `${API_BASE}${settings.graphrag_enabled ? "/graphrag/query" : "/rag/query"}`;
+  return `${API_BASE}/graphrag/query`;
 }
 
 async function ask() {
@@ -228,7 +236,7 @@ function getUrlParam(name) {
 
 function init() {
   settings = getSettings();
-  if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
+  // if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
 
   const prefill = getUrlParam("q");
   const autoAsk = getUrlParam("ask");
@@ -249,7 +257,7 @@ function init() {
 
   window.addEventListener("settings:changed", (event) => {
     settings = event.detail || getSettings();
-    if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
+    // if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
   });
 }
 

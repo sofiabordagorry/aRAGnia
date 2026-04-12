@@ -19,7 +19,7 @@ window.APP_CONFIG = {
     closeModalBtn: null,
     saveBtn: null,
     resetBtn: null,
-    graphToggle: null,
+    //graphToggle: null,
     themeLightBtn: null,
     themeDarkBtn: null,
     enterToSend: null,
@@ -61,7 +61,7 @@ window.APP_CONFIG = {
     els.closeModalBtn = document.getElementById("closeModalBtn");
     els.saveBtn = document.getElementById("saveBtn");
     els.resetBtn = document.getElementById("resetBtn");
-    els.graphToggle = document.getElementById("graphToggle");
+    //els.graphToggle = document.getElementById("graphToggle");
     els.themeLightBtn = document.getElementById("themeLightBtn");
     els.themeDarkBtn = document.getElementById("themeDarkBtn");
     els.enterToSend = document.getElementById("enterToSend");
@@ -73,7 +73,7 @@ window.APP_CONFIG = {
   }
 
   function renderDraftToModal() {
-    if (els.graphToggle) els.graphToggle.checked = draft.graphrag_enabled;
+    // if (els.graphToggle) els.graphToggle.checked = draft.graphrag_enabled;
     if (els.enterToSend) els.enterToSend.checked = draft.enter_to_send;
 
     applyTheme(draft.theme);
@@ -134,9 +134,9 @@ window.APP_CONFIG = {
       }
     });
 
-    els.graphToggle?.addEventListener("change", (event) => {
-      draft.graphrag_enabled = event.target.checked;
-    });
+    // els.graphToggle?.addEventListener("change", (event) => {
+    //   draft.graphrag_enabled = event.target.checked;
+    // });
 
     els.enterToSend?.addEventListener("change", (event) => {
       draft.enter_to_send = event.target.checked;
