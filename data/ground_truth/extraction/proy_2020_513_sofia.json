@@ -1,0 +1,312 @@
+{
+  "entities": [
+    {
+      "id": "proy_2020_513",
+      "label": "Proyecto",
+      "value": "Co-simulación en Sistemas Ciber Físicos"
+    },
+    {
+      "id": "2020",
+      "label": "Anio",
+      "value": {
+        "year": "2020"
+      }
+    },
+    {
+      "id": "computer_science",
+      "label": "Dominio",
+      "value": "Computer Science"
+    },
+    {
+      "id": "computer_networks_and_communications",
+      "label": "Topico",
+      "value": "Computer Networks and Communications"
+    },
+    {
+      "id": "software",
+      "label": "Topico",
+      "value": "Software"
+    },
+    {
+      "id": "computer_science_applications",
+      "label": "Topico",
+      "value": "Computer Science Applications"
+    },
+    {
+      "id": "proy_2020_513_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2020_513_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2020",
+        "subid": "513",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2020_513_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2020_513_informe",
+        "is_group": "proy",
+        "year_publisher": "2023",
+        "subid": "513",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "javier_baliosian",
+      "label": "Investigador",
+      "value": {
+        "name": "Javier Baliosian",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "matias_richart",
+      "label": "Investigador",
+      "value": {
+        "name": "Matías Richart",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "gonzalo_tejera",
+      "label": "Investigador",
+      "value": {
+        "name": "Gonzalo Tejera",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "facundo_benavides",
+      "label": "Investigador",
+      "value": {
+        "name": "Facundo Benavides",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "antonio_mauttone",
+      "label": "Investigador",
+      "value": {
+        "name": "Antonio Mauttone",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_amorin",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Amorín",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "federico_andrade",
+      "label": "Investigador",
+      "value": {
+        "name": "Federico Andrade",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "eduardo_grampin",
+      "label": "Investigador",
+      "value": {
+        "name": "Eduardo Grampín",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "jorge_visca",
+      "label": "Investigador",
+      "value": {
+        "name": "Jorge Visca",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "mercedes_marzoa",
+      "label": "Investigador",
+      "value": {
+        "name": "Mercedes Marzoa",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "ewelina_bakala",
+      "label": "Investigador",
+      "value": {
+        "name": "Ewelina Bakala",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "martin_llofriu",
+      "label": "Investigador",
+      "value": {
+        "name": "Martín Llofriu",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_trinidad",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Trinidad",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "alberto_castro",
+      "label": "Investigador",
+      "value": {
+        "name": "Alberto Castro",
+        "source": "human_annotation"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2020_513",
+      "target_id": "2020",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "computer_networks_and_communications",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "software",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "computer_science_applications",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "computer_networks_and_communications",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "software",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "computer_science_applications",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2020_513",
+      "target_id": "proy_2020_513_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2020_513",
+      "target_id": "proy_2020_513_informe",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "javier_baliosian",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "matias_richart",
+      "target_id": "proy_2020_513",
+      "properties": {
+        "rol": "co_direccion"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "gonzalo_tejera",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "facundo_benavides",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "antonio_mauttone",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_amorin",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "federico_andrade",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "eduardo_grampin",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "jorge_visca",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "mercedes_marzoa",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "ewelina_bakala",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "martin_llofriu",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_trinidad",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "alberto_castro",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    }
+  ]
+}

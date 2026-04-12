@@ -1,0 +1,142 @@
+{
+  "entities": [
+    {
+      "id": "proy_2018_260",
+      "label": "Proyecto",
+      "value": "Diseño óptimo de redes de ciclovías"
+    },
+    {
+      "id": "2018",
+      "label": "Anio",
+      "value": {
+        "year": "2018"
+      }
+    },
+    {
+      "id": "decision_sciences",
+      "label": "Dominio",
+      "value": "Decision Sciences"
+    },
+    {
+      "id": "management_science_and_operations_research",
+      "label": "Topico",
+      "value": "Management Science and Operations Research"
+    },
+    {
+      "id": "general_decision_sciences",
+      "label": "Topico",
+      "value": "General Decision Sciences"
+    },
+    {
+      "id": "statistics_probability_and_uncertainty",
+      "label": "Topico",
+      "value": "Statistics, Probability and Uncertainty"
+    },
+    {
+      "id": "proy_2018_260_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_260_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "subid": "260",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_260_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_260_informe",
+        "is_group": "proy",
+        "year_publisher": "2021",
+        "subid": "260",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "antonio_mauttone",
+      "label": "Investigador",
+      "value": {
+        "name": "Antonio Mauttone",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "maria_e_urquhart",
+      "label": "Investigador",
+      "value": {
+        "name": "María E. Urquhart",
+        "source": "human_annotation"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_260",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "management_science_and_operations_research",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "general_decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "statistics_probability_and_uncertainty",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "management_science_and_operations_research",
+      "target_id": "decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "general_decision_sciences",
+      "target_id": "decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "statistics_probability_and_uncertainty",
+      "target_id": "decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_260",
+      "target_id": "proy_2018_260_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_260",
+      "target_id": "proy_2018_260_informe",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "antonio_mauttone",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "maria_e_urquhart",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    }
+  ]
+}
