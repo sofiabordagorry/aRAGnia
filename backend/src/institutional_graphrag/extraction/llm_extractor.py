@@ -212,7 +212,10 @@ If no match:
     """
 
     def extract_researchers_from_chunks(
-        self, chunks: List[Dict[str, Any]], max_chunks: Optional[int] = None
+        self,
+        chunks: List[Dict[str, Any]],
+        max_chunks: Optional[int] = None,
+        include_headings: bool = True,
     ) -> LLMExtractionResult:
         """Extraer investigadores desde lista de chunks."""
         all_researchers = []
@@ -222,13 +225,24 @@ If no match:
 
         for i, chunk in enumerate(chunks_to_process, 1):
             chunk_id = chunk.get("chunk_id", f"chunk_{i}")
-            chunk_text = chunk.get("text", "")
+            raw_text = chunk.get("text", "")
+            headings = chunk.get("metadata", {}).get("headings", [])
 
-            if not chunk_text.strip():
+            if not raw_text.strip():
                 continue
 
+            clean_text = raw_text.strip()
+            if include_headings and headings:
+                last_heading = headings[-1].strip()
+                if clean_text == last_heading:
+                    final_text = "\n".join(headings)
+                else:
+                    final_text = "\n".join(headings) + "\n" + clean_text
+            else:
+                final_text = clean_text
+
             logger.debug(f"  Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
-            result = self.extract_researchers_from_chunk(chunk_text, chunk_id)
+            result = self.extract_researchers_from_chunk(final_text, chunk_id)
             all_researchers.extend(result.researchers)
             all_errors.extend(result.errors)
             if result.researchers:
@@ -239,7 +253,10 @@ If no match:
         return LLMExtractionResult(researchers=all_researchers, topics=[], errors=all_errors)
 
     def extract_topics_from_chunks(
-        self, chunks: List[Dict[str, Any]], max_chunks: Optional[int] = None
+        self,
+        chunks: List[Dict[str, Any]],
+        max_chunks: Optional[int] = None,
+        include_headings: bool = True,
     ) -> LLMExtractionResult:
         """Extraer tópicos desde lista de chunks."""
         all_topics = []
@@ -249,13 +266,24 @@ If no match:
 
         for i, chunk in enumerate(chunks_to_process, 1):
             chunk_id = chunk.get("chunk_id", f"chunk_{i}")
-            chunk_text = chunk.get("text", "")
+            raw_text = chunk.get("text", "")
+            headings = chunk.get("metadata", {}).get("headings", [])
 
-            if not chunk_text.strip():
+            if not raw_text.strip():
                 continue
 
+            clean_text = raw_text.strip()
+            if include_headings and headings:
+                last_heading = headings[-1].strip()
+                if clean_text == last_heading:
+                    final_text = "\n".join(headings)
+                else:
+                    final_text = "\n".join(headings) + "\n" + clean_text
+            else:
+                final_text = clean_text
+
             logger.debug(f"  Procesando chunk {i}/{len(chunks_to_process)}: {chunk_id}")
-            result = self.extract_topics_from_chunk(chunk_text, chunk_id)
+            result = self.extract_topics_from_chunk(final_text, chunk_id)
             all_topics.extend(result.topics)
             all_errors.extend(result.errors)
             if result.topics:

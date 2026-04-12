@@ -83,6 +83,7 @@ class EntityExtractor:
         max_docs: int | None = None,
         llm_researchers: bool = True,
         llm_topics: bool = True,
+        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
@@ -107,6 +108,7 @@ class EntityExtractor:
             max_docs=max_docs,
             llm_researchers=llm_researchers,
             llm_topics=llm_topics,
+            include_headings=include_headings,
             checkpoint_every=checkpoint_every,
         )
         return self.res
@@ -566,6 +568,7 @@ class EntityExtractor:
         max_docs: int | None = None,
         llm_researchers: bool = True,
         llm_topics: bool = True,
+        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
@@ -650,7 +653,7 @@ class EntityExtractor:
                             f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
                         )
                         llm_result_researcher = llm_extractor.extract_researchers_from_chunks(
-                            chunks, max_chunks=None
+                            chunks, max_chunks=None, include_headings=include_headings
                         )
                         # Agregar errores
                         self.res.errors.extend(llm_result_researcher.errors)
@@ -681,7 +684,7 @@ class EntityExtractor:
                             f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
                         llm_result_topic = llm_extractor.extract_topics_from_chunks(
-                            chunks, max_chunks=None
+                            chunks, max_chunks=None, include_headings=include_headings
                         )
                         # Agregar errores
                         self.res.errors.extend(llm_result_topic.errors)

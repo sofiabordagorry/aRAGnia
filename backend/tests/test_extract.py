@@ -13,6 +13,7 @@ import pandas as pd
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.extraction.llm_extractor import (
+    LLMEntityExtractor,
     LLMExtractionResult,
     ResearcherMention,
     TopicMention,
@@ -454,11 +455,13 @@ def test_llm_researchers_and_topics_and_project_aggregation(
 
     monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_researchers_from_chunks",
-        lambda self, chunks, max_chunks=None: mock_extract_researchers(chunks, max_chunks),
+        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_researchers(
+            chunks, max_chunks
+        ),
     )
     monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_topics_from_chunks",
-        lambda self, chunks, max_chunks=None: mock_extract_topics(chunks, max_chunks),
+        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_topics(chunks, max_chunks),
     )
 
     # ---- mock factories para controlar IDs ----
@@ -493,13 +496,12 @@ def test_llm_researchers_and_topics_and_project_aggregation(
         return new_entities, new_relationships
 
     monkeypatch.setattr(
-        ie_mod,
-        "create_entities_and_relationships_from_llm_extraction",
+        "institutional_graphrag.extraction.ie.create_entities_and_relationships_from_llm_extraction",
         fake_create_entities_and_relationships_from_llm_extraction,
     )
 
     # tópico: id global (compartido)
-    def fake_create_topics_from_llm_extraction(llm_result, existing_topic_ids):
+    def fake_create_topics_from_llm_extraction(self, llm_result, existing_topic_ids):
         new_entities = []
         new_relationships = []
         for m in llm_result.topics:
@@ -521,8 +523,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
         return new_entities, new_relationships
 
     monkeypatch.setattr(
-        ie_mod,
-        "create_topics_from_llm_extraction",
+        "institutional_graphrag.extraction.ie.LLMEntityExtractor.create_topics_from_llm_extraction",
         fake_create_topics_from_llm_extraction,
     )
 
@@ -765,3 +766,51 @@ def test_postprocess_preserves_dual_source_on_merge():
     final_source = entities[0]["value"].get("source")
     assert isinstance(final_source, list), "El source en postprocess debe ser lista tras merge"
     assert set(final_source) == {"rule_based", "llm"}
+
+
+def test_llm_extractor_include_headings_flag(monkeypatch):
+    """
+    Verifica que el flag include_headings formatee correctamente el texto
+    aislando la jerarquía de encabezados antes de enviarlo al LLM.
+    """
+    extractor = LLMEntityExtractor.__new__(LLMEntityExtractor)
+
+    # Lista para capturar el string exacto enviado al método singular
+    captured_texts = []
+
+    # Mock del método singular para interceptar el texto y evitar llamadas reales al LLM
+    def mock_singular_extract(chunk_text, chunk_id):
+        captured_texts.append(chunk_text)
+        return LLMExtractionResult(researchers=[], topics=[], errors=[])
+
+    monkeypatch.setattr(extractor, "extract_researchers_from_chunk", mock_singular_extract)
+
+    # --- Escenario 1: include_headings = True (Texto de cuerpo normal) ---
+    chunk_normal = {
+        "chunk_id": "c1",
+        "text": "Este es el contenido principal de la sección.",
+        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
+    }
+
+    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=True)
+
+    assert (
+        captured_texts[-1] == "Capítulo 1\nSección A\nEste es el contenido principal de la sección."
+    )
+
+    # --- Escenario 2: include_headings = False ---
+    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=False)
+
+    # Solo debe contener el texto puro
+    assert captured_texts[-1] == "Este es el contenido principal de la sección."
+
+    # --- Escenario 3: include_headings = True pero el texto ES el encabezado ---
+    chunk_header = {
+        "chunk_id": "c2",
+        "text": "Sección A",
+        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
+    }
+    extractor.extract_researchers_from_chunks([chunk_header], include_headings=True)
+
+    # Debe retornar la jerarquía sin duplicar "Sección A" al final
+    assert captured_texts[-1] == "Capítulo 1\nSección A"
