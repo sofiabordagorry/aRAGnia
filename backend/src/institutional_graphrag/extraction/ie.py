@@ -42,12 +42,14 @@ class EntityExtractor:
     def __init__(
         self,
         llm_model: Optional[str] = None,
+        data_dir: Path | None = None,
     ):
-        self.data_dir = DATA_DIR
-        self.documents_dir = DATA_DIR / "corpus"
-        self.chunks_dir = DATA_DIR / "chunks"
-        self.table_dir = DATA_DIR / "tables"
-        self.input_dir = DATA_DIR / "entities_relations"
+        base = data_dir if data_dir is not None else DATA_DIR
+        self.data_dir = base
+        self.documents_dir = base / "corpus"
+        self.chunks_dir = base / "chunks"
+        self.table_dir = base / "tables"
+        self.input_dir = base / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
 
@@ -61,11 +63,15 @@ class EntityExtractor:
         self._seen_entities: set[tuple[str, str]] = set()
         self._seen_rels: set[tuple[str, str, str, str]] = set()
         self._rel_index: dict[tuple[str, str, str], int] = {}
+        self.reg: Dict[str, List[str]] = {}
+        self._registry_dirty: bool = False
 
     def cleanup(self):
         self._seen_entities = set()
         self._seen_rels = set()
         self._rel_index = {}
+        self.reg = {}
+        self._registry_dirty = False
         self.res = ExtractionResult(entities=[], relationships=[], errors=[])
         self.rule_based.cleanup()
         self.doc_by_basename = {}
@@ -78,8 +84,9 @@ class EntityExtractor:
         llm_researchers: bool = True,
         llm_topics: bool = True,
         include_headings: bool = True,
+        checkpoint_every: int = 5,
     ) -> ExtractionResult:
-        entities_json = DATA_DIR / "entities_relations" / "entity_documents.json"
+        entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
             self.load_subset_from_graph_json(
                 entities_json,
@@ -102,6 +109,7 @@ class EntityExtractor:
             llm_researchers=llm_researchers,
             llm_topics=llm_topics,
             include_headings=include_headings,
+            checkpoint_every=checkpoint_every,
         )
         return self.res
 
@@ -529,17 +537,31 @@ class EntityExtractor:
         tmp.write_text(json.dumps(self.reg, ensure_ascii=False, indent=2), encoding="utf-8")
         os.replace(tmp, path)
 
-    def already_run(self, path: Path, doc_id: str, entity_label: str) -> bool:
-        self.reg = self.load_registry(path)
+    def already_run(self, doc_id: str, entity_label: str) -> bool:
         return entity_label in self.reg.get(doc_id, [])
 
-    def mark_success(self, path: Path, doc_id: str, entity_label: str) -> None:
-        self.reg = self.load_registry(path)
+    def mark_success(self, doc_id: str, entity_label: str) -> None:
         self.reg.setdefault(doc_id, [])
         if entity_label not in self.reg[doc_id]:
             self.reg[doc_id].append(entity_label)
             self.reg[doc_id].sort()
-            self.atomic_write(path)
+            self._registry_dirty = True
+
+    def _flush_registry(self, registry_path: Path) -> None:
+        if self._registry_dirty:
+            self.atomic_write(registry_path)
+            self._registry_dirty = False
+
+    def _save_checkpoint(
+        self,
+        filename: str = "entity_documents.json",
+        registry_path: Path | None = None,
+    ) -> None:
+        """Guarda el estado actual a disco (checkpoint intermedio)."""
+        self.save_in_file(filename)
+        if registry_path is not None:
+            self._flush_registry(registry_path)
+        logger.info("[Checkpoint] Guardado intermedio en %s", filename)
 
     def _extract_with_llm(
         self,
@@ -547,10 +569,12 @@ class EntityExtractor:
         llm_researchers: bool = True,
         llm_topics: bool = True,
         include_headings: bool = True,
+        checkpoint_every: int = 5,
     ) -> None:
         """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
         Args:
             max_docs: Límite opcional de documentos a procesar.
+            checkpoint_every: Guardar a disco cada N documentos procesados.
         """
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
@@ -559,6 +583,9 @@ class EntityExtractor:
             temperature=0.1,
             max_tokens=1024,
         )
+        registry_path = self.input_dir / "llm_registry.json"
+        self.reg = self.load_registry(registry_path)
+        self._registry_dirty = False
 
         # Procesar cada proyecto
         projects = [e for e in self.res.entities if e.label == "Proyecto"]
@@ -595,13 +622,9 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                researcher_cache = self.already_run(
-                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Investigador"
-                )
+                researcher_cache = self.already_run(doc_id, "Investigador")
                 # logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
-                topic_cache = self.already_run(
-                    DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
-                )
+                topic_cache = self.already_run(doc_id, "Topico")
 
                 # Cargar chunks del documento
                 base_name = doc.value.get("base_name", "")
@@ -649,11 +672,7 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs existentes para este proyecto
                         existing_researcher_ids.update(e.id for e in new_entities)
-                        self.mark_success(
-                            DATA_DIR / "entities_relations" / "llm_registry.json",
-                            doc_id,
-                            "Investigador",
-                        )
+                        self.mark_success(doc_id, "Investigador")
                         logger.info(
                             f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
                         )
@@ -681,9 +700,7 @@ class EntityExtractor:
 
                         # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
-                        self.mark_success(
-                            DATA_DIR / "entities_relations" / "llm_registry.json", doc_id, "Topico"
-                        )
+                        self.mark_success(doc_id, "Topico")
 
                         logger.info(
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
@@ -691,6 +708,11 @@ class EntityExtractor:
 
                     # Incrementar contador de documentos procesados
                     docs_processed += 1
+
+                    # Checkpoint periódico para no perder progreso
+                    if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
+                        self._save_checkpoint(registry_path=registry_path)
+
                 except Exception as e:
                     self.res.errors.append(
                         {
@@ -701,6 +723,11 @@ class EntityExtractor:
                     )
                     docs_processed += 1
             self._aggregate_topics_for_project(project_id)
+
+        # Checkpoint final tras toda la extracción LLM
+        if docs_processed > 0:
+            self._save_checkpoint(registry_path=registry_path)
+            logger.info("[LLM] Extracción completada — %d documentos procesados", docs_processed)
 
     def _aggregate_topics_for_project(self, project_id: str) -> None:
         """Agregar tópicos a nivel de proyecto basándose en los chunks.

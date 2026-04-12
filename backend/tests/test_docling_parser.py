@@ -21,9 +21,8 @@ def test_parse_corpus_directorio_no_existe():
 
 
 def test_parse_corpus_sin_archivos(tmp_path):
-    """Debe retornar lista vacía si no hay archivos."""
-    output_dir = tmp_path / "output"
-    result = parse_corpus(tmp_path, output_dir)
+    """Debe retornar iterable vacío si no hay archivos."""
+    result = list(parse_corpus(tmp_path))
 
     assert result == []
 
@@ -99,7 +98,7 @@ def test_parse_corpus_subset_integration(tmp_path, monkeypatch):
     for pdf in files_to_test:
         shutil.copy(pdf, test_subset_dir / pdf.name)
 
-    results = parse_corpus(test_subset_dir, recursive=False, skip_errors=True)
+    results = list(parse_corpus(test_subset_dir, recursive=False, skip_errors=True))
 
     assert len(results) == len(files_to_test)
     assert results[0]["name"] == files_to_test[0].stem
