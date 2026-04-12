@@ -1,0 +1,177 @@
+{
+    "entities": [
+        {
+            "id": "agronomy_and_crop_science",
+            "label": "Topico",
+            "value": "Agronomy and Crop Science"
+        },
+        {
+            "id": "agricultural_and_biological_sciences",
+            "label": "Dominio",
+            "value": "Agricultural and Biological Sciences"
+        },
+        {
+            "id": "artificial_intelligence",
+            "label": "Topico",
+            "value": "Artificial Intelligence"
+        },
+        {
+            "id": "computer_science",
+            "label": "Dominio",
+            "value": "Computer Science"
+        },
+        {
+            "id": "management_science_and_operations_research",
+            "label": "Topico",
+            "value": "Management Science and Operations Research"
+        },
+        {
+            "id": "decision_sciences",
+            "label": "Dominio",
+            "value": "Decision Sciences"
+        },
+        {
+            "id": "proy_2018_413",
+            "label": "Proyecto",
+            "value": "Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
+        },
+        {
+            "id": "guillermo_ettlin",
+            "label": "Investigador",
+            "value": {
+                "name": "GUILLERMO ETTLIN",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "brian_yang",
+            "label": "Investigador",
+            "value": {
+                "name": "BRIAN YANG",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "rehaan_ahmad",
+            "label": "Investigador",
+            "value": {
+                "name": "REHAAN AHMAD",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "gerardo_rubino",
+            "label": "Investigador",
+            "value": {
+                "name": "GERARDO RUBINO",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "andrés_berger",
+            "label": "Investigador",
+            "value": {
+                "name": "ANDRÉS BERGER",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "martín_beyer",
+            "label": "Investigador",
+            "value": {
+                "name": "MARTÍN BEYER",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "pablo_rodríguez_bocca",
+            "label": "Investigador",
+            "value": {
+                "name": "PABLO RODRÍGUEZ BOCCA",
+                "source": "llm"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "agronomy_and_crop_science",
+            "target_id": "agricultural_and_biological_sciences",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "artificial_intelligence",
+            "target_id": "computer_science",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "management_science_and_operations_research",
+            "target_id": "decision_sciences",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "guillermo_ettlin",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "brian_yang",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "rehaan_ahmad",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "gerardo_rubino",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "andrés_berger",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "martín_beyer",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "pablo_rodríguez_bocca",
+            "target_id": "proy_2018_413",
+            "properties": {}
+        },
+        {
+            "type": "TIENE_TOPICO",
+            "source_id": "gi_2018_413",
+            "target_id": "PENDING",
+            "properties": {
+                "mention_count": "na"
+            }
+        },
+        {
+            "type": "RESPONSABLE_DE",
+            "source_id": "pablo_rodríguez_bocca",
+            "target_id": "gi_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "RESPONSABLE_DE",
+            "source_id": "andrés_berger",
+            "target_id": "gi_2020_513",
+            "properties": {}
+        }
+    ]
+}

@@ -1,0 +1,286 @@
+{
+    "entities": [
+        {
+            "id": "control_and_systems_engineering",
+            "label": "Topico",
+            "value": "Control and Systems Engineering"
+        },
+        {
+            "id": "engineering",
+            "label": "Dominio",
+            "value": "Engineering"
+        },
+        {
+            "id": "software",
+            "label": "Topico",
+            "value": "Software"
+        }, 
+        {
+            "id": "computer_science",
+            "label": "Dominio",
+            "value": "Computer Science"
+        },
+        {
+            "id": "computer_networks_and_communications",
+            "label": "Topico",
+            "value": "Computer Networks and Communications"
+        },
+        {
+            "id": "proy_2020_513",
+            "label": "Proyecto",
+            "value": "Co-simulacion en Sistemas Ciber Físicos"
+        },
+        {
+            "id": "eduardo_grampín",
+            "label": "Investigador",
+            "value": {
+                "name": "EDUARDO GRAMPÍN",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "mercedes_marzoa",
+            "label": "Investigador",
+            "value": {
+                "name": "MERCEDES MARZOA",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "antonio_mauttone",
+            "label": "Investigador",
+            "value": {
+                "name": "ANTONIO MAUTTONE",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "ewelina_bakala",
+            "label": "Investigador",
+            "value": {
+                "name": "EWELINA BAKALA",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "federico_andrade",
+            "label": "Investigador",
+            "value": {
+                "name": "FEDERICO ANDRADE",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "facundo_benavides",
+            "label": "Investigador",
+            "value": {
+                "name": "FACUNDO BENAVIDES",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "gonzalo_tejera",
+            "label": "Investigador",
+            "value": {
+                "name": "GONZALO TEJERA",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "matías_richart",
+            "label": "Investigador",
+            "value": {
+                "name": "MATÍAS RICHART",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "alberto_castro",
+            "label": "Investigador",
+            "value": {
+                "name": "ALBERTO CASTRO",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "javier_baliosian",
+            "label": "Investigador",
+            "value": {
+                "name": "JAVIER BALIOSIAN",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "martín_llofriu",
+            "label": "Investigador",
+            "value": {
+                "name": "MARTÍN LLOFRIU",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "guillermo_amorín",
+            "label": "Investigador",
+            "value": {
+                "name": "GUILLERMO AMORÍN",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "jorge_visca",
+            "label": "Investigador",
+            "value": {
+                "name": "JORGE VISCA",
+                "source": "llm"
+            }
+        },
+        {
+            "id": "guillermo_trinidad",
+            "label": "Investigador",
+            "value": {
+                "name": "GUILLERMO TRINIDAD",
+                "source": "llm"
+            }
+        }
+    ],
+    "relationships": [
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "software",
+            "target_id": "computer_science",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "control_and_systems_engineering",
+            "target_id": "engineering",
+            "properties": {}
+        },
+        {
+            "type": "PERTENECE_A_DOMINIO",
+            "source_id": "computer_networks_and_communications",
+            "target_id": "computer_science",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "antonio_mauttone",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "ewelina_bakala",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "facundo_benavides",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "federico_andrade",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "mercedes_marzoa",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "matías_richart",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "javier_baliosian",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "jorge_visca",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "alberto_castro",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "gonzalo_tejera",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "martín_llofriu",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "guillermo_trinidad",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "eduardo_grampín",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "PARTICIPO_EN",
+            "source_id": "guillermo_amorín",
+            "target_id": "proy_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "TIENE_TOPICO",
+            "source_id": "gi_2020_513",
+            "target_id": "control_and_systems_engineering",
+            "properties": {
+                "mention_count": "na"
+            }
+        },
+        {
+            "type": "TIENE_TOPICO",
+            "source_id": "gi_2020_513",
+            "target_id": "software",
+            "properties": {
+                "mention_count": "na"
+            }
+        }, 
+        {
+            "type": "TIENE_TOPICO",
+            "source_id": "gi_2020_513",
+            "target_id": "computer_networks_and_communications",
+            "properties": {
+                "mention_count": "na"
+            }
+        },
+        {
+            "type": "RESPONSABLE_DE",
+            "source_id": "javier_baliosian",
+            "target_id": "gi_2020_513",
+            "properties": {}
+        },
+        {
+            "type": "RESPONSABLE_DE",
+            "source_id": "matías_richart",
+            "target_id": "gi_2020_513",
+            "properties": {}
+        }
+    ]
+}
