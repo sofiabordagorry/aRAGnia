@@ -169,8 +169,9 @@ function renderChunks(chunks, mode) {
     //     ? '<span class="chunk-meta-pill chunk-meta-graph">Graph chunk</span>'
     //     : '<span class="chunk-meta-pill chunk-meta-rag">RAG chunk</span>';
 
-    const modeHtml = '<span class="chunk-meta-pill chunk-meta-graph">Graph chunk</span>';
-    
+    const modeHtml =
+      '<span class="chunk-meta-pill chunk-meta-graph">Graph chunk</span>';
+
     const scoreHtml =
       chunk.score !== null && chunk.score !== undefined && chunk.score !== ""
         ? `<span class="chunk-meta-pill"><strong>score:</strong> ${escapeHtml(chunk.score)}</span>`
