@@ -7,8 +7,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 import pandas as pd
+import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
@@ -814,7 +814,8 @@ def test_llm_extractor_include_headings_flag(monkeypatch):
 
     # Debe retornar la jerarquía sin duplicar "Sección A" al final
     assert captured_texts[-1] == "Capítulo 1\nSección A"
-    
+
+
 def test_investigador_value_with_extra_properties():
     """Test creating Investigador with cedula, mail, and afiliacion."""
     inv = Investigador(
