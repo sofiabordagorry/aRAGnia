@@ -9,8 +9,6 @@ from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_response import (
     LLMExtractionResult,
-    ResearcherMention,
-    TopicMention,
     parse_researcher_response,
     parse_topic_response,
 )
