@@ -428,7 +428,7 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     return None
 
 
-_NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "NOT MENTIONED"}
+_NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "not mentioned"}
 
 # Cédula uruguaya: 6-8 dígitos, opcionalmente separados con puntos y/o guión verificador
 _CEDULA_RE = re.compile(r"^[\d][\d.]{4,9}[-]?\d?$")
@@ -438,8 +438,19 @@ def _clean_optional_field(raw: Any) -> Optional[str]:
     """Clean an optional string field from LLM output. Returns None for null-like values."""
     if not isinstance(raw, str):
         return None
-    cleaned = raw.strip()
-    if cleaned.lower() in _NULL_STRINGS:
+    cleaned = re.sub(r"\s+", " ", raw).strip()
+    cleaned_lower = cleaned.lower()
+
+    # Exact null-like values
+    if cleaned_lower in _NULL_STRINGS:
+        return None
+
+    # Null-like values included inside longer strings
+    for token in _NULL_STRINGS:
+        if token and token in cleaned_lower:
+            return None
+
+    if not cleaned:
         return None
     return cleaned
 
