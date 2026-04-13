@@ -428,6 +428,42 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     return None
 
 
+_NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "NOT MENTIONED"}
+
+# Cédula uruguaya: 6-8 dígitos, opcionalmente separados con puntos y/o guión verificador
+_CEDULA_RE = re.compile(r"^[\d][\d.]{4,9}[-]?\d?$")
+
+
+def _clean_optional_field(raw: Any) -> Optional[str]:
+    """Clean an optional string field from LLM output. Returns None for null-like values."""
+    if not isinstance(raw, str):
+        return None
+    cleaned = raw.strip()
+    if cleaned.lower() in _NULL_STRINGS:
+        return None
+    return cleaned
+
+
+def _validate_cedula(value: str) -> Optional[str]:
+    """Validate that a string looks like a Uruguayan cédula (6-8 digits)."""
+    # Strip spaces
+    value = value.replace(" ", "")
+    if not _CEDULA_RE.match(value):
+        return None
+    # Count actual digits — must be between 6 and 8
+    digit_count = sum(c.isdigit() for c in value)
+    if digit_count < 6 or digit_count > 8:
+        return None
+    return value
+
+
+def _validate_mail(value: str) -> Optional[str]:
+    """Validate that a string looks like an email (contains @)."""
+    if "@" not in value:
+        return None
+    return value
+
+
 def parse_researcher_response(
     response: str, chunk_id: str, chunk_text: str = ""
 ) -> LLMExtractionResult:
@@ -481,23 +517,15 @@ def parse_researcher_response(
                 continue
 
             # Extraer propiedades opcionales
-            cedula = item.get("cedula")
-            if isinstance(cedula, str):
-                cedula = cedula.strip() or None
-            else:
-                cedula = None
+            cedula = _clean_optional_field(item.get("cedula"))
+            if cedula:
+                cedula = _validate_cedula(cedula)
 
-            mail = item.get("mail")
-            if isinstance(mail, str):
-                mail = mail.strip() or None
-            else:
-                mail = None
+            mail = _clean_optional_field(item.get("mail"))
+            if mail:
+                mail = _validate_mail(mail)
 
-            afiliacion = item.get("afiliacion")
-            if isinstance(afiliacion, str):
-                afiliacion = afiliacion.strip() or None
-            else:
-                afiliacion = None
+            afiliacion = _clean_optional_field(item.get("afiliacion"))
 
             # Si llegamos hasta acá, pasó todas las validaciones
             researchers.append(
