@@ -19,6 +19,7 @@ from institutional_graphrag.graph.schema import (
     Dominio,
     Entity,
     Investigador,
+    InvestigadorValue,
     Relationship,
     Topico,
 )
@@ -381,7 +382,7 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        inv_value: dict[str, Any] = {"name": mention.name, "source": "llm"}
+        inv_value: InvestigadorValue = {"name": mention.name, "source": "llm"}
         if mention.cedula:
             inv_value["cedula"] = mention.cedula
         if mention.mail:
