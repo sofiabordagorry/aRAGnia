@@ -254,6 +254,14 @@
       }
     },
     {
+      "id": "alvaro_martin",
+      "label": "Investigador",
+      "value": {
+        "name": "Álvaro Martín",
+        "source": "human_annotation"
+      }
+    },
+    {
       "id": "flavia_serra",
       "label": "Investigador",
       "value": {
@@ -322,14 +330,6 @@
       "label": "Investigador",
       "value": {
         "name": "José Sotelo Silveira",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "guillermo_dufort",
-      "label": "Investigador",
-      "value": {
-        "name": "Guillermo Dufort",
         "source": "human_annotation"
       }
     },
@@ -442,14 +442,6 @@
       "label": "Investigador",
       "value": {
         "name": "Facundo Benavides",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "antonio_mauttone",
-      "label": "Investigador",
-      "value": {
-        "name": "Antonio Mauttone",
         "source": "human_annotation"
       }
     },
@@ -847,6 +839,12 @@
     },
     {
       "type": "RESPONSABLE_DE",
+      "source_id": "alvaro_martin",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
       "source_id": "alvaro_martin",
       "target_id": "proy_2016_729",
       "properties": {}
