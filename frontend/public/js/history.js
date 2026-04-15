@@ -5,13 +5,9 @@ const els = {
   historyEmpty: document.getElementById("historyEmpty"),
   clearHistoryBtn: document.getElementById("clearHistoryBtn"),
   searchInput: document.getElementById("searchInput"),
-  // filterAll: document.getElementById("filterAll"),
-  // filterRag: document.getElementById("filterRag"),
-  // filterGraph: document.getElementById("filterGraph"),
   drawerRoot: document.getElementById("historyDrawer"),
   drawerBackdrop: document.getElementById("historyDrawerBackdrop"),
   drawerCloseBtn: document.getElementById("drawerCloseBtn"),
-  // drawerMode: document.getElementById("drawerMode"),
   drawerDate: document.getElementById("drawerDate"),
   drawerQuestion: document.getElementById("drawerQuestion"),
   drawerCypherSection: document.getElementById("drawerCypherSection"),
@@ -164,11 +160,6 @@ function renderChunks(chunks, mode) {
     const card = document.createElement("div");
     card.className = "chunk-card";
 
-    // const modeHtml =
-    //   mode === "graphrag"
-    //     ? '<span class="chunk-meta-pill chunk-meta-graph">Graph chunk</span>'
-    //     : '<span class="chunk-meta-pill chunk-meta-rag">RAG chunk</span>';
-
     const modeHtml =
       '<span class="chunk-meta-pill chunk-meta-graph">Graph chunk</span>';
 
@@ -215,12 +206,6 @@ function renderChunks(chunks, mode) {
 function renderDrawer(item) {
   if (!els.drawerRoot) return;
 
-  // els.drawerMode.textContent =
-  //   item.mode === "graphrag"
-  //     ? "GraphRAG"
-  //     : item.mode === "rag"
-  //       ? "RAG"
-  //       : "Desconocido";
   els.drawerDate.textContent = formatDate(item.ts);
   els.drawerQuestion.textContent = item.q ?? "";
   els.drawerAnswer.textContent = item.answer ?? "";
@@ -252,8 +237,6 @@ function renderFromCache() {
     row.className = "history-row";
     row.title = "Click para ver detalle";
 
-    // const modeLabel =
-    //   item.mode === "graphrag" ? "GraphRAG" : item.mode === "rag" ? "RAG" : "?";
     const extraMeta =
       item.mode === "graphrag" && item.cypherQuery
         ? '<span class="history-extra">Cypher</span>'
@@ -324,24 +307,6 @@ els.searchInput?.addEventListener("input", (event) => {
   renderFromCache();
 });
 
-// els.filterAll?.addEventListener("click", () => {
-//   filterMode = "all";
-//   setActiveFilter();
-//   renderFromCache();
-// });
-
-// els.filterRag?.addEventListener("click", () => {
-//   filterMode = "rag";
-//   setActiveFilter();
-//   renderFromCache();
-// });
-
-// els.filterGraph?.addEventListener("click", () => {
-//   filterMode = "graphrag";
-//   setActiveFilter();
-//   renderFromCache();
-// });
-
 els.drawerBackdrop?.addEventListener("click", drawerClose);
 els.drawerCloseBtn?.addEventListener("click", drawerClose);
 
@@ -351,5 +316,4 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// setActiveFilter();
 loadHistoryOnce();
