@@ -695,12 +695,6 @@
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "management_science_and_operations_research",
-      "target_id": "decision_sciences",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
       "source_id": "safety_risk_reliability_and_quality",
       "target_id": "engineering",
       "properties": {}
