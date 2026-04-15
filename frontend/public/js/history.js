@@ -111,7 +111,6 @@ async function apiDeleteItem(id) {
   }
 }
 
-
 function matches(item) {
   const term = searchText.trim().toLowerCase();
   if (!term) return true;
@@ -221,10 +220,9 @@ function renderFromCache() {
     row.className = "history-row";
     row.title = "Click para ver detalle";
 
-    const extraMeta =
-      item.cypherQuery
-        ? '<span class="history-extra">Cypher</span>'
-        : "";
+    const extraMeta = item.cypherQuery
+      ? '<span class="history-extra">Cypher</span>'
+      : "";
 
     row.innerHTML = `
       <div class="history-main">

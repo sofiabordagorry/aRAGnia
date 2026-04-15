@@ -129,7 +129,7 @@ window.APP_CONFIG = {
         closeModal({ revert: true });
       }
     });
-    
+
     els.enterToSend?.addEventListener("change", (event) => {
       draft.enter_to_send = event.target.checked;
     });
