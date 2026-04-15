@@ -1,6 +1,5 @@
 const API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 const DEFAULTS = {
-  graphrag_enabled: true,
   enter_to_send: true,
 };
 
@@ -14,10 +13,6 @@ let settings = getSettings();
 
 function getSettings() {
   return { ...DEFAULTS, ...(window.SettingsUI?.getSettings?.() || {}) };
-}
-
-function modeLabel() {
-  return "Modo: GraphRAG";
 }
 
 function escapeHtml(value) {
@@ -159,10 +154,6 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
   scrollChatToBottom();
 }
 
-function currentEndpoint() {
-  return `${API_BASE}/graphrag/query`;
-}
-
 async function ask() {
   const query = els.queryInput?.value.trim();
   if (!query) {
@@ -179,7 +170,7 @@ async function ask() {
   const typingMessage = addTyping();
 
   try {
-    const response = await fetch(currentEndpoint(), {
+    const response = await fetch(`${API_BASE}/graphrag/query`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),

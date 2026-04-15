@@ -1,13 +1,12 @@
 window.APP_CONFIG = {
   API_BASE: "http://localhost:8000",
-  SETTINGS_KEY: "rag_graphrag_ui_v1",
+  SETTINGS_KEY: "graphrag_ui_v1",
 };
 
 (() => {
   const STORAGE_KEY = window.APP_CONFIG.SETTINGS_KEY;
 
   const DEFAULTS = {
-    graphrag_enabled: true,
     theme: "light",
     enter_to_send: true,
   };
