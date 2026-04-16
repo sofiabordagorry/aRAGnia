@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_response import (
     LLMExtractionResult,
+    ResearcherMention,
+    TopicMention,
     parse_researcher_response,
     parse_topic_response,
 )
@@ -27,6 +29,14 @@ from institutional_graphrag.llm.llm_provider import get_llm_client
 
 logger = logging.getLogger(__name__)
 TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
+
+# Backward-compatible public exports expected by tests and callers.
+__all__ = [
+    "LLMEntityExtractor",
+    "LLMExtractionResult",
+    "ResearcherMention",
+    "TopicMention",
+]
 
 
 class LLMEntityExtractor:
