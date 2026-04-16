@@ -1,0 +1,1017 @@
+{
+  "entities": [
+    {
+      "id": "proy_2012_638",
+      "label": "Proyecto",
+      "value": "Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad"
+    },
+    {
+      "id": "2012",
+      "label": "Anio",
+      "value": {
+        "year": "2012"
+      }
+    },
+    {
+      "id": "proy_2016_729",
+      "label": "Proyecto",
+      "value": "Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos"
+    },
+    {
+      "id": "2016",
+      "label": "Anio",
+      "value": {
+        "year": "2016"
+      }
+    },
+    {
+      "id": "proy_2018_260",
+      "label": "Proyecto",
+      "value": "Diseño óptimo de redes de ciclovías"
+    },
+    {
+      "id": "2018",
+      "label": "Anio",
+      "value": {
+        "year": "2018"
+      }
+    },
+    {
+      "id": "proy_2020_513",
+      "label": "Proyecto",
+      "value": "Co-simulación en Sistemas Ciber Físicos"
+    },
+    {
+      "id": "2020",
+      "label": "Anio",
+      "value": {
+        "year": "2020"
+      }
+    },
+    {
+      "id": "proy_2018_413",
+      "label": "Proyecto",
+      "value": "Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
+    },
+    {
+      "id": "agricultural_and_biological_sciences",
+      "label": "Dominio",
+      "value": "Agricultural and Biological Sciences"
+    },
+    {
+      "id": "artificial_intelligence",
+      "label": "Topico",
+      "value": "Artificial Intelligence"
+    },
+    {
+      "id": "agronomy_and_crop_science",
+      "label": "Topico",
+      "value": "Agronomy and Crop Science"
+    },
+    {
+      "id": "computer_science",
+      "label": "Dominio",
+      "value": "Computer Science"
+    },
+    {
+      "id": "decision_sciences",
+      "label": "Dominio",
+      "value": "Decision Sciences"
+    },
+    {
+      "id": "engineering",
+      "label": "Dominio",
+      "value": "Engineering"
+    },
+    {
+      "id": "software",
+      "label": "Topico",
+      "value": "Software"
+    },
+    {
+      "id": "control_and_systems_engineering",
+      "label": "Topico",
+      "value": "Control and Systems Engineering"
+    },
+    {
+      "id": "mathematics",
+      "label": "Dominio",
+      "value": "Mathematics"
+    },
+    {
+      "id": "modeling_and_simulation",
+      "label": "Topico",
+      "value": "Modeling and Simulation"
+    },
+    {
+      "id": "computational_theory_and_mathematics",
+      "label": "Topico",
+      "value": "Computational Theory and Mathematics"
+    },
+    {
+      "id": "computer_science_applications",
+      "label": "Topico",
+      "value": "Computer Science Applications"
+    },
+    {
+      "id": "computer_networks_and_communications",
+      "label": "Topico",
+      "value": "Computer Networks and Communications"
+    },
+    {
+      "id": "signal_processing",
+      "label": "Topico",
+      "value": "Signal Processing"
+    },
+    {
+      "id": "information_systems",
+      "label": "Topico",
+      "value": "Information Systems"
+    },
+    {
+      "id": "safety_risk_reliability_and_quality",
+      "label": "Topico",
+      "value": "Safety, Risk, Reliability and Quality"
+    },
+    {
+      "id": "management_science_and_operations_research",
+      "label": "Topico",
+      "value": "Management Science and Operations Research"
+    },
+    {
+      "id": "general_decision_sciences",
+      "label": "Topico",
+      "value": "General Decision Sciences"
+    },
+    {
+      "id": "proy_2012_638_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2012_638_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2012",
+        "sub_id": "638",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2012_638_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2012_638_informe",
+        "is_group": "proy",
+        "year_publisher": "2012",
+        "sub_id": "638",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2016_729_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_729_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "subid": "729",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_729_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_729_informe",
+        "is_group": "proy",
+        "year_publisher": "2019",
+        "subid": "729",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_260_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_260_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "260",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_260_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_260_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "260",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_413_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_413_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "413",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_413_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_413_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "413",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2020_513_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2020_513_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2020",
+        "subid": "513",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2020_513_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2020_513_informe",
+        "is_group": "proy",
+        "year_publisher": "2023",
+        "subid": "513",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "alvaro_martin",
+      "label": "Investigador",
+      "value": {
+        "name": "Álvaro Martín",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "flavia_serra",
+      "label": "Investigador",
+      "value": {
+        "name": "FLAVIA SERRA",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "lorena_etcheverry",
+      "label": "Investigador",
+      "value": {
+        "name": "LORENA ETCHEVERRY",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "raul_ruggia",
+      "label": "Investigador",
+      "value": {
+        "name": "RAUL RUGGIA",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "adriana_marotta",
+      "label": "Investigador",
+      "value": {
+        "name": "ADRIANA MAROTTA",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "laura_gonzalez",
+      "label": "Investigador",
+      "value": {
+        "name": "LAURA GONZALEZ",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "fernando_carpani",
+      "label": "Investigador",
+      "value": {
+        "name": "FERNANDO CARPANI",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "daniel_callejas",
+      "label": "Investigador",
+      "value": {
+        "name": "DANIEL CALLEJAS",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "gadiel_seroussi",
+      "label": "Investigador",
+      "value": {
+        "name": "Gadiel Seroussi",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "jose_sotelo_silveira",
+      "label": "Investigador",
+      "value": {
+        "name": "José Sotelo Silveira",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_dufort",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Dufort",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "antonio_mauttone",
+      "label": "Investigador",
+      "value": {
+        "name": "Antonio Mauttone",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "maría_e_urquhart",
+      "label": "Investigador",
+      "value": {
+        "name": "María E. Urquhart",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_ettlin",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Ettlin",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "pablo_rodríguez_bocca",
+      "label": "Investigador",
+      "value": {
+        "name": "Pablo Rodríguez Bocca",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "andrés_berger",
+      "label": "Investigador",
+      "value": {
+        "name": "Andrés Berger",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "gerardo_rubino",
+      "label": "Investigador",
+      "value": {
+        "name": "Gerardo Rubino",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "martín_beyer",
+      "label": "Investigador",
+      "value": {
+        "name": "Martín Beyer",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "brian_yang",
+      "label": "Investigador",
+      "value": {
+        "name": "Brian Yang",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "rehaan_ahmad",
+      "label": "Investigador",
+      "value": {
+        "name": "Rehaan Ahmad",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "javier_baliosian",
+      "label": "Investigador",
+      "value": {
+        "name": "Javier Baliosian",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "matias_richart",
+      "label": "Investigador",
+      "value": {
+        "name": "Matías Richart",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "gonzalo_tejera",
+      "label": "Investigador",
+      "value": {
+        "name": "Gonzalo Tejera",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "facundo_benavides",
+      "label": "Investigador",
+      "value": {
+        "name": "Facundo Benavides",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_amorin",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Amorín",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "federico_andrade",
+      "label": "Investigador",
+      "value": {
+        "name": "Federico Andrade",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "eduardo_grampin",
+      "label": "Investigador",
+      "value": {
+        "name": "Eduardo Grampín",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "jorge_visca",
+      "label": "Investigador",
+      "value": {
+        "name": "Jorge Visca",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "mercedes_marzoa",
+      "label": "Investigador",
+      "value": {
+        "name": "Mercedes Marzoa",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "ewelina_bakala",
+      "label": "Investigador",
+      "value": {
+        "name": "Ewelina Bakala",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "martin_llofriu",
+      "label": "Investigador",
+      "value": {
+        "name": "Martín Llofriu",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "guillermo_trinidad",
+      "label": "Investigador",
+      "value": {
+        "name": "Guillermo Trinidad",
+        "source": "human_annotation"
+      }
+    },
+    {
+      "id": "alberto_castro",
+      "label": "Investigador",
+      "value": {
+        "name": "Alberto Castro",
+        "source": "human_annotation"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2012_638",
+      "target_id": "2012",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2016_729",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_260",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_413",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2020_513",
+      "target_id": "2020",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_638",
+      "target_id": "information_systems",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_638",
+      "target_id": "software",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "computer_networks_and_communications",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "software",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2020_513",
+      "target_id": "control_and_systems_engineering",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_638",
+      "target_id": "safety_risk_reliability_and_quality",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_729",
+      "target_id": "signal_processing",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_729",
+      "target_id": "computational_theory_and_mathematics",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_729",
+      "target_id": "computer_science_applications",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "computational_theory_and_mathematics",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "computer_science_applications",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "control_and_systems_engineering",
+      "target_id": "engineering",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "management_science_and_operations_research",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "general_decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "modeling_and_simulation",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "modeling_and_simulation",
+      "target_id": "mathematics",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_413",
+      "target_id": "artificial_intelligence",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_413",
+      "target_id": "agronomy_and_crop_science",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_413",
+      "target_id": "management_science_and_operations_research",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "management_science_and_operations_research",
+      "target_id": "decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "artificial_intelligence",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "computer_networks_and_communications",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "general_decision_sciences",
+      "target_id": "decision_sciences",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "agronomy_and_crop_science",
+      "target_id": "agricultural_and_biological_sciences",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "safety_risk_reliability_and_quality",
+      "target_id": "engineering",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "software",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "signal_processing",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "information_systems",
+      "target_id": "computer_science",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_638",
+      "target_id": "proy_2012_638_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_638",
+      "target_id": "proy_2012_638_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_729",
+      "target_id": "proy_2016_729_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_729",
+      "target_id": "proy_2016_729_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_260",
+      "target_id": "proy_2018_260_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_260",
+      "target_id": "proy_2018_260_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_413",
+      "target_id": "proy_2018_413_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_413",
+      "target_id": "proy_2018_413_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2020_513",
+      "target_id": "proy_2020_513_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2020_513",
+      "target_id": "proy_2020_513_informe",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "adriana_marotta",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "daniel_callejas",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "fernando_carpani",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "laura_gonzalez",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "adriana_marotta",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "raul_ruggia",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "lorena_etcheverry",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "flavia_serra",
+      "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "alvaro_martin",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "alvaro_martin",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "gadiel_seroussi",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "jose_sotelo_silveira",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_dufort",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "antonio_mauttone",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "maría_e_urquhart",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "antonio_mauttone",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "pablo_rodríguez_bocca",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "andrés_berger",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_ettlin",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "pablo_rodríguez_bocca",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "andrés_berger",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "gerardo_rubino",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "martín_beyer",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "brian_yang",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "rehaan_ahmad",
+      "target_id": "proy_2018_413",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "javier_baliosian",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "RESPONSABLE_DE",
+      "source_id": "matias_richart",
+      "target_id": "proy_2020_513",
+      "properties": {
+        "rol": "co_direccion"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "gonzalo_tejera",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "facundo_benavides",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "antonio_mauttone",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_amorin",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "federico_andrade",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "eduardo_grampin",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "jorge_visca",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "mercedes_marzoa",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "ewelina_bakala",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "martin_llofriu",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "guillermo_trinidad",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "alberto_castro",
+      "target_id": "proy_2020_513",
+      "properties": {}
+    }
+  ]
+}
