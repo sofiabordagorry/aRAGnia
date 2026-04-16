@@ -1,13 +1,12 @@
 window.APP_CONFIG = {
   API_BASE: "http://localhost:8000",
-  SETTINGS_KEY: "rag_graphrag_ui_v1",
+  SETTINGS_KEY: "graphrag_ui_v1",
 };
 
 (() => {
   const STORAGE_KEY = window.APP_CONFIG.SETTINGS_KEY;
 
   const DEFAULTS = {
-    graphrag_enabled: true,
     theme: "light",
     enter_to_send: true,
   };
@@ -19,7 +18,6 @@ window.APP_CONFIG = {
     closeModalBtn: null,
     saveBtn: null,
     resetBtn: null,
-    graphToggle: null,
     themeLightBtn: null,
     themeDarkBtn: null,
     enterToSend: null,
@@ -61,7 +59,6 @@ window.APP_CONFIG = {
     els.closeModalBtn = document.getElementById("closeModalBtn");
     els.saveBtn = document.getElementById("saveBtn");
     els.resetBtn = document.getElementById("resetBtn");
-    els.graphToggle = document.getElementById("graphToggle");
     els.themeLightBtn = document.getElementById("themeLightBtn");
     els.themeDarkBtn = document.getElementById("themeDarkBtn");
     els.enterToSend = document.getElementById("enterToSend");
@@ -73,7 +70,6 @@ window.APP_CONFIG = {
   }
 
   function renderDraftToModal() {
-    if (els.graphToggle) els.graphToggle.checked = draft.graphrag_enabled;
     if (els.enterToSend) els.enterToSend.checked = draft.enter_to_send;
 
     applyTheme(draft.theme);
@@ -132,10 +128,6 @@ window.APP_CONFIG = {
       if (event.key === "Escape" && !els.modal?.classList.contains("hidden")) {
         closeModal({ revert: true });
       }
-    });
-
-    els.graphToggle?.addEventListener("change", (event) => {
-      draft.graphrag_enabled = event.target.checked;
     });
 
     els.enterToSend?.addEventListener("change", (event) => {

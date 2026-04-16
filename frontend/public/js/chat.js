@@ -1,6 +1,5 @@
 const API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 const DEFAULTS = {
-  graphrag_enabled: true,
   enter_to_send: true,
 };
 
@@ -8,17 +7,12 @@ const els = {
   queryInput: document.getElementById("queryInput"),
   askBtn: document.getElementById("askBtn"),
   chat: document.getElementById("chat"),
-  modeBadge: document.getElementById("modeBadge"),
 };
 
 let settings = getSettings();
 
 function getSettings() {
   return { ...DEFAULTS, ...(window.SettingsUI?.getSettings?.() || {}) };
-}
-
-function modeLabel(currentSettings) {
-  return currentSettings.graphrag_enabled ? "Modo: GraphRAG" : "Modo: RAG";
 }
 
 function escapeHtml(value) {
@@ -132,7 +126,7 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
 
     const entities = chunkToEntities[chunk.id] || [];
     const tags =
-      entities.length > 0 && settings.graphrag_enabled
+      entities.length > 0
         ? `<div class="source-entities">${entities
             .map(
               ([id, label]) =>
@@ -160,10 +154,6 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
   scrollChatToBottom();
 }
 
-function currentEndpoint() {
-  return `${API_BASE}${settings.graphrag_enabled ? "/graphrag/query" : "/rag/query"}`;
-}
-
 async function ask() {
   const query = els.queryInput?.value.trim();
   if (!query) {
@@ -180,7 +170,7 @@ async function ask() {
   const typingMessage = addTyping();
 
   try {
-    const response = await fetch(currentEndpoint(), {
+    const response = await fetch(`${API_BASE}/graphrag/query`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
@@ -228,7 +218,6 @@ function getUrlParam(name) {
 
 function init() {
   settings = getSettings();
-  if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
 
   const prefill = getUrlParam("q");
   const autoAsk = getUrlParam("ask");
@@ -249,7 +238,6 @@ function init() {
 
   window.addEventListener("settings:changed", (event) => {
     settings = event.detail || getSettings();
-    if (els.modeBadge) els.modeBadge.textContent = modeLabel(settings);
   });
 }
 
