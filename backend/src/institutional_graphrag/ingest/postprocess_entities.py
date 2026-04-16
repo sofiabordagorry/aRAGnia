@@ -406,6 +406,10 @@ class Postprocessor:
                 ):
                     canonical_r["value"]["source"] = ["rule_based", "llm"]
 
+                for prop in ("cedula", "mail", "afiliacion"):
+                    if not canonical_r["value"].get(prop) and dup_r["value"].get(prop):
+                        canonical_r["value"][prop] = dup_r["value"][prop]
+
                 merge_changes.append(
                     {
                         "type": "merge",

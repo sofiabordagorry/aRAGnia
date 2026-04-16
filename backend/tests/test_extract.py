@@ -7,8 +7,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 import pandas as pd
+import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
@@ -814,3 +814,130 @@ def test_llm_extractor_include_headings_flag(monkeypatch):
 
     # Debe retornar la jerarquía sin duplicar "Sección A" al final
     assert captured_texts[-1] == "Capítulo 1\nSección A"
+
+
+def test_investigador_value_with_extra_properties():
+    """Test creating Investigador with cedula, mail, and afiliacion."""
+    inv = Investigador(
+        id="juan_perez",
+        value={
+            "name": "Juan Pérez",
+            "source": "llm",
+            "cedula": "1.234.567-8",
+            "mail": "jperez@fing.edu.uy",
+            "afiliacion": "Facultad de Ingeniería, UdelaR",
+        },
+    )
+    assert inv.value["cedula"] == "1.234.567-8"
+    assert inv.value["mail"] == "jperez@fing.edu.uy"
+    assert inv.value["afiliacion"] == "Facultad de Ingeniería, UdelaR"
+
+
+def test_investigador_value_without_extra_properties():
+    """Test that Investigador still works without the new optional fields."""
+    inv = Investigador(
+        id="juan_perez",
+        value={"name": "Juan Pérez", "source": "rule_based"},
+    )
+    assert inv.value.get("cedula") is None
+    assert inv.value.get("mail") is None
+    assert inv.value.get("afiliacion") is None
+
+
+def test_researcher_mention_with_extra_properties():
+    """Test ResearcherMention carries cedula, mail, and afiliacion."""
+    mention = ResearcherMention(
+        name="Ana López",
+        evidence="Ana López, CI 3.456.789-0, alopez@fcien.edu.uy",
+        chunk_id="chunk_1",
+        cedula="3.456.789-0",
+        mail="alopez@fcien.edu.uy",
+        afiliacion="Facultad de Ciencias",
+    )
+    assert mention.cedula == "3.456.789-0"
+    assert mention.mail == "alopez@fcien.edu.uy"
+    assert mention.afiliacion == "Facultad de Ciencias"
+
+
+def test_researcher_mention_defaults_none():
+    """Test ResearcherMention defaults extra properties to None."""
+    mention = ResearcherMention(
+        name="Pedro Gómez",
+        evidence="Pedro Gómez participa",
+        chunk_id="chunk_1",
+    )
+    assert mention.cedula is None
+    assert mention.mail is None
+    assert mention.afiliacion is None
+
+
+def test_ie_add_entities_preserves_extra_properties_on_merge(extractor: EntityExtractor):
+    """Test that merging investigators preserves cedula/mail/afiliacion from existing entity."""
+    inv1 = Investigador(
+        id="ana_lopez",
+        value={
+            "name": "Ana López",
+            "source": "rule_based",
+            "cedula": "3.456.789-0",
+            "mail": "alopez@fcien.edu.uy",
+        },
+    )
+    extractor.add_entities([inv1])
+
+    # LLM extraction finds same person without extra properties
+    inv2 = Investigador(
+        id="ana_lopez",
+        value={"name": "Ana López", "source": "llm"},
+    )
+    extractor.add_entities([inv2])
+
+    merged = next(e for e in extractor.res.entities if e.id == "ana_lopez")
+    assert merged.value["source"] == ["rule_based", "llm"]
+    assert merged.value["cedula"] == "3.456.789-0"
+    assert merged.value["mail"] == "alopez@fcien.edu.uy"
+
+
+def test_postprocess_preserves_extra_properties_on_consolidation():
+    """Test that postprocessor preserves cedula/mail/afiliacion when consolidating researchers."""
+    postprocessor = Postprocessor(enable_researcher_consolidation=True)
+
+    payload = {
+        "entities": [
+            {
+                "id": "inv_1",
+                "label": "Investigador",
+                "value": {
+                    "name": "MARIA GARCIA",
+                    "source": "rule_based",
+                    "cedula": "1.111.111-1",
+                },
+            },
+            {
+                "id": "inv_2",
+                "label": "Investigador",
+                "value": {
+                    "name": "Maria Garcia",
+                    "source": "llm",
+                    "mail": "mgarcia@fmed.edu.uy",
+                    "afiliacion": "Facultad de Medicina",
+                },
+            },
+        ],
+        "relationships": [
+            {
+                "type": "EXTRAIDO_DE",
+                "source_id": "chunk_001",
+                "target_id": "inv_1",
+                "properties": {"evidence_text": "responsable valido extraido"},
+            },
+        ],
+    }
+
+    data, log = postprocessor.postprocess_payload(payload)
+    entities = data["entities"]
+
+    assert len(entities) == 1
+    value = entities[0]["value"]
+    assert value["cedula"] == "1.111.111-1"
+    assert value["mail"] == "mgarcia@fmed.edu.uy"
+    assert value["afiliacion"] == "Facultad de Medicina"

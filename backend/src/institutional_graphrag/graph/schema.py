@@ -27,6 +27,9 @@ class DocumentoValue(TypedDict):
 class InvestigadorValue(TypedDict):
     name: str
     source: Union[Literal["rule_based", "llm"], List[Literal["rule_based", "llm"]]]
+    cedula: NotRequired[str]
+    mail: NotRequired[str]
+    afiliacion: NotRequired[str]
 
 
 @dataclass

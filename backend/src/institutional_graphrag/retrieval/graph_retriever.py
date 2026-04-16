@@ -247,7 +247,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 SCHEMA:
 Nodes and their key properties:
 - Proyecto     → id: 'gi_2014_133', value: 'Síntesis y evaluación biológica de nuevos quimioterápicos'
-- Investigador → id: 'lastname_firstname', name: 'Firstname Lastname'
+- Investigador → id: 'lastname_firstname', name: 'Firstname Lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
 - Topico       → value: 'Biotechnology'      ← property is "value", NOT "id"
 - Documento    → id: '...', base_name: 'gi_2014_133', type: 'informe'|'propuesta'|'resumen'|'tabla', year_publisher: '2014', is_group: 'false'
 - Chunk        → id: '...', text: '...'

@@ -12,6 +12,9 @@ class ResearcherMention:
     name: str
     evidence: str
     chunk_id: str
+    cedula: Optional[str] = None
+    mail: Optional[str] = None
+    afiliacion: Optional[str] = None
 
 
 @dataclass
@@ -425,6 +428,61 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     return None
 
 
+_NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "not mentioned"}
+
+# Cédula uruguaya: 6-8 dígitos, opcionalmente separados con puntos y/o guión verificador
+_CEDULA_RE = re.compile(r"^[\d][\d.]{4,9}[-]?\d?$")
+
+
+def _clean_optional_field(raw: Any) -> Optional[str]:
+    """Clean an optional string field from LLM output. Returns None for null-like values."""
+    if not isinstance(raw, str):
+        return None
+    cleaned = re.sub(r"\s+", " ", raw).strip()
+    cleaned_lower = cleaned.lower()
+
+    # Exact null-like values
+    if cleaned_lower in _NULL_STRINGS:
+        return None
+
+    # Null-like values included inside longer strings
+    for token in _NULL_STRINGS:
+        if token and token in cleaned_lower:
+            return None
+
+    if not cleaned:
+        return None
+    return cleaned
+
+
+def _validate_cedula(value: str) -> Optional[str]:
+    """Validate a Uruguayan cédula (6-8 digits). Format only 8-digit values."""
+    # Strip spaces
+    value = value.replace(" ", "")
+    if not _CEDULA_RE.match(value):
+        return None
+
+    digits_only = "".join(c for c in value if c.isdigit())
+    # Count actual digits — must be between 6 and 8
+    digit_count = len(digits_only)
+    if digit_count < 6 or digit_count > 8:
+        return None
+
+    if digit_count == 8:
+        body, verifier = digits_only[:-1], digits_only[-1]
+        body_formatted = re.sub(r"(?<=\d)(?=(\d{3})+$)", ".", body)
+        return f"{body_formatted}-{verifier}"
+
+    return value
+
+
+def _validate_mail(value: str) -> Optional[str]:
+    """Validate that a string looks like an email (contains @)."""
+    if "@" not in value:
+        return None
+    return value
+
+
 def parse_researcher_response(
     response: str, chunk_id: str, chunk_text: str = ""
 ) -> LLMExtractionResult:
@@ -477,8 +535,28 @@ def parse_researcher_response(
                 )
                 continue
 
+            # Extraer propiedades opcionales
+            cedula = _clean_optional_field(item.get("cedula"))
+            if cedula:
+                cedula = _validate_cedula(cedula)
+
+            mail = _clean_optional_field(item.get("mail"))
+            if mail:
+                mail = _validate_mail(mail)
+
+            afiliacion = _clean_optional_field(item.get("afiliacion"))
+
             # Si llegamos hasta acá, pasó todas las validaciones
-            researchers.append(ResearcherMention(name=name, evidence=evidence, chunk_id=chunk_id))
+            researchers.append(
+                ResearcherMention(
+                    name=name,
+                    evidence=evidence,
+                    chunk_id=chunk_id,
+                    cedula=cedula,
+                    mail=mail,
+                    afiliacion=afiliacion,
+                )
+            )
 
     except json.JSONDecodeError as e:
         errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
