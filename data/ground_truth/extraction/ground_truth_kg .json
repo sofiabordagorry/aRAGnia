@@ -826,12 +826,6 @@
       "properties": {}
     },
     {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "signal_processing",
-      "target_id": "computer_science",
-      "properties": {}
-    },
-    {
       "type": "RESPONSABLE_DE",
       "source_id": "alvaro_martin",
       "target_id": "proy_2016_729",
