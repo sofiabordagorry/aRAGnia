@@ -456,15 +456,23 @@ def _clean_optional_field(raw: Any) -> Optional[str]:
 
 
 def _validate_cedula(value: str) -> Optional[str]:
-    """Validate that a string looks like a Uruguayan cédula (6-8 digits)."""
+    """Validate a Uruguayan cédula (6-8 digits). Format only 8-digit values."""
     # Strip spaces
     value = value.replace(" ", "")
     if not _CEDULA_RE.match(value):
         return None
+
+    digits_only = "".join(c for c in value if c.isdigit())
     # Count actual digits — must be between 6 and 8
-    digit_count = sum(c.isdigit() for c in value)
+    digit_count = len(digits_only)
     if digit_count < 6 or digit_count > 8:
         return None
+
+    if digit_count == 8:
+        body, verifier = digits_only[:-1], digits_only[-1]
+        body_formatted = re.sub(r"(?<=\d)(?=(\d{3})+$)", ".", body)
+        return f"{body_formatted}-{verifier}"
+
     return value
 
 
