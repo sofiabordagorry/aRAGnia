@@ -61,6 +61,7 @@ def entity_key(entity: dict, use_id: bool = False) -> Tuple:
                 value.get("base_name", ""),
                 value.get("sub_id", ""),
                 value.get("type", ""),
+                value.get("is_group", "")
             )
 
     return (label, normalize_text(value))
