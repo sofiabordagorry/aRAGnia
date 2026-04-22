@@ -281,46 +281,6 @@
   },
   {
     "id": 36,
-    "categoria": "Trazabilidad y Explicabilidad",
-    "pregunta": "¿De qué fragmento de texto (chunk) exacto se extrajo la participación de Flavia Serra?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 37,
-    "categoria": "Trazabilidad y Explicabilidad",
-    "pregunta": "Muestra el texto original del cual se dedujo que José Sotelo Silveira participa en el proyecto de genomas.",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 38,
-    "categoria": "Trazabilidad y Explicabilidad",
-    "pregunta": "¿En qué chunk se menciona a Ewelina Bakala y qué contexto específico aporta sobre su rol en el proyecto?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 39,
-    "categoria": "Trazabilidad y Explicabilidad",
-    "pregunta": "¿Existen múltiples chunks que evidencien la participación de Matías Richart en proyectos de co-simulación, o solo uno?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 40,
-    "categoria": "Trazabilidad y Explicabilidad",
-    "pregunta": "¿Cuál es el extracto de texto que justifica la vinculación de Gerardo Rubino con el proyecto de NDVI?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 41,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI?",
     "cypher_query": "",
@@ -328,7 +288,7 @@
     "answer": ""
   },
   {
-    "id": 42,
+    "id": 37,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías?",
     "cypher_query": "",
@@ -336,7 +296,7 @@
     "answer": ""
   },
   {
-    "id": 43,
+    "id": 38,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Adriana Marotta?",
     "cypher_query": "",
@@ -344,7 +304,7 @@
     "answer": ""
   },
   {
-    "id": 44,
+    "id": 39,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál es la dirección de correo electrónico o teléfono de Álvaro Martín para contactarlo?",
     "cypher_query": "",
@@ -352,7 +312,7 @@
     "answer": ""
   },
   {
-    "id": 45,
+    "id": 40,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Sistemas de Información?",
     "cypher_query": "",
@@ -360,7 +320,7 @@
     "answer": ""
   },
   {
-    "id": 46,
+    "id": 41,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿En qué universidad internacional realizó su doctorado Gadiel Seroussi?",
     "cypher_query": "",
@@ -368,7 +328,7 @@
     "answer": ""
   },
   {
-    "id": 47,
+    "id": 42,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
     "cypher_query": "",
@@ -376,7 +336,7 @@
     "answer": ""
   },
   {
-    "id": 48,
+    "id": 43,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
     "cypher_query": "",
@@ -384,7 +344,7 @@
     "answer": ""
   },
   {
-    "id": 49,
+    "id": 44,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Javier Baliosian?",
     "cypher_query": "",
@@ -392,7 +352,7 @@
     "answer": ""
   },
   {
-    "id": 50,
+    "id": 45,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál es el cronograma detallado de actividades, mes a mes, para la ejecución del proyecto de co-simulación?",
     "cypher_query": "",
@@ -400,7 +360,7 @@
     "answer": ""
   },
   {
-    "id": 51,
+    "id": 46,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué institución internacional financió la compra de los secuenciadores MinION mencionados en el proyecto de genética?",
     "cypher_query": "",
@@ -408,7 +368,7 @@
     "answer": ""
   },
   {
-    "id": 52,
+    "id": 47,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuántas horas semanales dedica cada investigador en promedio a su respectivo proyecto?",
     "cypher_query": "",
@@ -416,7 +376,7 @@
     "answer": ""
   },
   {
-    "id": 53,
+    "id": 48,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos año 2020",
     "cypher_query": "",
@@ -424,7 +384,7 @@
     "answer": ""
   },
   {
-    "id": 54,
+    "id": 49,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "adriana marotta temas",
     "cypher_query": "",
@@ -432,7 +392,7 @@
     "answer": ""
   },
   {
-    "id": 55,
+    "id": 50,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "investigadores genetica",
     "cypher_query": "",
@@ -440,7 +400,7 @@
     "answer": ""
   },
   {
-    "id": 56,
+    "id": 51,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos inteligencia artificial y agricultura",
     "cypher_query": "",
@@ -448,7 +408,7 @@
     "answer": ""
   },
   {
-    "id": 57,
+    "id": 52,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "quien investiga ciclovias",
     "cypher_query": "",
@@ -456,7 +416,7 @@
     "answer": ""
   },
   {
-    "id": 58,
+    "id": 53,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos compartidos alvaro martin y gadiel seroussi",
     "cypher_query": "",
@@ -464,7 +424,7 @@
     "answer": ""
   },
   {
-    "id": 59,
+    "id": 54,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "dominios de investigacion 2018 vs 2020",
     "cypher_query": "",
@@ -472,7 +432,7 @@
     "answer": ""
   },
   {
-    "id": 60,
+    "id": 55,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de co simulacion",
     "cypher_query": "",
