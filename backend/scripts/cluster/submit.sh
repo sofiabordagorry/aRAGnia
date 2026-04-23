@@ -27,6 +27,7 @@
 #SBATCH --gres=gpu:a40:1         # GPU A40 (48GB) — más disponibles que A100
                                  # Alternativas: gpu:a100:1 (40GB, solo 2 en el cluster)
                                  #               gpu:1 (cualquier GPU, si el modelo entra en 12GB)
+#SBATCH --export=ALL             # Exportar el entorno del shell al job (HF_TOKEN, etc.)
 #SBATCH --mail-type=ALL
 # Descomentar y poner tu email para recibir notificaciones:
 # #SBATCH --mail-user=tu_email@fing.edu.uy
@@ -39,7 +40,9 @@ set -e
 export PATH=$PATH:/usr/local/cuda/bin
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/local/cuda/lib64
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+# SLURM copia el script a /var/spool/, así que BASH_SOURCE no sirve para ubicar el repo.
+# Usamos SLURM_SUBMIT_DIR (directorio desde donde se hizo sbatch) como raíz del repo.
+REPO_ROOT="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
 ENV_NAME="graphrag"
 
 # --- Almacenamiento de alta velocidad (scratch) ---
@@ -73,10 +76,15 @@ cleanup() {
 trap cleanup EXIT
 
 # Activar conda
-# En cluster.uy suele estar en ~/.conda o ~/miniconda3
-# Ajustar la ruta si es necesario
-source "$(conda info --base)/etc/profile.d/conda.sh"
+# SLURM no hereda el shell init del usuario, así que el PATH de conda no está disponible.
+# Hay que hacer source directo del conda.sh de miniconda.
+CONDA_BASE="${CONDA_BASE:-$HOME/miniconda3}"
+source "$CONDA_BASE/etc/profile.d/conda.sh"
 conda activate "$ENV_NAME"
+
+# El sistema tiene libstdc++ viejo (GCC 4.8.5, CXXABI <= 1.3.8), numpy/torch pip wheels
+# requieren CXXABI_1.3.9+. Forzar el uso del libstdc++ del entorno conda.
+export LD_LIBRARY_PATH="$CONDA_BASE/envs/$ENV_NAME/lib:${LD_LIBRARY_PATH:-}"
 
 echo "[INFO] Python: $(which python) — $(python --version)"
 echo "[INFO] Entorno conda: $CONDA_DEFAULT_ENV"
@@ -111,16 +119,14 @@ echo ""
 echo "[INFO] Iniciando pipeline..."
 echo "============================================================"
 
-# Correr el pipeline completo
-python "$REPO_ROOT/backend/scripts/cluster/pipeline.py" \
+# Correr el pipeline multi-modelo.
+# --skip-docling y --skip-chunks: las etapas previas ya están hechas en una
+# corrida anterior; los archivos están en data/docling/ y data/chunks/.
+# Esto también evita importar docling, que está roto en este entorno por la
+# upgrade de transformers a >=5 (necesario para Qwen3.5).
+python "$REPO_ROOT/backend/scripts/cluster/multi_model_pipeline.py" \
     --data-dir "$SCRATCH_DATA" \
     --env-file "$REPO_ROOT/backend/.env"
-
-# Para saltear etapas ya procesadas, agregar flags:
-#   --skip-docling
-#   --skip-chunks
-#   --skip-embeddings
-#   --skip-extraction
 
 # Para desactivar LLM (más rápido, sin Groq):
 #   --no-llm-researchers
