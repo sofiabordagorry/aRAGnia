@@ -7,7 +7,7 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
@@ -631,7 +631,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         return "\n".join(context_parts)
 
-    def _extract_chunks_and_entities_from_results(
+    def extract_chunks_and_entities_from_results(
         self, records: List[Any]
     ) -> tuple[List[GraphRAGChunk], Dict[tuple[str, str], dict], Dict[str, List[tuple[str, str]]]]:
         """Extrae chunks y evidencia de entidades desde los resultados de Cypher."""
@@ -820,16 +820,25 @@ Tu respuesta (frase introductoria + lista completa):"""
             {"role": "user", "content": user_prompt},
         ]
 
+    
     def query(self, user_query: str) -> GraphRAGResult:
         """
         Pipeline completo de GraphRAG:
         """
         if not user_query or not user_query.strip():
             raise ValueError("Query vacía")
+        invalidResult: GraphRAGResult = None
+        cypher_query: str = ""
+        records: List[Any] = []
+        invalidResult, records, cypher_query = self.generate_cypher_query_result(user_query=user_query)
 
+        if records == []:
+            return invalidResult
+        return self.generate_result(records=records, user_query=user_query, cypher_query=cypher_query)
+
+    def generate_cypher_query_result(self, user_query) -> Tuple[GraphRAGResult, List[Any], str]:
         logger.info(f"Query recibida: '{user_query}'")
 
-        # Clasificar intención del usuario
         intent = self._classify_query_intent(user_query)
         logger.info(f"Intención clasificada: {intent}")
 
@@ -842,7 +851,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                 chunks=[],
                 cypher_query="",
                 chunk_to_entities={},
-            )
+            ), [], ""
 
         try:
             cypher_query = self.generate_cypher_query(user_query)
@@ -857,7 +866,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                     chunks=[],
                     cypher_query="",
                     chunk_to_entities={},
-                )
+                ), [], ""
             raise
 
         # Ejecutar query con reintentos en caso de error de sintaxis
@@ -882,16 +891,18 @@ Tu respuesta (frase introductoria + lista completa):"""
                 )
                 if attempt == MAX_SYNTAX_RETRIES - 1:
                     logger.error("Se agotaron los reintentos de corrección de sintaxis")
-                    return _too_complex_result
+                    return _too_complex_result, [], ""
                 try:
                     cypher_query = self._fix_cypher_query(cypher_query, str(exc))
                 except ValueError as fix_err:
                     logger.error(f"No se pudo corregir la query: {fix_err}")
-                    return _too_complex_result
-
+                    return _too_complex_result, [], ""
+        return None, records, cypher_query
+    
+    def generate_result(self, records, user_query, cypher_query)-> GraphRAGResult:
         # Extraer chunks y evidencia
         chunks, evidence_entities, chunk_to_entities = (
-            self._extract_chunks_and_entities_from_results(records)
+            self.extract_chunks_and_entities_from_results(records)
         )
         logger.info(f"Extraídos {len(chunks)} chunks con {len(evidence_entities)} entidades")
         if not chunks:

@@ -1,0 +1,29 @@
+{
+  "preguntas": [
+    "¿Qué investigadores participaron en el proyecto GI_2010_1445?",
+    "¿Quién es el responsable del proyecto GI_2010_1445?",
+    "¿Qué documentos están asociados al proyecto GI_2010_1445?",
+    "¿Qué tópicos tiene el proyecto GI_2010_1445?",
+    "¿A qué dominio pertenece el tópico Modeling and Simulation?",
+    "¿Qué proyectos tienen el tópico Computer Science Applications?",
+    "¿Qué investigadores trabajaron en proyectos del dominio Engineering?",
+    "¿Qué documentos fueron extraídos del proyecto GI_2010_1445?",
+    "¿Qué investigadores aparecen en el documento informe_2010_1445?",
+    "¿Qué proyectos tienen más de un investigador?",
+    "¿Cuáles son todos los dominios presentes en el grafo?",
+    "¿Qué tópicos están asociados al dominio Management Science and Operations Research?",
+    "¿Qué proyectos tienen documentos tipo informe?",
+    "¿Qué investigadores participaron en más de un proyecto?",
+    "¿Qué documentos pertenecen al año 2010?",
+    "¿Qué proyectos tienen al investigador Christopher Quincke?",
+    "¿Qué tópicos aparecen en documentos del proyecto GI_2010_1445?",
+    "¿Qué dominios tienen más de un tópico asociado?",
+    "¿Qué investigadores están asociados a más de un documento?",
+    "¿Qué proyectos no tienen investigadores asociados?",
+    "¿Qué documentos están relacionados con más de un proyecto?",
+    "¿Qué investigadores tienen nombre similar entre sí?",
+    "¿Qué tópicos aparecen en más de un proyecto?",
+    "¿Qué dominios no tienen tópicos asociados?",
+    "¿Qué proyectos tienen al menos un documento tipo tabla?"
+  ]
+}
