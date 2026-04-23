@@ -17,72 +17,47 @@ ANSWERS_OUTPUT_PATH = Path("data/results/query_batch_answers.jsonl")
 
 
 def _extract_question_text(item: Any) -> str:
-    if isinstance(item, str):
-        return item.strip()
-
     if isinstance(item, dict):
-        for key in ("question", "query", "text", "prompt"):
-            value = item.get(key)
-            if isinstance(value, str) and value.strip():
-                return value.strip()
+        value = item.get("question")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
 
     return ""
 
 
 def load_questions(path: Path) -> list[dict[str, Any]]:
-    suffix = path.suffix.lower()
+    if path.suffix.lower() != ".json":
+        raise ValueError("Formato no soportado. Este script solo acepta .json")
 
-    if suffix == ".txt":
-        items: list[dict[str, Any]] = []
-        for idx, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            items.append({"id": f"q{idx}", "question": line, "raw": line})
-        return items
+    payload = json.loads(path.read_text(encoding="utf-8"))
 
-    if suffix == ".jsonl":
-        items = []
-        for idx, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-            line = raw.strip()
-            if not line:
-                continue
-            obj = json.loads(line)
-            text = _extract_question_text(obj)
-            if not text:
-                continue
-            qid = str(obj.get("id") or obj.get("question_id") or f"q{idx}")
-            items.append({"id": qid, "question": text, "raw": obj})
-        return items
+    if isinstance(payload, dict):
+        questions_data = payload.get("questions", [])
+    elif isinstance(payload, list):
+        questions_data = payload
+    else:
+        raise ValueError("JSON de preguntas invalido: se esperaba lista u objeto con 'questions'.")
 
-    if suffix == ".json":
-        payload = json.loads(path.read_text(encoding="utf-8"))
+    items = []
+    for idx, obj in enumerate(questions_data, 1):
+        if not isinstance(obj, dict):
+            continue
 
-        if isinstance(payload, dict):
-            questions_data = payload.get("questions", [])
-        elif isinstance(payload, list):
-            questions_data = payload
-        else:
-            raise ValueError("JSON de preguntas invalido: se esperaba lista u objeto con 'questions'.")
+        text = _extract_question_text(obj)
+        if not text:
+            continue
 
-        items = []
-        for idx, obj in enumerate(questions_data, 1):
-            text = _extract_question_text(obj)
-            if not text:
-                continue
+        qid = obj.get("id") or idx
 
-            if isinstance(obj, dict):
-                qid = str(obj.get("id") or obj.get("question_id") or f"q{idx}")
-                raw_obj: Any = obj
-            else:
-                qid = f"q{idx}"
-                raw_obj = obj
+        items.append(
+            {
+                "id": qid,
+                "question": text,
+                "raw": obj,
+            }
+        )
 
-            items.append({"id": qid, "question": text, "raw": raw_obj})
-
-        return items
-
-    raise ValueError("Formato no soportado. Usar .txt, .json o .jsonl")
+    return items
 
 
 def _build_debug_payload(response_data: dict[str, Any]) -> dict[str, Any]:
@@ -117,6 +92,10 @@ def _build_debug_payload(response_data: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "cypher_query": response_data.get("cypher_query", ""),
+        "retrieved_subgraph": {
+            "chunk_to_entities": chunk_to_entities,
+            "chunks": response_data.get("chunks", []),
+        },
         "chunks": response_data.get("chunks", []),
         "chunk_to_entities": chunk_to_entities,
         "entities_extracted": entities_list,
@@ -177,16 +156,20 @@ def run_batch(
 def write_answers_jsonl(path: Path, results: list[dict[str, Any]]) -> None:
     lines: list[str] = []
     for row in results:
+        out = {
+            "id": row["id"],
+            "pregunta": row["question"],
+            "answer": row["answer"],
+            "ok": row["ok"],
+        }
+
+        debug = row.get("debug") if isinstance(row.get("debug"), dict) else {}
+        if debug:
+            out["cypher_query"] = debug.get("cypher_query", "")
+            out["retrieved_subgraph"] = debug.get("retrieved_subgraph", "")
+
         lines.append(
-            json.dumps(
-                {
-                    "id": row["id"],
-                    "question": row["question"],
-                    "answer": row["answer"],
-                    "ok": row["ok"],
-                },
-                ensure_ascii=False,
-            )
+            json.dumps(out, ensure_ascii=False)
         )
     path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
 
@@ -202,7 +185,7 @@ def parse_args() -> argparse.Namespace:
         "--questions-file",
         type=Path,
         required=True,
-        help="Ruta al archivo de preguntas (.txt, .json o .jsonl).",
+        help="Ruta al archivo de preguntas .json.",
     )
     parser.add_argument(
         "--include-debug",
