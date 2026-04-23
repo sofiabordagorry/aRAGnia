@@ -2,7 +2,7 @@
   {
     "id": 1,
     "categoria": "Consultas Estructurales Simples",
-    "pregunta": "¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos?",
+    "pregunta": "¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -10,7 +10,7 @@
   {
     "id": 2,
     "categoria": "Consultas Estructurales Simples",
-    "pregunta": "¿En qué proyecto participó Guillermo Dufort y Álvarez?",
+    "pregunta": "¿En qué proyecto participó Guillermo Dufort?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -42,7 +42,7 @@
   {
     "id": 6,
     "categoria": "Consultas Estructurales Simples",
-    "pregunta": "¿En qué año inició oficialmente el proyecto de predicción de NDVI?",
+    "pregunta": "¿En qué año inició oficialmente el proyecto de predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -74,7 +74,7 @@
   {
     "id": 10,
     "categoria": "Consultas Estructurales Simples",
-    "pregunta": "¿Quiénes figuran como responsables directos del proyecto de redes de ciclovías?",
+    "pregunta": "¿Quiénes figuran como responsables directos del proyecto de Diseño óptimo de redes de ciclovías?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -122,7 +122,7 @@
   {
     "id": 16,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto Web Warehouse?",
+    "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -154,7 +154,7 @@
   {
     "id": 20,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿En qué año comenzaron a aparecer en la red proyectos vinculados a Genética o Bioquímica?",
+    "pregunta": "Compara los tópicos de los proyectos de 2015 con los de 2020. ¿Qué diferencias principales o nuevos enfoques se notan?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -162,7 +162,7 @@
   {
     "id": 21,
     "categoria": "Análisis Temporal",
-    "pregunta": "Compara los tópicos de los proyectos de 2015 con los de 2020. ¿Qué diferencias principales o nuevos enfoques se notan?",
+    "pregunta": "¿Qué investigadores comenzaron proyectos nuevos dentro del dominio Ingeniería durante el año 2018?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -170,7 +170,7 @@
   {
     "id": 22,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Qué investigadores comenzaron proyectos nuevos dentro del dominio Ingeniería durante el año 2018?",
+    "pregunta": "¿Cuál es el año que presenta la mayor diversidad de tópicos investigados simultáneamente?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -178,7 +178,7 @@
   {
     "id": 23,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Cuál es el año que presenta la mayor diversidad de tópicos investigados simultáneamente?",
+    "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -186,21 +186,13 @@
   {
     "id": 24,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 25,
-    "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo ha cambiado el enfoque de investigación o los tópicos asociados a Gonzalo Tejera a lo largo del tiempo?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
   },
   {
-    "id": 26,
+    "id": 25,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el dominio Ciencias Agrícolas y Biológicas?",
     "cypher_query": "",
@@ -208,7 +200,7 @@
     "answer": ""
   },
   {
-    "id": 27,
+    "id": 26,
     "categoria": "Consultas Complejas",
     "pregunta": "Lista únicamente a los responsables de proyectos que abarquen el tópico Software.",
     "cypher_query": "",
@@ -216,7 +208,7 @@
     "answer": ""
   },
   {
-    "id": 28,
+    "id": 27,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Existen investigadores que participen en proyectos de dominios completamente distintos entre sí? ¿Quiénes son?",
     "cypher_query": "",
@@ -224,7 +216,7 @@
     "answer": ""
   },
   {
-    "id": 29,
+    "id": 28,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Ciencias de la Computación y de Ciencias Agrícolas y Biológicas?",
     "cypher_query": "",
@@ -232,7 +224,7 @@
     "answer": ""
   },
   {
-    "id": 30,
+    "id": 29,
     "categoria": "Consultas Complejas",
     "pregunta": "Identifica a todos los investigadores asociados directa o indirectamente al tópico Modelado y Simulación.",
     "cypher_query": "",
@@ -240,7 +232,7 @@
     "answer": ""
   },
   {
-    "id": 31,
+    "id": 30,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué áreas o tópicos investigan en conjunto Pablo Rodríguez Bocca y Andrés Berger?",
     "cypher_query": "",
@@ -248,7 +240,7 @@
     "answer": ""
   },
   {
-    "id": 32,
+    "id": 31,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos dominios diferentes a la vez?",
     "cypher_query": "",
@@ -256,7 +248,7 @@
     "answer": ""
   },
   {
-    "id": 33,
+    "id": 32,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué otros investigadores comparten los mismos dominios de investigación que Gadiel Seroussi?",
     "cypher_query": "",
@@ -264,15 +256,15 @@
     "answer": ""
   },
   {
-    "id": 34,
+    "id": 33,
     "categoria": "Consultas Complejas",
-    "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de secuenciación por nanoporos.",
+    "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos.",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
   },
   {
-    "id": 35,
+    "id": 34,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Cuál es el dominio transversal más común entre todos los proyectos integrados en el sistema?",
     "cypher_query": "",
@@ -280,9 +272,17 @@
     "answer": ""
   },
   {
+    "id": 35,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
     "id": 36,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI?",
+    "pregunta": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías en Diseño óptimo de redes de ciclovías?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -290,7 +290,7 @@
   {
     "id": 37,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías?",
+    "pregunta": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Adriana Marotta?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -298,7 +298,7 @@
   {
     "id": 38,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Adriana Marotta?",
+    "pregunta": "¿Cuál es la dirección de correo electrónico o teléfono de Álvaro Martín para contactarlo?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -306,7 +306,7 @@
   {
     "id": 39,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Cuál es la dirección de correo electrónico o teléfono de Álvaro Martín para contactarlo?",
+    "pregunta": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Sistemas de Información?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -314,7 +314,7 @@
   {
     "id": 40,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Sistemas de Información?",
+    "pregunta": "¿En qué universidad internacional realizó su doctorado Gadiel Seroussi?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -322,7 +322,7 @@
   {
     "id": 41,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿En qué universidad internacional realizó su doctorado Gadiel Seroussi?",
+    "pregunta": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -330,7 +330,7 @@
   {
     "id": 42,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
+    "pregunta": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -338,7 +338,7 @@
   {
     "id": 43,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
+    "pregunta": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Javier Baliosian?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -346,7 +346,7 @@
   {
     "id": 44,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Javier Baliosian?",
+    "pregunta": "¿Cuál es el cronograma detallado de actividades, mes a mes, para la ejecución del proyecto de Co-simulación en Sistemas Ciber Físicos?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -354,7 +354,7 @@
   {
     "id": 45,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Cuál es el cronograma detallado de actividades, mes a mes, para la ejecución del proyecto de co-simulación?",
+    "pregunta": "¿Qué institución internacional financió la compra de los secuenciadores MinION mencionados en el proyecto de genética?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
@@ -362,21 +362,13 @@
   {
     "id": 46,
     "categoria": "Fuera de Alcance",
-    "pregunta": "¿Qué institución internacional financió la compra de los secuenciadores MinION mencionados en el proyecto de genética?",
-    "cypher_query": "",
-    "retrieved_subgraph": "",
-    "answer": ""
-  },
-  {
-    "id": 47,
-    "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuántas horas semanales dedica cada investigador en promedio a su respectivo proyecto?",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
   },
   {
-    "id": 48,
+    "id": 47,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos año 2020",
     "cypher_query": "",
@@ -384,7 +376,7 @@
     "answer": ""
   },
   {
-    "id": 49,
+    "id": 48,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "adriana marotta temas",
     "cypher_query": "",
@@ -392,15 +384,15 @@
     "answer": ""
   },
   {
-    "id": 50,
+    "id": 49,
     "categoria": "Lenguaje Natural Informal",
-    "pregunta": "investigadores genetica",
+    "pregunta": "investigadores agronomía",
     "cypher_query": "",
     "retrieved_subgraph": "",
     "answer": ""
   },
   {
-    "id": 51,
+    "id": 50,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos inteligencia artificial y agricultura",
     "cypher_query": "",
@@ -408,7 +400,7 @@
     "answer": ""
   },
   {
-    "id": 52,
+    "id": 51,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "quien investiga ciclovias",
     "cypher_query": "",
@@ -416,7 +408,7 @@
     "answer": ""
   },
   {
-    "id": 53,
+    "id": 52,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos compartidos alvaro martin y gadiel seroussi",
     "cypher_query": "",
@@ -424,7 +416,7 @@
     "answer": ""
   },
   {
-    "id": 54,
+    "id": 53,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "dominios de investigacion 2018 vs 2020",
     "cypher_query": "",
@@ -432,7 +424,7 @@
     "answer": ""
   },
   {
-    "id": 55,
+    "id": 54,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de co simulacion",
     "cypher_query": "",
