@@ -49,7 +49,7 @@ El cluster no tiene SSH key configurada para GitHub, hay que usar un Personal Ac
 **En el cluster**:
 ```bash
 cd ~
-git clone https://github.com/<usuario>/institutional-graphrag.git
+git clone https://github.com/sofiabordagorry/institutional-graphrag.git
 # Cuando pida password, pegar el PAT (no la contrasena de GitHub)
 cd institutional-graphrag
 ```
@@ -69,6 +69,12 @@ Los PDFs del corpus y los archivos de tablas deben estar en `data/corpus/` y `da
 rsync -arvz -e "ssh -p 10022" data/corpus/ tu_usuario@cluster.uy:~/institutional-graphrag/data/corpus/
 rsync -arvz -e "ssh -p 10022" data/tables/ tu_usuario@cluster.uy:~/institutional-graphrag/data/tables/
 scp -P 10022 backend/.env tu_usuario@cluster.uy:~/institutional-graphrag/backend/.env
+```
+
+En windows:
+
+```bash
+scp -P 10022 -r data/corpus/* tu_usuario@cluster.uy:~/institutional-graphrag/data/corpus/
 ```
 
 Tambien crear la carpeta `logs/` que SLURM necesita para escribir los logs:
