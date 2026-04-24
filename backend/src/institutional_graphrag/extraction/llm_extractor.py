@@ -28,7 +28,7 @@ from institutional_graphrag.graph.schema import (
 from institutional_graphrag.llm.llm_provider import get_llm_client
 
 logger = logging.getLogger(__name__)
-TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
+TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 # Backward-compatible public exports expected by tests and callers.
 __all__ = [
