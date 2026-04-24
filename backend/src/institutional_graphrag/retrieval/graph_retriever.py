@@ -173,7 +173,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         Genera una query Cypher usando LLM a partir de la pregunta del usuario.
         """
         user_query = "".join(
-            c for c in unicodedata.normalize("NFD", user_query) if unicodedata.category(c) != "Mn"
+            c for c in unicodedata.normalize("NFD", user_query.upper()) if unicodedata.category(c) != "Mn"
         )
         prompt = self._build_cypher_generation_prompt(user_query)
 

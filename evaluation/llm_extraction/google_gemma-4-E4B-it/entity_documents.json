@@ -37413,482 +37413,482 @@
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": "Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad."
+      "value": "WEB WAREHOUSE DE DATOS ABIERTOS DE GOBIERNO CON GESTIÓN DE CALIDAD."
     },
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": "Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
+      "value": "APLICACIONES DE LA TEORÍA DE LA INFORMACIÓN AL PROCESAMIENTO DE DATOS DE SECUENCIACIÓN DE GENOMAS POR NANOPOROS"
     },
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": "Diseño óptimo de redes de ciclovías"
+      "value": "DISEÑO ÓPTIMO DE REDES DE CICLOVÍAS"
     },
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": "Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
+      "value": "PREDICCIÓN DE NDVI DENTRO DE PARCELAS DE CULTIVOS AGRÍCOLAS MEDIANTE TÉCNICAS DE APRENDIZAJE PROFUNDO"
     },
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": "Co-simulación en Sistemas Ciber-Físicos"
+      "value": "CO-SIMULACIÓN EN SISTEMAS CIBER-FÍSICOS"
     },
     {
       "id": "general_arts_and_humanities",
       "label": "Topico",
-      "value": "Artes y Humanidades Generales"
+      "value": "ARTES Y HUMANIDADES GENERALES"
     },
     {
       "id": "arts_and_humanities",
       "label": "Dominio",
-      "value": "Artes y Humanidades"
+      "value": "ARTES Y HUMANIDADES"
     },
     {
       "id": "information_systems",
       "label": "Topico",
-      "value": "Sistemas de Informacion"
+      "value": "SISTEMAS DE INFORMACION"
     },
     {
       "id": "computer_science",
       "label": "Dominio",
-      "value": "Ciencias de la Computacion"
+      "value": "CIENCIAS DE LA COMPUTACION"
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
-      "value": "Aplicaciones de Ciencias de la Computacion"
+      "value": "APLICACIONES DE CIENCIAS DE LA COMPUTACION"
     },
     {
       "id": "software",
       "label": "Topico",
-      "value": "Software"
+      "value": "SOFTWARE"
     },
     {
       "id": "communication",
       "label": "Topico",
-      "value": "Comunicacion"
+      "value": "COMUNICACION"
     },
     {
       "id": "social_sciences",
       "label": "Dominio",
-      "value": "Ciencias Sociales"
+      "value": "CIENCIAS SOCIALES"
     },
     {
       "id": "public_administration",
       "label": "Topico",
-      "value": "Administracion Publica"
+      "value": "ADMINISTRACION PUBLICA"
     },
     {
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
-      "value": "Seguridad, Riesgo, Confiabilidad y Calidad"
+      "value": "SEGURIDAD, RIESGO, CONFIABILIDAD Y CALIDAD"
     },
     {
       "id": "engineering",
       "label": "Dominio",
-      "value": "Ingenieria"
+      "value": "INGENIERIA"
     },
     {
       "id": "information_systems_and_management",
       "label": "Topico",
-      "value": "Sistemas de Informacion y Gestion"
+      "value": "SISTEMAS DE INFORMACION Y GESTION"
     },
     {
       "id": "decision_sciences",
       "label": "Dominio",
-      "value": "Ciencias de la Decision"
+      "value": "CIENCIAS DE LA DECISION"
     },
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
-      "value": "Modelado y Simulacion"
+      "value": "MODELADO Y SIMULACION"
     },
     {
       "id": "mathematics",
       "label": "Dominio",
-      "value": "Matematicas"
+      "value": "MATEMATICAS"
     },
     {
       "id": "computational_theory_and_mathematics",
       "label": "Topico",
-      "value": "Teoria Computacional y Matematicas"
+      "value": "TEORIA COMPUTACIONAL Y MATEMATICAS"
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
-      "value": "Redes de Computadoras y Comunicaciones"
+      "value": "REDES DE COMPUTADORAS Y COMUNICACIONES"
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
-      "value": "Ciencias de la Gestion e Investigacion Operativa"
+      "value": "CIENCIAS DE LA GESTION E INVESTIGACION OPERATIVA"
     },
     {
       "id": "transportation",
       "label": "Topico",
-      "value": "Transporte"
+      "value": "TRANSPORTE"
     },
     {
       "id": "tourism_leisure_and_hospitality_management",
       "label": "Topico",
-      "value": "Gestion del Turismo, Ocio y Hospitalidad"
+      "value": "GESTION DEL TURISMO, OCIO Y HOSPITALIDAD"
     },
     {
       "id": "business_management_and_accounting",
       "label": "Dominio",
-      "value": "Negocios, Gestion y Contabilidad"
+      "value": "NEGOCIOS, GESTION Y CONTABILIDAD"
     },
     {
       "id": "urban_studies",
       "label": "Topico",
-      "value": "Estudios Urbanos"
+      "value": "ESTUDIOS URBANOS"
     },
     {
       "id": "management_information_systems",
       "label": "Topico",
-      "value": "Sistemas de Informacion de Gestion"
+      "value": "SISTEMAS DE INFORMACION DE GESTION"
     },
     {
       "id": "signal_processing",
       "label": "Topico",
-      "value": "Procesamiento de Senales"
+      "value": "PROCESAMIENTO DE SENALES"
     },
     {
       "id": "management_monitoring_policy_and_law",
       "label": "Topico",
-      "value": "Gestion, Monitoreo, Politica y Ley"
+      "value": "GESTION, MONITOREO, POLITICA Y LEY"
     },
     {
       "id": "environmental_science",
       "label": "Dominio",
-      "value": "Ciencias Ambientales"
+      "value": "CIENCIAS AMBIENTALES"
     },
     {
       "id": "general_engineering",
       "label": "Topico",
-      "value": "Ingenieria General"
+      "value": "INGENIERIA GENERAL"
     },
     {
       "id": "artificial_intelligence",
       "label": "Topico",
-      "value": "Inteligencia Artificial"
+      "value": "INTELIGENCIA ARTIFICIAL"
     },
     {
       "id": "process_chemistry_and_technology",
       "label": "Topico",
-      "value": "Quimica de Procesos y Tecnologia"
+      "value": "QUIMICA DE PROCESOS Y TECNOLOGIA"
     },
     {
       "id": "chemical_engineering",
       "label": "Dominio",
-      "value": "Ingenieria Quimica"
+      "value": "INGENIERIA QUIMICA"
     },
     {
       "id": "management_of_technology_and_innovation",
       "label": "Topico",
-      "value": "Gestion de Tecnologia e Innovacion"
+      "value": "GESTION DE TECNOLOGIA E INNOVACION"
     },
     {
       "id": "strategy_and_management",
       "label": "Topico",
-      "value": "Estrategia y Gestion"
+      "value": "ESTRATEGIA Y GESTION"
     },
     {
       "id": "industrial_and_manufacturing_engineering",
       "label": "Topico",
-      "value": "Ingenieria Industrial y de Manufactura"
+      "value": "INGENIERIA INDUSTRIAL Y DE MANUFACTURA"
     },
     {
       "id": "education",
       "label": "Topico",
-      "value": "Educacion"
+      "value": "EDUCACION"
     },
     {
       "id": "development",
       "label": "Topico",
-      "value": "Desarrollo"
+      "value": "DESARROLLO"
     },
     {
       "id": "general_economics_econometrics_and_finance",
       "label": "Topico",
-      "value": "Economia, Econometria y Finanzas Generales"
+      "value": "ECONOMIA, ECONOMETRIA Y FINANZAS GENERALES"
     },
     {
       "id": "economics_econometrics_and_finance",
       "label": "Dominio",
-      "value": "Economia, Econometria y Finanzas"
+      "value": "ECONOMIA, ECONOMETRIA Y FINANZAS"
     },
     {
       "id": "business_and_international_management",
       "label": "Topico",
-      "value": "Negocios y Gestion Internacional"
+      "value": "NEGOCIOS Y GESTION INTERNACIONAL"
     },
     {
       "id": "library_and_information_sciences",
       "label": "Topico",
-      "value": "Bibliotecologia y Ciencias de la Informacion"
+      "value": "BIBLIOTECOLOGIA Y CIENCIAS DE LA INFORMACION"
     },
     {
       "id": "molecular_biology",
       "label": "Topico",
-      "value": "Biologia Molecular"
+      "value": "BIOLOGIA MOLECULAR"
     },
     {
       "id": "biochemistry_genetics_and_molecular_biology",
       "label": "Dominio",
-      "value": "Bioquimica, Genetica y Biologia Molecular"
+      "value": "BIOQUIMICA, GENETICA Y BIOLOGIA MOLECULAR"
     },
     {
       "id": "research_and_theory",
       "label": "Topico",
-      "value": "Investigacion y Teoria"
+      "value": "INVESTIGACION Y TEORIA"
     },
     {
       "id": "nursing",
       "label": "Dominio",
-      "value": "Enfermeria"
+      "value": "ENFERMERIA"
     },
     {
       "id": "statistics_and_probability",
       "label": "Topico",
-      "value": "Estadistica y Probabilidad"
+      "value": "ESTADISTICA Y PROBABILIDAD"
     },
     {
       "id": "genetics",
       "label": "Topico",
-      "value": "Genetica"
+      "value": "GENETICA"
     },
     {
       "id": "microbiology",
       "label": "Topico",
-      "value": "Microbiologia"
+      "value": "MICROBIOLOGIA"
     },
     {
       "id": "immunology_and_microbiology",
       "label": "Dominio",
-      "value": "Inmunologia y Microbiologia"
+      "value": "INMUNOLOGIA Y MICROBIOLOGIA"
     },
     {
       "id": "biotechnology",
       "label": "Topico",
-      "value": "Biotecnologia"
+      "value": "BIOTECNOLOGIA"
     },
     {
       "id": "biomedical_engineering",
       "label": "Topico",
-      "value": "Ingenieria Biomedica"
+      "value": "INGENIERIA BIOMEDICA"
     },
     {
       "id": "bioengineering",
       "label": "Topico",
-      "value": "Bioingenieria"
+      "value": "BIOINGENIERIA"
     },
     {
       "id": "health_informatics",
       "label": "Topico",
-      "value": "Informatica en Salud"
+      "value": "INFORMATICA EN SALUD"
     },
     {
       "id": "medicine",
       "label": "Dominio",
-      "value": "Medicina"
+      "value": "MEDICINA"
     },
     {
       "id": "aerospace_engineering",
       "label": "Topico",
-      "value": "Ingenieria Aeroespacial"
+      "value": "INGENIERIA AEROESPACIAL"
     },
     {
       "id": "mechanical_engineering",
       "label": "Topico",
-      "value": "Ingenieria Mecanica"
+      "value": "INGENIERIA MECANICA"
     },
     {
       "id": "electrical_and_electronic_engineering",
       "label": "Topico",
-      "value": "Ingenieria Electrica y Electronica"
+      "value": "INGENIERIA ELECTRICA Y ELECTRONICA"
     },
     {
       "id": "materials_chemistry",
       "label": "Topico",
-      "value": "Quimica de Materiales"
+      "value": "QUIMICA DE MATERIALES"
     },
     {
       "id": "materials_science",
       "label": "Dominio",
-      "value": "Ciencias de los Materiales"
+      "value": "CIENCIAS DE LOS MATERIALES"
     },
     {
       "id": "chemical_health_and_safety",
       "label": "Topico",
-      "value": "Salud y Seguridad Quimica"
+      "value": "SALUD Y SEGURIDAD QUIMICA"
     },
     {
       "id": "computational_mechanics",
       "label": "Topico",
-      "value": "Mecanica Computacional"
+      "value": "MECANICA COMPUTACIONAL"
     },
     {
       "id": "civil_and_structural_engineering",
       "label": "Topico",
-      "value": "Ingenieria Civil y Estructural"
+      "value": "INGENIERIA CIVIL Y ESTRUCTURAL"
     },
     {
       "id": "geography_planning_and_development",
       "label": "Topico",
-      "value": "Geografia, Planificacion y Desarrollo"
+      "value": "GEOGRAFIA, PLANIFICACION Y DESARROLLO"
     },
     {
       "id": "mathematical_physics",
       "label": "Topico",
-      "value": "Fisica Matematica"
+      "value": "FISICA MATEMATICA"
     },
     {
       "id": "human_factors_and_ergonomics",
       "label": "Topico",
-      "value": "Factores Humanos y Ergonomia"
+      "value": "FACTORES HUMANOS Y ERGONOMIA"
     },
     {
       "id": "applied_mathematics",
       "label": "Topico",
-      "value": "Matematicas Aplicadas"
+      "value": "MATEMATICAS APLICADAS"
     },
     {
       "id": "building_and_construction",
       "label": "Topico",
-      "value": "Construccion y Edificacion"
+      "value": "CONSTRUCCION Y EDIFICACION"
     },
     {
       "id": "numerical_analysis",
       "label": "Topico",
-      "value": "Analisis Numerico"
+      "value": "ANALISIS NUMERICO"
     },
     {
       "id": "general_social_sciences",
       "label": "Topico",
-      "value": "Ciencias Sociales Generales"
+      "value": "CIENCIAS SOCIALES GENERALES"
     },
     {
       "id": "public_health_environmental_and_occupational_health",
       "label": "Topico",
-      "value": "Salud Publica, Ambiental y Ocupacional"
+      "value": "SALUD PUBLICA, AMBIENTAL Y OCUPACIONAL"
     },
     {
       "id": "environmental_engineering",
       "label": "Topico",
-      "value": "Ingenieria Ambiental"
+      "value": "INGENIERIA AMBIENTAL"
     },
     {
       "id": "general_decision_sciences",
       "label": "Topico",
-      "value": "Ciencias de la Decision Generales"
+      "value": "CIENCIAS DE LA DECISION GENERALES"
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
-      "value": "Ingenieria de Control y Sistemas"
+      "value": "INGENIERIA DE CONTROL Y SISTEMAS"
     },
     {
       "id": "computer_graphics_and_computer-aided_design",
       "label": "Topico",
-      "value": "Graficos por Computadora y Diseno Asistido por Computadora"
+      "value": "GRAFICOS POR COMPUTADORA Y DISENO ASISTIDO POR COMPUTADORA"
     },
     {
       "id": "computer_vision_and_pattern_recognition",
       "label": "Topico",
-      "value": "Vision por Computadora y Reconocimiento de Patrones"
+      "value": "VISION POR COMPUTADORA Y RECONOCIMIENTO DE PATRONES"
     },
     {
       "id": "computational_mathematics",
       "label": "Topico",
-      "value": "Matematicas Computacionales"
+      "value": "MATEMATICAS COMPUTACIONALES"
     },
     {
       "id": "agronomy_and_crop_science",
       "label": "Topico",
-      "value": "Agronomia y Ciencias de Cultivos"
+      "value": "AGRONOMIA Y CIENCIAS DE CULTIVOS"
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
-      "value": "Ciencias Agricolas y Biologicas"
+      "value": "CIENCIAS AGRICOLAS Y BIOLOGICAS"
     },
     {
       "id": "ecology_evolution_behavior_and_systematics",
       "label": "Topico",
-      "value": "Ecologia, Evolucion, Comportamiento y Sistematica"
+      "value": "ECOLOGIA, EVOLUCION, COMPORTAMIENTO Y SISTEMATICA"
     },
     {
       "id": "environmental_chemistry",
       "label": "Topico",
-      "value": "Quimica Ambiental"
+      "value": "QUIMICA AMBIENTAL"
     },
     {
       "id": "general_agricultural_and_biological_sciences",
       "label": "Topico",
-      "value": "Ciencias Agricolas y Biologicas Generales"
+      "value": "CIENCIAS AGRICOLAS Y BIOLOGICAS GENERALES"
     },
     {
       "id": "statistics_probability_and_uncertainty",
       "label": "Topico",
-      "value": "Estadistica, Probabilidad e Incertidumbre"
+      "value": "ESTADISTICA, PROBABILIDAD E INCERTIDUMBRE"
     },
     {
       "id": "plant_science",
       "label": "Topico",
-      "value": "Ciencias de las Plantas"
+      "value": "CIENCIAS DE LAS PLANTAS"
     },
     {
       "id": "soil_science",
       "label": "Topico",
-      "value": "Ciencias del Suelo"
+      "value": "CIENCIAS DEL SUELO"
     },
     {
       "id": "geology",
       "label": "Topico",
-      "value": "Geologia"
+      "value": "GEOLOGIA"
     },
     {
       "id": "earth_and_planetary_sciences",
       "label": "Dominio",
-      "value": "Ciencias de la Tierra y Planetarias"
+      "value": "CIENCIAS DE LA TIERRA Y PLANETARIAS"
     },
     {
       "id": "earth-surface_processes",
       "label": "Topico",
-      "value": "Procesos de la Superficie Terrestre"
+      "value": "PROCESOS DE LA SUPERFICIE TERRESTRE"
     },
     {
       "id": "hardware_and_architecture",
       "label": "Topico",
-      "value": "Hardware y Arquitectura"
+      "value": "HARDWARE Y ARQUITECTURA"
     },
     {
       "id": "organizational_behavior_and_human_resource_management",
       "label": "Topico",
-      "value": "Comportamiento Organizacional y Gestion de Recursos Humanos"
+      "value": "COMPORTAMIENTO ORGANIZACIONAL Y GESTION DE RECURSOS HUMANOS"
     },
     {
       "id": "automotive_engineering",
       "label": "Topico",
-      "value": "Ingenieria Automotriz"
+      "value": "INGENIERIA AUTOMOTRIZ"
     },
     {
       "id": "human-computer_interaction",
       "label": "Topico",
-      "value": "Interaccion Humano-Computadora"
+      "value": "INTERACCION HUMANO-COMPUTADORA"
     },
     {
       "id": "instrumentation",
       "label": "Topico",
-      "value": "Instrumentacion"
+      "value": "INSTRUMENTACION"
     },
     {
       "id": "physics_and_astronomy",
       "label": "Dominio",
-      "value": "Fisica y Astronomia"
+      "value": "FISICA Y ASTRONOMIA"
     },
     {
       "id": "pablo_rodrı́guez-bocca",
