@@ -510,7 +510,9 @@ class RuleBasedExtractor:
     def _add_project_from_best(self, project_id: str, best: dict[str, Any]) -> None:
         # mismo comportamiento que tu bloque
         project_title = "".join(
-            c for c in unicodedata.normalize("NFD", best["candidate_title"].upper()) if unicodedata.category(c) != "Mn"
+            c
+            for c in unicodedata.normalize("NFD", best["candidate_title"].upper())
+            if unicodedata.category(c) != "Mn"
         )
         self.res.entities.append(Proyecto(id=project_id, value=project_title))
 

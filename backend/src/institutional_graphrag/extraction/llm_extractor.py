@@ -345,7 +345,9 @@ If no match:
                 )
                 continue
             topic_value = "".join(
-                c for c in unicodedata.normalize("NFD", mention.topic.upper()) if unicodedata.category(c) != "Mn"
+                c
+                for c in unicodedata.normalize("NFD", mention.topic.upper())
+                if unicodedata.category(c) != "Mn"
             )
             entities.append(Topico(id=topic_id, value=topic_value))
             field_name = self.subfields_map.get(topic_normalized)
@@ -353,7 +355,9 @@ If no match:
                 field_normalized = field_name.lower().strip()
                 field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
                 domain_value = "".join(
-                    c for c in unicodedata.normalize("NFD", field_name.upper()) if unicodedata.category(c) != "Mn"
+                    c
+                    for c in unicodedata.normalize("NFD", field_name.upper())
+                    if unicodedata.category(c) != "Mn"
                 )
                 entities.append(Dominio(field_id, domain_value))
                 relationships.append(PERTENECE_A_DOMINIO(topic_id, field_id))
