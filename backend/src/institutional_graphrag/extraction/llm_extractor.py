@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -343,7 +344,10 @@ If no match:
                     )
                 )
                 continue
-            entities.append(Topico(id=topic_id, value=mention.topic))
+            topic_value = "".join(
+                c for c in unicodedata.normalize("NFD", mention.topic) if unicodedata.category(c) != "Mn"
+            )
+            entities.append(Topico(id=topic_id, value=topic_value))
             field_name = self.subfields_map.get(topic_normalized)
             if field_name:
                 field_normalized = field_name.lower().strip()
