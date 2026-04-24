@@ -6484,32 +6484,32 @@
     {
       "id": "computational_mechanics",
       "label": "Topico",
-      "value": "Computational Mechanics"
+      "value": "Mecanica Computacional"
     },
     {
       "id": "engineering",
       "label": "Dominio",
-      "value": "Engineering"
+      "value": "Ingenieria"
     },
     {
       "id": "information_systems",
       "label": "Topico",
-      "value": "Information Systems"
+      "value": "Sistemas de Informacion"
     },
     {
       "id": "computer_science",
       "label": "Dominio",
-      "value": "Computer Science"
+      "value": "Ciencias de la Computacion"
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
-      "value": "Computer Networks and Communications"
+      "value": "Redes de Computadoras y Comunicaciones"
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
-      "value": "Computer Science Applications"
+      "value": "Aplicaciones de Ciencias de la Computacion"
     },
     {
       "id": "software",
@@ -6519,227 +6519,227 @@
     {
       "id": "general_engineering",
       "label": "Topico",
-      "value": "General Engineering"
+      "value": "Ingenieria General"
     },
     {
       "id": "electrical_and_electronic_engineering",
       "label": "Topico",
-      "value": "Electrical and Electronic Engineering"
+      "value": "Ingenieria Electrica y Electronica"
     },
     {
       "id": "media_technology",
       "label": "Topico",
-      "value": "Media Technology"
+      "value": "Tecnologia de Medios"
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
-      "value": "Control and Systems Engineering"
+      "value": "Ingenieria de Control y Sistemas"
     },
     {
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
-      "value": "Safety, Risk, Reliability and Quality"
+      "value": "Seguridad, Riesgo, Confiabilidad y Calidad"
     },
     {
       "id": "safety_research",
       "label": "Topico",
-      "value": "Safety Research"
+      "value": "Investigacion en Seguridad"
     },
     {
       "id": "social_sciences",
       "label": "Dominio",
-      "value": "Social Sciences"
+      "value": "Ciencias Sociales"
     },
     {
       "id": "architecture",
       "label": "Topico",
-      "value": "Architecture"
+      "value": "Arquitectura"
     },
     {
       "id": "industrial_and_manufacturing_engineering",
       "label": "Topico",
-      "value": "Industrial and Manufacturing Engineering"
+      "value": "Ingenieria Industrial y de Manufactura"
     },
     {
       "id": "environmental_science",
       "label": "Dominio",
-      "value": "Environmental Science"
+      "value": "Ciencias Ambientales"
     },
     {
       "id": "education",
       "label": "Topico",
-      "value": "Education"
+      "value": "Educacion"
     },
     {
       "id": "general_social_sciences",
       "label": "Topico",
-      "value": "General Social Sciences"
+      "value": "Ciencias Sociales Generales"
     },
     {
       "id": "information_systems_and_management",
       "label": "Topico",
-      "value": "Information Systems and Management"
+      "value": "Sistemas de Informacion y Gestion"
     },
     {
       "id": "decision_sciences",
       "label": "Dominio",
-      "value": "Decision Sciences"
+      "value": "Ciencias de la Decision"
     },
     {
       "id": "business_and_international_management",
       "label": "Topico",
-      "value": "Business and International Management"
+      "value": "Negocios y Gestion Internacional"
     },
     {
       "id": "business_management_and_accounting",
       "label": "Dominio",
-      "value": "Business, Management and Accounting"
+      "value": "Negocios, Gestion y Contabilidad"
     },
     {
       "id": "theoretical_computer_science",
       "label": "Topico",
-      "value": "Theoretical Computer Science"
+      "value": "Ciencias de la Computacion Teoricas"
     },
     {
       "id": "mathematics",
       "label": "Dominio",
-      "value": "Mathematics"
+      "value": "Matematicas"
     },
     {
       "id": "signal_processing",
       "label": "Topico",
-      "value": "Signal Processing"
+      "value": "Procesamiento de Senales"
     },
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
-      "value": "Modeling and Simulation"
+      "value": "Modelado y Simulacion"
     },
     {
       "id": "computational_mathematics",
       "label": "Topico",
-      "value": "Computational Mathematics"
+      "value": "Matematicas Computacionales"
     },
     {
       "id": "mechanical_engineering",
       "label": "Topico",
-      "value": "Mechanical Engineering"
+      "value": "Ingenieria Mecanica"
     },
     {
       "id": "biochemistry",
       "label": "Topico",
-      "value": "Biochemistry"
+      "value": "Bioquimica"
     },
     {
       "id": "biochemistry_genetics_and_molecular_biology",
       "label": "Dominio",
-      "value": "Biochemistry, Genetics and Molecular Biology"
+      "value": "Bioquimica, Genetica y Biologia Molecular"
     },
     {
       "id": "civil_and_structural_engineering",
       "label": "Topico",
-      "value": "Civil and Structural Engineering"
+      "value": "Ingenieria Civil y Estructural"
     },
     {
       "id": "biomedical_engineering",
       "label": "Topico",
-      "value": "Biomedical Engineering"
+      "value": "Ingenieria Biomedica"
     },
     {
       "id": "transportation",
       "label": "Topico",
-      "value": "Transportation"
+      "value": "Transporte"
     },
     {
       "id": "urban_studies",
       "label": "Topico",
-      "value": "Urban Studies"
+      "value": "Estudios Urbanos"
     },
     {
       "id": "geography_planning_and_development",
       "label": "Topico",
-      "value": "Geography, Planning and Development"
+      "value": "Geografia, Planificacion y Desarrollo"
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
-      "value": "Management Science and Operations Research"
+      "value": "Ciencias de la Gestion e Investigacion Operativa"
     },
     {
       "id": "public_administration",
       "label": "Topico",
-      "value": "Public Administration"
+      "value": "Administracion Publica"
     },
     {
       "id": "ocean_engineering",
       "label": "Topico",
-      "value": "Ocean Engineering"
+      "value": "Ingenieria Oceanica"
     },
     {
       "id": "general_agricultural_and_biological_sciences",
       "label": "Topico",
-      "value": "General Agricultural and Biological Sciences"
+      "value": "Ciencias Agricolas y Biologicas Generales"
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
-      "value": "Agricultural and Biological Sciences"
+      "value": "Ciencias Agricolas y Biologicas"
     },
     {
       "id": "computer_vision_and_pattern_recognition",
       "label": "Topico",
-      "value": "Computer Vision and Pattern Recognition"
+      "value": "Vision por Computadora y Reconocimiento de Patrones"
     },
     {
       "id": "bioengineering",
       "label": "Topico",
-      "value": "Bioengineering"
+      "value": "Bioingenieria"
     },
     {
       "id": "chemical_engineering",
       "label": "Dominio",
-      "value": "Chemical Engineering"
+      "value": "Ingenieria Quimica"
     },
     {
       "id": "agronomy_and_crop_science",
       "label": "Topico",
-      "value": "Agronomy and Crop Science"
+      "value": "Agronomia y Ciencias de Cultivos"
     },
     {
       "id": "biomaterials",
       "label": "Topico",
-      "value": "Biomaterials"
+      "value": "Biomateriales"
     },
     {
       "id": "materials_science",
       "label": "Dominio",
-      "value": "Materials Science"
+      "value": "Ciencias de los Materiales"
     },
     {
       "id": "ecology",
       "label": "Topico",
-      "value": "Ecology"
+      "value": "Ecologia"
     },
     {
       "id": "environmental_chemistry",
       "label": "Topico",
-      "value": "Environmental Chemistry"
+      "value": "Quimica Ambiental"
     },
     {
       "id": "general_materials_science",
       "label": "Topico",
-      "value": "General Materials Science"
+      "value": "Ciencias de los Materiales Generales"
     },
     {
       "id": "library_and_information_sciences",
       "label": "Topico",
-      "value": "Library and Information Sciences"
+      "value": "Bibliotecologia y Ciencias de la Informacion"
     },
     {
       "id": "aerospace_engineering",
       "label": "Topico",
-      "value": "Aerospace Engineering"
+      "value": "Ingenieria Aeroespacial"
     },
     {
       "id": "ismael_caballero",

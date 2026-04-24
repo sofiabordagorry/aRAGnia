@@ -6484,167 +6484,167 @@
     {
       "id": "general_engineering",
       "label": "Topico",
-      "value": "General Engineering"
+      "value": "Ingenieria General"
     },
     {
       "id": "engineering",
       "label": "Dominio",
-      "value": "Engineering"
+      "value": "Ingenieria"
     },
     {
       "id": "general_social_sciences",
       "label": "Topico",
-      "value": "General Social Sciences"
+      "value": "Ciencias Sociales Generales"
     },
     {
       "id": "social_sciences",
       "label": "Dominio",
-      "value": "Social Sciences"
+      "value": "Ciencias Sociales"
     },
     {
       "id": "general_health_professions",
       "label": "Topico",
-      "value": "General Health Professions"
+      "value": "Profesiones de la Salud Generales"
     },
     {
       "id": "health_professions",
       "label": "Dominio",
-      "value": "Health Professions"
+      "value": "Profesiones de la Salud"
     },
     {
       "id": "general_economics_econometrics_and_finance",
       "label": "Topico",
-      "value": "General Economics, Econometrics and Finance"
+      "value": "Economia, Econometria y Finanzas Generales"
     },
     {
       "id": "economics_econometrics_and_finance",
       "label": "Dominio",
-      "value": "Economics, Econometrics and Finance"
+      "value": "Economia, Econometria y Finanzas"
     },
     {
       "id": "general_decision_sciences",
       "label": "Topico",
-      "value": "General Decision Sciences"
+      "value": "Ciencias de la Decision Generales"
     },
     {
       "id": "decision_sciences",
       "label": "Dominio",
-      "value": "Decision Sciences"
+      "value": "Ciencias de la Decision"
     },
     {
       "id": "computational_mechanics",
       "label": "Topico",
-      "value": "Computational Mechanics"
+      "value": "Mecanica Computacional"
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
-      "value": "Control and Systems Engineering"
+      "value": "Ingenieria de Control y Sistemas"
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
-      "value": "Computer Science Applications"
+      "value": "Aplicaciones de Ciencias de la Computacion"
     },
     {
       "id": "computer_science",
       "label": "Dominio",
-      "value": "Computer Science"
+      "value": "Ciencias de la Computacion"
     },
     {
       "id": "education",
       "label": "Topico",
-      "value": "Education"
+      "value": "Educacion"
     },
     {
       "id": "architecture",
       "label": "Topico",
-      "value": "Architecture"
+      "value": "Arquitectura"
     },
     {
       "id": "general_arts_and_humanities",
       "label": "Topico",
-      "value": "General Arts and Humanities"
+      "value": "Artes y Humanidades Generales"
     },
     {
       "id": "arts_and_humanities",
       "label": "Dominio",
-      "value": "Arts and Humanities"
+      "value": "Artes y Humanidades"
     },
     {
       "id": "electrical_and_electronic_engineering",
       "label": "Topico",
-      "value": "Electrical and Electronic Engineering"
+      "value": "Ingenieria Electrica y Electronica"
     },
     {
       "id": "industrial_and_manufacturing_engineering",
       "label": "Topico",
-      "value": "Industrial and Manufacturing Engineering"
+      "value": "Ingenieria Industrial y de Manufactura"
     },
     {
       "id": "environmental_science",
       "label": "Dominio",
-      "value": "Environmental Science"
+      "value": "Ciencias Ambientales"
     },
     {
       "id": "mechanical_engineering",
       "label": "Topico",
-      "value": "Mechanical Engineering"
+      "value": "Ingenieria Mecanica"
     },
     {
       "id": "mechanics_of_materials",
       "label": "Topico",
-      "value": "Mechanics of Materials"
+      "value": "Mecanica de Materiales"
     },
     {
       "id": "communication",
       "label": "Topico",
-      "value": "Communication"
+      "value": "Comunicacion"
     },
     {
       "id": "public_administration",
       "label": "Topico",
-      "value": "Public Administration"
+      "value": "Administracion Publica"
     },
     {
       "id": "information_systems",
       "label": "Topico",
-      "value": "Information Systems"
+      "value": "Sistemas de Informacion"
     },
     {
       "id": "biomedical_engineering",
       "label": "Topico",
-      "value": "Biomedical Engineering"
+      "value": "Ingenieria Biomedica"
     },
     {
       "id": "computational_theory_and_mathematics",
       "label": "Topico",
-      "value": "Computational Theory and Mathematics"
+      "value": "Teoria Computacional y Matematicas"
     },
     {
       "id": "signal_processing",
       "label": "Topico",
-      "value": "Signal Processing"
+      "value": "Procesamiento de Senales"
     },
     {
       "id": "biotechnology",
       "label": "Topico",
-      "value": "Biotechnology"
+      "value": "Biotecnologia"
     },
     {
       "id": "biochemistry_genetics_and_molecular_biology",
       "label": "Dominio",
-      "value": "Biochemistry, Genetics and Molecular Biology"
+      "value": "Bioquimica, Genetica y Biologia Molecular"
     },
     {
       "id": "bioengineering",
       "label": "Topico",
-      "value": "Bioengineering"
+      "value": "Bioingenieria"
     },
     {
       "id": "chemical_engineering",
       "label": "Dominio",
-      "value": "Chemical Engineering"
+      "value": "Ingenieria Quimica"
     },
     {
       "id": "software",
@@ -6654,252 +6654,252 @@
     {
       "id": "general_agricultural_and_biological_sciences",
       "label": "Topico",
-      "value": "General Agricultural and Biological Sciences"
+      "value": "Ciencias Agricolas y Biologicas Generales"
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
-      "value": "Agricultural and Biological Sciences"
+      "value": "Ciencias Agricolas y Biologicas"
     },
     {
       "id": "statistics_and_probability",
       "label": "Topico",
-      "value": "Statistics and Probability"
+      "value": "Estadistica y Probabilidad"
     },
     {
       "id": "mathematics",
       "label": "Dominio",
-      "value": "Mathematics"
+      "value": "Matematicas"
     },
     {
       "id": "computational_mathematics",
       "label": "Topico",
-      "value": "Computational Mathematics"
+      "value": "Matematicas Computacionales"
     },
     {
       "id": "civil_and_structural_engineering",
       "label": "Topico",
-      "value": "Civil and Structural Engineering"
+      "value": "Ingenieria Civil y Estructural"
     },
     {
       "id": "aerospace_engineering",
       "label": "Topico",
-      "value": "Aerospace Engineering"
+      "value": "Ingenieria Aeroespacial"
     },
     {
       "id": "transportation",
       "label": "Topico",
-      "value": "Transportation"
+      "value": "Transporte"
     },
     {
       "id": "geography_planning_and_development",
       "label": "Topico",
-      "value": "Geography, Planning and Development"
+      "value": "Geografia, Planificacion y Desarrollo"
     },
     {
       "id": "urban_studies",
       "label": "Topico",
-      "value": "Urban Studies"
+      "value": "Estudios Urbanos"
     },
     {
       "id": "mathematical_physics",
       "label": "Topico",
-      "value": "Mathematical Physics"
+      "value": "Fisica Matematica"
     },
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
-      "value": "Modeling and Simulation"
+      "value": "Modelado y Simulacion"
     },
     {
       "id": "numerical_analysis",
       "label": "Topico",
-      "value": "Numerical Analysis"
+      "value": "Analisis Numerico"
     },
     {
       "id": "theoretical_computer_science",
       "label": "Topico",
-      "value": "Theoretical Computer Science"
+      "value": "Ciencias de la Computacion Teoricas"
     },
     {
       "id": "sociology_and_political_science",
       "label": "Topico",
-      "value": "Sociology and Political Science"
+      "value": "Sociologia y Ciencias Politicas"
     },
     {
       "id": "public_health_environmental_and_occupational_health",
       "label": "Topico",
-      "value": "Public Health, Environmental and Occupational Health"
+      "value": "Salud Publica, Ambiental y Ocupacional"
     },
     {
       "id": "medicine",
       "label": "Dominio",
-      "value": "Medicine"
+      "value": "Medicina"
     },
     {
       "id": "process_chemistry_and_technology",
       "label": "Topico",
-      "value": "Process Chemistry and Technology"
+      "value": "Quimica de Procesos y Tecnologia"
     },
     {
       "id": "fluid_flow_and_transfer_processes",
       "label": "Topico",
-      "value": "Fluid Flow and Transfer Processes"
+      "value": "Flujo de Fluidos y Procesos de Transferencia"
     },
     {
       "id": "filtration_and_separation",
       "label": "Topico",
-      "value": "Filtration and Separation"
+      "value": "Filtracion y Separacion"
     },
     {
       "id": "chemical_health_and_safety",
       "label": "Topico",
-      "value": "Chemical Health and Safety"
+      "value": "Salud y Seguridad Quimica"
     },
     {
       "id": "catalysis",
       "label": "Topico",
-      "value": "Catalysis"
+      "value": "Catalisis"
     },
     {
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
-      "value": "Safety, Risk, Reliability and Quality"
+      "value": "Seguridad, Riesgo, Confiabilidad y Calidad"
     },
     {
       "id": "ocean_engineering",
       "label": "Topico",
-      "value": "Ocean Engineering"
+      "value": "Ingenieria Oceanica"
     },
     {
       "id": "building_and_construction",
       "label": "Topico",
-      "value": "Building and Construction"
+      "value": "Construccion y Edificacion"
     },
     {
       "id": "human_factors_and_ergonomics",
       "label": "Topico",
-      "value": "Human Factors and Ergonomics"
+      "value": "Factores Humanos y Ergonomia"
     },
     {
       "id": "research_and_theory",
       "label": "Topico",
-      "value": "Research and Theory"
+      "value": "Investigacion y Teoria"
     },
     {
       "id": "nursing",
       "label": "Dominio",
-      "value": "Nursing"
+      "value": "Enfermeria"
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
-      "value": "Computer Networks and Communications"
+      "value": "Redes de Computadoras y Comunicaciones"
     },
     {
       "id": "computer_vision_and_pattern_recognition",
       "label": "Topico",
-      "value": "Computer Vision and Pattern Recognition"
+      "value": "Vision por Computadora y Reconocimiento de Patrones"
     },
     {
       "id": "computer_graphics_and_computer-aided_design",
       "label": "Topico",
-      "value": "Computer Graphics and Computer-Aided Design"
+      "value": "Graficos por Computadora y Diseno Asistido por Computadora"
     },
     {
       "id": "environmental_engineering",
       "label": "Topico",
-      "value": "Environmental Engineering"
+      "value": "Ingenieria Ambiental"
     },
     {
       "id": "management_information_systems",
       "label": "Topico",
-      "value": "Management Information Systems"
+      "value": "Sistemas de Informacion de Gestion"
     },
     {
       "id": "business_management_and_accounting",
       "label": "Dominio",
-      "value": "Business, Management and Accounting"
+      "value": "Negocios, Gestion y Contabilidad"
     },
     {
       "id": "management_of_technology_and_innovation",
       "label": "Topico",
-      "value": "Management of Technology and Innovation"
+      "value": "Gestion de Tecnologia e Innovacion"
     },
     {
       "id": "health_information_management",
       "label": "Topico",
-      "value": "Health Information Management"
+      "value": "Gestion de Informacion en Salud"
     },
     {
       "id": "language_and_linguistics",
       "label": "Topico",
-      "value": "Language and Linguistics"
+      "value": "Lengua y Linguistica"
     },
     {
       "id": "general_psychology",
       "label": "Topico",
-      "value": "General Psychology"
+      "value": "Psicologia General"
     },
     {
       "id": "psychology",
       "label": "Dominio",
-      "value": "Psychology"
+      "value": "Psicologia"
     },
     {
       "id": "general_energy",
       "label": "Topico",
-      "value": "General Energy"
+      "value": "Energia General"
     },
     {
       "id": "energy",
       "label": "Dominio",
-      "value": "Energy"
+      "value": "Energia"
     },
     {
       "id": "energy_engineering_and_power_technology",
       "label": "Topico",
-      "value": "Energy Engineering and Power Technology"
+      "value": "Ingenieria de Energia y Tecnologia de Potencia"
     },
     {
       "id": "renewable_energy_sustainability_and_the_environment",
       "label": "Topico",
-      "value": "Renewable Energy, Sustainability and the Environment"
+      "value": "Energia Renovable, Sostenibilidad y Medio Ambiente"
     },
     {
       "id": "ecological_modeling",
       "label": "Topico",
-      "value": "Ecological Modeling"
+      "value": "Modelado Ecologico"
     },
     {
       "id": "artificial_intelligence",
       "label": "Topico",
-      "value": "Artificial Intelligence"
+      "value": "Inteligencia Artificial"
     },
     {
       "id": "media_technology",
       "label": "Topico",
-      "value": "Media Technology"
+      "value": "Tecnologia de Medios"
     },
     {
       "id": "general_materials_science",
       "label": "Topico",
-      "value": "General Materials Science"
+      "value": "Ciencias de los Materiales Generales"
     },
     {
       "id": "materials_science",
       "label": "Dominio",
-      "value": "Materials Science"
+      "value": "Ciencias de los Materiales"
     },
     {
       "id": "human-computer_interaction",
       "label": "Topico",
-      "value": "Human-Computer Interaction"
+      "value": "Interaccion Humano-Computadora"
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
-      "value": "Management Science and Operations Research"
+      "value": "Ciencias de la Gestion e Investigacion Operativa"
     },
     {
       "id": "pablo_rodrı́guez-bocca",
