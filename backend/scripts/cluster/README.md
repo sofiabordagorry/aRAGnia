@@ -221,6 +221,11 @@ sbatch backend/scripts/cluster/submit.sh
 
 El job usa `--partition=besteffort --qos=besteffort_gpu --gres=gpu:a40:1` (ver [submit.sh](submit.sh)).
 
+**Para recibir notificaciones por email** cuando el job termina (exitoso o fallido):
+1. En [submit.sh](submit.sh), descomenta la línea `#SBATCH --mail-user=tu_email@fing.edu.uy` y reemplaza con tu email
+2. Vuelve a ejecutar `sbatch backend/scripts/cluster/submit.sh`
+3. Recibirás notificaciones al inicio, término y si el job falla
+
 ### Que hace el job
 
 1. Copia `data/` del home (NFS lento) a `/scratch/$USER/graphrag_data/` (SSD local, 300 GB)
