@@ -148,6 +148,7 @@ def step_extraction(
     llm_topics: bool,
     researcher_consolidation: bool,
     checkpoint_every: int = 5,
+    llm_model: str | None = None,
 ) -> None:
     """Extrae entidades y relaciones (reglas + LLM) y las postprocesa."""
     log.info("Etapa 3: Extracción")
@@ -155,7 +156,7 @@ def step_extraction(
     from institutional_graphrag.extraction.ie import EntityExtractor
     from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
-    extractor = EntityExtractor(data_dir=data_dir)
+    extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(
         max_docs=max_docs,
         llm_researchers=llm_researchers,

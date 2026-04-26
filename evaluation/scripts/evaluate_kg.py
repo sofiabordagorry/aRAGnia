@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
+import sys
 
-from dotenv import load_dotenv
-
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 from util.html_report import write_project_side_by_side_html, render_html_report
 from util.graph_compare import build_rendered_projects
 from util.graph_validation import validate_graph_against_schema
@@ -12,17 +12,23 @@ from typing import Any, Dict
 # Cargar variables de entorno
 
 PRED_PATH = (
-    Path(__file__).parents[1]
+    Path(__file__).parents[2]
     / "data"
     / "entities_relations"
     / "entity_documents.json"
 )
 GT_PATH = (
-    Path(__file__).parent
+    Path(__file__).parents[1]
     / "ground_truth"
     / "extraction"
     / "ground_truth_kg.json"
 )
+RESULTS_PATH = (
+    Path(__file__).parents[2]
+    / "evaluation"
+    / "results_knowledge_graph"
+)
+
 def load_json(path: str | Path) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -35,9 +41,9 @@ if __name__ == "__main__":
     gt_path = GT_PATH
     pred_path = PRED_PATH
 
-    output_html = "outputs/report_complete.html"
+    output_html = RESULTS_PATH / "report_complete.html"
     Path(output_html).parent.mkdir(parents=True, exist_ok=True)
-    output_json = "outputs/report_render_data.json"
+    output_json = RESULTS_PATH / "report_render_data.json"
 
     pred_data = load_json(pred_path)
     gt_data = load_json(gt_path)

@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -171,6 +172,11 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         """
         Genera una query Cypher usando LLM a partir de la pregunta del usuario.
         """
+        user_query = "".join(
+            c
+            for c in unicodedata.normalize("NFD", user_query.lower())
+            if unicodedata.category(c) != "Mn"
+        )
         prompt = self._build_cypher_generation_prompt(user_query)
 
         messages = [

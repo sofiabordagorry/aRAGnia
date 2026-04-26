@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -28,7 +29,7 @@ from institutional_graphrag.graph.schema import (
 from institutional_graphrag.llm.llm_provider import get_llm_client
 
 logger = logging.getLogger(__name__)
-TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
+TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 # Backward-compatible public exports expected by tests and callers.
 __all__ = [
@@ -343,12 +344,22 @@ If no match:
                     )
                 )
                 continue
-            entities.append(Topico(id=topic_id, value=mention.topic))
+            topic_value = "".join(
+                c
+                for c in unicodedata.normalize("NFD", mention.topic.lower())
+                if unicodedata.category(c) != "Mn"
+            )
+            entities.append(Topico(id=topic_id, value=topic_value))
             field_name = self.subfields_map.get(topic_normalized)
             if field_name:
                 field_normalized = field_name.lower().strip()
                 field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-                entities.append(Dominio(field_id, field_name))
+                domain_value = "".join(
+                    c
+                    for c in unicodedata.normalize("NFD", field_name.lower())
+                    if unicodedata.category(c) != "Mn"
+                )
+                entities.append(Dominio(field_id, domain_value))
                 relationships.append(PERTENECE_A_DOMINIO(topic_id, field_id))
             relationships.append(
                 EXTRAIDO_DE(
@@ -392,7 +403,12 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        inv_value: InvestigadorValue = {"name": mention.name, "source": "llm"}
+        investigador_name = "".join(
+            c
+            for c in unicodedata.normalize("NFD", mention.name.lower())
+            if unicodedata.category(c) != "Mn"
+        )
+        inv_value: InvestigadorValue = {"name": investigador_name, "source": "llm"}
         if mention.cedula:
             inv_value["cedula"] = mention.cedula
         if mention.mail:
