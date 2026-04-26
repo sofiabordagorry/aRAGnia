@@ -1,0 +1,377 @@
+{
+  "Ingenieria": {
+    "id": "https://openalex.org/fields/22",
+    "subfields": [
+      "Ingenieria General",
+      "Ingenieria Aeroespacial",
+      "Ingenieria Automotriz",
+      "Ingenieria Biomedica",
+      "Ingenieria Civil y Estructural",
+      "Mecanica Computacional",
+      "Ingenieria de Control y Sistemas",
+      "Ingenieria Electrica y Electronica",
+      "Ingenieria Industrial y de Manufactura",
+      "Ingenieria Mecanica",
+      "Mecanica de Materiales",
+      "Ingenieria Oceanica",
+      "Seguridad, Riesgo, Confiabilidad y Calidad",
+      "Tecnologia de Medios",
+      "Construccion y Edificacion",
+      "Arquitectura"
+    ]
+  },
+  "Ciencias Sociales": {
+    "id": "https://openalex.org/fields/33",
+    "subfields": [
+      "Ciencias Sociales Generales",
+      "Arqueologia",
+      "Desarrollo",
+      "Educacion",
+      "Geografia, Planificacion y Desarrollo",
+      "Salud",
+      "Factores Humanos y Ergonomia",
+      "Derecho",
+      "Bibliotecologia y Ciencias de la Informacion",
+      "Linguistica y Lenguaje",
+      "Investigacion en Seguridad",
+      "Sociologia y Ciencias Politicas",
+      "Transporte",
+      "Antropologia",
+      "Comunicacion",
+      "Estudios Culturales",
+      "Demografia",
+      "Estudios de Genero",
+      "Estudios del Ciclo de Vida",
+      "Ciencias Politicas y Relaciones Internacionales",
+      "Administracion Publica",
+      "Estudios Urbanos"
+    ]
+  },
+  "Medicina": {
+    "id": "https://openalex.org/fields/27",
+    "subfields": [
+      "Anatomia",
+      "Anestesiologia y Medicina del Dolor",
+      "Bioquimica",
+      "Cardiologia y Medicina Cardiovascular",
+      "Cuidados Criticos y Medicina Intensiva",
+      "Medicina Complementaria y Alternativa",
+      "Dermatologia",
+      "Medicina de Emergencia",
+      "Endocrinologia, Diabetes y Metabolismo",
+      "Epidemiologia",
+      "Medicina Familiar",
+      "Gastroenterologia",
+      "Genetica",
+      "Geriatria y Gerontologia",
+      "Informatica en Salud",
+      "Hematologia",
+      "Hepatologia",
+      "Inmunologia y Alergologia",
+      "Medicina Interna",
+      "Enfermedades Infecciosas",
+      "Microbiologia",
+      "Nefrologia",
+      "Neurologia",
+      "Obstetricia y Ginecologia",
+      "Oncologia",
+      "Oftalmologia",
+      "Ortopedia y Medicina Deportiva",
+      "Otorrinolaringologia",
+      "Patologia y Medicina Forense",
+      "Pediatria, Perinatologia y Salud Infantil",
+      "Farmacologia",
+      "Fisiologia",
+      "Psiquiatria y Salud Mental",
+      "Salud Publica, Ambiental y Ocupacional",
+      "Medicina Pulmonar y Respiratoria",
+      "Radiologia, Medicina Nuclear e Imagen",
+      "Rehabilitacion",
+      "Medicina Reproductiva",
+      "Reumatologia",
+      "Cirugia",
+      "Trasplante",
+      "Urologia"
+    ]
+  },
+  "Artes y Humanidades": {
+    "id": "https://openalex.org/fields/12",
+    "subfields": [
+      "Artes y Humanidades Generales",
+      "Historia",
+      "Lengua y Linguistica",
+      "Arqueologia",
+      "Clasicos",
+      "Conservacion",
+      "Historia y Filosofia de la Ciencia",
+      "Literatura y Teoria Literaria",
+      "Museologia",
+      "Musica",
+      "Filosofia",
+      "Estudios Religiosos",
+      "Artes Visuales y Escenicas"
+    ]
+  },
+  "Fisica y Astronomia": {
+    "id": "https://openalex.org/fields/31",
+    "subfields": [
+      "Acustica y Ultrasonidos",
+      "Astronomia y Astrofisica",
+      "Fisica de la Materia Condensada",
+      "Instrumentacion",
+      "Fisica Nuclear y de Altas Energias",
+      "Fisica Atomica y Molecular, y Optica",
+      "Radiacion",
+      "Fisica Estadistica y No Lineal"
+    ]
+  },
+  "Ciencias de la Computacion": {
+    "id": "https://openalex.org/fields/17",
+    "subfields": [
+      "Inteligencia Artificial",
+      "Teoria Computacional y Matematicas",
+      "Graficos por Computadora y Diseno Asistido por Computadora",
+      "Redes de Computadoras y Comunicaciones",
+      "Aplicaciones de Ciencias de la Computacion",
+      "Vision por Computadora y Reconocimiento de Patrones",
+      "Hardware y Arquitectura",
+      "Interaccion Humano-Computadora",
+      "Sistemas de Informacion",
+      "Procesamiento de Senales",
+      "Software"
+    ]
+  },
+  "Ciencias Agricolas y Biologicas": {
+    "id": "https://openalex.org/fields/11",
+    "subfields": [
+      "Ciencias Agricolas y Biologicas Generales",
+      "Agronomia y Ciencias de Cultivos",
+      "Ciencias Animales y Zoologia",
+      "Ciencias Acuaticas",
+      "Ecologia, Evolucion, Comportamiento y Sistematica",
+      "Ciencias de los Alimentos",
+      "Silvicultura",
+      "Horticultura",
+      "Entomologia",
+      "Ciencias de las Plantas",
+      "Ciencias del Suelo"
+    ]
+  },
+  "Bioquimica, Genetica y Biologia Molecular": {
+    "id": "https://openalex.org/fields/13",
+    "subfields": [
+      "Envejecimiento",
+      "Bioquimica",
+      "Biofisica",
+      "Biotecnologia",
+      "Investigacion en Cancer",
+      "Biologia Celular",
+      "Bioquimica Clinica",
+      "Biologia del Desarrollo",
+      "Endocrinologia",
+      "Genetica",
+      "Biologia Molecular",
+      "Medicina Molecular",
+      "Fisiologia",
+      "Biologia Estructural"
+    ]
+  },
+  "Ciencias Ambientales": {
+    "id": "https://openalex.org/fields/23",
+    "subfields": [
+      "Modelado Ecologico",
+      "Ecologia",
+      "Quimica Ambiental",
+      "Ingenieria Ambiental",
+      "Cambio Global y Planetario",
+      "Salud, Toxicologia y Mutagenesis",
+      "Gestion, Monitoreo, Politica y Ley",
+      "Conservacion de la Naturaleza y el Paisaje",
+      "Contaminacion",
+      "Ingenieria Industrial y de Manufactura",
+      "Ciencias del Agua y Tecnologia"
+    ]
+  },
+  "Economia, Econometria y Finanzas": {
+    "id": "https://openalex.org/fields/20",
+    "subfields": [
+      "Economia, Econometria y Finanzas Generales",
+      "Economia y Econometria",
+      "Finanzas"
+    ]
+  },
+  "Ciencias de los Materiales": {
+    "id": "https://openalex.org/fields/25",
+    "subfields": [
+      "Ciencias de los Materiales Generales",
+      "Biomateriales",
+      "Ceramica y Compuestos",
+      "Materiales Electronicos, Opticos y Magneticos",
+      "Quimica de Materiales",
+      "Metales y Aleaciones",
+      "Polimeros y Plasticos",
+      "Superficies, Recubrimientos y Peliculas"
+    ]
+  },
+  "Negocios, Gestion y Contabilidad": {
+    "id": "https://openalex.org/fields/14",
+    "subfields": [
+      "Contabilidad",
+      "Negocios y Gestion Internacional",
+      "Sistemas de Informacion de Gestion",
+      "Gestion de Tecnologia e Innovacion",
+      "Marketing",
+      "Comportamiento Organizacional y Gestion de Recursos Humanos",
+      "Estrategia y Gestion",
+      "Gestion del Turismo, Ocio y Hospitalidad",
+      "Relaciones Industriales"
+    ]
+  },
+  "Psicologia": {
+    "id": "https://openalex.org/fields/32",
+    "subfields": [
+      "Psicologia General",
+      "Psicologia Aplicada",
+      "Psicologia Clinica",
+      "Psicologia del Desarrollo y Educativa",
+      "Psicologia Experimental y Cognitiva",
+      "Neuropsicologia y Psicologia Fisiologica",
+      "Psicologia Social"
+    ]
+  },
+  "Profesiones de la Salud": {
+    "id": "https://openalex.org/fields/36",
+    "subfields": [
+      "Profesiones de la Salud Generales",
+      "Terapia Complementaria y Manual",
+      "Servicios Medicos de Emergencia",
+      "Gestion de Informacion en Salud",
+      "Tecnologia de Laboratorio Medico",
+      "Terminologia Medica",
+      "Terapia Ocupacional",
+      "Farmacia",
+      "Fisioterapia, Terapia Deportiva y Rehabilitacion",
+      "Tecnologia Radiologica y Ultrasonido",
+      "Fonoaudiologia y Audicion"
+    ]
+  },
+  "Ciencias de la Tierra y Planetarias": {
+    "id": "https://openalex.org/fields/19",
+    "subfields": [
+      "Ciencias Atmosfericas",
+      "Procesos de la Superficie Terrestre",
+      "Geoquimica y Petrologia",
+      "Geologia",
+      "Geofisica",
+      "Oceanografia",
+      "Paleontologia",
+      "Ciencias del Espacio y Planetarias"
+    ]
+  },
+  "Quimica": {
+    "id": "https://openalex.org/fields/16",
+    "subfields": [
+      "Quimica Analitica",
+      "Electroquimica",
+      "Quimica Inorganica",
+      "Quimica Organica",
+      "Quimica Fisica y Teorica",
+      "Espectroscopia"
+    ]
+  },
+  "Matematicas": {
+    "id": "https://openalex.org/fields/26",
+    "subfields": [
+      "Algebra y Teoria de Numeros",
+      "Matematicas Aplicadas",
+      "Matematicas Computacionales",
+      "Matematicas Discretas y Combinatoria",
+      "Geometria y Topologia",
+      "Fisica Matematica",
+      "Modelado y Simulacion",
+      "Analisis Numerico",
+      "Estadistica y Probabilidad",
+      "Ciencias de la Computacion Teoricas"
+    ]
+  },
+  "Neurociencia": {
+    "id": "https://openalex.org/fields/28",
+    "subfields": [
+      "Neurociencia del Comportamiento",
+      "Psiquiatria Biologica",
+      "Neurociencia Celular y Molecular",
+      "Neurociencia Cognitiva",
+      "Neurociencia del Desarrollo",
+      "Sistemas Endocrinos y Autonomos",
+      "Neurologia",
+      "Sistemas Sensoriales"
+    ]
+  },
+  "Ciencias de la Decision": {
+    "id": "https://openalex.org/fields/18",
+    "subfields": [
+      "Ciencias de la Decision Generales",
+      "Sistemas de Informacion y Gestion",
+      "Ciencias de la Gestion e Investigacion Operativa",
+      "Estadistica, Probabilidad e Incertidumbre"
+    ]
+  },
+  "Inmunologia y Microbiologia": {
+    "id": "https://openalex.org/fields/24",
+    "subfields": [
+      "Microbiologia Aplicada y Biotecnologia",
+      "Inmunologia",
+      "Microbiologia",
+      "Parasitologia",
+      "Virologia"
+    ]
+  },
+  "Energia": {
+    "id": "https://openalex.org/fields/21",
+    "subfields": [
+      "Energia General",
+      "Ingenieria de Energia y Tecnologia de Potencia",
+      "Tecnologia de Combustibles",
+      "Energia Nuclear e Ingenieria",
+      "Energia Renovable, Sostenibilidad y Medio Ambiente"
+    ]
+  },
+  "Enfermeria": {
+    "id": "https://openalex.org/fields/29",
+    "subfields": [
+      "Cuestiones, Etica y Aspectos Legales",
+      "Liderazgo y Gestion",
+      "Nutricion y Dietetica",
+      "Investigacion y Teoria"
+    ]
+  },
+  "Farmacologia, Toxicologia y Farmacia": {
+    "id": "https://openalex.org/fields/30",
+    "subfields": [
+      "Descubrimiento de Farmacos",
+      "Ciencias Farmaceuticas",
+      "Farmacologia",
+      "Toxicologia"
+    ]
+  },
+  "Odontologia": {
+    "id": "https://openalex.org/fields/35",
+    "subfields": [
+      "Odontologia General",
+      "Cirugia Oral",
+      "Ortodoncia",
+      "Periodoncia"
+    ]
+  },
+  "Ingenieria Quimica": {
+    "id": "https://openalex.org/fields/15",
+    "subfields": [
+      "Bioingenieria",
+      "Catalisis",
+      "Salud y Seguridad Quimica",
+      "Filtracion y Separacion",
+      "Flujo de Fluidos y Procesos de Transferencia",
+      "Quimica de Procesos y Tecnologia"
+    ]
+  }
+}
