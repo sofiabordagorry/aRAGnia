@@ -31,8 +31,8 @@ class Postprocessor:
     # -------------------------
     @staticmethod
     def normalize_name(name: str) -> str:
-        """Normalizar nombre a mayúsculas, eliminar tildes y limpiar espacios."""
-        normalized = name.strip().upper()
+        """Normalizar nombre a minúsculas, eliminar tildes y limpiar espacios."""
+        normalized = name.strip().lower()
 
         normalized = "".join(
             c for c in unicodedata.normalize("NFD", normalized) if unicodedata.category(c) != "Mn"
@@ -355,7 +355,7 @@ class Postprocessor:
         if normalization_changes:
             transformation_log.append(
                 {
-                    "step": "Normalización a MAYÚSCULAS",
+                    "step": "Normalización a minúsculas",
                     "count": len(normalization_changes),
                     "changes": normalization_changes[:20],
                 }
@@ -653,7 +653,7 @@ class Postprocessor:
                 f.write(f"PASO: {transformation['step']}\n")
                 f.write(f"Cambios: {transformation['count']}\n\n")
 
-                if transformation["step"] == "Normalización a MAYÚSCULAS":
+                if transformation["step"] == "Normalización a minúsculas":
                     f.write("Ejemplos de normalizaciones:\n")
                     for change in transformation["changes"][:10]:
                         f.write(f"  '{change['original']}' → '{change['normalized']}'\n")
