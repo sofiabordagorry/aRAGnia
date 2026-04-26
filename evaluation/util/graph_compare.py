@@ -62,10 +62,21 @@ class ProjectSubgraphBuilder:
     ) -> Dict[str, Any]:
         if not project_id:
             return {}
+        table_document_ids = {
+            e["id"]
+            for e in self.entities
+            if (
+                e.get("label") == "Documento"
+                and e.get("type") == "tabla"
+                and "id" in e
+            )
+        }
 
         project_entities = []
         for e in self.entities:
             eid = e.get("id")
+            if eid in table_document_ids:
+                continue
             if eid and project_id in self.entity_to_projects.get(eid, set()):
                 project_entities.append(e)
 
@@ -78,7 +89,8 @@ class ProjectSubgraphBuilder:
                 and not (s in self.chunk_ids or t in self.chunk_ids)
             ):
                 project_relationships.append(r)
-
+            if s in table_document_ids or t in table_document_ids:
+                continue
         entity_set = {entity_key(e, use_id=use_entity_id) for e in project_entities}
         rel_set = {relationship_key(r) for r in project_relationships}
 
