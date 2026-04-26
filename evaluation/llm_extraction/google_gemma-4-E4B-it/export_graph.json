@@ -46,7 +46,7 @@
       "id": "adriana_marotta",
       "label": "Investigador",
       "value": {
-        "name": "ADRIANA MAROTTA",
+        "name": "adriana marotta",
         "source": "llm"
       }
     },
@@ -54,28 +54,28 @@
       "id": "aerospace_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA AEROESPACIAL"
+        "value": "ingenieria aeroespacial"
       }
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS AGRICOLAS Y BIOLOGICAS"
+        "value": "ciencias agricolas y biologicas"
       }
     },
     {
       "id": "agronomy_and_crop_science",
       "label": "Topico",
       "value": {
-        "value": "AGRONOMIA Y CIENCIAS DE CULTIVOS"
+        "value": "agronomia y ciencias de cultivos"
       }
     },
     {
       "id": "alberto_castro",
       "label": "Investigador",
       "value": {
-        "name": "ALBERTO CASTRO",
+        "name": "alberto castro",
         "source": "llm"
       }
     },
@@ -83,7 +83,7 @@
       "id": "alejandro_vaisman",
       "label": "Investigador",
       "value": {
-        "name": "ALEJANDRO VAISMAN",
+        "name": "alejandro vaisman",
         "source": "llm"
       }
     },
@@ -91,7 +91,7 @@
       "id": "andrea_delgado",
       "label": "Investigador",
       "value": {
-        "name": "ANDREA DELGADO",
+        "name": "andrea delgado",
         "source": "llm"
       }
     },
@@ -99,7 +99,7 @@
       "id": "andres_berger_ricca",
       "label": "Investigador",
       "value": {
-        "name": "ANDRES BERGER RICCA",
+        "name": "andres berger ricca",
         "source": "rule_based"
       }
     },
@@ -107,7 +107,7 @@
       "id": "andrés_berger",
       "label": "Investigador",
       "value": {
-        "name": "ANDRES BERGER",
+        "name": "andres berger",
         "source": "llm"
       }
     },
@@ -115,7 +115,7 @@
       "id": "antonio_daniel_mauttone_vidales",
       "label": "Investigador",
       "value": {
-        "name": "ANTONIO DANIEL MAUTTONE VIDALES",
+        "name": "antonio daniel mauttone vidales",
         "source": "rule_based"
       }
     },
@@ -123,7 +123,7 @@
       "id": "antonio_mauttone",
       "label": "Investigador",
       "value": {
-        "name": "ANTONIO MAUTTONE",
+        "name": "antonio mauttone",
         "source": "llm"
       }
     },
@@ -131,35 +131,35 @@
       "id": "applied_mathematics",
       "label": "Topico",
       "value": {
-        "value": "MATEMATICAS APLICADAS"
+        "value": "matematicas aplicadas"
       }
     },
     {
       "id": "artificial_intelligence",
       "label": "Topico",
       "value": {
-        "value": "INTELIGENCIA ARTIFICIAL"
+        "value": "inteligencia artificial"
       }
     },
     {
       "id": "arts_and_humanities",
       "label": "Dominio",
       "value": {
-        "value": "ARTES Y HUMANIDADES"
+        "value": "artes y humanidades"
       }
     },
     {
       "id": "automotive_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA AUTOMOTRIZ"
+        "value": "ingenieria automotriz"
       }
     },
     {
       "id": "baliosian",
       "label": "Investigador",
       "value": {
-        "name": "BALIOSIAN",
+        "name": "baliosian",
         "source": "rule_based"
       }
     },
@@ -167,7 +167,7 @@
       "id": "bart_baesens",
       "label": "Investigador",
       "value": {
-        "name": "BART BAESENS",
+        "name": "bart baesens",
         "source": "llm"
       }
     },
@@ -175,7 +175,7 @@
       "id": "bernadette_farías-loscio",
       "label": "Investigador",
       "value": {
-        "name": "BERNADETTE FARIAS-LOSCIO",
+        "name": "bernadette farias-loscio",
         "source": "llm"
       }
     },
@@ -183,35 +183,35 @@
       "id": "biochemistry_genetics_and_molecular_biology",
       "label": "Dominio",
       "value": {
-        "value": "BIOQUIMICA, GENETICA Y BIOLOGIA MOLECULAR"
+        "value": "bioquimica, genetica y biologia molecular"
       }
     },
     {
       "id": "bioengineering",
       "label": "Topico",
       "value": {
-        "value": "BIOINGENIERIA"
+        "value": "bioingenieria"
       }
     },
     {
       "id": "biomedical_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA BIOMEDICA"
+        "value": "ingenieria biomedica"
       }
     },
     {
       "id": "biotechnology",
       "label": "Topico",
       "value": {
-        "value": "BIOTECNOLOGIA"
+        "value": "biotecnologia"
       }
     },
     {
       "id": "brian_yang",
       "label": "Investigador",
       "value": {
-        "name": "BRIAN YANG",
+        "name": "brian yang",
         "source": "llm"
       }
     },
@@ -219,42 +219,42 @@
       "id": "building_and_construction",
       "label": "Topico",
       "value": {
-        "value": "CONSTRUCCION Y EDIFICACION"
+        "value": "construccion y edificacion"
       }
     },
     {
       "id": "business_and_international_management",
       "label": "Topico",
       "value": {
-        "value": "NEGOCIOS Y GESTION INTERNACIONAL"
+        "value": "negocios y gestion internacional"
       }
     },
     {
       "id": "business_management_and_accounting",
       "label": "Dominio",
       "value": {
-        "value": "NEGOCIOS, GESTION Y CONTABILIDAD"
+        "value": "negocios, gestion y contabilidad"
       }
     },
     {
       "id": "chemical_engineering",
       "label": "Dominio",
       "value": {
-        "value": "INGENIERIA QUIMICA"
+        "value": "ingenieria quimica"
       }
     },
     {
       "id": "chemical_health_and_safety",
       "label": "Topico",
       "value": {
-        "value": "SALUD Y SEGURIDAD QUIMICA"
+        "value": "salud y seguridad quimica"
       }
     },
     {
       "id": "christopher_quincke",
       "label": "Investigador",
       "value": {
-        "name": "CHRISTOPHER QUINCKE",
+        "name": "christopher quincke",
         "source": "llm"
       }
     },
@@ -262,14 +262,14 @@
       "id": "civil_and_structural_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA CIVIL Y ESTRUCTURAL"
+        "value": "ingenieria civil y estructural"
       }
     },
     {
       "id": "claudio_risso",
       "label": "Investigador",
       "value": {
-        "name": "CLAUDIO RISSO",
+        "name": "claudio risso",
         "source": "llm"
       }
     },
@@ -277,77 +277,77 @@
       "id": "communication",
       "label": "Topico",
       "value": {
-        "value": "COMUNICACION"
+        "value": "comunicacion"
       }
     },
     {
       "id": "computational_mathematics",
       "label": "Topico",
       "value": {
-        "value": "MATEMATICAS COMPUTACIONALES"
+        "value": "matematicas computacionales"
       }
     },
     {
       "id": "computational_mechanics",
       "label": "Topico",
       "value": {
-        "value": "MECANICA COMPUTACIONAL"
+        "value": "mecanica computacional"
       }
     },
     {
       "id": "computational_theory_and_mathematics",
       "label": "Topico",
       "value": {
-        "value": "TEORIA COMPUTACIONAL Y MATEMATICAS"
+        "value": "teoria computacional y matematicas"
       }
     },
     {
       "id": "computer_graphics_and_computer-aided_design",
       "label": "Topico",
       "value": {
-        "value": "GRAFICOS POR COMPUTADORA Y DISENO ASISTIDO POR COMPUTADORA"
+        "value": "graficos por computadora y diseno asistido por computadora"
       }
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
       "value": {
-        "value": "REDES DE COMPUTADORAS Y COMUNICACIONES"
+        "value": "redes de computadoras y comunicaciones"
       }
     },
     {
       "id": "computer_science",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS DE LA COMPUTACION"
+        "value": "ciencias de la computacion"
       }
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
       "value": {
-        "value": "APLICACIONES DE CIENCIAS DE LA COMPUTACION"
+        "value": "aplicaciones de ciencias de la computacion"
       }
     },
     {
       "id": "computer_vision_and_pattern_recognition",
       "label": "Topico",
       "value": {
-        "value": "VISION POR COMPUTADORA Y RECONOCIMIENTO DE PATRONES"
+        "value": "vision por computadora y reconocimiento de patrones"
       }
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA DE CONTROL Y SISTEMAS"
+        "value": "ingenieria de control y sistemas"
       }
     },
     {
       "id": "cristina_mayr",
       "label": "Investigador",
       "value": {
-        "name": "CRISTINA MAYR",
+        "name": "cristina mayr",
         "source": "llm"
       }
     },
@@ -355,7 +355,7 @@
       "id": "daniel_callejas",
       "label": "Investigador",
       "value": {
-        "name": "DANIEL CALLEJAS",
+        "name": "daniel callejas",
         "source": "llm"
       }
     },
@@ -363,21 +363,21 @@
       "id": "decision_sciences",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS DE LA DECISION"
+        "value": "ciencias de la decision"
       }
     },
     {
       "id": "development",
       "label": "Topico",
       "value": {
-        "value": "DESARROLLO"
+        "value": "desarrollo"
       }
     },
     {
       "id": "directora_del_proyecto",
       "label": "Investigador",
       "value": {
-        "name": "DIRECTORA DEL PROYECTO",
+        "name": "directora del proyecto",
         "source": "llm"
       }
     },
@@ -385,7 +385,7 @@
       "id": "dmitry_vengertsev",
       "label": "Investigador",
       "value": {
-        "name": "DMITRY VENGERTSEV",
+        "name": "dmitry vengertsev",
         "source": "llm"
       }
     },
@@ -393,7 +393,7 @@
       "id": "doctores_recientes",
       "label": "Investigador",
       "value": {
-        "name": "DOCTORES RECIENTES",
+        "name": "doctores recientes",
         "source": "llm"
       }
     },
@@ -401,35 +401,35 @@
       "id": "earth-surface_processes",
       "label": "Topico",
       "value": {
-        "value": "PROCESOS DE LA SUPERFICIE TERRESTRE"
+        "value": "procesos de la superficie terrestre"
       }
     },
     {
       "id": "earth_and_planetary_sciences",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS DE LA TIERRA Y PLANETARIAS"
+        "value": "ciencias de la tierra y planetarias"
       }
     },
     {
       "id": "ecology_evolution_behavior_and_systematics",
       "label": "Topico",
       "value": {
-        "value": "ECOLOGIA, EVOLUCION, COMPORTAMIENTO Y SISTEMATICA"
+        "value": "ecologia, evolucion, comportamiento y sistematica"
       }
     },
     {
       "id": "economics_econometrics_and_finance",
       "label": "Dominio",
       "value": {
-        "value": "ECONOMIA, ECONOMETRIA Y FINANZAS"
+        "value": "economia, econometria y finanzas"
       }
     },
     {
       "id": "eduardo_gramp",
       "label": "Investigador",
       "value": {
-        "name": "EDUARDO GRAMP",
+        "name": "eduardo gramp",
         "source": "llm"
       }
     },
@@ -437,21 +437,21 @@
       "id": "education",
       "label": "Topico",
       "value": {
-        "value": "EDUCACION"
+        "value": "educacion"
       }
     },
     {
       "id": "electrical_and_electronic_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA ELECTRICA Y ELECTRONICA"
+        "value": "ingenieria electrica y electronica"
       }
     },
     {
       "id": "emiliano_viotti",
       "label": "Investigador",
       "value": {
-        "name": "EMILIANO VIOTTI",
+        "name": "emiliano viotti",
         "source": "llm"
       }
     },
@@ -459,35 +459,35 @@
       "id": "engineering",
       "label": "Dominio",
       "value": {
-        "value": "INGENIERIA"
+        "value": "ingenieria"
       }
     },
     {
       "id": "environmental_chemistry",
       "label": "Topico",
       "value": {
-        "value": "QUIMICA AMBIENTAL"
+        "value": "quimica ambiental"
       }
     },
     {
       "id": "environmental_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA AMBIENTAL"
+        "value": "ingenieria ambiental"
       }
     },
     {
       "id": "environmental_science",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS AMBIENTALES"
+        "value": "ciencias ambientales"
       }
     },
     {
       "id": "ewelina_bakala",
       "label": "Investigador",
       "value": {
-        "name": "EWELINA BAKALA",
+        "name": "ewelina bakala",
         "source": "llm"
       }
     },
@@ -495,7 +495,7 @@
       "id": "facundo_benavides",
       "label": "Investigador",
       "value": {
-        "name": "FACUNDO BENAVIDES",
+        "name": "facundo benavides",
         "source": "llm"
       }
     },
@@ -503,7 +503,7 @@
       "id": "federico_andrade",
       "label": "Investigador",
       "value": {
-        "name": "FEDERICO ANDRADE",
+        "name": "federico andrade",
         "source": "llm"
       }
     },
@@ -511,7 +511,7 @@
       "id": "federico_ciuffardi",
       "label": "Investigador",
       "value": {
-        "name": "FEDERICO CIUFFARDI",
+        "name": "federico ciuffardi",
         "source": "llm"
       }
     },
@@ -519,7 +519,7 @@
       "id": "federico_grunwald",
       "label": "Investigador",
       "value": {
-        "name": "FEDERICO GRUNWALD",
+        "name": "federico grunwald",
         "source": "llm"
       }
     },
@@ -527,7 +527,7 @@
       "id": "federico_gómez_romero",
       "label": "Investigador",
       "value": {
-        "name": "FEDERICO GOMEZ ROMERO",
+        "name": "federico gomez romero",
         "source": "llm"
       }
     },
@@ -535,7 +535,7 @@
       "id": "felipe_velázquez",
       "label": "Investigador",
       "value": {
-        "name": "FELIPE VELAZQUEZ",
+        "name": "felipe velazquez",
         "source": "llm"
       }
     },
@@ -543,7 +543,7 @@
       "id": "fernando_carpani",
       "label": "Investigador",
       "value": {
-        "name": "FERNANDO CARPANI",
+        "name": "fernando carpani",
         "source": "llm"
       }
     },
@@ -551,7 +551,7 @@
       "id": "flavia_serra",
       "label": "Investigador",
       "value": {
-        "name": "FLAVIA SERRA",
+        "name": "flavia serra",
         "source": "llm"
       }
     },
@@ -559,7 +559,7 @@
       "id": "franco_robledo",
       "label": "Investigador",
       "value": {
-        "name": "FRANCO ROBLEDO",
+        "name": "franco robledo",
         "source": "llm"
       }
     },
@@ -567,7 +567,7 @@
       "id": "gabriel_jambrina",
       "label": "Investigador",
       "value": {
-        "name": "GABRIEL JAMBRINA",
+        "name": "gabriel jambrina",
         "source": "llm"
       }
     },
@@ -575,70 +575,70 @@
       "id": "general_agricultural_and_biological_sciences",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS AGRICOLAS Y BIOLOGICAS GENERALES"
+        "value": "ciencias agricolas y biologicas generales"
       }
     },
     {
       "id": "general_arts_and_humanities",
       "label": "Topico",
       "value": {
-        "value": "ARTES Y HUMANIDADES GENERALES"
+        "value": "artes y humanidades generales"
       }
     },
     {
       "id": "general_decision_sciences",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS DE LA DECISION GENERALES"
+        "value": "ciencias de la decision generales"
       }
     },
     {
       "id": "general_economics_econometrics_and_finance",
       "label": "Topico",
       "value": {
-        "value": "ECONOMIA, ECONOMETRIA Y FINANZAS GENERALES"
+        "value": "economia, econometria y finanzas generales"
       }
     },
     {
       "id": "general_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA GENERAL"
+        "value": "ingenieria general"
       }
     },
     {
       "id": "general_social_sciences",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS SOCIALES GENERALES"
+        "value": "ciencias sociales generales"
       }
     },
     {
       "id": "genetics",
       "label": "Topico",
       "value": {
-        "value": "GENETICA"
+        "value": "genetica"
       }
     },
     {
       "id": "geography_planning_and_development",
       "label": "Topico",
       "value": {
-        "value": "GEOGRAFIA, PLANIFICACION Y DESARROLLO"
+        "value": "geografia, planificacion y desarrollo"
       }
     },
     {
       "id": "geology",
       "label": "Topico",
       "value": {
-        "value": "GEOLOGIA"
+        "value": "geologia"
       }
     },
     {
       "id": "gerardo_rubino",
       "label": "Investigador",
       "value": {
-        "name": "GERARDO RUBINO",
+        "name": "gerardo rubino",
         "source": "llm"
       }
     },
@@ -5551,7 +5551,7 @@
       "id": "gonzalo_tejera",
       "label": "Investigador",
       "value": {
-        "name": "GONZALO TEJERA",
+        "name": "gonzalo tejera",
         "source": "llm"
       }
     },
@@ -5559,7 +5559,7 @@
       "id": "guillermo_amor",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO AMOR",
+        "name": "guillermo amor",
         "source": "llm"
       }
     },
@@ -5567,7 +5567,7 @@
       "id": "guillermo_dufort",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO DUFORT",
+        "name": "guillermo dufort",
         "source": "llm"
       }
     },
@@ -5575,7 +5575,7 @@
       "id": "guillermo_dufort_y_álvarez",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO DUFORT Y ALVAREZ",
+        "name": "guillermo dufort y alvarez",
         "source": "llm"
       }
     },
@@ -5583,7 +5583,7 @@
       "id": "guillermo_ettlin",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO ETTLIN",
+        "name": "guillermo ettlin",
         "source": "llm"
       }
     },
@@ -5591,7 +5591,7 @@
       "id": "guillermo_trinidad",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO TRINIDAD",
+        "name": "guillermo trinidad",
         "source": "llm"
       }
     },
@@ -5599,35 +5599,35 @@
       "id": "hardware_and_architecture",
       "label": "Topico",
       "value": {
-        "value": "HARDWARE Y ARQUITECTURA"
+        "value": "hardware y arquitectura"
       }
     },
     {
       "id": "health_informatics",
       "label": "Topico",
       "value": {
-        "value": "INFORMATICA EN SALUD"
+        "value": "informatica en salud"
       }
     },
     {
       "id": "human-computer_interaction",
       "label": "Topico",
       "value": {
-        "value": "INTERACCION HUMANO-COMPUTADORA"
+        "value": "interaccion humano-computadora"
       }
     },
     {
       "id": "human_factors_and_ergonomics",
       "label": "Topico",
       "value": {
-        "value": "FACTORES HUMANOS Y ERGONOMIA"
+        "value": "factores humanos y ergonomia"
       }
     },
     {
       "id": "idoia_ochoa",
       "label": "Investigador",
       "value": {
-        "name": "IDOIA OCHOA",
+        "name": "idoia ochoa",
         "source": "llm"
       }
     },
@@ -5635,42 +5635,42 @@
       "id": "immunology_and_microbiology",
       "label": "Dominio",
       "value": {
-        "value": "INMUNOLOGIA Y MICROBIOLOGIA"
+        "value": "inmunologia y microbiologia"
       }
     },
     {
       "id": "industrial_and_manufacturing_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA INDUSTRIAL Y DE MANUFACTURA"
+        "value": "ingenieria industrial y de manufactura"
       }
     },
     {
       "id": "information_systems",
       "label": "Topico",
       "value": {
-        "value": "SISTEMAS DE INFORMACION"
+        "value": "sistemas de informacion"
       }
     },
     {
       "id": "information_systems_and_management",
       "label": "Topico",
       "value": {
-        "value": "SISTEMAS DE INFORMACION Y GESTION"
+        "value": "sistemas de informacion y gestion"
       }
     },
     {
       "id": "instrumentation",
       "label": "Topico",
       "value": {
-        "value": "INSTRUMENTACION"
+        "value": "instrumentacion"
       }
     },
     {
       "id": "ismael_caballero",
       "label": "Investigador",
       "value": {
-        "name": "ISMAEL CABALLERO",
+        "name": "ismael caballero",
         "source": "llm"
       }
     },
@@ -5678,7 +5678,7 @@
       "id": "javier_baliosian",
       "label": "Investigador",
       "value": {
-        "name": "JAVIER BALIOSIAN",
+        "name": "javier baliosian",
         "source": "llm"
       }
     },
@@ -5686,7 +5686,7 @@
       "id": "joaquín_correa",
       "label": "Investigador",
       "value": {
-        "name": "JOAQUIN CORREA",
+        "name": "joaquin correa",
         "source": "llm"
       }
     },
@@ -5694,7 +5694,7 @@
       "id": "jochen_de_weerdt",
       "label": "Investigador",
       "value": {
-        "name": "JOCHEN DE WEERDT",
+        "name": "jochen de weerdt",
         "source": "llm"
       }
     },
@@ -5702,7 +5702,7 @@
       "id": "jorge_rodrigo_amaro",
       "label": "Investigador",
       "value": {
-        "name": "JORGE RODRIGO AMARO",
+        "name": "jorge rodrigo amaro",
         "source": "llm"
       }
     },
@@ -5710,7 +5710,7 @@
       "id": "jorge_visca",
       "label": "Investigador",
       "value": {
-        "name": "JORGE VISCA",
+        "name": "jorge visca",
         "source": "llm"
       }
     },
@@ -5718,7 +5718,7 @@
       "id": "josé_sotelo",
       "label": "Investigador",
       "value": {
-        "name": "JOSE SOTELO",
+        "name": "jose sotelo",
         "source": "llm"
       }
     },
@@ -5726,7 +5726,7 @@
       "id": "laura_gonzælez",
       "label": "Investigador",
       "value": {
-        "name": "LAURA GONZÆLEZ",
+        "name": "laura gonzælez",
         "source": "llm"
       }
     },
@@ -5734,14 +5734,14 @@
       "id": "library_and_information_sciences",
       "label": "Topico",
       "value": {
-        "value": "BIBLIOTECOLOGIA Y CIENCIAS DE LA INFORMACION"
+        "value": "bibliotecologia y ciencias de la informacion"
       }
     },
     {
       "id": "lorena_etcheverry",
       "label": "Investigador",
       "value": {
-        "name": "LORENA ETCHEVERRY",
+        "name": "lorena etcheverry",
         "source": "llm"
       }
     },
@@ -5749,35 +5749,35 @@
       "id": "management_information_systems",
       "label": "Topico",
       "value": {
-        "value": "SISTEMAS DE INFORMACION DE GESTION"
+        "value": "sistemas de informacion de gestion"
       }
     },
     {
       "id": "management_monitoring_policy_and_law",
       "label": "Topico",
       "value": {
-        "value": "GESTION, MONITOREO, POLITICA Y LEY"
+        "value": "gestion, monitoreo, politica y ley"
       }
     },
     {
       "id": "management_of_technology_and_innovation",
       "label": "Topico",
       "value": {
-        "value": "GESTION DE TECNOLOGIA E INNOVACION"
+        "value": "gestion de tecnologia e innovacion"
       }
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS DE LA GESTION E INVESTIGACION OPERATIVA"
+        "value": "ciencias de la gestion e investigacion operativa"
       }
     },
     {
       "id": "marcos_toscano",
       "label": "Investigador",
       "value": {
-        "name": "MARCOS TOSCANO",
+        "name": "marcos toscano",
         "source": "llm"
       }
     },
@@ -5785,7 +5785,7 @@
       "id": "marotta_llambi",
       "label": "Investigador",
       "value": {
-        "name": "MAROTTA LLAMBI",
+        "name": "marotta llambi",
         "source": "rule_based"
       }
     },
@@ -5793,7 +5793,7 @@
       "id": "martin_giachino",
       "label": "Investigador",
       "value": {
-        "name": "MARTIN GIACHINO",
+        "name": "martin giachino",
         "source": "llm"
       }
     },
@@ -5801,7 +5801,7 @@
       "id": "martin_menoni_alvaro",
       "label": "Investigador",
       "value": {
-        "name": "MARTIN MENONI ALVARO",
+        "name": "martin menoni alvaro",
         "source": "rule_based"
       }
     },
@@ -5809,7 +5809,7 @@
       "id": "mart´_ın_llofriu",
       "label": "Investigador",
       "value": {
-        "name": "MART´ IN LLOFRIU",
+        "name": "mart´ in llofriu",
         "source": "llm"
       }
     },
@@ -5817,7 +5817,7 @@
       "id": "martín_beracochea",
       "label": "Investigador",
       "value": {
-        "name": "MARTIN BERACOCHEA",
+        "name": "martin beracochea",
         "source": "llm"
       }
     },
@@ -5825,7 +5825,7 @@
       "id": "martín_beyer",
       "label": "Investigador",
       "value": {
-        "name": "MARTIN BEYER",
+        "name": "martin beyer",
         "source": "llm"
       }
     },
@@ -5833,7 +5833,7 @@
       "id": "maría_e_urquhart",
       "label": "Investigador",
       "value": {
-        "name": "MARIA E. URQUHART",
+        "name": "maria e. urquhart",
         "source": "llm"
       }
     },
@@ -5841,35 +5841,35 @@
       "id": "materials_chemistry",
       "label": "Topico",
       "value": {
-        "value": "QUIMICA DE MATERIALES"
+        "value": "quimica de materiales"
       }
     },
     {
       "id": "materials_science",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS DE LOS MATERIALES"
+        "value": "ciencias de los materiales"
       }
     },
     {
       "id": "mathematical_physics",
       "label": "Topico",
       "value": {
-        "value": "FISICA MATEMATICA"
+        "value": "fisica matematica"
       }
     },
     {
       "id": "mathematics",
       "label": "Dominio",
       "value": {
-        "value": "MATEMATICAS"
+        "value": "matematicas"
       }
     },
     {
       "id": "mat´_ıas_richart",
       "label": "Investigador",
       "value": {
-        "name": "MAT´ IAS RICHART",
+        "name": "mat´ ias richart",
         "source": "llm"
       }
     },
@@ -5877,7 +5877,7 @@
       "id": "matías_richart",
       "label": "Investigador",
       "value": {
-        "name": "MATIAS RICHART",
+        "name": "matias richart",
         "source": "llm"
       }
     },
@@ -5885,21 +5885,21 @@
       "id": "mechanical_engineering",
       "label": "Topico",
       "value": {
-        "value": "INGENIERIA MECANICA"
+        "value": "ingenieria mecanica"
       }
     },
     {
       "id": "medicine",
       "label": "Dominio",
       "value": {
-        "value": "MEDICINA"
+        "value": "medicina"
       }
     },
     {
       "id": "mercedes_marzoa",
       "label": "Investigador",
       "value": {
-        "name": "MERCEDES MARZOA",
+        "name": "mercedes marzoa",
         "source": "llm"
       }
     },
@@ -5907,49 +5907,49 @@
       "id": "microbiology",
       "label": "Topico",
       "value": {
-        "value": "MICROBIOLOGIA"
+        "value": "microbiologia"
       }
     },
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
       "value": {
-        "value": "MODELADO Y SIMULACION"
+        "value": "modelado y simulacion"
       }
     },
     {
       "id": "molecular_biology",
       "label": "Topico",
       "value": {
-        "value": "BIOLOGIA MOLECULAR"
+        "value": "biologia molecular"
       }
     },
     {
       "id": "numerical_analysis",
       "label": "Topico",
       "value": {
-        "value": "ANALISIS NUMERICO"
+        "value": "analisis numerico"
       }
     },
     {
       "id": "nursing",
       "label": "Dominio",
       "value": {
-        "value": "ENFERMERIA"
+        "value": "enfermeria"
       }
     },
     {
       "id": "organizational_behavior_and_human_resource_management",
       "label": "Topico",
       "value": {
-        "value": "COMPORTAMIENTO ORGANIZACIONAL Y GESTION DE RECURSOS HUMANOS"
+        "value": "comportamiento organizacional y gestion de recursos humanos"
       }
     },
     {
       "id": "pablo_alejandro_rodriguez_bocca",
       "label": "Investigador",
       "value": {
-        "name": "PABLO ALEJANDRO RODRIGUEZ BOCCA",
+        "name": "pablo alejandro rodriguez bocca",
         "source": "rule_based"
       }
     },
@@ -5957,7 +5957,7 @@
       "id": "pablo_rodríguez_bocca",
       "label": "Investigador",
       "value": {
-        "name": "PABLO RODRIGUEZ BOCCA",
+        "name": "pablo rodriguez bocca",
         "source": "llm"
       }
     },
@@ -5965,7 +5965,7 @@
       "id": "pablo_rodrı́guez-bocca",
       "label": "Investigador",
       "value": {
-        "name": "PABLO RODRIGUEZ-BOCCA",
+        "name": "pablo rodriguez-bocca",
         "source": "llm"
       }
     },
@@ -5973,7 +5973,7 @@
       "id": "pablo_smircich",
       "label": "Investigador",
       "value": {
-        "name": "PABLO SMIRCICH",
+        "name": "pablo smircich",
         "source": "llm"
       }
     },
@@ -5981,28 +5981,28 @@
       "id": "physics_and_astronomy",
       "label": "Dominio",
       "value": {
-        "value": "FISICA Y ASTRONOMIA"
+        "value": "fisica y astronomia"
       }
     },
     {
       "id": "plant_science",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS DE LAS PLANTAS"
+        "value": "ciencias de las plantas"
       }
     },
     {
       "id": "process_chemistry_and_technology",
       "label": "Topico",
       "value": {
-        "value": "QUIMICA DE PROCESOS Y TECNOLOGIA"
+        "value": "quimica de procesos y tecnologia"
       }
     },
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
       "value": {
-        "value": "WEB WAREHOUSE DE DATOS ABIERTOS DE GOBIERNO CON GESTIÓN DE CALIDAD."
+        "value": "web warehouse de datos abiertos de gobierno con gestión de calidad."
       }
     },
     {
@@ -18406,7 +18406,7 @@
       "id": "proy_2016_729",
       "label": "Proyecto",
       "value": {
-        "value": "APLICACIONES DE LA TEORÍA DE LA INFORMACIÓN AL PROCESAMIENTO DE DATOS DE SECUENCIACIÓN DE GENOMAS POR NANOPOROS"
+        "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
       }
     },
     {
@@ -23034,7 +23034,7 @@
       "id": "proy_2018_260",
       "label": "Proyecto",
       "value": {
-        "value": "DISEÑO ÓPTIMO DE REDES DE CICLOVÍAS"
+        "value": "diseño óptimo de redes de ciclovías"
       }
     },
     {
@@ -24200,7 +24200,7 @@
       "id": "proy_2018_413",
       "label": "Proyecto",
       "value": {
-        "value": "PREDICCIÓN DE NDVI DENTRO DE PARCELAS DE CULTIVOS AGRÍCOLAS MEDIANTE TÉCNICAS DE APRENDIZAJE PROFUNDO"
+        "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
       }
     },
     {
@@ -27796,7 +27796,7 @@
       "id": "proy_2020_513",
       "label": "Proyecto",
       "value": {
-        "value": "CO-SIMULACIÓN EN SISTEMAS CIBER-FÍSICOS"
+        "value": "co-simulación en sistemas ciber-físicos"
       }
     },
     {
@@ -38500,21 +38500,21 @@
       "id": "public_administration",
       "label": "Topico",
       "value": {
-        "value": "ADMINISTRACION PUBLICA"
+        "value": "administracion publica"
       }
     },
     {
       "id": "public_health_environmental_and_occupational_health",
       "label": "Topico",
       "value": {
-        "value": "SALUD PUBLICA, AMBIENTAL Y OCUPACIONAL"
+        "value": "salud publica, ambiental y ocupacional"
       }
     },
     {
       "id": "raœl_ruggia",
       "label": "Investigador",
       "value": {
-        "name": "RAŒL RUGGIA",
+        "name": "raœl ruggia",
         "source": "llm"
       }
     },
@@ -38522,7 +38522,7 @@
       "id": "rehaan_ahmad",
       "label": "Investigador",
       "value": {
-        "name": "REHAAN AHMAD",
+        "name": "rehaan ahmad",
         "source": "llm"
       }
     },
@@ -38530,14 +38530,14 @@
       "id": "research_and_theory",
       "label": "Topico",
       "value": {
-        "value": "INVESTIGACION Y TEORIA"
+        "value": "investigacion y teoria"
       }
     },
     {
       "id": "richart",
       "label": "Investigador",
       "value": {
-        "name": "RICHART",
+        "name": "richart",
         "source": "rule_based"
       }
     },
@@ -38545,7 +38545,7 @@
       "id": "richart_gutierrez",
       "label": "Investigador",
       "value": {
-        "name": "RICHART GUTIERREZ",
+        "name": "richart gutierrez",
         "source": "rule_based"
       }
     },
@@ -38553,14 +38553,14 @@
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
       "value": {
-        "value": "SEGURIDAD, RIESGO, CONFIABILIDAD Y CALIDAD"
+        "value": "seguridad, riesgo, confiabilidad y calidad"
       }
     },
     {
       "id": "sandra_mitrovic",
       "label": "Investigador",
       "value": {
-        "name": "SANDRA MITROVIC",
+        "name": "sandra mitrovic",
         "source": "llm"
       }
     },
@@ -38568,7 +38568,7 @@
       "id": "santiago_vidal",
       "label": "Investigador",
       "value": {
-        "name": "SANTIAGO VIDAL",
+        "name": "santiago vidal",
         "source": "llm"
       }
     },
@@ -38576,70 +38576,70 @@
       "id": "signal_processing",
       "label": "Topico",
       "value": {
-        "value": "PROCESAMIENTO DE SENALES"
+        "value": "procesamiento de senales"
       }
     },
     {
       "id": "social_sciences",
       "label": "Dominio",
       "value": {
-        "value": "CIENCIAS SOCIALES"
+        "value": "ciencias sociales"
       }
     },
     {
       "id": "software",
       "label": "Topico",
       "value": {
-        "value": "SOFTWARE"
+        "value": "software"
       }
     },
     {
       "id": "soil_science",
       "label": "Topico",
       "value": {
-        "value": "CIENCIAS DEL SUELO"
+        "value": "ciencias del suelo"
       }
     },
     {
       "id": "statistics_and_probability",
       "label": "Topico",
       "value": {
-        "value": "ESTADISTICA Y PROBABILIDAD"
+        "value": "estadistica y probabilidad"
       }
     },
     {
       "id": "statistics_probability_and_uncertainty",
       "label": "Topico",
       "value": {
-        "value": "ESTADISTICA, PROBABILIDAD E INCERTIDUMBRE"
+        "value": "estadistica, probabilidad e incertidumbre"
       }
     },
     {
       "id": "strategy_and_management",
       "label": "Topico",
       "value": {
-        "value": "ESTRATEGIA Y GESTION"
+        "value": "estrategia y gestion"
       }
     },
     {
       "id": "tourism_leisure_and_hospitality_management",
       "label": "Topico",
       "value": {
-        "value": "GESTION DEL TURISMO, OCIO Y HOSPITALIDAD"
+        "value": "gestion del turismo, ocio y hospitalidad"
       }
     },
     {
       "id": "transportation",
       "label": "Topico",
       "value": {
-        "value": "TRANSPORTE"
+        "value": "transporte"
       }
     },
     {
       "id": "tsachy_weissman",
       "label": "Investigador",
       "value": {
-        "name": "TSACHY WEISSMAN",
+        "name": "tsachy weissman",
         "source": "llm"
       }
     },
@@ -38647,14 +38647,14 @@
       "id": "urban_studies",
       "label": "Topico",
       "value": {
-        "value": "ESTUDIOS URBANOS"
+        "value": "estudios urbanos"
       }
     },
     {
       "id": "valentina_ramos",
       "label": "Investigador",
       "value": {
-        "name": "VALENTINA RAMOS",
+        "name": "valentina ramos",
         "source": "llm"
       }
     },
@@ -38662,7 +38662,7 @@
       "id": "viviana_solla",
       "label": "Investigador",
       "value": {
-        "name": "VIVIANA SOLLA",
+        "name": "viviana solla",
         "source": "llm"
       }
     },
@@ -38670,7 +38670,7 @@
       "id": "wilfried_lemahieu",
       "label": "Investigador",
       "value": {
-        "name": "WILFRIED LEMAHIEU",
+        "name": "wilfried lemahieu",
         "source": "llm"
       }
     },
@@ -38678,7 +38678,7 @@
       "id": "álvaro_martín",
       "label": "Investigador",
       "value": {
-        "name": "ALVARO MARTIN",
+        "name": "alvaro martin",
         "source": "llm"
       }
     }

@@ -346,7 +346,7 @@ If no match:
                 continue
             topic_value = "".join(
                 c
-                for c in unicodedata.normalize("NFD", mention.topic.upper())
+                for c in unicodedata.normalize("NFD", mention.topic.lower())
                 if unicodedata.category(c) != "Mn"
             )
             entities.append(Topico(id=topic_id, value=topic_value))
@@ -356,7 +356,7 @@ If no match:
                 field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
                 domain_value = "".join(
                     c
-                    for c in unicodedata.normalize("NFD", field_name.upper())
+                    for c in unicodedata.normalize("NFD", field_name.lower())
                     if unicodedata.category(c) != "Mn"
                 )
                 entities.append(Dominio(field_id, domain_value))
@@ -403,7 +403,12 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        inv_value: InvestigadorValue = {"name": mention.name, "source": "llm"}
+        investigador_name = "".join(
+            c
+            for c in unicodedata.normalize("NFD", mention.name.lower())
+            if unicodedata.category(c) != "Mn"
+        )
+        inv_value: InvestigadorValue = {"name": investigador_name, "source": "llm"}
         if mention.cedula:
             inv_value["cedula"] = mention.cedula
         if mention.mail:

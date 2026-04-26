@@ -511,7 +511,7 @@ class RuleBasedExtractor:
         # mismo comportamiento que tu bloque
         project_title = "".join(
             c
-            for c in unicodedata.normalize("NFD", best["candidate_title"].upper())
+            for c in unicodedata.normalize("NFD", best["candidate_title"].lower())
             if unicodedata.category(c) != "Mn"
         )
         self.res.entities.append(Proyecto(id=project_id, value=project_title))
@@ -598,7 +598,12 @@ class RuleBasedExtractor:
             if not isinstance(chunk_id, str) or not chunk_id.strip():
                 continue
 
-            self.res.entities.append(Proyecto(id=project_id, value=title.strip()))
+            fallback_title = "".join(
+                c
+                for c in unicodedata.normalize("NFD", title.strip().lower())
+                if unicodedata.category(c) != "Mn"
+            )
+            self.res.entities.append(Proyecto(id=project_id, value=fallback_title))
 
             if year:
                 self.res.relationships.append(INICIO_EN(project_id, best["year"]))
@@ -817,11 +822,16 @@ class RuleBasedExtractor:
 
             candidate_id = self.make_candidate_id(candidate_in_text)
             if candidate_id:
+                investigador_name = "".join(
+                    c
+                    for c in unicodedata.normalize("NFD", candidate_in_text.lower())
+                    if unicodedata.category(c) != "Mn"
+                )
                 self.res.entities.append(
                     Investigador(
                         id=candidate_id,
                         value={
-                            "name": candidate_in_text,
+                            "name": investigador_name,
                             "source": "rule_based",
                         },
                     )
