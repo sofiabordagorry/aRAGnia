@@ -3,7 +3,7 @@
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": "WEB WAREHOUSE DE DATOS ABIERTOS DE GOBIERNO CON GESTIÓN DE CALIDAD"
+      "value": "web warehouse de datos abiertos de gobierno con gestión de calidad"
     },
     {
       "id": "2012",
@@ -15,7 +15,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": "APLICACIONES DE LA TEORÍA DE LA INFORMACIÓN AL PROCESAMIENTO DE DATOS DE SECUENCIACIÓN DE GENOMAS POR NANOPOROS"
+      "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
     },
     {
       "id": "2016",
@@ -27,7 +27,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": "DISEÑO ÓPTIMO DE REDES DE CICLOVÍAS"
+      "value": "diseño óptimo de redes de ciclovías"
     },
     {
       "id": "2018",
@@ -39,7 +39,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": "CO-SIMULACIÓN EN SISTEMAS CIBER FÍSICOS"
+      "value": "co-simulación en sistemas ciber físicos"
     },
     {
       "id": "2020",
@@ -51,97 +51,97 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": "PREDICCIÓN DE NDVI DENTRO DE PARCELAS DE CULTIVOS AGRÍCOLAS MEDIANTE TÉCNICAS DE APRENDIZAJE PROFUNDO"
+      "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
-      "value": "CIENCIAS AGRICOLAS Y BIOLOGICAS"
+      "value": "ciencias agricolas y biologicas"
     },
     {
       "id": "artificial_intelligence",
       "label": "Topico",
-      "value": "INTELIGENCIA ARTIFICIAL"
+      "value": "inteligencia artificial"
     },
     {
       "id": "agronomy_and_crop_science",
       "label": "Topico",
-      "value": "AGRONOMIA Y CIENCIAS DE CULTIVOS"
+      "value": "agronomia y ciencias de cultivos"
     },
     {
       "id": "computer_science",
       "label": "Dominio",
-      "value": "CIENCIAS DE LA COMPUTACION"
+      "value": "ciencias de la computacion"
     },
     {
       "id": "decision_sciences",
       "label": "Dominio",
-      "value": "CIENCIAS DE LA DECISION"
+      "value": "ciencias de la decision"
     },
     {
       "id": "engineering",
       "label": "Dominio",
-      "value": "INGENIERIA"
+      "value": "ingenieria"
     },
     {
       "id": "software",
       "label": "Topico",
-      "value": "SOFTWARE"
+      "value": "software"
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
-      "value": "INGENIERIA DE CONTROL Y SISTEMAS"
+      "value": "ingenieria de control y sistemas"
     },
     {
       "id": "mathematics",
       "label": "Dominio",
-      "value": "MATEMATICAS"
+      "value": "matematicas"
     },
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
-      "value": "MODELADO Y SIMULACION"
+      "value": "modelado y simulacion"
     },
     {
       "id": "computational_theory_and_mathematics",
       "label": "Topico",
-      "value": "TEORIA COMPUTACIONAL Y MATEMATICAS"
+      "value": "teoria computacional y matematicas"
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
-      "value": "APLICACIONES DE CIENCIAS DE LA COMPUTACION"
+      "value": "aplicaciones de ciencias de la computacion"
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
-      "value": "REDES DE COMPUTADORAS Y COMUNICACIONES"
+      "value": "redes de computadoras y comunicaciones"
     },
     {
       "id": "signal_processing",
       "label": "Topico",
-      "value": "PROCESAMIENTO DE SENALES"
+      "value": "procesamiento de senales"
     },
     {
       "id": "information_systems",
       "label": "Topico",
-      "value": "SISTEMAS DE INFORMACION"
+      "value": "sistemas de informacion"
     },
     {
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
-      "value": "SEGURIDAD, RIESGO, CONFIABILIDAD Y CALIDAD"
+      "value": "seguridad, riesgo, confiabilidad y calidad"
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
-      "value": "CIENCIAS DE LA GESTION E INVESTIGACION OPERATIVA"
+      "value": "ciencias de la gestion e investigacion operativa"
     },
     {
       "id": "general_decision_sciences",
       "label": "Topico",
-      "value": "CIENCIAS DE LA DECISION GENERALES"
+      "value": "ciencias de la decision generales"
     },
     {
       "id": "proy_2012_638_propuesta",
@@ -257,7 +257,7 @@
       "id": "alvaro_martin",
       "label": "Investigador",
       "value": {
-        "name": "ÁLVARO MARTÍN",
+        "name": "álvaro martín",
         "source": "human_annotation"
       }
     },
@@ -265,7 +265,7 @@
       "id": "flavia_serra",
       "label": "Investigador",
       "value": {
-        "name": "FLAVIA SERRA",
+        "name": "flavia serra",
         "source": "human_annotation"
       }
     },
@@ -273,7 +273,7 @@
       "id": "lorena_etcheverry",
       "label": "Investigador",
       "value": {
-        "name": "LORENA ETCHEVERRY",
+        "name": "lorena etcheverry",
         "source": "human_annotation"
       }
     },
@@ -281,7 +281,7 @@
       "id": "raul_ruggia",
       "label": "Investigador",
       "value": {
-        "name": "RAUL RUGGIA",
+        "name": "raul ruggia",
         "source": "human_annotation"
       }
     },
@@ -289,7 +289,7 @@
       "id": "adriana_marotta",
       "label": "Investigador",
       "value": {
-        "name": "ADRIANA MAROTTA",
+        "name": "adriana marotta",
         "source": "human_annotation"
       }
     },
@@ -297,7 +297,7 @@
       "id": "laura_gonzalez",
       "label": "Investigador",
       "value": {
-        "name": "LAURA GONZALEZ",
+        "name": "laura gonzalez",
         "source": "human_annotation"
       }
     },
@@ -305,7 +305,7 @@
       "id": "fernando_carpani",
       "label": "Investigador",
       "value": {
-        "name": "FERNANDO CARPANI",
+        "name": "fernando carpani",
         "source": "human_annotation"
       }
     },
@@ -313,7 +313,7 @@
       "id": "daniel_callejas",
       "label": "Investigador",
       "value": {
-        "name": "DANIEL CALLEJAS",
+        "name": "daniel callejas",
         "source": "human_annotation"
       }
     },
@@ -321,7 +321,7 @@
       "id": "gadiel_seroussi",
       "label": "Investigador",
       "value": {
-        "name": "GADIEL SEROUSSI",
+        "name": "gadiel seroussi",
         "source": "human_annotation"
       }
     },
@@ -329,7 +329,7 @@
       "id": "jose_sotelo_silveira",
       "label": "Investigador",
       "value": {
-        "name": "JOSÉ SOTELO SILVEIRA",
+        "name": "josé sotelo silveira",
         "source": "human_annotation"
       }
     },
@@ -337,7 +337,7 @@
       "id": "guillermo_dufort",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO DUFORT",
+        "name": "guillermo dufort",
         "source": "human_annotation"
       }
     },
@@ -345,7 +345,7 @@
       "id": "antonio_mauttone",
       "label": "Investigador",
       "value": {
-        "name": "ANTONIO MAUTTONE",
+        "name": "antonio mauttone",
         "source": "human_annotation"
       }
     },
@@ -353,7 +353,7 @@
       "id": "maría_e_urquhart",
       "label": "Investigador",
       "value": {
-        "name": "MARÍA E. URQUHART",
+        "name": "maría e. urquhart",
         "source": "human_annotation"
       }
     },
@@ -361,7 +361,7 @@
       "id": "guillermo_ettlin",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO ETTLIN",
+        "name": "guillermo ettlin",
         "source": "human_annotation"
       }
     },
@@ -369,7 +369,7 @@
       "id": "pablo_rodríguez_bocca",
       "label": "Investigador",
       "value": {
-        "name": "PABLO RODRÍGUEZ BOCCA",
+        "name": "pablo rodríguez bocca",
         "source": "human_annotation"
       }
     },
@@ -377,7 +377,7 @@
       "id": "andrés_berger",
       "label": "Investigador",
       "value": {
-        "name": "ANDRÉS BERGER",
+        "name": "andrés berger",
         "source": "human_annotation"
       }
     },
@@ -385,7 +385,7 @@
       "id": "gerardo_rubino",
       "label": "Investigador",
       "value": {
-        "name": "GERARDO RUBINO",
+        "name": "gerardo rubino",
         "source": "human_annotation"
       }
     },
@@ -393,7 +393,7 @@
       "id": "martín_beyer",
       "label": "Investigador",
       "value": {
-        "name": "MARTÍN BEYER",
+        "name": "martín beyer",
         "source": "human_annotation"
       }
     },
@@ -401,7 +401,7 @@
       "id": "brian_yang",
       "label": "Investigador",
       "value": {
-        "name": "BRIAN YANG",
+        "name": "brian yang",
         "source": "human_annotation"
       }
     },
@@ -409,7 +409,7 @@
       "id": "rehaan_ahmad",
       "label": "Investigador",
       "value": {
-        "name": "REHAAN AHMAD",
+        "name": "rehaan ahmad",
         "source": "human_annotation"
       }
     },
@@ -417,7 +417,7 @@
       "id": "javier_baliosian",
       "label": "Investigador",
       "value": {
-        "name": "JAVIER BALIOSIAN",
+        "name": "javier baliosian",
         "source": "human_annotation"
       }
     },
@@ -425,7 +425,7 @@
       "id": "matias_richart",
       "label": "Investigador",
       "value": {
-        "name": "MATÍAS RICHART",
+        "name": "matías richart",
         "source": "human_annotation"
       }
     },
@@ -433,7 +433,7 @@
       "id": "gonzalo_tejera",
       "label": "Investigador",
       "value": {
-        "name": "GONZALO TEJERA",
+        "name": "gonzalo tejera",
         "source": "human_annotation"
       }
     },
@@ -441,7 +441,7 @@
       "id": "facundo_benavides",
       "label": "Investigador",
       "value": {
-        "name": "FACUNDO BENAVIDES",
+        "name": "facundo benavides",
         "source": "human_annotation"
       }
     },
@@ -449,7 +449,7 @@
       "id": "guillermo_amorin",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO AMORÍN",
+        "name": "guillermo amorín",
         "source": "human_annotation"
       }
     },
@@ -457,7 +457,7 @@
       "id": "federico_andrade",
       "label": "Investigador",
       "value": {
-        "name": "FEDERICO ANDRADE",
+        "name": "federico andrade",
         "source": "human_annotation"
       }
     },
@@ -465,7 +465,7 @@
       "id": "eduardo_grampin",
       "label": "Investigador",
       "value": {
-        "name": "EDUARDO GRAMPÍN",
+        "name": "eduardo grampín",
         "source": "human_annotation"
       }
     },
@@ -473,7 +473,7 @@
       "id": "jorge_visca",
       "label": "Investigador",
       "value": {
-        "name": "JORGE VISCA",
+        "name": "jorge visca",
         "source": "human_annotation"
       }
     },
@@ -481,7 +481,7 @@
       "id": "mercedes_marzoa",
       "label": "Investigador",
       "value": {
-        "name": "MERCEDES MARZOA",
+        "name": "mercedes marzoa",
         "source": "human_annotation"
       }
     },
@@ -489,7 +489,7 @@
       "id": "ewelina_bakala",
       "label": "Investigador",
       "value": {
-        "name": "EWELINA BAKALA",
+        "name": "ewelina bakala",
         "source": "human_annotation"
       }
     },
@@ -497,7 +497,7 @@
       "id": "martin_llofriu",
       "label": "Investigador",
       "value": {
-        "name": "MARTÍN LLOFRIU",
+        "name": "martín llofriu",
         "source": "human_annotation"
       }
     },
@@ -505,7 +505,7 @@
       "id": "guillermo_trinidad",
       "label": "Investigador",
       "value": {
-        "name": "GUILLERMO TRINIDAD",
+        "name": "guillermo trinidad",
         "source": "human_annotation"
       }
     },
@@ -513,7 +513,7 @@
       "id": "alberto_castro",
       "label": "Investigador",
       "value": {
-        "name": "ALBERTO CASTRO",
+        "name": "alberto castro",
         "source": "human_annotation"
       }
     }
