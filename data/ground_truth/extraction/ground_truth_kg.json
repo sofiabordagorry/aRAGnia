@@ -3,7 +3,7 @@
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": "web warehouse de datos abiertos de gobierno con gestión de calidad"
+      "value": "web warehouse de datos abiertos de gobierno con gestion de calidad"
     },
     {
       "id": "2012",
@@ -15,7 +15,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
+      "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
     },
     {
       "id": "2016",
@@ -27,7 +27,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": "diseño óptimo de redes de ciclovías"
+      "value": "diseño optimo de redes de ciclovias"
     },
     {
       "id": "2018",
@@ -39,7 +39,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": "co-simulación en sistemas ciber físicos"
+      "value": "co-simulacion en sistemas ciber fisicos"
     },
     {
       "id": "2020",
@@ -51,7 +51,7 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
+      "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
     },
     {
       "id": "agricultural_and_biological_sciences",
@@ -257,7 +257,7 @@
       "id": "alvaro_martin",
       "label": "Investigador",
       "value": {
-        "name": "álvaro martín",
+        "name": "alvaro martin",
         "source": "human_annotation"
       }
     },
@@ -329,7 +329,7 @@
       "id": "jose_sotelo_silveira",
       "label": "Investigador",
       "value": {
-        "name": "josé sotelo silveira",
+        "name": "jose sotelo silveira",
         "source": "human_annotation"
       }
     },
@@ -353,7 +353,7 @@
       "id": "maría_e_urquhart",
       "label": "Investigador",
       "value": {
-        "name": "maría e. urquhart",
+        "name": "maria e. urquhart",
         "source": "human_annotation"
       }
     },
@@ -369,7 +369,7 @@
       "id": "pablo_rodríguez_bocca",
       "label": "Investigador",
       "value": {
-        "name": "pablo rodríguez bocca",
+        "name": "pablo rodriguez bocca",
         "source": "human_annotation"
       }
     },
@@ -377,7 +377,7 @@
       "id": "andrés_berger",
       "label": "Investigador",
       "value": {
-        "name": "andrés berger",
+        "name": "andres berger",
         "source": "human_annotation"
       }
     },
@@ -393,7 +393,7 @@
       "id": "martín_beyer",
       "label": "Investigador",
       "value": {
-        "name": "martín beyer",
+        "name": "martin beyer",
         "source": "human_annotation"
       }
     },
@@ -425,7 +425,7 @@
       "id": "matias_richart",
       "label": "Investigador",
       "value": {
-        "name": "matías richart",
+        "name": "matias richart",
         "source": "human_annotation"
       }
     },
@@ -449,7 +449,7 @@
       "id": "guillermo_amorin",
       "label": "Investigador",
       "value": {
-        "name": "guillermo amorín",
+        "name": "guillermo amorin",
         "source": "human_annotation"
       }
     },
@@ -465,7 +465,7 @@
       "id": "eduardo_grampin",
       "label": "Investigador",
       "value": {
-        "name": "eduardo grampín",
+        "name": "eduardo grampin",
         "source": "human_annotation"
       }
     },
@@ -497,7 +497,7 @@
       "id": "martin_llofriu",
       "label": "Investigador",
       "value": {
-        "name": "martín llofriu",
+        "name": "martin llofriu",
         "source": "human_annotation"
       }
     },
