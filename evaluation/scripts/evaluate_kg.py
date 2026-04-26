@@ -66,8 +66,8 @@ if __name__ == "__main__":
     # Verificar Estabilidad del grafo.
     report = validate_graph_against_schema(pred_data)
 
-    output_html_metrics = "outputs/report_structure_graph.json"
-    output_html_side_by_side = "outputs/report_structure_graph.html"
+    output_html_metrics = RESULTS_PATH/ "report_structure_graph.json"
+    output_html_side_by_side = RESULTS_PATH/ "report_structure_graph.html"
 
     save_json(report.to_dict(), output_html_metrics)
     render_html_report(report, output_html_side_by_side)

@@ -67,11 +67,10 @@ class ProjectSubgraphBuilder:
             for e in self.entities
             if (
                 e.get("label") == "Documento"
-                and e.get("type") == "tabla"
+                and e.get("value", {}).get("type") == "tabla"
                 and "id" in e
             )
         }
-
         project_entities = []
         for e in self.entities:
             eid = e.get("id")
@@ -84,13 +83,13 @@ class ProjectSubgraphBuilder:
         for r in self.relationships:
             s = r.get("source_id")
             t = r.get("target_id")
+            if s in table_document_ids or t in table_document_ids:
+                continue
             if (
                 (s == project_id or t == project_id)
                 and not (s in self.chunk_ids or t in self.chunk_ids)
             ):
                 project_relationships.append(r)
-            if s in table_document_ids or t in table_document_ids:
-                continue
         entity_set = {entity_key(e, use_id=use_entity_id) for e in project_entities}
         rel_set = {relationship_key(r) for r in project_relationships}
 
