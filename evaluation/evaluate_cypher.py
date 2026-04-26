@@ -11,8 +11,8 @@ from typing import Any, Dict
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 
 
-REPORT_OUTPUT_PATH = Path("../evaluation/question_to_cypher/query_batch_report.json")
-ANSWERS_OUTPUT_PATH = Path("../evaluation/question_to_cypher/query_batch_answers.jsonl")
+REPORT_OUTPUT_PATH = Path("../evaluation/ground_truth/question_to_cypher/query_batch_report.json")
+ANSWERS_OUTPUT_PATH = Path("../evaluation/ground_truth/question_to_cypher/query_batch_answers.jsonl")
 
 
 def to_jsonable(obj: Any) -> Any:

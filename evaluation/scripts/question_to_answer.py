@@ -12,8 +12,8 @@ from fastapi import HTTPException
 from institutional_graphrag.api.router_graphrag import QueryRequest, graphrag_query
 
 
-REPORT_OUTPUT_PATH = Path("../evaluation/question_to_answer/query_batch_report.json")
-ANSWERS_OUTPUT_PATH = Path("../evaluation/question_to_answer/query_batch_answers.jsonl")
+REPORT_OUTPUT_PATH = Path("../evaluation/ground_truth/question_to_answer/query_batch_report.json")
+ANSWERS_OUTPUT_PATH = Path("../evaluation/ground_truth/question_to_answer/query_batch_answers.jsonl")
 
 
 def _extract_question_text(item: Any) -> str:
