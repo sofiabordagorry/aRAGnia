@@ -720,7 +720,9 @@ class RuleBasedExtractor:
 
         name = name.upper()
         name = "".join(
-            c for c in unicodedata.normalize("NFD", name) if unicodedata.category(c) != "Mn" or c == "\u0303"
+            c
+            for c in unicodedata.normalize("NFD", name)
+            if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
         return " ".join(name.split())
 
