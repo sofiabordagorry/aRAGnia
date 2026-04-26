@@ -18,7 +18,7 @@ ANSWERS_OUTPUT_PATH = Path("../evaluation/question_to_answer/query_batch_answers
 
 def _extract_question_text(item: Any) -> str:
     if isinstance(item, dict):
-        value = item.get("question")
+        value = item.get("pregunta")
         if isinstance(value, str) and value.strip():
             return value.strip()
 
