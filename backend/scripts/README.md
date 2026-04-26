@@ -87,17 +87,6 @@ cd backend
   - Salida: no genera archivos; imprime top-k resultados en consola usando `data/embeddings/`.
   - Uso: `python scripts/basic_knn_query.py`
 
-- `question_to_answer.py`
-  - Lee preguntas desde un archivo (`.txt`, `.json`, `.jsonl`) y consulta solo GraphRAG.
-  - Reutiliza la lógica del endpoint interno de GraphRAG para evitar duplicar pipeline.
-  - Salida:
-    - Reporte completo en `data/results/query_batch_report.json`.
-    - Resumen en `data/results/query_batch_answers.jsonl` con `id`, `question`, `answer`, `ok`.
-  - Opcional: `--include-debug` para guardar `cypher_query`, `chunks`, `chunk_to_entities`, `entities_extracted` y `relationships_extracted`.
-  - Uso:
-    - `python scripts/question_to_answer.py --questions-file data/results/preguntas.txt`
-    - `python scripts/question_to_answer.py --questions-file data/results/preguntas.json --include-debug`
-
 - `demo_vector_store.py`
   - Demo de chunking + embeddings + carga en Qdrant + búsqueda.
   - Salida: carga de ejemplo en Qdrant (`demo_collection`) y resultados de búsqueda en consola (no escribe archivos).
