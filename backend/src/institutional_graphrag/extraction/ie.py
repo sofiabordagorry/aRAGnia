@@ -94,6 +94,7 @@ class EntityExtractor:
                 value_filter={"source": "llm"},
             )
             self.load_subset_from_graph_json(entities_json, label="Topico")
+            self.load_subset_from_graph_json(entities_json, label="Dominio")
 
         self._extract_documents()
         self._build_doc_indexes()
