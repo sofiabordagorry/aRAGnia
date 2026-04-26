@@ -35,7 +35,7 @@ class Postprocessor:
         normalized = name.strip().lower()
 
         normalized = "".join(
-            c for c in unicodedata.normalize("NFD", normalized) if unicodedata.category(c) != "Mn"
+            c for c in unicodedata.normalize("NFD", normalized) if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
 
         normalized = re.sub(r"\s+", " ", normalized)

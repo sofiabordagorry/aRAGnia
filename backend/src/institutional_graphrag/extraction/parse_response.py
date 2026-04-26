@@ -351,7 +351,7 @@ def _levenshtein_distance(s1: str, s2: str) -> int:
 
 def _normalize_string(s: str) -> str:
     normalized = unicodedata.normalize("NFD", s)
-    return "".join(c for c in normalized if unicodedata.category(c) != "Mn")
+    return "".join(c for c in normalized if unicodedata.category(c) != "Mn" or c == "\u0303")
 
 
 def _clean_name_edges(name: str) -> str:

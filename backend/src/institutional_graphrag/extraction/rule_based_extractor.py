@@ -512,7 +512,7 @@ class RuleBasedExtractor:
         project_title = "".join(
             c
             for c in unicodedata.normalize("NFD", best["candidate_title"].lower())
-            if unicodedata.category(c) != "Mn"
+            if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
         self.res.entities.append(Proyecto(id=project_id, value=project_title))
 
@@ -601,7 +601,7 @@ class RuleBasedExtractor:
             fallback_title = "".join(
                 c
                 for c in unicodedata.normalize("NFD", title.strip().lower())
-                if unicodedata.category(c) != "Mn"
+                if unicodedata.category(c) != "Mn" or c == "\u0303"
             )
             self.res.entities.append(Proyecto(id=project_id, value=fallback_title))
 
@@ -720,7 +720,7 @@ class RuleBasedExtractor:
 
         name = name.upper()
         name = "".join(
-            c for c in unicodedata.normalize("NFD", name) if unicodedata.category(c) != "Mn"
+            c for c in unicodedata.normalize("NFD", name) if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
         return " ".join(name.split())
 
@@ -825,7 +825,7 @@ class RuleBasedExtractor:
                 investigador_name = "".join(
                     c
                     for c in unicodedata.normalize("NFD", candidate_in_text.lower())
-                    if unicodedata.category(c) != "Mn"
+                    if unicodedata.category(c) != "Mn" or c == "\u0303"
                 )
                 self.res.entities.append(
                     Investigador(
@@ -855,7 +855,7 @@ class RuleBasedExtractor:
 
         # 2) quitar acentos
         s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
+        s = "".join(c for c in s if not unicodedata.combining(c) or c == "\u0303")
 
         # 3) reemplazar cualquier cosa que no sea letra o número por _
         s = re.sub(r"[^a-z0-9]+", "_", s)
