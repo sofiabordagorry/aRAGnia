@@ -488,22 +488,27 @@ LIMIT 1
 
 QUESTION: {user_query}
 
-CRITICAL DECISION:
-- "cuantos" → use count()
-- "quienes" → return investigadores
-- listing → return entities + chunks
-- If the user mentions a project title/name, search Proyecto.value with CONTAINS
-- If the user mentions a project id like gi_2014_133, search Proyecto.id with =
+CRITICAL DECISION - COUNT vs LIST:
+- If question asks "cuántos", "cuántas", "how many", "qué cantidad" → USE count() and RETURN count(x) AS total (NO chunks needed)
+- If question asks "cuáles", "qué proyectos", "quiénes", "list", "muéstrame" → RETURN entities + COLLECT(c) AS chunks
+- If question asks "quién/quiénes" (WHO) → RETURN investigators (i), NOT projects
+- If question asks "qué año" (WHAT year) → RETURN year value directly (a.year or a)
+- Analyze the question intent carefully before generating the query
+RETURN RULES:
+- "¿Quiénes participaron?" → RETURN investigadores (i), NOT proyecto (p)
+- "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
+- "¿Cuántos proyectos?" → RETURN count(p) AS total
+- "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
 
 CRITICAL SYNTAX:
-- Wrap output in <QUERY> and </QUERY>
-- NEVER use {{property: value}} syntax
-- NEVER write two or more relationships in the same MATCH/OPTIONAL MATCH.
+- Wrap your query in <QUERY> and </QUERY> tags
+- Every variable in WITH/RETURN must be defined in a previous MATCH
+- Use [:EXTRAIDO_DE]->(entity) for investigators/topics, [:TITULO_EXTRAIDO_DE]->(chunk) for projects
+- Topico uses {{value: '...'}}, Anio uses {{year: '...'}}, all others use {{id: '...'}}
+- NEVER name a relationship variable (never write -[r:TYPE]-> or -[rel:TYPE]->), always use -[:TYPE]->
+- NEVER use a variable as both a relationship and a node
 - NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
 - ALWAYS use WHERE for filtering
-- NEVER invent relationships
-- NEVER invent directions
-- NEVER use p.id for project titles/names
 - ALWAYS use toLower(p.value) CONTAINS 'normalized project text' for project titles/names
 
 <QUERY>
