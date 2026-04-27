@@ -555,7 +555,7 @@ CRITICAL SYNTAX:
                 re.IGNORECASE | re.VERBOSE,
             )
 
-            def repl(m: re.Match) -> str:
+            def repl(m: re.Match[str]) -> str:
                 left = m.group("left")
                 right = m.group("right")
 
@@ -568,7 +568,7 @@ CRITICAL SYNTAX:
                         f"({right}:{source_type})-[:{rel_type}]->({left}:{target_type})"
                     )
 
-                return m.group(0)
+                return str(m.group(0))
 
             new_fixed = pattern.sub(repl, fixed)
 
