@@ -125,7 +125,6 @@ Classification (answer only SEARCH or CHAT):"""
             {"role": "system", "content": "You are a classifier. Answer only with SEARCH or CHAT."},
             {"role": "user", "content": prompt},
         ]
-        print("MODELO:", self.answer_llm_client.model)
         response = (
             self.answer_llm_client.generate(
                 messages=messages,
@@ -177,8 +176,6 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             for c in unicodedata.normalize("NFD", user_query.lower())
             if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
-        user_query = unicodedata.normalize("NFC", user_query)
-        print("query:",user_query)
         prompt = self._build_cypher_generation_prompt(user_query)
 
         messages = [
@@ -192,7 +189,6 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         # Reintentar hasta 2 veces si el LLM no genera los tags correctamente
         MAX_TAG_RETRIES = 2
         cypher_query = None
-        print("MODELO USADO",self.cypher_llm_client.model)
         for attempt in range(MAX_TAG_RETRIES):
             response = self.cypher_llm_client.generate(
                 messages=messages,
@@ -257,9 +253,9 @@ Nodes and their key properties:
 - Investigador → id: 'lastname_firstname', name: 'firstname lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
 - Topico       → value: 'biotecnologia'
 - Dominio      → value: 'ciencias naturales'
-- Documento    → id: '...', base_name: 'gi_2014_133'
+- Documento → id: '...', base_name: 'gi_2014_133', type: 'informe'|'propuesta'|'resumen'|'tabla', year_publisher: '2014', is_group: 'false'
 - Chunk        → id: '...', text: '...'
-- Anio         → year: '2014'
+- Anio         → year: '2014'           ← property is "year", NOT "value" or "id"
 
 Relationships:
 - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
@@ -276,135 +272,23 @@ Relationships:
 
 RULES:
 
-1. Read-only queries only (MATCH, OPTIONAL MATCH, WHERE, RETURN)
-
-2. NEVER use property maps inside nodes.
-
-CORRECT:
-MATCH (t:Topico)
-WHERE t.value = 'biotecnologia'
-
-CORRECT:
-MATCH (d:Dominio)
-WHERE d.value = 'ciencias naturales'
-
-CORRECT when searching project by ID:
-MATCH (p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-
-CORRECT when searching project by name/title/value:
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-
-INCORRECT:
-MATCH (t:Topico {{value: 'biotecnologia'}})
-
-INCORRECT:
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-
-INCORRECT when searching project by title:
-MATCH (p:Proyecto)
-WHERE p.id = 'web warehouse de datos abiertos de gobierno con gestion de calidad'
-
-3. ALWAYS filter values using WHERE
-
-4. ALWAYS normalize text values:
-- lowercase
-- no accents
-- never translate to english
-
-5. Topics are stored in spanish, lowercase and without accents:
-- correct: 'biotecnologia'
-- correct: 'inteligencia artificial'
-
-6. Domains are stored in spanish, lowercase and without accents:
-- correct: 'ciencias naturales'
-
-7. Project titles/names are stored in Proyecto.value.
-When the user mentions a project name/title, search with:
-WHERE toLower(p.value) CONTAINS 'normalized project text'
-Do NOT search project names/titles using p.id.
-
-8. Use p.id only when the user provides an explicit project id like:
-- 'gi_2014_133'
-- 'gi_2010_152'
-
-9. Use ONLY relationships defined in schema
-
-10. NEVER invent relationships
-
-11. NEVER invent relationship directions
-
-12. NEVER define relationship variables
-
-13. Convert year a integer
-
-CORRECT:
--[:TYPE]->
-
-INCORRECT:
--[r:TYPE]->
-
-13. Generate EXACTLY ONE query
-
-14. Every RETURN/WITH variable must exist previously
-
-15. If impossible:
-respond with:
-
-<QUERY>UNSUPPORTED</QUERY>
-
-16. COUNT questions must use count()
-
-17. The property Anio.year is stored as a STRING, not as an integer.
-
-When comparing years numerically (>, <, >=, <=), ALWAYS convert using toInteger().
-
-CORRECT:
-MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio)
-WHERE toInteger(a.year) >= 2018
-
-CORRECT:
-WHERE toInteger(a.year) < 2020
-
-INCORRECT:
-WHERE a.year >= 2018
-
-INCORRECT:
-WHERE a.year < 2020
-
-18. NEVER generate chained relationship patterns.
-
-A MATCH or OPTIONAL MATCH statement must contain EXACTLY ONE relationship.
-
-This means every MATCH/OPTIONAL MATCH can have only:
-- one source node
-- one relationship
-- one target node
-
-CORRECT:
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)
-
-CORRECT:
-MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-
-CORRECT:
-MATCH (i)-[:PARTICIPO_EN]->(p)
-
-INCORRECT:
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-
-INCORRECT:
-MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio)<-[:TIENE_TOPICO]-(p:Proyecto)
-
-INCORRECT:
-MATCH (i:Investigador)-[:PARTICIPO_EN|RESPONSABLE_DE]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)
-
-INCORRECT:
-MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio)<-[:INICIO_EN]-(other_p:Proyecto)
-
-Do not put more than one relationship in the same MATCH line.
-Split every path into multiple MATCH statements.
+1. Read-only (MATCH, OPTIONAL MATCH, WHERE, RETURN)
+2. Return chunks (c:Chunk) when listing or describing entities — they contain the actual text evidence. For COUNT queries, omit chunks and return only the aggregation result.
+3. Connect patterns: every MATCH must use variables defined in previous MATCHes
+4. Use [:EXTRAIDO_DE] for investigators/topics, [:TITULO_EXTRAIDO_DE] for projects to navigate to their evidence chunks
+6. Only add LIMIT when the question explicitly asks for a specific number of results (e.g. "los 10 tópicos con más proyectos" → LIMIT 10). Otherwise, omit LIMIT entirely.
+7. NEVER define relationship variables — use anonymous patterns only: -[:TYPE]-> NOT -[r:TYPE]->
+8. Node variables must be unique and never reused for a different type
+9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
+10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
+11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
+12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
+13. ALWAYS filter values using WHERE.
+14. ALWAYS normalize text values: lowercase, no accents, never translate.
+15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
+16. Domains are stored in Spanish, lowercase and without accents.
+17 Search project titles/names with toLower(p.value) CONTAINS.
+18. Convert Anio.year with toInteger() for numeric comparisons.
 
 PATTERNS:
 
@@ -642,19 +526,19 @@ CRITICAL SYNTAX:
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
-                ("Investigador", "PARTICIPO_EN", "Proyecto"),
-                ("Investigador", "RESPONSABLE_DE", "Proyecto"),
-                ("Proyecto", "TIENE_TOPICO", "Topico"),
-                ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
-                ("Proyecto", "ES_DESCRITO_POR", "Documento"),
-                ("Proyecto", "INICIO_EN", "Anio"),
-                ("Documento", "PRIMER_CHUNK", "Chunk"),
-                ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
-                ("Chunk", "DE_DOCUMENTO", "Documento"),
-                ("Chunk", "EXTRAIDO_DE", "Investigador"),
-                ("Chunk", "EXTRAIDO_DE", "Topico"),
-                ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
-            ]
+            ("Investigador", "PARTICIPO_EN", "Proyecto"),
+            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
+            ("Proyecto", "TIENE_TOPICO", "Topico"),
+            ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
+            ("Proyecto", "ES_DESCRITO_POR", "Documento"),
+            ("Proyecto", "INICIO_EN", "Anio"),
+            ("Documento", "PRIMER_CHUNK", "Chunk"),
+            ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
+            ("Chunk", "DE_DOCUMENTO", "Documento"),
+            ("Chunk", "EXTRAIDO_DE", "Investigador"),
+            ("Chunk", "EXTRAIDO_DE", "Topico"),
+            ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
+        ]
         fixed = query
         corrections_made = []
         var_types = dict(re.findall(r"\((\w+)\s*:\s*(\w+)", fixed))
@@ -685,7 +569,8 @@ CRITICAL SYNTAX:
                     )
 
                 return m.group(0)
-            new_fixed  = pattern.sub(repl, fixed)
+
+            new_fixed = pattern.sub(repl, fixed)
 
             if new_fixed != fixed:
                 corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
