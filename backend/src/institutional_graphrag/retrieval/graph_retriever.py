@@ -125,9 +125,9 @@ Classification (answer only SEARCH or CHAT):"""
             {"role": "system", "content": "You are a classifier. Answer only with SEARCH or CHAT."},
             {"role": "user", "content": prompt},
         ]
-
+        print("MODELO:", self.answer_llm_client.model)
         response = (
-            self.cypher_llm_client.generate(
+            self.answer_llm_client.generate(
                 messages=messages,
                 temperature=0.0,
                 max_tokens=10,
@@ -177,6 +177,8 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             for c in unicodedata.normalize("NFD", user_query.lower())
             if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
+        user_query = unicodedata.normalize("NFC", user_query)
+        print("query:",user_query)
         prompt = self._build_cypher_generation_prompt(user_query)
 
         messages = [
@@ -190,7 +192,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         # Reintentar hasta 2 veces si el LLM no genera los tags correctamente
         MAX_TAG_RETRIES = 2
         cypher_query = None
-
+        print("MODELO USADO",self.cypher_llm_client.model)
         for attempt in range(MAX_TAG_RETRIES):
             response = self.cypher_llm_client.generate(
                 messages=messages,
@@ -249,20 +251,21 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
     def _build_cypher_generation_prompt(self, user_query: str) -> str:
         """Construye el prompt para la generación de queries Cypher."""
         return f"""Generate a Cypher query for Neo4j to answer this question.
-
 SCHEMA:
 Nodes and their key properties:
-- Proyecto     → id: 'gi_2014_133', value: 'Síntesis y evaluación biológica de nuevos quimioterápicos'
-- Investigador → id: 'lastname_firstname', name: 'Firstname Lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
-- Topico       → value: 'Biotechnology'      ← property is "value", NOT "id"
-- Documento    → id: '...', base_name: 'gi_2014_133', type: 'informe'|'propuesta'|'resumen'|'tabla', year_publisher: '2014', is_group: 'false'
+- Proyecto     → id: 'gi_2014_133', value: 'sintesis y evaluacion biologica de nuevos quimioterapicos'
+- Investigador → id: 'lastname_firstname', name: 'firstname lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
+- Topico       → value: 'biotecnologia'
+- Dominio      → value: 'ciencias naturales'
+- Documento    → id: '...', base_name: 'gi_2014_133'
 - Chunk        → id: '...', text: '...'
-- Anio         → year: '2014'                ← property is "year", NOT "value" or "id"
+- Anio         → year: '2014'
 
 Relationships:
 - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
 - (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
 - (Proyecto)-[:TIENE_TOPICO]->(Topico)
+- (Topico)-[:PERTENECE_A_DOMINIO]->(Dominio)
 - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
 - (Proyecto)-[:INICIO_EN]->(Anio)
 - (Documento)-[:PRIMER_CHUNK]->(Chunk)
@@ -272,160 +275,352 @@ Relationships:
 - (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
 
 RULES:
-1. Read-only (MATCH, RETURN only)
-2. Return chunks (c:Chunk) when listing or describing entities — they contain the actual text evidence. For COUNT queries, omit chunks and return only the aggregation result.
-3. Connect patterns: every MATCH must use variables defined in previous MATCHes
-4. Use [:EXTRAIDO_DE] for investigators/topics, [:TITULO_EXTRAIDO_DE] for projects to navigate to their evidence chunks
-5. Topics are stored in ENGLISH: 'Biotechnology', 'Engineering', 'Medicine', etc.
-6. Only add LIMIT when the question explicitly asks for a specific number of results (e.g. "los 10 tópicos con más proyectos" → LIMIT 10). Otherwise, omit LIMIT entirely.
-7. NEVER define relationship variables — use anonymous patterns only: -[:TYPE]-> NOT -[r:TYPE]->
-8. Node variables must be unique and never reused for a different type
-9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
-10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
-11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
-12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
 
-PATTERNS (use what fits best):
+1. Read-only queries only (MATCH, OPTIONAL MATCH, WHERE, RETURN)
 
-=== COUNT QUERIES (when user asks "cuántos", "cuántas", "how many") ===
+2. NEVER use property maps inside nodes.
 
-Count projects by investigator (e.g., "cuántos proyectos tiene X?"):
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-RETURN count(p) AS total
+CORRECT:
+MATCH (t:Topico)
+WHERE t.value = 'biotecnologia'
 
-Count projects by investigator responsable (e.g., "de cuántos proyectos fue responsable X?"):
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
-RETURN count(p) AS total
+CORRECT:
+MATCH (d:Dominio)
+WHERE d.value = 'ciencias naturales'
 
-Count projects by year (e.g., "cuántos proyectos en 2018?"):
-MATCH (a:Anio {{year: '2018'}})
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-RETURN count(p) AS total
+CORRECT when searching project by ID:
+MATCH (p:Proyecto)
+WHERE p.id = 'gi_2014_133'
 
-Count projects by topic (e.g., "cuántos proyectos de biotecnología?"):
-MATCH (t:Topico {{value: 'Biotechnology'}})
+CORRECT when searching project by name/title/value:
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+
+INCORRECT:
+MATCH (t:Topico {{value: 'biotecnologia'}})
+
+INCORRECT:
+MATCH (p:Proyecto {{id: 'gi_2014_133'}})
+
+INCORRECT when searching project by title:
+MATCH (p:Proyecto)
+WHERE p.id = 'web warehouse de datos abiertos de gobierno con gestion de calidad'
+
+3. ALWAYS filter values using WHERE
+
+4. ALWAYS normalize text values:
+- lowercase
+- no accents
+- never translate to english
+
+5. Topics are stored in spanish, lowercase and without accents:
+- correct: 'biotecnologia'
+- correct: 'inteligencia artificial'
+
+6. Domains are stored in spanish, lowercase and without accents:
+- correct: 'ciencias naturales'
+
+7. Project titles/names are stored in Proyecto.value.
+When the user mentions a project name/title, search with:
+WHERE toLower(p.value) CONTAINS 'normalized project text'
+Do NOT search project names/titles using p.id.
+
+8. Use p.id only when the user provides an explicit project id like:
+- 'gi_2014_133'
+- 'gi_2010_152'
+
+9. Use ONLY relationships defined in schema
+
+10. NEVER invent relationships
+
+11. NEVER invent relationship directions
+
+12. NEVER define relationship variables
+
+13. Convert year a integer
+
+CORRECT:
+-[:TYPE]->
+
+INCORRECT:
+-[r:TYPE]->
+
+13. Generate EXACTLY ONE query
+
+14. Every RETURN/WITH variable must exist previously
+
+15. If impossible:
+respond with:
+
+<QUERY>UNSUPPORTED</QUERY>
+
+16. COUNT questions must use count()
+
+17. The property Anio.year is stored as a STRING, not as an integer.
+
+When comparing years numerically (>, <, >=, <=), ALWAYS convert using toInteger().
+
+CORRECT:
+MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio)
+WHERE toInteger(a.year) >= 2018
+
+CORRECT:
+WHERE toInteger(a.year) < 2020
+
+INCORRECT:
+WHERE a.year >= 2018
+
+INCORRECT:
+WHERE a.year < 2020
+
+18. NEVER generate chained relationship patterns.
+
+A MATCH or OPTIONAL MATCH statement must contain EXACTLY ONE relationship.
+
+This means every MATCH/OPTIONAL MATCH can have only:
+- one source node
+- one relationship
+- one target node
+
+CORRECT:
+MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)
+
+CORRECT:
+MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
+
+CORRECT:
+MATCH (i)-[:PARTICIPO_EN]->(p)
+
+INCORRECT:
+MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
+
+INCORRECT:
+MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio)<-[:TIENE_TOPICO]-(p:Proyecto)
+
+INCORRECT:
+MATCH (i:Investigador)-[:PARTICIPO_EN|RESPONSABLE_DE]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)
+
+INCORRECT:
+MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio)<-[:INICIO_EN]-(other_p:Proyecto)
+
+Do not put more than one relationship in the same MATCH line.
+Split every path into multiple MATCH statements.
+
+PATTERNS:
+
+=== COUNT ===
+
+Count projects by topic:
+
+MATCH (t:Topico)
+WHERE t.value = 'biotecnologia'
+
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
+
 RETURN count(p) AS total
 
-Count total entities (e.g., "cuántos investigadores hay?"):
-MATCH (i:Investigador) RETURN count(i) AS total
-MATCH (p:Proyecto) RETURN count(p) AS total
 
-=== LIST QUERIES (when user asks "cuáles", "qué proyectos", "lista", "muéstrame") ===
+Count projects by domain:
 
-List projects by topic:
-MATCH (t:Topico {{value: 'Biotechnology'}})
+MATCH (d:Dominio)
+WHERE d.value = 'ciencias naturales'
+
+MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
+
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
+
+RETURN count(DISTINCT p) AS total
+
+
+Count projects by project title/name:
+
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+
+RETURN count(p) AS total
+
+
+=== LIST ===
+
+Projects by topic:
+
+MATCH (t:Topico)
+WHERE t.value = 'biotecnologia'
+
+MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
+
 MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+
 RETURN p, COLLECT(c) AS chunks
 
-List investigators of a project (WHO participated):
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto {{id: 'gi_2014_133'}})
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
--- CRITICAL: RETURN the investigators (i), NOT the project (p)
 
-List researchers responsible for a project (WHO was IN CHARGE):
-MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto {{id: 'gi_2014_133'}})
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
--- CRITICAL: RETURN the researchers (i), NOT the project (p)
+Projects by domain:
 
-Projects by name of researcher in charge — note direction: Investigador -> Proyecto:
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
+MATCH (d:Dominio)
+WHERE d.value = 'ciencias naturales'
+
+MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
+
+MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
+
 MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, i, COLLECT(c) AS chunks
 
-Projects by researcher name — note direction: Investigador -> Proyecto:
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, i, COLLECT(c) AS chunks
+RETURN DISTINCT p, d, COLLECT(DISTINCT c) AS chunks
 
-Chunks of a specific topic (only when asked about the topic itself, not its projects):
-MATCH (t:Topico {{value: 'Biotechnology'}})
-MATCH (c:Chunk)-[:EXTRAIDO_DE]->(t)
-RETURN c, t
 
-By project ID (chunks about a specific project):
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN c, p
+Project by title/name:
 
-Documents of a project:
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)
-MATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)
-RETURN d, p, COLLECT(c) AS chunks
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
 
-Describe / full info about a specific project (name, year, topics, investigators):
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+
+RETURN p, COLLECT(DISTINCT c) AS chunks
+
+
+Domains of a topic:
+
+MATCH (t:Topico)
+WHERE t.value = 'inteligencia artificial'
+
+MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
+
+RETURN t, d
+
+
+Topics of a domain:
+
+MATCH (d:Dominio)
+WHERE d.value = 'ciencias naturales'
+
+MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
+
+RETURN d, COLLECT(DISTINCT t) AS topics
+
+
+Investigators of project by ID:
+
+MATCH (p:Proyecto)
+WHERE p.id = 'gi_2014_133'
+
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
+
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+
+RETURN i, COLLECT(DISTINCT c) AS chunks
+
+
+Investigators of project by title/name:
+
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
+
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+
+RETURN i, COLLECT(DISTINCT c) AS chunks
+
+
+Responsible investigators by project ID:
+
+MATCH (p:Proyecto)
+WHERE p.id = 'gi_2014_133'
+
+MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p)
+
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+
+RETURN i, COLLECT(DISTINCT c) AS chunks
+
+
+Responsible investigators by project title/name:
+
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+
+MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p)
+
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+
+RETURN i, COLLECT(DISTINCT c) AS chunks
+
+
+Project description by ID:
+
+MATCH (p:Proyecto)
+WHERE p.id = 'gi_2014_133'
+
+OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+
 OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+
+OPTIONAL MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
+
 OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
+
 OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
+
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1
 
-Projects by a specific year (LIST):
-MATCH (a:Anio {{year: 'year_value'}})
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, COLLECT(c) AS chunks
+RETURN p,
+       COLLECT(DISTINCT c) AS chunks,
+       COLLECT(DISTINCT t) AS topics,
+       COLLECT(DISTINCT d) AS domains,
+       COLLECT(DISTINCT inv) AS investigators,
+       COLLECT(DISTINCT maininv) AS researchers_in_charge,
+       a
 
-=== ADVANCED AGGREGATION ===
+LIMIT 1
 
-Projects by area for ALL years (aggregation with grouping):
-MATCH (a:Anio)
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
-RETURN a.year AS anio, t.value AS area, count(DISTINCT p) AS total_proyectos
-ORDER BY anio DESC, total_proyectos DESC
 
-Top N topics by project count (user asked for specific number, e.g. 10):
-MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)
-RETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10
+Project description by title/name:
 
-Top N investigators by project count (e.g., "qué investigadores participaron en más proyectos? top 10"):
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
-WITH i, count(DISTINCT p) AS num_proyectos
-RETURN i.name AS investigador, num_proyectos
-ORDER BY num_proyectos DESC
-LIMIT 10
--- CRITICAL: DO NOT add WHERE conditions filtering by name unless explicitly asked
+MATCH (p:Proyecto)
+WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
 
-=== SIMPLE VALUE QUERIES (year, name, single property) ===
+OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
 
-Get year when a project started:
-MATCH (p:Proyecto {{id: 'gi_2010_152'}})
+OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+
+OPTIONAL MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
+
+OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
+
+OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
+
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-RETURN a.year AS año, a
+
+RETURN p,
+       COLLECT(DISTINCT c) AS chunks,
+       COLLECT(DISTINCT t) AS topics,
+       COLLECT(DISTINCT d) AS domains,
+       COLLECT(DISTINCT inv) AS investigators,
+       COLLECT(DISTINCT maininv) AS researchers_in_charge,
+       a
+
+LIMIT 1
+
 
 QUESTION: {user_query}
 
-CRITICAL DECISION - COUNT vs LIST:
-- If question asks "cuántos", "cuántas", "how many", "qué cantidad" → USE count() and RETURN count(x) AS total (NO chunks needed)
-- If question asks "cuáles", "qué proyectos", "quiénes", "list", "muéstrame" → RETURN entities + COLLECT(c) AS chunks
-- If question asks "quién/quiénes" (WHO) → RETURN investigators (i), NOT projects
-- If question asks "qué año" (WHAT year) → RETURN year value directly (a.year or a)
-- Analyze the question intent carefully before generating the query
-
-RETURN RULES:
-- "¿Quiénes participaron?" → RETURN investigadores (i), NOT proyecto (p)
-- "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
-- "¿Cuántos proyectos?" → RETURN count(p) AS total
-- "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
+CRITICAL DECISION:
+- "cuantos" → use count()
+- "quienes" → return investigadores
+- listing → return entities + chunks
+- If the user mentions a project title/name, search Proyecto.value with CONTAINS
+- If the user mentions a project id like gi_2014_133, search Proyecto.id with =
 
 CRITICAL SYNTAX:
-- Wrap your query in <QUERY> and </QUERY> tags
-- Every variable in WITH/RETURN must be defined in a previous MATCH
-- Use [:EXTRAIDO_DE]->(entity) for investigators/topics, [:TITULO_EXTRAIDO_DE]->(chunk) for projects
-- Topico uses {{value: '...'}}, Anio uses {{year: '...'}}, all others use {{id: '...'}}
-- NEVER name a relationship variable (never write -[r:TYPE]-> or -[rel:TYPE]->), always use -[:TYPE]->
-- NEVER use a variable as both a relationship and a node
+- Wrap output in <QUERY> and </QUERY>
+- NEVER use {{property: value}} syntax
+- NEVER write two or more relationships in the same MATCH/OPTIONAL MATCH.
+- NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
+- ALWAYS use WHERE for filtering
+- NEVER invent relationships
+- NEVER invent directions
+- NEVER use p.id for project titles/names
+- ALWAYS use toLower(p.value) CONTAINS 'normalized project text' for project titles/names
 
 <QUERY>
 """
@@ -447,44 +642,55 @@ CRITICAL SYNTAX:
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
-            ("Investigador", "PARTICIPO_EN", "Proyecto"),
-            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
-            ("Proyecto", "TIENE_TOPICO", "Topico"),
-            ("Proyecto", "ES_DESCRITO_POR", "Documento"),
-            ("Proyecto", "INICIO_EN", "Anio"),
-            ("Documento", "PRIMER_CHUNK", "Chunk"),
-            ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
-            ("Chunk", "DE_DOCUMENTO", "Documento"),
-            ("Chunk", "EXTRAIDO_DE", "Investigador"),
-            ("Chunk", "EXTRAIDO_DE", "Topico"),
-            ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
-        ]
-
+                ("Investigador", "PARTICIPO_EN", "Proyecto"),
+                ("Investigador", "RESPONSABLE_DE", "Proyecto"),
+                ("Proyecto", "TIENE_TOPICO", "Topico"),
+                ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
+                ("Proyecto", "ES_DESCRITO_POR", "Documento"),
+                ("Proyecto", "INICIO_EN", "Anio"),
+                ("Documento", "PRIMER_CHUNK", "Chunk"),
+                ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
+                ("Chunk", "DE_DOCUMENTO", "Documento"),
+                ("Chunk", "EXTRAIDO_DE", "Investigador"),
+                ("Chunk", "EXTRAIDO_DE", "Topico"),
+                ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
+            ]
         fixed = query
         corrections_made = []
+        var_types = dict(re.findall(r"\((\w+)\s*:\s*(\w+)", fixed))
 
         for source_type, rel_type, target_type in correct_directions:
             # Patrón para detectar la dirección invertida
             pattern = re.compile(
                 rf"""
-                MATCH\s*
-                \(\s*(?P<var1>\w+)\s*(?::\s*{target_type})?\s*(?:\{{[^}}]*\}})?\s*\)
+                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s*
+                \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
                 \s*-\s*\[:{rel_type}\]\s*->\s*
-                \(\s*(?P<var2>\w+)\s*(?::\s*{source_type})?\s*(?:\{{[^}}]*\}})?\s*\)
+                \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
                 """,
                 re.IGNORECASE | re.VERBOSE,
             )
 
-            def make_repl(src_type, rel, tgt_type):
-                def _repl(m: re.Match) -> str:
-                    return f"MATCH ({m.group('var2')})-[:{rel}]->({m.group('var1')})"
+            def repl(m: re.Match) -> str:
+                left = m.group("left")
+                right = m.group("right")
 
-                return _repl
+                left_type = m.group("left_label") or var_types.get(left)
+                right_type = m.group("right_label") or var_types.get(right)
+                # Si está invertida: target -> source
+                if left_type == target_type and right_type == source_type:
+                    return (
+                        f"{m.group('match_type')} "
+                        f"({right}:{source_type})-[:{rel_type}]->({left}:{target_type})"
+                    )
 
-            new_fixed = pattern.sub(make_repl(source_type, rel_type, target_type), fixed)
+                return m.group(0)
+            new_fixed  = pattern.sub(repl, fixed)
+
             if new_fixed != fixed:
                 corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
                 fixed = new_fixed
+                print("fixed", fixed)
 
         if corrections_made:
             logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
