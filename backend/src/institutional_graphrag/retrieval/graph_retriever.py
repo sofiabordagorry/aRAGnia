@@ -292,198 +292,193 @@ RULES:
 
 PATTERNS:
 
-=== COUNT ===
+=== COUNT QUERIES (when user asks "cuántos", "cuántas", "how many") ===
 
-Count projects by topic:
+Count projects by investigator (e.g., "cuántos proyectos tiene X?"):
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
+RETURN count(p) AS total
 
+Count projects by investigator responsable (e.g., "de cuántos proyectos fue responsable X?"):
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
+RETURN count(p) AS total
+
+Count projects by year (e.g., "cuántos proyectos en 2018?"):
+MATCH (a:Anio)
+WHERE a.year = '2018'
+MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+RETURN count(p) AS total
+
+Count projects by topic (e.g., "cuántos proyectos de biotecnología?"):
 MATCH (t:Topico)
 WHERE t.value = 'biotecnologia'
-
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-
 RETURN count(p) AS total
+
+Count total entities (e.g., "cuántos investigadores hay?"):
+MATCH (i:Investigador) RETURN count(i) AS total
+MATCH (p:Proyecto) RETURN count(p) AS total
 
 
 Count projects by domain:
-
 MATCH (d:Dominio)
 WHERE d.value = 'ciencias naturales'
-
 MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-
 RETURN count(DISTINCT p) AS total
 
-
 Count projects by project title/name:
-
 MATCH (p:Proyecto)
 WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-
 RETURN count(p) AS total
 
 
-=== LIST ===
+=== LIST QUERIES (when user asks "cuáles", "qué proyectos", "lista", "muéstrame") ===
 
-Projects by topic:
-
+List projects by topic:
 MATCH (t:Topico)
 WHERE t.value = 'biotecnologia'
-
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-
 MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-
 RETURN p, COLLECT(c) AS chunks
 
+List investigators of a project (WHO participated):
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
+WHERE p.id = 'gi_2014_133'
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+RETURN i, COLLECT(DISTINCT c) AS chunks
+-- CRITICAL: RETURN the investigators (i), NOT the project (p)
 
-Projects by domain:
+List researchers responsible for a project (WHO was IN CHARGE):
+MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto)
+WHERE p.id = 'gi_2014_133'
+OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+RETURN i, COLLECT(DISTINCT c) AS chunks
 
+
+List projects by domain:
 MATCH (d:Dominio)
 WHERE d.value = 'ciencias naturales'
-
 MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-
 MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-
 MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-
 RETURN DISTINCT p, d, COLLECT(DISTINCT c) AS chunks
 
-
-Project by title/name:
-
+List project by title/name:
 MATCH (p:Proyecto)
 WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-
 OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-
 RETURN p, COLLECT(DISTINCT c) AS chunks
 
 
-Domains of a topic:
-
+List domains of a topic:
 MATCH (t:Topico)
 WHERE t.value = 'inteligencia artificial'
-
 MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-
 RETURN t, d
 
-
 Topics of a domain:
-
 MATCH (d:Dominio)
 WHERE d.value = 'ciencias naturales'
-
 MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-
 RETURN d, COLLECT(DISTINCT t) AS topics
 
-
 Investigators of project by ID:
-
 MATCH (p:Proyecto)
 WHERE p.id = 'gi_2014_133'
-
 MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
-
 OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-
 RETURN i, COLLECT(DISTINCT c) AS chunks
 
 
 Investigators of project by title/name:
-
 MATCH (p:Proyecto)
 WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-
 MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
-
 OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-
 RETURN i, COLLECT(DISTINCT c) AS chunks
 
 
 Responsible investigators by project ID:
-
 MATCH (p:Proyecto)
 WHERE p.id = 'gi_2014_133'
-
 MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p)
-
 OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-
 RETURN i, COLLECT(DISTINCT c) AS chunks
 
+-- CRITICAL: RETURN the researchers (i), NOT the project (p)
 
-Responsible investigators by project title/name:
+Projects by name of researcher in charge — note direction: Investigador -> Proyecto:
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+RETURN p, i, COLLECT(c) AS chunks
 
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+Projects by researcher name — note direction: Investigador -> Proyecto:
+MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
+MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+RETURN p, i, COLLECT(c) AS chunks
 
-MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p)
+Chunks of a specific topic (only when asked about the topic itself, not its projects):
+MATCH (t:Topico {{value: 'Biotechnology'}})
+MATCH (c:Chunk)-[:EXTRAIDO_DE]->(t)
+RETURN c, t
 
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
+By project ID (chunks about a specific project):
+MATCH (p:Proyecto {{id: 'gi_2014_133'}})
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+RETURN c, p
 
-RETURN i, COLLECT(DISTINCT c) AS chunks
+Documents of a project:
+MATCH (p:Proyecto {{id: 'gi_2014_133'}})
+MATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)
+MATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)
+RETURN d, p, COLLECT(c) AS chunks
 
-
-Project description by ID:
-
-MATCH (p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-
+Describe / full info about a specific project (name, year, topics, investigators):
+MATCH (p:Proyecto {{id: 'gi_2014_133'}})
 OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-
 OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
-
-OPTIONAL MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-
 OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
-
 OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
-
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
+RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1
 
-RETURN p,
-       COLLECT(DISTINCT c) AS chunks,
-       COLLECT(DISTINCT t) AS topics,
-       COLLECT(DISTINCT d) AS domains,
-       COLLECT(DISTINCT inv) AS investigators,
-       COLLECT(DISTINCT maininv) AS researchers_in_charge,
-       a
+Projects by a specific year (LIST):
+MATCH (a:Anio {{year: 'year_value'}})
+MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+RETURN p, COLLECT(c) AS chunks
 
-LIMIT 1
+=== ADVANCED AGGREGATION ===
 
+Projects by area for ALL years (aggregation with grouping):
+MATCH (a:Anio)
+MATCH (p:Proyecto)-[:INICIO_EN]->(a)
+MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+RETURN a.year AS anio, t.value AS area, count(DISTINCT p) AS total_proyectos
+ORDER BY anio DESC, total_proyectos DESC
 
-Project description by title/name:
+Top N topics by project count (user asked for specific number, e.g. 10):
+MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)
+RETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10
 
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
+Top N investigators by project count (e.g., "qué investigadores participaron en más proyectos? top 10"):
+MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
+WITH i, count(DISTINCT p) AS num_proyectos
+RETURN i.name AS investigador, num_proyectos
+ORDER BY num_proyectos DESC
+LIMIT 10
+-- CRITICAL: DO NOT add WHERE conditions filtering by name unless explicitly asked
 
-OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
+=== SIMPLE VALUE QUERIES (year, name, single property) ===
 
-OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
-
-OPTIONAL MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-
-OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
-
-OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
-
+Get year when a project started:
+MATCH (p:Proyecto {{id: 'gi_2010_152'}})
 OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-
-RETURN p,
-       COLLECT(DISTINCT c) AS chunks,
-       COLLECT(DISTINCT t) AS topics,
-       COLLECT(DISTINCT d) AS domains,
-       COLLECT(DISTINCT inv) AS investigators,
-       COLLECT(DISTINCT maininv) AS researchers_in_charge,
-       a
-
-LIMIT 1
+RETURN a.year AS año, a
 
 
 QUESTION: {user_query}
