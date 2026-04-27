@@ -7,16 +7,9 @@ from util.html_report import write_project_side_by_side_html, render_html_report
 from util.graph_compare import build_rendered_projects
 from util.graph_validation import validate_graph_against_schema
 from typing import Any, Dict
+import argparse
 
 
-# Cargar variables de entorno
-
-PRED_PATH = (
-    Path(__file__).parents[2]
-    / "data"
-    / "entities_relations"
-    / "entity_documents.json"
-)
 GT_PATH = (
     Path(__file__).parents[1]
     / "ground_truth"
@@ -38,8 +31,16 @@ def save_json(data: Dict[str, Any], path: str | Path) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "pred_file",
+        help="Ruta al archivo JSON con las predicciones",
+    )
+
+    args = parser.parse_args()
+
+    pred_path = Path(args.pred_file)
     gt_path = GT_PATH
-    pred_path = PRED_PATH
 
     output_html = RESULTS_PATH / "report_complete.html"
     Path(output_html).parent.mkdir(parents=True, exist_ok=True)

@@ -53,23 +53,17 @@
     {
       "id": "aerospace_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria aeroespacial"
-      }
+      "value": "ingenieria aeroespacial"
     },
     {
       "id": "agricultural_and_biological_sciences",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias agricolas y biologicas"
-      }
+      "value": "ciencias agricolas y biologicas"
     },
     {
       "id": "agronomy_and_crop_science",
       "label": "Topico",
-      "value": {
-        "value": "agronomia y ciencias de cultivos"
-      }
+      "value": "agronomia y ciencias de cultivos"
     },
     {
       "id": "alejandro_vaisman",
@@ -116,37 +110,27 @@
     {
       "id": "applied_mathematics",
       "label": "Topico",
-      "value": {
-        "value": "matematicas aplicadas"
-      }
+      "value": "matematicas aplicadas"
     },
     {
       "id": "applied_microbiology_and_biotechnology",
       "label": "Topico",
-      "value": {
-        "value": "microbiologia aplicada y biotecnologia"
-      }
+      "value": "microbiologia aplicada y biotecnologia"
     },
     {
       "id": "applied_psychology",
       "label": "Topico",
-      "value": {
-        "value": "psicologia aplicada"
-      }
+      "value": "psicologia aplicada"
     },
     {
       "id": "architecture",
       "label": "Topico",
-      "value": {
-        "value": "arquitectura"
-      }
+      "value": "arquitectura"
     },
     {
       "id": "artificial_intelligence",
       "label": "Topico",
-      "value": {
-        "value": "inteligencia artificial"
-      }
+      "value": "inteligencia artificial"
     },
     {
       "id": "baliosian",
@@ -159,16 +143,12 @@
     {
       "id": "biochemistry_genetics_and_molecular_biology",
       "label": "Dominio",
-      "value": {
-        "value": "bioquimica, genetica y biologia molecular"
-      }
+      "value": "bioquimica, genetica y biologia molecular"
     },
     {
       "id": "biomedical_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria biomedica"
-      }
+      "value": "ingenieria biomedica"
     },
     {
       "id": "brian_yang",
@@ -181,9 +161,7 @@
     {
       "id": "business_management_and_accounting",
       "label": "Dominio",
-      "value": {
-        "value": "negocios, gestion y contabilidad"
-      }
+      "value": "negocios, gestion y contabilidad"
     },
     {
       "id": "christopher_quincke",
@@ -196,72 +174,52 @@
     {
       "id": "civil_and_structural_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria civil y estructural"
-      }
+      "value": "ingenieria civil y estructural"
     },
     {
       "id": "communication",
       "label": "Topico",
-      "value": {
-        "value": "comunicacion"
-      }
+      "value": "comunicacion"
     },
     {
       "id": "computational_mathematics",
       "label": "Topico",
-      "value": {
-        "value": "matematicas computacionales"
-      }
+      "value": "matematicas computacionales"
     },
     {
       "id": "computational_mechanics",
       "label": "Topico",
-      "value": {
-        "value": "mecanica computacional"
-      }
+      "value": "mecanica computacional"
     },
     {
       "id": "computational_theory_and_mathematics",
       "label": "Topico",
-      "value": {
-        "value": "teoria computacional y matematicas"
-      }
+      "value": "teoria computacional y matematicas"
     },
     {
       "id": "computer_networks_and_communications",
       "label": "Topico",
-      "value": {
-        "value": "redes de computadoras y comunicaciones"
-      }
+      "value": "redes de computadoras y comunicaciones"
     },
     {
       "id": "computer_science",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de la computacion"
-      }
+      "value": "ciencias de la computacion"
     },
     {
       "id": "computer_science_applications",
       "label": "Topico",
-      "value": {
-        "value": "aplicaciones de ciencias de la computacion"
-      }
+      "value": "aplicaciones de ciencias de la computacion"
     },
     {
       "id": "computer_vision_and_pattern_recognition",
       "label": "Topico",
-      "value": {
-        "value": "vision por computadora y reconocimiento de patrones"
-      }
+      "value": "vision por computadora y reconocimiento de patrones"
     },
     {
       "id": "control_and_systems_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria de control y sistemas"
-      }
+      "value": "ingenieria de control y sistemas"
     },
     {
       "id": "daniel_callejas",
@@ -274,9 +232,7 @@
     {
       "id": "decision_sciences",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de la decision"
-      }
+      "value": "ciencias de la decision"
     },
     {
       "id": "dr_seroussi",
@@ -314,23 +270,17 @@
     {
       "id": "ecological_modeling",
       "label": "Topico",
-      "value": {
-        "value": "modelado ecologico"
-      }
+      "value": "modelado ecologico"
     },
     {
       "id": "economics_and_econometrics",
       "label": "Topico",
-      "value": {
-        "value": "economia y econometria"
-      }
+      "value": "economia y econometria"
     },
     {
       "id": "economics_econometrics_and_finance",
       "label": "Dominio",
-      "value": {
-        "value": "economia, econometria y finanzas"
-      }
+      "value": "economia, econometria y finanzas"
     },
     {
       "id": "eduardo_gramp",
@@ -344,37 +294,27 @@
     {
       "id": "education",
       "label": "Topico",
-      "value": {
-        "value": "educacion"
-      }
+      "value": "educacion"
     },
     {
       "id": "electrical_and_electronic_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria electrica y electronica"
-      }
+      "value": "ingenieria electrica y electronica"
     },
     {
       "id": "engineering",
       "label": "Dominio",
-      "value": {
-        "value": "ingenieria"
-      }
+      "value": "ingenieria"
     },
     {
       "id": "environmental_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria ambiental"
-      }
+      "value": "ingenieria ambiental"
     },
     {
       "id": "environmental_science",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias ambientales"
-      }
+      "value": "ciencias ambientales"
     },
     {
       "id": "ewelina_bakala",
@@ -452,51 +392,37 @@
     {
       "id": "general_agricultural_and_biological_sciences",
       "label": "Topico",
-      "value": {
-        "value": "ciencias agricolas y biologicas generales"
-      }
+      "value": "ciencias agricolas y biologicas generales"
     },
     {
       "id": "general_economics_econometrics_and_finance",
       "label": "Topico",
-      "value": {
-        "value": "economia, econometria y finanzas generales"
-      }
+      "value": "economia, econometria y finanzas generales"
     },
     {
       "id": "general_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria general"
-      }
+      "value": "ingenieria general"
     },
     {
       "id": "general_materials_science",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de los materiales generales"
-      }
+      "value": "ciencias de los materiales generales"
     },
     {
       "id": "general_social_sciences",
       "label": "Topico",
-      "value": {
-        "value": "ciencias sociales generales"
-      }
+      "value": "ciencias sociales generales"
     },
     {
       "id": "genetics",
       "label": "Topico",
-      "value": {
-        "value": "genetica"
-      }
+      "value": "genetica"
     },
     {
       "id": "geography_planning_and_development",
       "label": "Topico",
-      "value": {
-        "value": "geografia, planificacion y desarrollo"
-      }
+      "value": "geografia, planificacion y desarrollo"
     },
     {
       "id": "gerardo_rubino",
@@ -4958,16 +4884,12 @@
     {
       "id": "hardware_and_architecture",
       "label": "Topico",
-      "value": {
-        "value": "hardware y arquitectura"
-      }
+      "value": "hardware y arquitectura"
     },
     {
       "id": "human-computer_interaction",
       "label": "Topico",
-      "value": {
-        "value": "interaccion humano-computadora"
-      }
+      "value": "interaccion humano-computadora"
     },
     {
       "id": "idoia_ochoa",
@@ -4980,37 +4902,27 @@
     {
       "id": "immunology_and_microbiology",
       "label": "Dominio",
-      "value": {
-        "value": "inmunologia y microbiologia"
-      }
+      "value": "inmunologia y microbiologia"
     },
     {
       "id": "industrial_and_manufacturing_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria industrial y de manufactura"
-      }
+      "value": "ingenieria industrial y de manufactura"
     },
     {
       "id": "information_systems",
       "label": "Topico",
-      "value": {
-        "value": "sistemas de informacion"
-      }
+      "value": "sistemas de informacion"
     },
     {
       "id": "information_systems_and_management",
       "label": "Topico",
-      "value": {
-        "value": "sistemas de informacion y gestion"
-      }
+      "value": "sistemas de informacion y gestion"
     },
     {
       "id": "instrumentation",
       "label": "Topico",
-      "value": {
-        "value": "instrumentacion"
-      }
+      "value": "instrumentacion"
     },
     {
       "id": "ismael_caballero",
@@ -5064,9 +4976,7 @@
     {
       "id": "library_and_information_sciences",
       "label": "Topico",
-      "value": {
-        "value": "bibliotecologia y ciencias de la informacion"
-      }
+      "value": "bibliotecologia y ciencias de la informacion"
     },
     {
       "id": "lorena_etcheverry",
@@ -5079,23 +4989,17 @@
     {
       "id": "management_information_systems",
       "label": "Topico",
-      "value": {
-        "value": "sistemas de informacion de gestion"
-      }
+      "value": "sistemas de informacion de gestion"
     },
     {
       "id": "management_of_technology_and_innovation",
       "label": "Topico",
-      "value": {
-        "value": "gestion de tecnologia e innovacion"
-      }
+      "value": "gestion de tecnologia e innovacion"
     },
     {
       "id": "management_science_and_operations_research",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de la gestion e investigacion operativa"
-      }
+      "value": "ciencias de la gestion e investigacion operativa"
     },
     {
       "id": "marotta_llambi",
@@ -5148,23 +5052,17 @@
     {
       "id": "materials_science",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de los materiales"
-      }
+      "value": "ciencias de los materiales"
     },
     {
       "id": "mathematical_physics",
       "label": "Topico",
-      "value": {
-        "value": "fisica matematica"
-      }
+      "value": "fisica matematica"
     },
     {
       "id": "mathematics",
       "label": "Dominio",
-      "value": {
-        "value": "matematicas"
-      }
+      "value": "matematicas"
     },
     {
       "id": "matías_richart",
@@ -5186,23 +5084,17 @@
     {
       "id": "mechanical_engineering",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria mecanica"
-      }
+      "value": "ingenieria mecanica"
     },
     {
       "id": "mechanics_of_materials",
       "label": "Topico",
-      "value": {
-        "value": "mecanica de materiales"
-      }
+      "value": "mecanica de materiales"
     },
     {
       "id": "media_technology",
       "label": "Topico",
-      "value": {
-        "value": "tecnologia de medios"
-      }
+      "value": "tecnologia de medios"
     },
     {
       "id": "mercedes_marzoa",
@@ -5215,16 +5107,12 @@
     {
       "id": "modeling_and_simulation",
       "label": "Topico",
-      "value": {
-        "value": "modelado y simulacion"
-      }
+      "value": "modelado y simulacion"
     },
     {
       "id": "nursing",
       "label": "Dominio",
-      "value": {
-        "value": "enfermeria"
-      }
+      "value": "enfermeria"
     },
     {
       "id": "pablo_alejandro_rodriguez_bocca",
@@ -5261,16 +5149,12 @@
     {
       "id": "physics_and_astronomy",
       "label": "Dominio",
-      "value": {
-        "value": "fisica y astronomia"
-      }
+      "value": "fisica y astronomia"
     },
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": {
-        "value": "web warehouse de datos abiertos de gobierno con gestión de calidad."
-      }
+      "value": "web warehouse de datos abiertos de gobierno con gestión de calidad."
     },
     {
       "id": "proy_2012_638_informe",
@@ -17736,9 +17620,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": {
-        "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
-      }
+      "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
     },
     {
       "id": "proy_2016_729_informe",
@@ -22202,9 +22084,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": {
-        "value": "diseño óptimo de redes de ciclovías"
-      }
+      "value": "diseño óptimo de redes de ciclovías"
     },
     {
       "id": "proy_2018_260_informe",
@@ -23394,9 +23274,7 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": {
-        "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
-      }
+      "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
     },
     {
       "id": "proy_2018_413_informe",
@@ -26992,9 +26870,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": {
-        "value": "co-simulación en sistemas ciber-físicos"
-      }
+      "value": "co-simulación en sistemas ciber-físicos"
     },
     {
       "id": "proy_2020_513_informe",
@@ -37687,16 +37563,12 @@
     {
       "id": "psychology",
       "label": "Dominio",
-      "value": {
-        "value": "psicologia"
-      }
+      "value": "psicologia"
     },
     {
       "id": "public_administration",
       "label": "Topico",
-      "value": {
-        "value": "administracion publica"
-      }
+      "value": "administracion publica"
     },
     {
       "id": "raúl_ruggia",
@@ -37717,9 +37589,7 @@
     {
       "id": "research_and_theory",
       "label": "Topico",
-      "value": {
-        "value": "investigacion y teoria"
-      }
+      "value": "investigacion y teoria"
     },
     {
       "id": "richart",
@@ -37740,72 +37610,52 @@
     {
       "id": "safety_research",
       "label": "Topico",
-      "value": {
-        "value": "investigacion en seguridad"
-      }
+      "value": "investigacion en seguridad"
     },
     {
       "id": "safety_risk_reliability_and_quality",
       "label": "Topico",
-      "value": {
-        "value": "seguridad, riesgo, confiabilidad y calidad"
-      }
+      "value": "seguridad, riesgo, confiabilidad y calidad"
     },
     {
       "id": "signal_processing",
       "label": "Topico",
-      "value": {
-        "value": "procesamiento de senales"
-      }
+      "value": "procesamiento de senales"
     },
     {
       "id": "social_sciences",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias sociales"
-      }
+      "value": "ciencias sociales"
     },
     {
       "id": "software",
       "label": "Topico",
-      "value": {
-        "value": "software"
-      }
+      "value": "software"
     },
     {
       "id": "statistics_and_probability",
       "label": "Topico",
-      "value": {
-        "value": "estadistica y probabilidad"
-      }
+      "value": "estadistica y probabilidad"
     },
     {
       "id": "statistics_probability_and_uncertainty",
       "label": "Topico",
-      "value": {
-        "value": "estadistica, probabilidad e incertidumbre"
-      }
+      "value": "estadistica, probabilidad e incertidumbre"
     },
     {
       "id": "theoretical_computer_science",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de la computacion teoricas"
-      }
+      "value": "ciencias de la computacion teoricas"
     },
     {
       "id": "transportation",
       "label": "Topico",
-      "value": {
-        "value": "transporte"
-      }
+      "value": "transporte"
     },
     {
       "id": "urban_studies",
       "label": "Topico",
-      "value": {
-        "value": "estudios urbanos"
-      }
+      "value": "estudios urbanos"
     },
     {
       "id": "álvarez",

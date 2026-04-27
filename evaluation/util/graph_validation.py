@@ -514,7 +514,9 @@ def validate_constraints(idx: Dict[str, Any], issues: List[Issue]) -> None:
     # 2.b) Todo documento debe tener al menos un PRIMER_CHUNK y al menos un DE_DOCUMENTO
     for document in idx["entities_by_label"].get("Documento", []):
         did = document["id"]
-
+        doc_type = document.get("value", {}).get("type")
+        if doc_type == "tabla":
+            continue
         first_chunks = document_first_chunks(did)
         doc_chunks = chunks_of_document(did)
 
@@ -580,6 +582,41 @@ def validate_constraints(idx: Dict[str, Any], issues: List[Issue]) -> None:
                 unreachable_chunk_ids=unreachable,
                 visited_chunk_ids=sorted(visited),
             )
+    for topic in idx["entities_by_label"].get("Topico", []):
+        tid = topic["id"]
+
+        projects = sources_of(tid, "TIENE_TOPICO")
+        if not projects:
+            add_issue(
+                issues,
+                "error",
+                "constraint",
+                "topic.requires_project",
+                "El tópico no está asociado a ningún proyecto.",
+                topic_id=tid,
+            )
+
+        domains = targets_of(tid, "PERTENECE_A_DOMINIO")
+        if len(domains) == 0:
+            add_issue(
+                issues,
+                "error",
+                "constraint",
+                "topic.requires_domain",
+                "El tópico no está asociado a ningún dominio.",
+                topic_id=tid,
+            )
+        elif len(domains) > 1:
+            add_issue(
+                issues,
+                "error",
+                "constraint",
+                "topic.single_domain",
+                "El tópico está asociado a más de un dominio.",
+                topic_id=tid,
+                domain_ids=domains,
+            )
+
 
     # 4) No pueden existir ciclos en SIGUIENTE_CHUNK
     next_graph: Dict[str, List[str]] = defaultdict(list)
