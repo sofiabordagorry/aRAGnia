@@ -39,6 +39,7 @@ class Postprocessor:
             for c in unicodedata.normalize("NFD", normalized)
             if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
+        normalized = unicodedata.normalize("NFC", normalized)
 
         normalized = re.sub(r"\s+", " ", normalized)
 
