@@ -90,9 +90,9 @@ class GraphRAGRetriever:
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
         answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
-        # LLM para clasificación y Cypher
+        # LLM para Cypher
         self.cypher_llm_client = get_llm_client(model=cypher_model)
-        # LLM para respuestas finales
+        # LLM para clasificación y respuestas finales
         self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
@@ -575,7 +575,6 @@ CRITICAL SYNTAX:
             if new_fixed != fixed:
                 corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
                 fixed = new_fixed
-                print("fixed", fixed)
 
         if corrections_made:
             logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
