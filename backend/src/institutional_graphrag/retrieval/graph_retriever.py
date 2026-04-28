@@ -177,6 +177,8 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             for c in unicodedata.normalize("NFD", user_query.lower())
             if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
+        user_query = unicodedata.normalize("NFC", user_query)
+
         prompt = self._build_cypher_generation_prompt(user_query)
 
         messages = [
