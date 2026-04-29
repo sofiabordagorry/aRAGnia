@@ -512,8 +512,10 @@ class RuleBasedExtractor:
         project_title = "".join(
             c
             for c in unicodedata.normalize("NFD", best["candidate_title"].lower())
-            if unicodedata.category(c) != "Mn"
+            if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
+        project_title = unicodedata.normalize("NFC", project_title)
+
         self.res.entities.append(Proyecto(id=project_id, value=project_title))
 
         year = best.get("year")
@@ -601,8 +603,10 @@ class RuleBasedExtractor:
             fallback_title = "".join(
                 c
                 for c in unicodedata.normalize("NFD", title.strip().lower())
-                if unicodedata.category(c) != "Mn"
+                if unicodedata.category(c) != "Mn" or c == "\u0303"
             )
+            fallback_title = unicodedata.normalize("NFC", fallback_title)
+
             self.res.entities.append(Proyecto(id=project_id, value=fallback_title))
 
             if year:
@@ -720,8 +724,12 @@ class RuleBasedExtractor:
 
         name = name.upper()
         name = "".join(
-            c for c in unicodedata.normalize("NFD", name) if unicodedata.category(c) != "Mn"
+            c
+            for c in unicodedata.normalize("NFD", name)
+            if unicodedata.category(c) != "Mn" or c == "\u0303"
         )
+        name = unicodedata.normalize("NFC", name)
+
         return " ".join(name.split())
 
     def is_name_col(self, col: str) -> bool:
@@ -825,8 +833,10 @@ class RuleBasedExtractor:
                 investigador_name = "".join(
                     c
                     for c in unicodedata.normalize("NFD", candidate_in_text.lower())
-                    if unicodedata.category(c) != "Mn"
+                    if unicodedata.category(c) != "Mn" or c == "\u0303"
                 )
+                investigador_name = unicodedata.normalize("NFC", investigador_name)
+
                 self.res.entities.append(
                     Investigador(
                         id=candidate_id,
@@ -855,7 +865,8 @@ class RuleBasedExtractor:
 
         # 2) quitar acentos
         s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
+        s = "".join(c for c in s if not unicodedata.combining(c) or c == "\u0303")
+        s = unicodedata.normalize("NFC", s)
 
         # 3) reemplazar cualquier cosa que no sea letra o número por _
         s = re.sub(r"[^a-z0-9]+", "_", s)

@@ -61,8 +61,8 @@ services:
     command: >
       -c "
       until OLLAMA_HOST=http://ollama:11434 ollama list >/dev/null 2>&1; do sleep 2; done;
-      OLLAMA_HOST=http://ollama:11434 ollama pull llama3.2:3b;
-      OLLAMA_HOST=http://ollama:11434 ollama pull qwen2.5:3b-instruct;
+      OLLAMA_HOST=http://ollama:11434 ollama pull ${OLLAMA_MODEL_CYPHER};
+      OLLAMA_HOST=http://ollama:11434 ollama pull ${OLLAMA_MODEL_ANSWER};
       "
     volumes:
       - ollama_data:/root/.ollama

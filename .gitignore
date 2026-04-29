@@ -15,6 +15,7 @@ data/tables/
 data/entities_relations
 data/cache_paths.csv
 evaluation/question_to_answer/
+evaluation/results_knowledge_graph/
 # Virtual environments
 venv/
 .venv/

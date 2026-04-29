@@ -14,3 +14,16 @@ Guía rápida de los scripts en esta carpeta.
   - Uso:
     - `python evaluation/scripts/question_to_answer.py --questions-file data/results/preguntas.txt`
     - `python evaluation/scripts/question_to_answer.py --questions-file data/results/preguntas.json --include-debug`
+
+- `evaluate_kg.py`
+  - Compara un grafo proporcionado contra el ground truth (evaluation/ground_truth/extraction/ground_truth_kg.json).
+  - Genera un reporte HTML y json lado a lado de entidades y relaciones.
+  - También valida la estructura del grafo contra el esquema definido.
+  - Salida:
+    - Reporte comparativo en evaluation/results_knowledge_graph/report_complete.html
+    - Datos renderizados en evaluation/results_knowledge_graph/report_render_data.json
+    - Reporte de validación estructural en evaluation/results_knowledge_graph/report_structure_graph.json
+    - Reporte HTML de validación estructural en evaluation/results_knowledge_graph/report_structure_graph.html
+  - Uso:
+    - `python evaluation/scripts/question_to_answer.py --questions-file evaluation/llm_extraction/Qwen_Qwen2.5-coder-14B-Instruct`
+- 

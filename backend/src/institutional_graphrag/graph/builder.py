@@ -970,11 +970,23 @@ class GraphBuilder:
             for record in node_result:
                 label = record["label"] or "SinLabel"
                 entity_id = record["id"]
-                value = dict(record["value"]) if record["value"] is not None else {}
 
-                # eliminar propiedades que no querés duplicadas o internas
-                value.pop("__created__", None)
-                value.pop("id", None)
+                props = dict(record["value"]) if record["value"] is not None else {}
+
+                props.pop("__created__", None)
+                props.pop("id", None)
+
+                if label in {"Proyecto", "Topico", "Dominio"}:
+                    value = props.get("value")
+
+                    if isinstance(value, dict) and "value" in value:
+                        value = value["value"]
+
+                    if value is None:
+                        value = ""
+
+                else:
+                    value = props
 
                 neo4j_entities.append(
                     {
