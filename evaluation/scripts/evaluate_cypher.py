@@ -20,7 +20,7 @@ ANSWERS_OUTPUT_PATH = (
     Path(__file__).parents[1]
     / "ground_truth"
     / "question_to_cypher"
-    / "query_batch_answers.json"
+    / "query_batch_answers.jsonl"
 )
 def log(msg: str) -> None:
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
