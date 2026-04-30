@@ -918,7 +918,7 @@ Tu respuesta (frase introductoria + lista completa):"""
             {"role": "user", "content": user_prompt},
         ]
 
-    def query(self, user_query: str) -> GraphRAGResult | None:
+    def query(self, user_query: str) -> GraphRAGResult:
         """
         Pipeline completo de GraphRAG:
         """
@@ -936,9 +936,7 @@ Tu respuesta (frase introductoria + lista completa):"""
             records=records, user_query=user_query, cypher_query=cypher_query
         )
 
-    def generate_cypher_query_result(
-        self, user_query
-    ) -> Tuple[GraphRAGResult | None, List[Any], str]:
+    def generate_cypher_query_result(self, user_query) -> Tuple[GraphRAGResult, List[Any], str]:
         logger.info(f"Query recibida: '{user_query}'")
 
         intent = self._classify_query_intent(user_query)
@@ -1007,7 +1005,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                 except ValueError as fix_err:
                     logger.error(f"No se pudo corregir la query: {fix_err}")
                     return _too_complex_result, [], ""
-        return None, records, cypher_query
+        return _too_complex_result, records, cypher_query
 
     def generate_result(self, records, user_query, cypher_query) -> GraphRAGResult:
         # Extraer chunks y evidencia
