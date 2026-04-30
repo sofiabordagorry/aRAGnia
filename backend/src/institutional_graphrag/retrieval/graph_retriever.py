@@ -918,26 +918,27 @@ Tu respuesta (frase introductoria + lista completa):"""
             {"role": "user", "content": user_prompt},
         ]
 
-    def query(self, user_query: str) -> GraphRAGResult:
+    def query(self, user_query: str) -> GraphRAGResult | None:
         """
         Pipeline completo de GraphRAG:
         """
         if not user_query or not user_query.strip():
             raise ValueError("Query vacía")
-        invalidResult: GraphRAGResult = None
         cypher_query: str = ""
         records: List[Any] = []
         invalidResult, records, cypher_query = self.generate_cypher_query_result(
             user_query=user_query
         )
 
-        if records == []:
+        if not records:
             return invalidResult
         return self.generate_result(
             records=records, user_query=user_query, cypher_query=cypher_query
         )
 
-    def generate_cypher_query_result(self, user_query) -> Tuple[GraphRAGResult, List[Any], str]:
+    def generate_cypher_query_result(
+        self, user_query
+    ) -> Tuple[GraphRAGResult | None, List[Any], str]:
         logger.info(f"Query recibida: '{user_query}'")
 
         intent = self._classify_query_intent(user_query)
