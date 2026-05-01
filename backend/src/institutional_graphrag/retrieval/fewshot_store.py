@@ -111,9 +111,7 @@ class FewShotStore:
         if not new:
             return
 
-        embeddings = [
-            self._embedder.embed_query(q)[0].tolist() for q, _ in new
-        ]
+        embeddings = [self._embedder.embed_query(q)[0].tolist() for q, _ in new]
         metadata = [{"question": q, "cypher": c} for q, c in new]
         self._store.add_documents(embeddings, metadata)
 
