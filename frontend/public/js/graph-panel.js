@@ -74,7 +74,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     panStartY: 0,
   };
 
-  const ZOOM_STEP = 0.2;
   const ZOOM_MIN = 0.3;
   const ZOOM_MAX = 4.0;
 
@@ -120,12 +119,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       edge_count: 0,
       alias_edge_count: 0,
     };
-    if (els.nodeCount)
+
+    if (els.nodeCount) {
       els.nodeCount.textContent = `${safeSummary.node_count} nodos`;
-    if (els.edgeCount)
+    }
+    if (els.edgeCount) {
       els.edgeCount.textContent = `${safeSummary.edge_count} relaciones`;
-    if (els.aliasCount)
+    }
+    if (els.aliasCount) {
       els.aliasCount.textContent = `${safeSummary.alias_edge_count} aliases`;
+    }
   }
 
   function setActiveSidePanel(panelName) {
@@ -142,18 +145,15 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     els.tabEntitiesBtn?.classList.toggle("active", entityActive);
     els.tabAliasesBtn?.classList.toggle("active", !entityActive);
 
-    if (els.tabEntitiesBtn) {
-      els.tabEntitiesBtn.setAttribute(
-        "aria-selected",
-        entityActive ? "true" : "false",
-      );
-    }
-    if (els.tabAliasesBtn) {
-      els.tabAliasesBtn.setAttribute(
-        "aria-selected",
-        !entityActive ? "true" : "false",
-      );
-    }
+    els.tabEntitiesBtn?.setAttribute(
+      "aria-selected",
+      entityActive ? "true" : "false",
+    );
+
+    els.tabAliasesBtn?.setAttribute(
+      "aria-selected",
+      !entityActive ? "true" : "false",
+    );
 
     if (!entityActive && !state.aliasLoadedOnce) {
       loadAliases();
@@ -181,23 +181,27 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function apiUrl(path, params = {}) {
     const url = new URL(`${GRAPH_API_BASE}${path}`);
+
     Object.entries(params).forEach(([key, value]) => {
       if (value === undefined || value === null) return;
       const stringValue = String(value);
       if (stringValue === "") return;
       url.searchParams.set(key, stringValue);
     });
+
     return url.toString();
   }
 
   async function fetchJson(url) {
     const response = await fetch(url);
+
     if (!response.ok) {
       const text = await response.text().catch(() => "");
       throw new Error(
         `HTTP ${response.status} ${response.statusText}${text ? ` - ${text}` : ""}`,
       );
     }
+
     return response.json();
   }
 
@@ -212,10 +216,13 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function buildLegend(nodes) {
     if (!els.legend) return;
+
     const counts = new Map();
-    nodes.forEach((node) =>
-      counts.set(node.label, (counts.get(node.label) || 0) + 1),
-    );
+
+    nodes.forEach((node) => {
+      counts.set(node.label, (counts.get(node.label) || 0) + 1);
+    });
+
     els.legend.innerHTML = Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(
@@ -232,6 +239,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function buildLayout(nodes, width, height) {
     const positions = new Map();
     const grouped = new Map();
+
     nodes.forEach((node) => {
       if (!grouped.has(node.label)) grouped.set(node.label, []);
       grouped.get(node.label).push(node);
@@ -249,17 +257,21 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
     labels.forEach((label, groupIndex) => {
       const groupNodes = grouped.get(label) || [];
+
       const radius =
         labels.length === 1
           ? maxRadius * 0.65
           : 54 +
             (groupIndex * (maxRadius - 54)) / Math.max(labels.length - 1, 1);
+
       groupNodes.forEach((node, index) => {
         const angleOffset = groupIndex * 0.48;
         const angle =
           (2 * Math.PI * index) / Math.max(groupNodes.length, 1) + angleOffset;
+
         const jitter =
           groupNodes.length <= 2 ? 0 : (index % 2 === 0 ? 1 : -1) * 12;
+
         positions.set(node.id, {
           x: centerX + Math.cos(angle) * (radius + jitter),
           y: centerY + Math.sin(angle) * (radius + jitter),
@@ -273,26 +285,14 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function applyTransform() {
     const viewport = els.svg.querySelector("#graphViewport");
     if (!viewport) return;
+
     viewport.setAttribute(
       "transform",
       `translate(${state.panX.toFixed(3)} ${state.panY.toFixed(3)}) scale(${state.zoomScale.toFixed(3)})`,
     );
   }
 
-  // alias kept for callers that used the old name
   const applyZoom = applyTransform;
-
-  function resetTransform() {
-    const viewBox = els.svg.viewBox.baseVal;
-    state.zoomScale = 1;
-    state.panX = viewBox.width
-      ? (viewBox.width / 2) * (1 - state.zoomScale)
-      : 0;
-    state.panY = viewBox.height
-      ? (viewBox.height / 2) * (1 - state.zoomScale)
-      : 0;
-    applyTransform();
-  }
 
   function zoomAtPoint(delta, svgX, svgY) {
     const prevScale = state.zoomScale;
@@ -300,58 +300,56 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       ZOOM_MAX,
       Math.max(ZOOM_MIN, prevScale * (delta > 0 ? 1 / 1.12 : 1.12)),
     );
+
     if (nextScale === prevScale) return;
-    // keep the point under cursor fixed: pan += origin * (prevScale - nextScale)
+
     state.panX = svgX - (svgX - state.panX) * (nextScale / prevScale);
     state.panY = svgY - (svgY - state.panY) * (nextScale / prevScale);
     state.zoomScale = nextScale;
-    applyTransform();
-  }
 
-  function zoomGraph(direction) {
-    const viewBox = els.svg.viewBox.baseVal;
-    const cx = viewBox.width / 2;
-    const cy = viewBox.height / 2;
-    zoomAtPoint(direction === "in" ? -1 : 1, cx, cy);
+    applyTransform();
   }
 
   function bindPanAndZoom() {
     const svg = els.svg;
     if (!svg) return;
 
-    // --- Mouse drag ---
     svg.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      // don't start pan when clicking a node
       if (e.target.closest("[data-node-id]")) return;
+
       state.dragging = true;
       state.dragStartX = e.clientX;
       state.dragStartY = e.clientY;
       state.panStartX = state.panX;
       state.panStartY = state.panY;
+
       svg.style.cursor = "grabbing";
       e.preventDefault();
     });
 
     window.addEventListener("mousemove", (e) => {
       if (!state.dragging) return;
+
       state.panX = state.panStartX + (e.clientX - state.dragStartX);
       state.panY = state.panStartY + (e.clientY - state.dragStartY);
+
       applyTransform();
     });
 
     window.addEventListener("mouseup", () => {
       if (!state.dragging) return;
+
       state.dragging = false;
       svg.style.cursor = "grab";
     });
 
-    // --- Touch drag ---
     svg.addEventListener(
       "touchstart",
       (e) => {
         if (e.touches.length !== 1) return;
         if (e.target.closest("[data-node-id]")) return;
+
         state.dragging = true;
         state.dragStartX = e.touches[0].clientX;
         state.dragStartY = e.touches[0].clientY;
@@ -365,10 +363,12 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       "touchmove",
       (e) => {
         if (!state.dragging || e.touches.length !== 1) return;
+
         state.panX =
           state.panStartX + (e.touches[0].clientX - state.dragStartX);
         state.panY =
           state.panStartY + (e.touches[0].clientY - state.dragStartY);
+
         applyTransform();
       },
       { passive: true },
@@ -378,16 +378,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       state.dragging = false;
     });
 
-    // --- Wheel zoom (zoom toward cursor) ---
     svg.addEventListener(
       "wheel",
       (e) => {
         e.preventDefault();
+
         const rect = svg.getBoundingClientRect();
         const viewBox = svg.viewBox.baseVal;
-        // convert screen coords -> SVG viewBox coords
+
         const svgX = ((e.clientX - rect.left) / rect.width) * viewBox.width;
         const svgY = ((e.clientY - rect.top) / rect.height) * viewBox.height;
+
         zoomAtPoint(e.deltaY, svgX, svgY);
       },
       { passive: false },
@@ -396,6 +397,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderSelection(snapshot) {
     if (!els.selection) return;
+
     if (!state.selectedNodeId) {
       els.selection.textContent = state.aliasOnly
         ? "Filtro POSIBLE_ALIAS activo. Selecciona una entidad para cargar solo sus relaciones de alias."
@@ -406,6 +408,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const node = snapshot.nodes.find(
       (item) => item.id === state.selectedNodeId,
     );
+
     if (!node) {
       state.selectedNodeId = null;
       renderSelection(snapshot);
@@ -417,7 +420,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       .map((edge) => {
         const peerId = edge.source === node.id ? edge.target : edge.source;
         const peer = snapshot.nodes.find((item) => item.id === peerId);
-        return { display: peer?.display || peerId, label: edge.type };
+
+        return {
+          display: peer?.display || peerId,
+          label: edge.type,
+        };
       });
 
     const uniqueRelated = Array.from(
@@ -431,7 +438,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       const byLabel = String(a.label || "").localeCompare(
         String(b.label || ""),
       );
+
       if (byLabel !== 0) return byLabel;
+
       return String(a.display || "").localeCompare(String(b.display || ""));
     });
 
@@ -460,9 +469,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function syncEdgeTypeVisibility(edges) {
     const edgeTypes = new Set((edges || []).map((edge) => edge.type || ""));
     const nextVisibility = {};
+
     edgeTypes.forEach((type) => {
       nextVisibility[type] = state.edgeTypeVisibility[type] !== false;
     });
+
     state.edgeTypeVisibility = nextVisibility;
   }
 
@@ -474,6 +485,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderRelationFilters(snapshot) {
     if (!els.relationFilters) return;
+
     if (
       !snapshot ||
       !Array.isArray(snapshot.edges) ||
@@ -486,14 +498,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
     const typeCount = new Map();
     const seenByType = new Map();
+
     snapshot.edges.forEach((edge) => {
       const type = edge.type || "SIN_TIPO";
+
       if (!seenByType.has(type)) {
         seenByType.set(type, new Set());
       }
 
       const source = String(edge.source || "").trim();
       const target = String(edge.target || "").trim();
+
       if (!source || !target) return;
 
       const pairKey =
@@ -502,11 +517,13 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           : `${target}|${source}`;
 
       const seenPairs = seenByType.get(type);
-      if (seenPairs.has(pairKey)) return;
-      seenPairs.add(pairKey);
 
+      if (seenPairs.has(pairKey)) return;
+
+      seenPairs.add(pairKey);
       typeCount.set(type, (typeCount.get(type) || 0) + 1);
     });
+
     const orderedTypes = Array.from(typeCount.keys()).sort((a, b) =>
       a.localeCompare(b),
     );
@@ -551,9 +568,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         button.addEventListener("click", () => {
           const action = button.getAttribute("data-filter-action") || "";
           const checked = action === "all";
+
           orderedTypes.forEach((type) => {
             state.edgeTypeVisibility[type] = checked;
           });
+
           renderGraph();
         });
       });
@@ -561,6 +580,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderGraph() {
     const snapshot = state.snapshot;
+
     if (
       !snapshot ||
       !Array.isArray(snapshot.nodes) ||
@@ -582,22 +602,31 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
     toggleEmptyState(false);
     syncEdgeTypeVisibility(snapshot.edges);
+
     const visibleEdges = getVisibleEdges(snapshot);
+
     buildLegend(snapshot.nodes);
     renderRelationFilters(snapshot);
+
     const width = Math.max(720, Math.round(els.svg.clientWidth || 720));
     const height = Math.max(520, Math.round(els.svg.clientHeight || 520));
+
     els.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
     const positions = buildLayout(snapshot.nodes, width, height);
     const connectedNodeIds = new Set();
+
     if (state.selectedNodeId) {
       connectedNodeIds.add(state.selectedNodeId);
+
       visibleEdges.forEach((edge) => {
-        if (edge.source === state.selectedNodeId)
+        if (edge.source === state.selectedNodeId) {
           connectedNodeIds.add(edge.target);
-        if (edge.target === state.selectedNodeId)
+        }
+
+        if (edge.target === state.selectedNodeId) {
           connectedNodeIds.add(edge.source);
+        }
       });
     }
 
@@ -605,15 +634,21 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       .map((edge) => {
         const source = positions.get(edge.source);
         const target = positions.get(edge.target);
+
         if (!source || !target) return "";
+
         const highlighted =
           state.selectedNodeId &&
           (edge.source === state.selectedNodeId ||
             edge.target === state.selectedNodeId);
+
         if (state.selectedNodeId && !highlighted) return "";
+
         const edgeClasses = ["graph-edge"];
+
         if (edge.is_alias) edgeClasses.push("alias");
         if (highlighted) edgeClasses.push("highlighted");
+
         return `
           <line class="${edgeClasses.join(" ")}" x1="${source.x.toFixed(2)}" y1="${source.y.toFixed(2)}" x2="${target.x.toFixed(2)}" y2="${target.y.toFixed(2)}">
             <title>${escapeHtml(edge.type)}: ${escapeHtml(edge.source)} -> ${escapeHtml(edge.target)}</title>
@@ -625,15 +660,20 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const nodeMarkup = snapshot.nodes
       .map((node) => {
         const position = positions.get(node.id);
+
         if (!position) return "";
         if (state.selectedNodeId && !connectedNodeIds.has(node.id)) return "";
+
         const radius = Math.max(
           8,
           Math.min(18, 8 + Math.round(node.degree / 2)),
         );
+
         const nodeClasses = ["graph-node"];
+
         if (node.is_alias_candidate) nodeClasses.push("alias-candidate");
         if (state.selectedNodeId === node.id) nodeClasses.push("selected");
+
         return `
           <g class="${nodeClasses.join(" ")}" data-node-id="${escapeHtml(node.id)}" transform="translate(${position.x.toFixed(2)} ${position.y.toFixed(2)})">
             <circle class="graph-node-circle" r="${radius}" fill="${getLabelColor(node.label)}"></circle>
@@ -645,7 +685,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       .join("");
 
     els.svg.innerHTML = `<g id="graphViewport">${edgeMarkup}${nodeMarkup}</g>`;
+
     applyZoom();
+
     els.svg.querySelectorAll("[data-node-id]").forEach((nodeElement) => {
       nodeElement.addEventListener("click", () => {
         const nodeId = nodeElement.getAttribute("data-node-id");
@@ -659,7 +701,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function renderEntityList() {
     if (!els.entityList) return;
+
     const entities = state.entityCatalog || [];
+
     if (!entities.length) {
       els.entityList.innerHTML =
         '<div class="alias-placeholder">No hay entidades para ese filtro.</div>';
@@ -674,7 +718,18 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
               <span class="entity-item-title">${escapeHtml(entity.display)}</span>
               <span class="entity-item-id">${escapeHtml(entity.id)}</span>
             </span>
-            <span class="entity-pill">${escapeHtml(entity.label)}</span>
+
+            <span class="entity-actions">
+              <span class="entity-pill">${escapeHtml(entity.label)}</span>
+              <button
+                class="entity-delete-btn"
+                type="button"
+                data-delete-entity-id="${escapeHtml(entity.id)}"
+                data-delete-entity-name="${escapeHtml(entity.display)}"
+              >
+                Eliminar
+              </button>
+            </span>
           </button>
         `,
       )
@@ -686,10 +741,22 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         selectEntity(entityId);
       });
     });
+
+    els.entityList.querySelectorAll(".entity-delete-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        showDeleteConfirm({
+          entityId: button.getAttribute("data-delete-entity-id") || "",
+          entityName: button.getAttribute("data-delete-entity-name") || "",
+        });
+      });
+    });
   }
 
   async function loadEntityCatalog() {
     if (state.loadingEntities) return;
+
     state.loadingEntities = true;
     setEntityStatus("Buscando entidades...");
 
@@ -701,20 +768,27 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           limit: 40,
         }),
       );
+
       state.entityCatalog = data.entities || [];
+
       if (els.entityResultCount) {
         els.entityResultCount.textContent = `${data.summary?.result_count || 0} resultados`;
       }
+
       setEntityStatus("Selecciona una entidad para visualizarla en el grafo.");
       renderEntityList();
     } catch (error) {
       state.entityCatalog = [];
-      if (els.entityResultCount)
+
+      if (els.entityResultCount) {
         els.entityResultCount.textContent = "0 resultados";
+      }
+
       setEntityStatus(
         `No se pudieron cargar entidades: ${error?.message || error}`,
         true,
       );
+
       renderEntityList();
     } finally {
       state.loadingEntities = false;
@@ -729,6 +803,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         .toLowerCase();
 
     const groups = new Map();
+
     const ensureGroup = (id, name) => {
       if (!groups.has(id)) {
         groups.set(id, {
@@ -738,15 +813,20 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           _seenTargets: new Set(),
         });
       }
+
       return groups.get(id);
     };
 
     const addDirectionalPair = (sourceId, sourceName, targetId, targetName) => {
       if (!sourceId || !targetId || sourceId === targetId) return;
+
       const group = ensureGroup(sourceId, sourceName || sourceId);
       const dedupeKey = `${targetId}`;
+
       if (group._seenTargets.has(dedupeKey)) return;
+
       group._seenTargets.add(dedupeKey);
+
       group.pairs.push({
         source_id: sourceId,
         source_name: sourceName || sourceId,
@@ -770,6 +850,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       name: group.name,
       pairs: group.pairs,
     }));
+
     grouped.forEach((group) => {
       group.pairs.sort((a, b) => {
         const byId = sortKey(a.target_id).localeCompare(sortKey(b.target_id));
@@ -782,8 +863,10 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       return grouped.sort((a, b) => {
         const byConnections = b.pairs.length - a.pairs.length;
         if (byConnections !== 0) return byConnections;
+
         const byName = sortKey(a.name).localeCompare(sortKey(b.name));
         if (byName !== 0) return byName;
+
         return sortKey(a.id).localeCompare(sortKey(b.id));
       });
     }
@@ -791,13 +874,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     return grouped.sort((a, b) => {
       const byId = sortKey(a.id).localeCompare(sortKey(b.id));
       if (byId !== 0) return byId;
+
       return sortKey(a.name).localeCompare(sortKey(b.name));
     });
   }
 
   function renderAliasList() {
     if (!els.aliasList) return;
+
     const aliasData = state.aliasData;
+
     if (
       !aliasData ||
       !Array.isArray(aliasData.pairs) ||
@@ -805,12 +891,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     ) {
       els.aliasList.innerHTML =
         '<div class="alias-placeholder">No hay posibles alias para ese filtro.</div>';
-      if (els.aliasEntityCount)
+
+      if (els.aliasEntityCount) {
         els.aliasEntityCount.textContent = "0 entidades";
+      }
+
       return;
     }
 
     const groups = groupAliasPairs(aliasData);
+
     if (els.aliasEntityCount) {
       els.aliasEntityCount.textContent = `${aliasData.summary?.entity_count || 0} entidades`;
     }
@@ -826,18 +916,26 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
               </div>
               <span class="metric-pill">${group.pairs.length}</span>
             </div>
+
             <div class="alias-pair-list">
               ${group.pairs
                 .map(
                   (pair) => `
                     <span class="alias-pair-item">
                       <button class="alias-pair-pill" type="button" data-node-id="${escapeHtml(pair.target_id)}">${escapeHtml(pair.target_name)}</button>
-                      <button class="alias-merge-btn" type="button"
+
+                      <button
+                        class="alias-merge-btn"
+                        type="button"
                         data-source-id="${escapeHtml(pair.target_id)}"
                         data-source-name="${escapeHtml(pair.target_name)}"
                         data-target-id="${escapeHtml(pair.source_id)}"
-                        data-target-name="${escapeHtml(pair.source_name)}">Unificar</button>
-                    </span>`,
+                        data-target-name="${escapeHtml(pair.source_name)}"
+                      >
+                        Unificar
+                      </button>
+                    </span>
+                  `,
                 )
                 .join("")}
             </div>
@@ -867,6 +965,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   async function loadAliases() {
     if (state.loadingAliases) return;
+
     state.loadingAliases = true;
     setAliasStatus("Buscando posibles alias...");
 
@@ -874,10 +973,13 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       state.aliasData = await fetchJson(
         apiUrl("/ui/graph/aliases", { search: state.aliasSearch }),
       );
+
       state.aliasLoadedOnce = true;
+
       setAliasStatus(
         `${state.aliasData.summary?.pair_count || 0} relaciones POSIBLE_ALIAS encontradas.`,
       );
+
       renderAliasList();
     } catch (error) {
       state.aliasData = {
@@ -885,10 +987,12 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         entities: [],
         summary: { pair_count: 0, entity_count: 0 },
       };
+
       setAliasStatus(
         `No se pudieron cargar los posibles alias: ${error?.message || error}`,
         true,
       );
+
       renderAliasList();
     } finally {
       state.loadingAliases = false;
@@ -897,8 +1001,11 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   async function loadNeighborhood(entityId) {
     if (!entityId || state.loadingGraph) return;
+
     state.loadingGraph = true;
+
     if (els.refreshBtn) els.refreshBtn.disabled = true;
+
     toggleEmptyState(true, "Cargando vecindad de la entidad...");
 
     try {
@@ -909,18 +1016,21 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           relationship_limit: 420,
         }),
       );
+
       state.snapshot = data;
       state.selectedNodeId = entityId;
-      // reset pan/zoom to center for new entity
       state.zoomScale = 1;
       state.panX = 0;
       state.panY = 0;
+
       updateMetrics(data.summary);
+
       setGraphStatus(
         state.aliasOnly
           ? "Filtro activo: solo se muestran relaciones POSIBLE_ALIAS de la entidad seleccionada."
           : "Vecindad de entidad cargada correctamente.",
       );
+
       renderEntityList();
       renderGraph();
     } catch (error) {
@@ -929,14 +1039,18 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         edges: [],
         summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
       };
+
       updateMetrics(state.snapshot.summary);
+
       setGraphStatus(
         `No se pudo cargar la vecindad: ${error?.message || error}`,
         true,
       );
+
       renderGraph();
     } finally {
       state.loadingGraph = false;
+
       if (els.refreshBtn) els.refreshBtn.disabled = false;
     }
   }
@@ -956,38 +1070,54 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   function showMergeConfirm({ sourceId, sourceName, targetId, targetName }) {
     if (!mergeModal.overlay) return;
+
     mergeModal.pending = { sourceId, targetId };
+
     if (mergeModal.text) {
-      mergeModal.text.innerHTML = `¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br><span class="merge-modal-warning">Se conservará <strong>${escapeHtml(targetName)}</strong>, se transferirán todas las relaciones del investigador origen al destino y esta acción no se puede deshacer.</span>`;
+      mergeModal.text.innerHTML = `
+        ¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br>
+        <span class="merge-modal-warning">
+          Se conservará <strong>${escapeHtml(targetName)}</strong>, se transferirán todas las relaciones del investigador origen al destino y esta acción no se puede deshacer.
+        </span>
+      `;
     }
+
     mergeModal.overlay.classList.remove("hidden");
   }
 
   function hideMergeConfirm() {
     if (!mergeModal.overlay) return;
+
     mergeModal.overlay.classList.add("hidden");
     mergeModal.pending = null;
   }
 
   async function executeMerge() {
     if (!mergeModal.pending) return;
-    const { sourceId, targetId } = mergeModal.pending;
-    hideMergeConfirm();
 
+    const { sourceId, targetId } = mergeModal.pending;
+
+    hideMergeConfirm();
     setAliasStatus("Unificando entidades...");
+
     try {
       const response = await fetch(apiUrl("/ui/graph/merge"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ source_id: sourceId, target_id: targetId }),
       });
+
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
         throw new Error(err.detail || `HTTP ${response.status}`);
       }
+
       setAliasStatus("Unificación exitosa. Recargando alias...");
+
       state.aliasLoadedOnce = false;
+
       await loadAliases();
+
       if (state.selectedEntityId) {
         await loadNeighborhood(state.selectedEntityId);
       }
@@ -999,8 +1129,98 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function bindMergeModal() {
     mergeModal.cancelBtn?.addEventListener("click", hideMergeConfirm);
     mergeModal.confirmBtn?.addEventListener("click", executeMerge);
+
     mergeModal.overlay?.addEventListener("click", (e) => {
       if (e.target === mergeModal.overlay) hideMergeConfirm();
+    });
+  }
+
+  const deleteModal = {
+    overlay: document.getElementById("deleteModal"),
+    text: document.getElementById("deleteModalText"),
+    confirmBtn: document.getElementById("deleteModalConfirm"),
+    cancelBtn: document.getElementById("deleteModalCancel"),
+    pending: null,
+  };
+
+  function showDeleteConfirm({ entityId, entityName }) {
+    if (!deleteModal.overlay) return;
+
+    deleteModal.pending = { entityId };
+
+    if (deleteModal.text) {
+      deleteModal.text.innerHTML = `
+        ¿Querés eliminar <strong>${escapeHtml(entityName)}</strong>?<br>
+        <span class="merge-modal-warning">
+          Se eliminará la entidad y sus relaciones. Esta acción no se puede deshacer.
+        </span>
+      `;
+    }
+
+    deleteModal.overlay.classList.remove("hidden");
+  }
+
+  function hideDeleteConfirm() {
+    if (!deleteModal.overlay) return;
+
+    deleteModal.overlay.classList.add("hidden");
+    deleteModal.pending = null;
+  }
+
+  async function executeDeleteEntity() {
+    if (!deleteModal.pending) return;
+
+    const { entityId } = deleteModal.pending;
+
+    hideDeleteConfirm();
+    setEntityStatus("Eliminando entidad...");
+
+    try {
+      const response = await fetch(apiUrl("/ui/graph/entity"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entity_id: entityId }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${response.status}`);
+      }
+
+      if (state.selectedEntityId === entityId) {
+        state.selectedEntityId = null;
+        state.selectedNodeId = null;
+        state.snapshot = {
+          nodes: [],
+          edges: [],
+          summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+        };
+
+        updateMetrics(state.snapshot.summary);
+      }
+
+      await loadEntityCatalog();
+      setEntityStatus("Entidad eliminada correctamente.");
+
+      if (state.aliasLoadedOnce) {
+        await loadAliases();
+      }
+
+      renderGraph();
+    } catch (error) {
+      setEntityStatus(
+        `Error al eliminar entidad: ${error?.message || error}`,
+        true,
+      );
+    }
+  }
+
+  function bindDeleteModal() {
+    deleteModal.cancelBtn?.addEventListener("click", hideDeleteConfirm);
+    deleteModal.confirmBtn?.addEventListener("click", executeDeleteEntity);
+
+    deleteModal.overlay?.addEventListener("click", (e) => {
+      if (e.target === deleteModal.overlay) hideDeleteConfirm();
     });
   }
 
@@ -1012,43 +1232,54 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
     const debouncedAliasSearch = debounce(() => {
       state.aliasSearch = (els.aliasSearchInput?.value || "").trim();
+
       if (state.activeSidePanel !== "aliases") {
         setActiveSidePanel("aliases");
       }
+
       loadAliases();
     }, 280);
 
     els.entitySearchInput?.addEventListener("input", debouncedEntitySearch);
+
     els.entityTypeSelect?.addEventListener("change", () => {
       state.entityType = els.entityTypeSelect?.value || "";
       loadEntityCatalog();
     });
 
     els.aliasSearchInput?.addEventListener("input", debouncedAliasSearch);
+
     if (els.aliasSortSelect) {
       els.aliasSortSelect.value = state.aliasSortMode;
+
       els.aliasSortSelect.addEventListener("change", () => {
         const nextMode =
           els.aliasSortSelect?.value === "connections"
             ? "connections"
             : "stable";
+
         state.aliasSortMode = nextMode;
         renderAliasList();
       });
     }
+
     els.tabEntitiesBtn?.addEventListener("click", () =>
       setActiveSidePanel("entities"),
     );
+
     els.tabAliasesBtn?.addEventListener("click", () =>
       setActiveSidePanel("aliases"),
     );
 
     els.refreshBtn?.addEventListener("click", async () => {
       const refreshTasks = [loadEntityCatalog()];
+
       if (state.aliasLoadedOnce || state.activeSidePanel === "aliases") {
         refreshTasks.push(loadAliases());
       }
+
       await Promise.all(refreshTasks);
+
       if (state.selectedEntityId) {
         await loadNeighborhood(state.selectedEntityId);
       }
@@ -1063,6 +1294,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   bindEvents();
   bindMergeModal();
+  bindDeleteModal();
   setActiveSidePanel("entities");
   renderGraph();
   loadEntityCatalog();
