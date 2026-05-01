@@ -10,8 +10,6 @@ const els = {
   drawerCloseBtn: document.getElementById("drawerCloseBtn"),
   drawerDate: document.getElementById("drawerDate"),
   drawerQuestion: document.getElementById("drawerQuestion"),
-  drawerCypherSection: document.getElementById("drawerCypherSection"),
-  drawerCypher: document.getElementById("drawerCypher"),
   drawerAnswer: document.getElementById("drawerAnswer"),
   drawerChunks: document.getElementById("drawerChunks"),
 };
@@ -115,7 +113,7 @@ function matches(item) {
   const term = searchText.trim().toLowerCase();
   if (!term) return true;
 
-  return [item.q, item.answer, item.cypherQuery].some((value) =>
+  return [item.q, item.answer].some((value) =>
     (value ?? "").toLowerCase().includes(term),
   );
 }
@@ -193,11 +191,6 @@ function renderDrawer(item) {
   els.drawerQuestion.textContent = item.q ?? "";
   els.drawerAnswer.textContent = item.answer ?? "";
 
-  const hasCypher = Boolean(item.cypherQuery?.trim());
-  if (els.drawerCypherSection) els.drawerCypherSection.hidden = !hasCypher;
-  if (els.drawerCypher)
-    els.drawerCypher.textContent = hasCypher ? item.cypherQuery : "";
-
   renderChunks(item.chunks);
 }
 
@@ -220,15 +213,10 @@ function renderFromCache() {
     row.className = "history-row";
     row.title = "Click para ver detalle";
 
-    const extraMeta = item.cypherQuery
-      ? '<span class="history-extra">Cypher</span>'
-      : "";
-
     row.innerHTML = `
       <div class="history-main">
         <div class="history-q">${escapeHtml(item.q)}</div>
         <div class="history-meta">
-          ${extraMeta}
           <span class="history-date">${formatDate(item.ts)}</span>
         </div>
       </div>
