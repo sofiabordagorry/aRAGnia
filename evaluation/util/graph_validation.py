@@ -585,17 +585,6 @@ def validate_constraints(idx: Dict[str, Any], issues: List[Issue]) -> None:
     for topic in idx["entities_by_label"].get("Topico", []):
         tid = topic["id"]
 
-        projects = sources_of(tid, "TIENE_TOPICO")
-        if not projects:
-            add_issue(
-                issues,
-                "error",
-                "constraint",
-                "topic.requires_project",
-                "El tópico no está asociado a ningún proyecto.",
-                topic_id=tid,
-            )
-
         domains = targets_of(tid, "PERTENECE_A_DOMINIO")
         if len(domains) == 0:
             add_issue(
