@@ -146,7 +146,11 @@ Classification (answer only SEARCH or CHAT):"""
             logger.warning(f"Intent classification unclear: '{response}', defaulting to CHAT")
             return "CHAT"
 
-    def _generate_conversational_response(self, user_query: str) -> str:
+    def _generate_conversational_response(
+        self,
+        user_query: str,
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+    ) -> str:
         """
         Genera respuesta conversacional amigable para queries tipo chat.
         """
@@ -154,10 +158,10 @@ Classification (answer only SEARCH or CHAT):"""
 
 Si te preguntan qué puedes hacer, explica que puedes buscar información sobre proyectos de investigación, investigadores, tópicos y documentos académicos."""
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_query},
-        ]
+        messages: List[Dict[str, str]] = [{"role": "system", "content": system_prompt}]
+        if conversation_history:
+            messages.extend(conversation_history)
+        messages.append({"role": "user", "content": user_query})
 
         response = self.answer_llm_client.generate(
             messages=messages,
@@ -911,7 +915,10 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         return "\n".join(lines)
 
     def build_messages_for_answer(
-        self, user_query: str, entity_context: str
+        self,
+        user_query: str,
+        entity_context: str,
+        conversation_history: Optional[List[Dict[str, str]]] = None,
     ) -> List[Dict[str, str]]:
         """
         Construir mensajes para el LLM usando SOLO entidades y relaciones del grafo.
@@ -940,12 +947,17 @@ IMPORTANTE: Usa TODOS los resultados mostrados arriba para generar tu respuesta.
 
 Tu respuesta (frase introductoria + lista completa):"""
 
-        return [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
+        messages: List[Dict[str, str]] = [{"role": "system", "content": system_prompt}]
+        if conversation_history:
+            messages.extend(conversation_history)
+        messages.append({"role": "user", "content": user_prompt})
+        return messages
 
-    def query(self, user_query: str) -> GraphRAGResult:
+    def query(
+        self,
+        user_query: str,
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+    ) -> GraphRAGResult:
         """
         Pipeline completo de GraphRAG:
         """
@@ -961,7 +973,9 @@ Tu respuesta (frase introductoria + lista completa):"""
         # Si es conversacional, generar respuesta directa sin búsqueda en grafo
         if intent == "CHAT":
             logger.info("Modo conversacional activado (usando llama)")
-            conversational_answer = self._generate_conversational_response(user_query)
+            conversational_answer = self._generate_conversational_response(
+                user_query, conversation_history=conversation_history
+            )
             return GraphRAGResult(
                 answer=conversational_answer,
                 chunks=[],
@@ -1083,7 +1097,7 @@ Tu respuesta (frase introductoria + lista completa):"""
 
         entity_context = self.build_entity_context(evidence_entities, chunk_to_entities)
 
-        messages = self.build_messages_for_answer(user_query, entity_context)
+        messages = self.build_messages_for_answer(user_query, entity_context, conversation_history)
         answer = self.answer_llm_client.generate(
             messages=messages,
             temperature=self.temperature,
