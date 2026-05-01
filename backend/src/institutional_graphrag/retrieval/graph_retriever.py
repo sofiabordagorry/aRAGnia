@@ -96,6 +96,7 @@ class GraphRAGRetriever:
         self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self._schema_cache: Optional[str] = None
 
     def close(self):
         """Cerrar conexión a Neo4j."""
@@ -246,31 +247,68 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         logger.info(f"Query Cypher generada: {cypher_query}")
         return cypher_query
 
+    def _fetch_schema(self) -> str:
+        """Fetches node labels/properties and relationships from Neo4j. Cached after first call."""
+        if self._schema_cache is not None:
+            return self._schema_cache
+
+        node_props: Dict[str, List[str]] = {}
+        rels: List[tuple[str, str, str]] = []
+
+        with self.driver.session() as session:
+            records = list(
+                session.run(
+                    """
+                    MATCH (n)
+                    UNWIND labels(n) AS lbl
+                    UNWIND keys(n) AS prop
+                    RETURN lbl AS label, collect(DISTINCT prop) AS properties
+                    ORDER BY label
+                    """
+                )
+            )
+            for r in records:
+                if r["label"]:
+                    node_props[r["label"]] = r["properties"]
+
+            records = list(
+                session.run(
+                    """
+                    MATCH (a)-[r]->(b)
+                    RETURN DISTINCT labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target
+                    ORDER BY rel
+                    """
+                )
+            )
+            for r in records:
+                if r["source"] and r["rel"] and r["target"]:
+                    rels.append((r["source"], r["rel"], r["target"]))
+
+        lines = ["Nodes and their key properties:"]
+        for label, props in sorted(node_props.items()):
+            lines.append(f"- {label:<15} → {', '.join(props)}")
+
+        lines.append("\nRelationships:")
+        for source, rel, target in rels:
+            lines.append(f"- ({source})-[:{rel}]->({target})")
+
+        self._schema_cache = "\n".join(lines)
+        logger.info("Schema cargado desde Neo4j y cacheado")
+        return self._schema_cache
+
     def _build_cypher_generation_prompt(self, user_query: str) -> str:
         """Construye el prompt para la generación de queries Cypher."""
+        schema = self._fetch_schema()
         return f"""Generate a Cypher query for Neo4j to answer this question.
 SCHEMA:
-Nodes and their key properties:
-- Proyecto     → id: 'gi_2014_133', value: 'sintesis y evaluacion biologica de nuevos quimioterapicos'
-- Investigador → id: 'lastname_firstname', name: 'firstname lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
-- Topico       → value: 'biotecnologia'
-- Dominio      → value: 'ciencias naturales'
-- Documento → id: '...', base_name: 'gi_2014_133', type: 'informe'|'propuesta'|'resumen'|'tabla', year_publisher: '2014', is_group: 'false'
-- Chunk        → id: '...', text: '...'
-- Anio         → year: '2014'           ← property is "year", NOT "value" or "id"
+{schema}
 
-Relationships:
-- (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
-- (Proyecto)-[:TIENE_TOPICO]->(Topico)
-- (Topico)-[:PERTENECE_A_DOMINIO]->(Dominio)
-- (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-- (Proyecto)-[:INICIO_EN]->(Anio)
-- (Documento)-[:PRIMER_CHUNK]->(Chunk)
-- (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
-- (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+SCHEMA NOTES:
+- Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
+- Investigador.id follows 'lastname_firstname'; use Investigador.name for display
+- Proyecto.value contains the project title; Proyecto.id follows 'gi_2014_133'
+- Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
 
@@ -590,18 +628,7 @@ CRITICAL SYNTAX:
         prompt = f"""The following Cypher query produced a syntax error. Fix it.
 
 SCHEMA:
-Nodes: Proyecto(id, value), Investigador(id, name), Topico(value), Documento(id, base_name, type, year_publisher, is_group), Chunk(id, text), Anio(year)
-Relationships:
-- (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
-- (Proyecto)-[:TIENE_TOPICO]->(Topico)
-- (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-- (Proyecto)-[:INICIO_EN]->(Anio)
-- (Documento)-[:PRIMER_CHUNK]->(Chunk)
-- (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
-- (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+{self._fetch_schema()}
 
 BROKEN QUERY:
 {broken_query}
