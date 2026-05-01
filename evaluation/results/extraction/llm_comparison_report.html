@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación LLM – Extracción KG</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 2rem 3rem; background: #f0f2f5; color: #2c3e50;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.2rem; color: #34495e; border-left: 4px solid #3498db; padding-left: 10px; margin-top: 2rem; }
+    p.subtitle { color: #666; margin-top: 0; }
+    .card {
+      background: white; border-radius: 10px; padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin: 1rem 0;
+    }
+    .overflow-x { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.8rem; }
+    th {
+      background: #2c3e50; color: white; padding: 7px 10px;
+      text-align: center; white-space: nowrap; font-size: 0.75rem;
+    }
+    th:first-child { text-align: left; }
+    td { padding: 7px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+    td.llm-name { text-align: left; font-weight: 600; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+    .chart-wrap { max-width: 900px; }
+    .chart-wrap img { width: 100%; height: auto; border-radius: 6px; }
+    ul.analysis { line-height: 1.9; }
+    ul.analysis li { margin-bottom: 0.25rem; }
+  </style>
+</head>
+<body>
+  <h1>Evaluación de Extracción – Comparación de LLMs</h1>
+  <p class="subtitle">5 modelos comparados contra el ground truth de extracción (métricas macro-average sobre 5 proyectos).</p>
+
+  <div class="card">
+    <h2>Mini Análisis</h2>
+    <ul class="analysis">
+      <li><strong>Gemma 4 E4B</strong> obtiene el mejor F1 macro en entidades (0.607).</li>
+<li><strong>Qwen2.5-Coder 14B</strong> tiene la mejor precisión en entidades (0.522) y <strong>Gemma 4 E4B</strong> el mejor recall (0.742).</li>
+<li><strong>Gemma 4 E4B</strong> obtiene el mejor F1 macro en relaciones (0.491).</li>
+<li><strong>Gemma 4 E4B</strong> genera el grafo más ajustado al esquema (score 100/100).</li>
+<li><strong>DeepSeek-Coder 6.7B</strong> tiene el rendimiento más bajo en entidades (F1 = 0.368).</li>
+<li>La capacidad de extracción de entidades es en general <strong>moderada</strong> y la de relaciones <strong>moderada</strong>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Resumen Global</h2>
+    <div class="overflow-x">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Modelo</th>
+            <th colspan="6" style="background:#1a252f;">Entidades (macro)</th>
+            <th colspan="6" style="background:#1a252f;">Relaciones (macro)</th>
+            <th rowspan="2">Schema</th>
+            <th rowspan="2">Errores</th>
+            <th rowspan="2">Warnings</th>
+          </tr>
+          <tr>
+            <th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th>
+            <th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class='llm-name'>Gemma 4 E4B</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.516</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.742</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.607</td><td>52</td><td>47</td><td>17</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.414</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.607</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.491</td><td>43</td><td>59</td><td>26</td><td style="color:#27ae60;font-weight:600;">100/100</td><td>0</td><td>0</td></tr>
+<tr><td class='llm-name'>Qwen2.5-Coder 14B</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.522</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.690</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.591</td><td>48</td><td>43</td><td>21</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.409</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.579</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.478</td><td>41</td><td>59</td><td>28</td><td style="color:#e74c3c;font-weight:600;">0/100</td><td>175</td><td>0</td></tr>
+<tr><td class='llm-name'>Qwen2.5 7B</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.390</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.709</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.499</td><td>50</td><td>83</td><td>19</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.324</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.590</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.414</td><td>42</td><td>94</td><td>27</td><td style="color:#27ae60;font-weight:600;">100/100</td><td>0</td><td>0</td></tr>
+<tr><td class='llm-name'>Llama 3.1 8B</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.289</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.732</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.414</td><td>51</td><td>128</td><td>18</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.240</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.612</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.344</td><td>43</td><td>139</td><td>26</td><td style="color:#27ae60;font-weight:600;">100/100</td><td>0</td><td>0</td></tr>
+<tr><td class='llm-name'>DeepSeek-Coder 6.7B</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.257</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.677</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.368</td><td>48</td><td>143</td><td>21</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.207</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.558</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.299</td><td>40</td><td>154</td><td>29</td><td style="color:#27ae60;font-weight:600;">100/100</td><td>0</td><td>0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Por Tipo de Entidad</h2>
+    <div class="overflow-x">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Modelo</th>
+            <th colspan="6" style="background:#1a252f;">Anio</th><th colspan="6" style="background:#1a252f;">Documento</th><th colspan="6" style="background:#1a252f;">Investigador</th><th colspan="6" style="background:#1a252f;">Proyecto</th><th colspan="6" style="background:#1a252f;">Topico</th>
+          </tr>
+          <tr><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class='llm-name'>Gemma 4 E4B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.410</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.829</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.538</td><td>28</td><td>36</td><td>6</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td>4</td><td>11</td><td>11</td></tr>
+<tr><td class='llm-name'>Qwen2.5-Coder 14B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.460</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.814</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.573</td><td>27</td><td>30</td><td>7</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.050</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.057</td><td>1</td><td>13</td><td>14</td></tr>
+<tr><td class='llm-name'>Qwen2.5 7B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.275</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.800</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.403</td><td>27</td><td>71</td><td>7</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td>3</td><td>12</td><td>12</td></tr>
+<tr><td class='llm-name'>Llama 3.1 8B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.196</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.893</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.318</td><td>29</td><td>115</td><td>5</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td>2</td><td>13</td><td>13</td></tr>
+<tr><td class='llm-name'>DeepSeek-Coder 6.7B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.164</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.779</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.266</td><td>27</td><td>129</td><td>7</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td>1</td><td>14</td><td>14</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Por Tipo de Relación</h2>
+    <div class="overflow-x">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Modelo</th>
+            <th colspan="6" style="background:#1a252f;">ES_DESCRITO_POR</th><th colspan="6" style="background:#1a252f;">INICIO_EN</th><th colspan="6" style="background:#1a252f;">PARTICIPO_EN</th><th colspan="6" style="background:#1a252f;">RESPONSABLE_DE</th><th colspan="6" style="background:#1a252f;">TIENE_TOPICO</th>
+          </tr>
+          <tr><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>P</th><th>R</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class='llm-name'>Gemma 4 E4B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.357</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.743</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.475</td><td>24</td><td>40</td><td>8</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td>0</td><td>8</td><td>7</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.267</td><td>4</td><td>11</td><td>11</td></tr>
+<tr><td class='llm-name'>Qwen2.5-Coder 14B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.367</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.726</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.480</td><td>23</td><td>39</td><td>9</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td>0</td><td>8</td><td>7</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td>3</td><td>12</td><td>12</td></tr>
+<tr><td class='llm-name'>Qwen2.5 7B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.251</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.743</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.369</td><td>24</td><td>74</td><td>8</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td>0</td><td>8</td><td>7</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td><td>3</td><td>12</td><td>12</td></tr>
+<tr><td class='llm-name'>Llama 3.1 8B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.177</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.833</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.290</td><td>26</td><td>118</td><td>6</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td>0</td><td>8</td><td>7</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.133</td><td>2</td><td>13</td><td>13</td></tr>
+<tr><td class='llm-name'>DeepSeek-Coder 6.7B</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>10</td><td>0</td><td>0</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">1.000</td><td>5</td><td>0</td><td>0</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.144</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.721</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.238</td><td>24</td><td>132</td><td>8</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td>0</td><td>8</td><td>7</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.067</td><td>1</td><td>14</td><td>14</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>F1 Macro Global por Modelo</h2>
+    <div class="chart-wrap">
+      <img src="images/chart_overall.png" alt="F1 Macro Global">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>F1 por Tipo de Entidad</h2>
+    <div class="chart-wrap">
+      <img src="images/chart_entities.png" alt="F1 por Tipo de Entidad">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>F1 por Tipo de Relación</h2>
+    <div class="chart-wrap">
+      <img src="images/chart_relations.png" alt="F1 por Tipo de Relación">
+    </div>
+  </div>
+
+</body>
+</html>
