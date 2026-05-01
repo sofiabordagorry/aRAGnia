@@ -10,7 +10,6 @@ const els = {
 };
 
 let settings = getSettings();
-let conversationHistory = [];
 
 function getSettings() {
   return { ...DEFAULTS, ...(window.SettingsUI?.getSettings?.() || {}) };
@@ -34,7 +33,6 @@ function scrollChatToBottom() {
 
 function clearConversationUI() {
   if (els.chat) els.chat.innerHTML = "";
-  conversationHistory = [];
 }
 
 function addMessage(type, content) {
@@ -163,6 +161,7 @@ async function ask() {
     return;
   }
 
+  clearConversationUI();
   addMessage("user", query);
 
   if (els.queryInput) els.queryInput.value = "";
@@ -174,7 +173,7 @@ async function ask() {
     const response = await fetch(`${API_BASE}/graphrag/query`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, conversation_history: conversationHistory }),
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
@@ -187,16 +186,15 @@ async function ask() {
     const data = await response.json();
     typingMessage.remove();
 
-    const answer = data.answer ?? "(sin answer)";
-    const assistantMessage = addMessage("assistant", answer);
+    const assistantMessage = addMessage(
+      "assistant",
+      data.answer ?? "(sin answer)",
+    );
     renderChunks(
       data.chunks ?? data.context ?? [],
       data.chunk_to_entities || {},
       assistantMessage,
     );
-
-    conversationHistory.push({ role: "user", content: query });
-    conversationHistory.push({ role: "assistant", content: answer });
   } catch (error) {
     typingMessage.remove();
     addMessage(

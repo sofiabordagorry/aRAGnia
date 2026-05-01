@@ -18,14 +18,8 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-class ConversationMessage(BaseModel):
-    role: str
-    content: str
-
-
 class QueryRequest(BaseModel):
     query: str
-    conversation_history: list[ConversationMessage] = []
 
 
 class QueryResponse(BaseModel):
@@ -52,8 +46,7 @@ def graphrag_query(payload: QueryRequest):
             max_tokens=1024,
         )
 
-        history = [{"role": m.role, "content": m.content} for m in payload.conversation_history]
-        result = retriever.query(payload.query, conversation_history=history)
+        result = retriever.query(payload.query)
 
         retriever.close()
         logger.info("Conexión a Neo4j cerrada")
