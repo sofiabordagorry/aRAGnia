@@ -143,9 +143,7 @@
     {
       "id": "arquitectura",
       "label": "Topico",
-      "value": {
-        "value": "arquitectura"
-      }
+      "value": "arquitectura"
     },
     {
       "id": "autorizo_a_la_cslc",
@@ -190,16 +188,12 @@
     {
       "id": "bibliotecologia_y_ciencias_de_la_informacion",
       "label": "Topico",
-      "value": {
-        "value": "bibliotecologia y ciencias de la informacion"
-      }
+      "value": "bibliotecologia y ciencias de la informacion"
     },
     {
       "id": "bioingenieria",
       "label": "Topico",
-      "value": {
-        "value": "bioingenieria"
-      }
+      "value": "bioingenieria"
     },
     {
       "id": "brian_yang",
@@ -245,9 +239,7 @@
     {
       "id": "catalisis",
       "label": "Topico",
-      "value": {
-        "value": "catalisis"
-      }
+      "value": "catalisis"
     },
     {
       "id": "christine_bourjot",
@@ -268,30 +260,22 @@
     {
       "id": "ciencias_ambientales",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias ambientales"
-      }
+      "value": "ciencias ambientales"
     },
     {
       "id": "ciencias_farmaceuticas",
       "label": "Topico",
-      "value": {
-        "value": "ciencias farmaceuticas"
-      }
+      "value": "ciencias farmaceuticas"
     },
     {
       "id": "ciencias_sociales",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias sociales"
-      }
+      "value": "ciencias sociales"
     },
     {
       "id": "cirugia_oral",
       "label": "Topico",
-      "value": {
-        "value": "cirugia oral"
-      }
+      "value": "cirugia oral"
     },
     {
       "id": "ciudadanos_comunes",
@@ -304,16 +288,12 @@
     {
       "id": "construccion_y_edificacion",
       "label": "Topico",
-      "value": {
-        "value": "construccion y edificacion"
-      }
+      "value": "construccion y edificacion"
     },
     {
       "id": "cuestiones_etica_y_aspectos_legales",
       "label": "Topico",
-      "value": {
-        "value": "cuestiones, etica y aspectos legales"
-      }
+      "value": "cuestiones, etica y aspectos legales"
     },
     {
       "id": "daniel_callejas",
@@ -343,9 +323,7 @@
     {
       "id": "descubrimiento_de_farmacos",
       "label": "Topico",
-      "value": {
-        "value": "descubrimiento de farmacos"
-      }
+      "value": "descubrimiento de farmacos"
     },
     {
       "id": "diego_gayoso",
@@ -473,37 +451,27 @@
     {
       "id": "energia",
       "label": "Dominio",
-      "value": {
-        "value": "energia"
-      }
+      "value": "energia"
     },
     {
       "id": "energia_general",
       "label": "Topico",
-      "value": {
-        "value": "energia general"
-      }
+      "value": "energia general"
     },
     {
       "id": "energia_nuclear_e_ingenieria",
       "label": "Topico",
-      "value": {
-        "value": "energia nuclear e ingenieria"
-      }
+      "value": "energia nuclear e ingenieria"
     },
     {
       "id": "energia_renovable_sostenibilidad_y_medio_ambiente",
       "label": "Topico",
-      "value": {
-        "value": "energia renovable, sostenibilidad y medio ambiente"
-      }
+      "value": "energia renovable, sostenibilidad y medio ambiente"
     },
     {
       "id": "enfermeria",
       "label": "Dominio",
-      "value": {
-        "value": "enfermeria"
-      }
+      "value": "enfermeria"
     },
     {
       "id": "equipo_proponente",
@@ -548,16 +516,12 @@
     {
       "id": "farmacologia",
       "label": "Topico",
-      "value": {
-        "value": "farmacologia"
-      }
+      "value": "farmacologia"
     },
     {
       "id": "farmacologia_toxicologia_y_farmacia",
       "label": "Dominio",
-      "value": {
-        "value": "farmacologia, toxicologia y farmacia"
-      }
+      "value": "farmacologia, toxicologia y farmacia"
     },
     {
       "id": "federico_andrade",
@@ -594,9 +558,7 @@
     {
       "id": "filtracion_y_separacion",
       "label": "Topico",
-      "value": {
-        "value": "filtracion y separacion"
-      }
+      "value": "filtracion y separacion"
     },
     {
       "id": "flavia_ramos",
@@ -619,9 +581,7 @@
     {
       "id": "flujo_de_fluidos_y_procesos_de_transferencia",
       "label": "Topico",
-      "value": {
-        "value": "flujo de fluidos y procesos de transferencia"
-      }
+      "value": "flujo de fluidos y procesos de transferencia"
     },
     {
       "id": "franco_robledo",
@@ -5147,93 +5107,67 @@
     {
       "id": "ingenieria",
       "label": "Dominio",
-      "value": {
-        "value": "ingenieria"
-      }
+      "value": "ingenieria"
     },
     {
       "id": "ingenieria_aeroespacial",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria aeroespacial"
-      }
+      "value": "ingenieria aeroespacial"
     },
     {
       "id": "ingenieria_automotriz",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria automotriz"
-      }
+      "value": "ingenieria automotriz"
     },
     {
       "id": "ingenieria_biomedica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria biomedica"
-      }
+      "value": "ingenieria biomedica"
     },
     {
       "id": "ingenieria_civil_y_estructural",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria civil y estructural"
-      }
+      "value": "ingenieria civil y estructural"
     },
     {
       "id": "ingenieria_de_control_y_sistemas",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria de control y sistemas"
-      }
+      "value": "ingenieria de control y sistemas"
     },
     {
       "id": "ingenieria_de_energia_y_tecnologia_de_potencia",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria de energia y tecnologia de potencia"
-      }
+      "value": "ingenieria de energia y tecnologia de potencia"
     },
     {
       "id": "ingenieria_electrica_y_electronica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria electrica y electronica"
-      }
+      "value": "ingenieria electrica y electronica"
     },
     {
       "id": "ingenieria_general",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria general"
-      }
+      "value": "ingenieria general"
     },
     {
       "id": "ingenieria_industrial_y_de_manufactura",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria industrial y de manufactura"
-      }
+      "value": "ingenieria industrial y de manufactura"
     },
     {
       "id": "ingenieria_mecanica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria mecanica"
-      }
+      "value": "ingenieria mecanica"
     },
     {
       "id": "ingenieria_oceanica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria oceanica"
-      }
+      "value": "ingenieria oceanica"
     },
     {
       "id": "ingenieria_quimica",
       "label": "Dominio",
-      "value": {
-        "value": "ingenieria quimica"
-      }
+      "value": "ingenieria quimica"
     },
     {
       "id": "ingeniero_de_investigaci",
@@ -5254,16 +5188,12 @@
     {
       "id": "investigacion_en_seguridad",
       "label": "Topico",
-      "value": {
-        "value": "investigacion en seguridad"
-      }
+      "value": "investigacion en seguridad"
     },
     {
       "id": "investigacion_y_teoria",
       "label": "Topico",
-      "value": {
-        "value": "investigacion y teoria"
-      }
+      "value": "investigacion y teoria"
     },
     {
       "id": "ismael_caballero",
@@ -5426,16 +5356,12 @@
     {
       "id": "liderazgo_y_gestion",
       "label": "Topico",
-      "value": {
-        "value": "liderazgo y gestion"
-      }
+      "value": "liderazgo y gestion"
     },
     {
       "id": "linguistica_y_lenguaje",
       "label": "Topico",
-      "value": {
-        "value": "linguistica y lenguaje"
-      }
+      "value": "linguistica y lenguaje"
     },
     {
       "id": "lorena_etcheverry",
@@ -5619,16 +5545,12 @@
     {
       "id": "mecanica_computacional",
       "label": "Topico",
-      "value": {
-        "value": "mecanica computacional"
-      }
+      "value": "mecanica computacional"
     },
     {
       "id": "mecanica_de_materiales",
       "label": "Topico",
-      "value": {
-        "value": "mecanica de materiales"
-      }
+      "value": "mecanica de materiales"
     },
     {
       "id": "mercedes_marzoa",
@@ -5667,30 +5589,22 @@
     {
       "id": "nutricion_y_dietetica",
       "label": "Topico",
-      "value": {
-        "value": "nutricion y dietetica"
-      }
+      "value": "nutricion y dietetica"
     },
     {
       "id": "odontologia",
       "label": "Dominio",
-      "value": {
-        "value": "odontologia"
-      }
+      "value": "odontologia"
     },
     {
       "id": "odontologia_general",
       "label": "Topico",
-      "value": {
-        "value": "odontologia general"
-      }
+      "value": "odontologia general"
     },
     {
       "id": "ortodoncia",
       "label": "Topico",
-      "value": {
-        "value": "ortodoncia"
-      }
+      "value": "ortodoncia"
     },
     {
       "id": "oscar_romero",
@@ -5803,30 +5717,22 @@
     {
       "id": "periodoncia",
       "label": "Topico",
-      "value": {
-        "value": "periodoncia"
-      }
+      "value": "periodoncia"
     },
     {
       "id": "profesiones_de_la_salud",
       "label": "Dominio",
-      "value": {
-        "value": "profesiones de la salud"
-      }
+      "value": "profesiones de la salud"
     },
     {
       "id": "profesiones_de_la_salud_generales",
       "label": "Topico",
-      "value": {
-        "value": "profesiones de la salud generales"
-      }
+      "value": "profesiones de la salud generales"
     },
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": {
-        "value": "web warehouse de datos abiertos de gobierno con gestion de calidad."
-      }
+      "value": "web warehouse de datos abiertos de gobierno con gestion de calidad."
     },
     {
       "id": "proy_2012_638_informe",
@@ -18292,9 +18198,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": {
-        "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
-      }
+      "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
     },
     {
       "id": "proy_2016_729_informe",
@@ -22758,9 +22662,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": {
-        "value": "diseño optimo de redes de ciclovias"
-      }
+      "value": "diseño optimo de redes de ciclovias"
     },
     {
       "id": "proy_2018_260_informe",
@@ -23950,9 +23852,7 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": {
-        "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
-      }
+      "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
     },
     {
       "id": "proy_2018_413_informe",
@@ -27548,9 +27448,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": {
-        "value": "co-simulacion en sistemas ciber-fisicos"
-      }
+      "value": "co-simulacion en sistemas ciber-fisicos"
     },
     {
       "id": "proy_2020_513_informe",
@@ -38243,37 +38141,27 @@
     {
       "id": "psicologia",
       "label": "Dominio",
-      "value": {
-        "value": "psicologia"
-      }
+      "value": "psicologia"
     },
     {
       "id": "psicologia_aplicada",
       "label": "Topico",
-      "value": {
-        "value": "psicologia aplicada"
-      }
+      "value": "psicologia aplicada"
     },
     {
       "id": "psicologia_clinica",
       "label": "Topico",
-      "value": {
-        "value": "psicologia clinica"
-      }
+      "value": "psicologia clinica"
     },
     {
       "id": "psicologia_social",
       "label": "Topico",
-      "value": {
-        "value": "psicologia social"
-      }
+      "value": "psicologia social"
     },
     {
       "id": "quimica_de_procesos_y_tecnologia",
       "label": "Topico",
-      "value": {
-        "value": "quimica de procesos y tecnologia"
-      }
+      "value": "quimica de procesos y tecnologia"
     },
     {
       "id": "r_o'grady",
@@ -38346,9 +38234,7 @@
     {
       "id": "salud_y_seguridad_quimica",
       "label": "Topico",
-      "value": {
-        "value": "salud y seguridad quimica"
-      }
+      "value": "salud y seguridad quimica"
     },
     {
       "id": "sandra_mitrovic",
@@ -38361,9 +38247,7 @@
     {
       "id": "seguridad_riesgo_confiabilidad_y_calidad",
       "label": "Topico",
-      "value": {
-        "value": "seguridad, riesgo, confiabilidad y calidad"
-      }
+      "value": "seguridad, riesgo, confiabilidad y calidad"
     },
     {
       "id": "sonia_atella",
@@ -38410,16 +38294,12 @@
     {
       "id": "tecnologia_de_combustibles",
       "label": "Topico",
-      "value": {
-        "value": "tecnologia de combustibles"
-      }
+      "value": "tecnologia de combustibles"
     },
     {
       "id": "tecnologia_de_medios",
       "label": "Topico",
-      "value": {
-        "value": "tecnologia de medios"
-      }
+      "value": "tecnologia de medios"
     },
     {
       "id": "terence_c_mills",
@@ -38432,9 +38312,7 @@
     {
       "id": "terminologia_medica",
       "label": "Topico",
-      "value": {
-        "value": "terminologia medica"
-      }
+      "value": "terminologia medica"
     },
     {
       "id": "tgc-lstm",
@@ -38463,16 +38341,12 @@
     {
       "id": "toxicologia",
       "label": "Topico",
-      "value": {
-        "value": "toxicologia"
-      }
+      "value": "toxicologia"
     },
     {
       "id": "transporte",
       "label": "Topico",
-      "value": {
-        "value": "transporte"
-      }
+      "value": "transporte"
     },
     {
       "id": "valentina_ramos",

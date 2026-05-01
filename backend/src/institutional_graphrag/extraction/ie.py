@@ -463,6 +463,11 @@ class EntityExtractor:
                 )
                 continue
 
+            # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
+            # entidades cuyo schema espera un str (Proyecto, Topico, Dominio).
+            if label in {"Proyecto", "Topico", "Dominio"} and isinstance(value, dict):
+                value = value.get("value", value)
+
             try:
                 entities.append(cls(id=entity_id, value=value))
             except Exception as exc:
