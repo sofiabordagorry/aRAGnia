@@ -373,7 +373,7 @@ class GraphBuilder:
                 f"""
                 MATCH (a:{label} {{id: $old_id}})
                 MATCH (b:{label} {{id: $new_id}})
-                SET b += a
+                SET b += a{{.*, id: b.id, name: coalesce(b.name, a.name)}}
                 """,
                 old_id=old_id,
                 new_id=new_id,
@@ -841,6 +841,34 @@ class GraphBuilder:
                 "alias_edge_count": alias_edge_count,
             },
         }
+
+    def merge_researchers(self, *, source_id: str, target_id: str) -> Neo4jStats:
+        """
+        Unifica dos nodos Investigador: transfiere todas las relaciones de source a target
+        y elimina el nodo source. Usa Cypher nativo (sin APOC).
+        """
+        if source_id == target_id:
+            raise ValueError("source_id y target_id deben ser diferentes")
+
+        stats = self.merge_node_id(
+            label="Investigador",
+            old_id=source_id,
+            new_id=target_id,
+        )
+
+        # Eliminar self-loops que puedan haber quedado en el nodo target
+        # (e.g. si source tenía POSIBLE_ALIAS -> target)
+        with self.driver.session() as session:
+            result = session.run(
+                """
+                MATCH (b:Investigador {id: $target_id})-[r]-(b)
+                DELETE r
+                """,
+                target_id=target_id,
+            )
+            stats.add_counters(result.consume().counters)
+
+        return stats
 
     def fetch_alias_candidates(self, *, search: Optional[str] = None) -> dict[str, Any]:
         search_text = self._normalized_search(search)

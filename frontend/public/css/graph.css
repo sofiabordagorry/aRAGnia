@@ -246,6 +246,72 @@ body {
   gap: 8px;
 }
 
+.graph-relation-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(0, 82, 122, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.relation-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.relation-filter-title {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.relation-filter-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.relation-filter-btn {
+  min-height: 26px;
+  padding: 0 8px;
+  border: 1px solid rgba(0, 82, 122, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.relation-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.relation-filter-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 82, 122, 0.16);
+  border-radius: 999px;
+  background: rgba(248, 251, 255, 0.96);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.relation-filter-item input {
+  accent-color: #0b4f74;
+}
+
 .legend-pill {
   display: inline-flex;
   align-items: center;
@@ -285,6 +351,58 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
+}
+
+.graph-selection .selection-relations-title {
+  margin-top: 10px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.graph-selection .selection-type-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.graph-selection .selection-type-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 82, 122, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.graph-selection .selection-type-label {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.graph-selection .selection-type-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 82, 122, 0.12);
+  color: #0b4f74;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.graph-selection .selection-relations-empty {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .graph-selection .selection-pill {
@@ -574,6 +692,12 @@ body {
   gap: 8px;
 }
 
+.alias-pair-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .alias-pair-pill {
   display: inline-flex;
   align-items: center;
@@ -586,6 +710,111 @@ body {
   font-size: 11px;
   font-weight: 900;
   cursor: pointer;
+}
+
+.alias-merge-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border: 1.5px solid rgba(180, 35, 24, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 241, 242, 0.82);
+  color: #b42318;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.alias-merge-btn:hover {
+  background: rgba(254, 226, 226, 0.95);
+  border-color: rgba(180, 35, 24, 0.6);
+}
+
+/* Modal */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-box {
+  width: min(420px, 92vw);
+  padding: 28px 28px 24px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-title {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.modal-text {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.merge-modal-warning {
+  display: block;
+  margin-top: 6px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.primary-btn {
+  min-height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--blue-1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+.primary-btn:hover {
+  background: var(--blue-2);
+  transform: translateY(-1px);
+}
+
+.danger-btn {
+  background: #b42318;
+}
+
+.danger-btn:hover {
+  background: #991b1b;
 }
 
 .graph-edge {
