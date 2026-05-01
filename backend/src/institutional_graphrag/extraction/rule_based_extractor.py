@@ -820,12 +820,7 @@ class RuleBasedExtractor:
                         self.res.relationships = [
                             r
                             for r in self.res.relationships
-                            if not (r.source_id == inv_id and r.target_id == project_id)
-                        ]
-                        self.res.relationships = [
-                            r
-                            for r in self.res.relationships
-                            if not (r.source_id == table_chunk_id and r.target_id == inv_id)
+                            if not (r.source_id == inv_id or r.target_id == inv_id)
                         ]
 
             candidate_id = self.make_candidate_id(candidate_in_text)
