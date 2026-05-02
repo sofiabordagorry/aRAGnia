@@ -10,6 +10,7 @@ from qdrant_client import QdrantClient
 from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.persist_embeddings import persist_all_embeddings_and_metadata
+from institutional_graphrag.retrieval.fewshot_store import DEFAULT_EXAMPLES, FewShotStore
 from institutional_graphrag.retrieval.vector_store import VectorStore
 from institutional_graphrag.storage.database import create_tables
 
@@ -216,6 +217,17 @@ def check_qdrant_not_empty() -> None:
         persist_all_embeddings_and_metadata(store)
 
 
+def check_fewshot_not_empty() -> None:
+    store = FewShotStore()
+    if store.count() == 0:
+        print("Cargando ejemplos few-shot en Qdrant...")
+        store.add_examples(DEFAULT_EXAMPLES)
+        print(f"Few-shot: {store.count()} ejemplos cargados")
+    else:
+        print(f"Few-shot: {store.count()} ejemplos ya existentes")
+    store.close()
+
+
 def ensure_backends_ready() -> None:
     print("Esperando Postgres...")
     wait_for_postgres()
@@ -229,3 +241,4 @@ def ensure_backends_ready() -> None:
     check_postgres_not_empty()
     check_neo4j_not_empty()
     check_qdrant_not_empty()
+    check_fewshot_not_empty()

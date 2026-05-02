@@ -15,6 +15,9 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
 
+from institutional_graphrag.llm.llm_provider import get_llm_client
+from institutional_graphrag.retrieval.fewshot_store import FewShotStore
+
 logger = logging.getLogger(__name__)
 
 
@@ -83,8 +86,6 @@ class GraphRAGRetriever:
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ):
-        from institutional_graphrag.llm.llm_provider import get_llm_client
-
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
@@ -96,10 +97,27 @@ class GraphRAGRetriever:
         self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self._schema_cache: Optional[str] = None
+        self._fewshot: Optional[Any] = self._init_fewshot()
+
+    def _init_fewshot(self) -> Optional[Any]:
+        try:
+            store = FewShotStore()
+            if store.count() == 0:
+                logger.info("Colección few-shot vacía, se usarán ejemplos estáticos")
+                store.close()
+                return None
+            logger.info(f"Few-shot store cargado ({store.count()} ejemplos)")
+            return store
+        except Exception as e:
+            logger.warning(f"Few-shot store no disponible, se usarán ejemplos estáticos: {e}")
+            return None
 
     def close(self):
         """Cerrar conexión a Neo4j."""
         self.driver.close()
+        if self._fewshot:
+            self._fewshot.close()
 
     def _classify_query_intent(self, user_query: str) -> str:
         """
@@ -246,31 +264,76 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         logger.info(f"Query Cypher generada: {cypher_query}")
         return cypher_query
 
+    def _fetch_schema(self) -> str:
+        """Fetches node labels/properties and relationships from Neo4j. Cached after first call."""
+        if self._schema_cache is not None:
+            return self._schema_cache
+
+        node_props: Dict[str, List[str]] = {}
+        rels: List[tuple[str, str, str]] = []
+
+        with self.driver.session() as session:
+            records = list(session.run("""
+                    MATCH (n)
+                    UNWIND labels(n) AS lbl
+                    UNWIND keys(n) AS prop
+                    RETURN lbl AS label, collect(DISTINCT prop) AS properties
+                    ORDER BY label
+                    """))
+            for r in records:
+                if r["label"]:
+                    node_props[r["label"]] = r["properties"]
+
+            records = list(session.run("""
+                    MATCH (a)-[r]->(b)
+                    RETURN DISTINCT labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target
+                    ORDER BY rel
+                    """))
+            for r in records:
+                if r["source"] and r["rel"] and r["target"]:
+                    rels.append((r["source"], r["rel"], r["target"]))
+
+        lines = ["Nodes and their key properties:"]
+        for label, props in sorted(node_props.items()):
+            lines.append(f"- {label:<15} → {', '.join(props)}")
+
+        lines.append("\nRelationships:")
+        for source, rel, target in rels:
+            lines.append(f"- ({source})-[:{rel}]->({target})")
+
+        self._schema_cache = "\n".join(lines)
+        logger.info("Schema cargado desde Neo4j y cacheado")
+        return self._schema_cache
+
+    def _fetch_fewshot_examples(self, user_query: str) -> str:
+        """Returns a formatted block of similar (question, cypher) examples."""
+        if self._fewshot:
+            try:
+                examples = self._fewshot.search(user_query, top_k=3)
+                if examples:
+                    logger.debug("Few-shot examples retrieved: %s", [q for q, _ in examples])
+                    lines = ["SIMILAR EXAMPLES (use as reference patterns):"]
+                    for q, c in examples:
+                        lines.append(f"\nQuestion: {q}\n<QUERY>\n{c}\n</QUERY>")
+                    return "\n".join(lines)
+            except Exception as e:
+                logger.warning(f"Few-shot search failed, skipping: {e}")
+        return ""
+
     def _build_cypher_generation_prompt(self, user_query: str) -> str:
         """Construye el prompt para la generación de queries Cypher."""
+        schema = self._fetch_schema()
+        fewshot_block = self._fetch_fewshot_examples(user_query)
         return f"""Generate a Cypher query for Neo4j to answer this question.
 SCHEMA:
-Nodes and their key properties:
-- Proyecto     → id: 'gi_2014_133', value: 'sintesis y evaluacion biologica de nuevos quimioterapicos'
-- Investigador → id: 'lastname_firstname', name: 'firstname lastname', cedula: 'cedula' (optional), mail: 'email' (optional), afiliacion: 'institutional affiliation' (optional)
-- Topico       → value: 'biotecnologia'
-- Dominio      → value: 'ciencias naturales'
-- Documento → id: '...', base_name: 'gi_2014_133', type: 'informe'|'propuesta'|'resumen'|'tabla', year_publisher: '2014', is_group: 'false'
-- Chunk        → id: '...', text: '...'
-- Anio         → year: '2014'           ← property is "year", NOT "value" or "id"
+{schema}
 
-Relationships:
-- (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
-- (Proyecto)-[:TIENE_TOPICO]->(Topico)
-- (Topico)-[:PERTENECE_A_DOMINIO]->(Dominio)
-- (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-- (Proyecto)-[:INICIO_EN]->(Anio)
-- (Documento)-[:PRIMER_CHUNK]->(Chunk)
-- (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
-- (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+SCHEMA NOTES:
+- Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
+- Investigador.id follows 'lastname_firstname'; use Investigador.name for display
+- Proyecto.value contains the project title; Proyecto.id follows 'gi_2014_133'
+- Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
 
@@ -292,196 +355,7 @@ RULES:
 17 Search project titles/names with toLower(p.value) CONTAINS.
 18. Convert Anio.year with toInteger() for numeric comparisons.
 
-PATTERNS:
-
-=== COUNT QUERIES (when user asks "cuántos", "cuántas", "how many") ===
-
-Count projects by investigator (e.g., "cuántos proyectos tiene X?"):
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-RETURN count(p) AS total
-
-Count projects by investigator responsable (e.g., "de cuántos proyectos fue responsable X?"):
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
-RETURN count(p) AS total
-
-Count projects by year (e.g., "cuántos proyectos en 2018?"):
-MATCH (a:Anio)
-WHERE a.year = '2018'
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-RETURN count(p) AS total
-
-Count projects by topic (e.g., "cuántos proyectos de biotecnología?"):
-MATCH (t:Topico)
-WHERE t.value = 'biotecnologia'
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-RETURN count(p) AS total
-
-Count total entities (e.g., "cuántos investigadores hay?"):
-MATCH (i:Investigador) RETURN count(i) AS total
-MATCH (p:Proyecto) RETURN count(p) AS total
-
-
-Count projects by domain:
-MATCH (d:Dominio)
-WHERE d.value = 'ciencias naturales'
-MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-RETURN count(DISTINCT p) AS total
-
-Count projects by project title/name:
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-RETURN count(p) AS total
-
-
-=== LIST QUERIES (when user asks "cuáles", "qué proyectos", "lista", "muéstrame") ===
-
-List projects by topic:
-MATCH (t:Topico)
-WHERE t.value = 'biotecnologia'
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, COLLECT(c) AS chunks
-
-List investigators of a project (WHO participated):
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
--- CRITICAL: RETURN the investigators (i), NOT the project (p)
-
-List researchers responsible for a project (WHO was IN CHARGE):
-MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
-
-
-List projects by domain:
-MATCH (d:Dominio)
-WHERE d.value = 'ciencias naturales'
-MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN DISTINCT p, d, COLLECT(DISTINCT c) AS chunks
-
-List project by title/name:
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, COLLECT(DISTINCT c) AS chunks
-
-
-List domains of a topic:
-MATCH (t:Topico)
-WHERE t.value = 'inteligencia artificial'
-MATCH (t)-[:PERTENECE_A_DOMINIO]->(d:Dominio)
-RETURN t, d
-
-Topics of a domain:
-MATCH (d:Dominio)
-WHERE d.value = 'ciencias naturales'
-MATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)
-RETURN d, COLLECT(DISTINCT t) AS topics
-
-Investigators of project by ID:
-MATCH (p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
-
-
-Investigators of project by title/name:
-MATCH (p:Proyecto)
-WHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
-
-
-Responsible investigators by project ID:
-MATCH (p:Proyecto)
-WHERE p.id = 'gi_2014_133'
-MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p)
-OPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)
-RETURN i, COLLECT(DISTINCT c) AS chunks
-
--- CRITICAL: RETURN the researchers (i), NOT the project (p)
-
-Projects by name of researcher in charge — note direction: Investigador -> Proyecto:
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, i, COLLECT(c) AS chunks
-
-Projects by researcher name — note direction: Investigador -> Proyecto:
-MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'
-MATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, i, COLLECT(c) AS chunks
-
-Chunks of a specific topic (only when asked about the topic itself, not its projects):
-MATCH (t:Topico {{value: 'Biotechnology'}})
-MATCH (c:Chunk)-[:EXTRAIDO_DE]->(t)
-RETURN c, t
-
-By project ID (chunks about a specific project):
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN c, p
-
-Documents of a project:
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-MATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)
-MATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)
-RETURN d, p, COLLECT(c) AS chunks
-
-Describe / full info about a specific project (name, year, topics, investigators):
-MATCH (p:Proyecto {{id: 'gi_2014_133'}})
-OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-OPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
-OPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)
-OPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)
-OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-RETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1
-
-Projects by a specific year (LIST):
-MATCH (a:Anio {{year: 'year_value'}})
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)
-RETURN p, COLLECT(c) AS chunks
-
-=== ADVANCED AGGREGATION ===
-
-Projects by area for ALL years (aggregation with grouping):
-MATCH (a:Anio)
-MATCH (p:Proyecto)-[:INICIO_EN]->(a)
-MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
-RETURN a.year AS anio, t.value AS area, count(DISTINCT p) AS total_proyectos
-ORDER BY anio DESC, total_proyectos DESC
-
-Top N topics by project count (user asked for specific number, e.g. 10):
-MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)
-RETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10
-
-Top N investigators by project count (e.g., "qué investigadores participaron en más proyectos? top 10"):
-MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)
-WITH i, count(DISTINCT p) AS num_proyectos
-RETURN i.name AS investigador, num_proyectos
-ORDER BY num_proyectos DESC
-LIMIT 10
--- CRITICAL: DO NOT add WHERE conditions filtering by name unless explicitly asked
-
-=== SIMPLE VALUE QUERIES (year, name, single property) ===
-
-Get year when a project started:
-MATCH (p:Proyecto {{id: 'gi_2010_152'}})
-OPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)
-RETURN a.year AS año, a
-
+{fewshot_block}
 
 QUESTION: {user_query}
 
@@ -590,18 +464,7 @@ CRITICAL SYNTAX:
         prompt = f"""The following Cypher query produced a syntax error. Fix it.
 
 SCHEMA:
-Nodes: Proyecto(id, value), Investigador(id, name), Topico(value), Documento(id, base_name, type, year_publisher, is_group), Chunk(id, text), Anio(year)
-Relationships:
-- (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-- (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
-- (Proyecto)-[:TIENE_TOPICO]->(Topico)
-- (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-- (Proyecto)-[:INICIO_EN]->(Anio)
-- (Documento)-[:PRIMER_CHUNK]->(Chunk)
-- (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
-- (Chunk)-[:DE_DOCUMENTO]->(Documento)
-- (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-- (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+{self._fetch_schema()}
 
 BROKEN QUERY:
 {broken_query}
