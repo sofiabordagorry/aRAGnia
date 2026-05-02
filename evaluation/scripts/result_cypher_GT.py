@@ -9,7 +9,6 @@ from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 # ajustá este import según dónde tengas realmente execute_cypher_query
 
 
-INPUT_JSON_PATH = Path("datasetQA_GT.json")
 GT_PATH = (
     Path(__file__).parents[1]
     / "ground_truth"
@@ -50,10 +49,10 @@ def make_json_serializable(obj: Any) -> Any:
 
 
 def main() -> None:
-    if not INPUT_JSON_PATH.exists():
-        raise FileNotFoundError(f"No existe el archivo: {INPUT_JSON_PATH}")
+    if not GT_PATH.exists():
+        raise FileNotFoundError(f"No existe el archivo: {GT_PATH}")
 
-    with INPUT_JSON_PATH.open("r", encoding="utf-8") as f:
+    with GT_PATH.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
     if not isinstance(data, list):
@@ -95,10 +94,10 @@ def main() -> None:
             print(f"Error en pregunta {question_id}: {e}")
             item["retrieved_subgraph"] = "No se encontró información relevante en el grafo para responder esta pregunta."
 
-    with INPUT_JSON_PATH.open("w", encoding="utf-8") as f:
+    with GT_PATH.open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f"JSON actualizado en: {INPUT_JSON_PATH}")
+    print(f"JSON actualizado en: {GT_PATH}")
 
 
 if __name__ == "__main__":
