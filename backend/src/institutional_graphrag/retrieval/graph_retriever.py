@@ -15,6 +15,9 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
 
+from institutional_graphrag.llm.llm_provider import get_llm_client
+from institutional_graphrag.retrieval.fewshot_store import FewShotStore
+
 logger = logging.getLogger(__name__)
 
 
@@ -83,8 +86,6 @@ class GraphRAGRetriever:
         temperature: float = 0.3,
         max_tokens: int = 1024,
     ):
-        from institutional_graphrag.llm.llm_provider import get_llm_client
-
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
@@ -101,8 +102,6 @@ class GraphRAGRetriever:
 
     def _init_fewshot(self) -> Optional[Any]:
         try:
-            from institutional_graphrag.retrieval.fewshot_store import FewShotStore
-
             store = FewShotStore()
             if store.count() == 0:
                 logger.info("Colección few-shot vacía, se usarán ejemplos estáticos")
@@ -312,6 +311,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             try:
                 examples = self._fewshot.search(user_query, top_k=3)
                 if examples:
+                    logger.debug("Few-shot examples retrieved: %s", [q for q, _ in examples])
                     lines = ["SIMILAR EXAMPLES (use as reference patterns):"]
                     for q, c in examples:
                         lines.append(f"\nQuestion: {q}\n<QUERY>\n{c}\n</QUERY>")
