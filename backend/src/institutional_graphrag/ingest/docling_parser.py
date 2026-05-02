@@ -2,11 +2,10 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Optional, cast
 
-
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
-from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 DEFAULT_CORPUS_DIR = DATA_DIR / "corpus"
@@ -229,6 +228,7 @@ def filter_unprocessed(paths: list[Path]) -> list[Path]:
             print(f"Info:{e}")
     return out
 
+
 def build_converter() -> DocumentConverter:
 
     pipeline_options = PdfPipelineOptions()
@@ -254,6 +254,8 @@ def build_converter() -> DocumentConverter:
             )
         }
     )
+
+
 def parse_corpus(
     corpus_dir: Path = DEFAULT_CORPUS_DIR,
     recursive: bool = False,
