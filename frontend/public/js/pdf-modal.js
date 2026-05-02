@@ -199,3 +199,8 @@ window.PDFModal = (() => {
 })();
 
 PDFModal.init();
+
+function getPdfUrlFromChunkId(chunkId) {
+  const docId = chunkId.split("#")[0];
+  return `${API_BASE}/pdfs/${docId}.pdf`;
+}

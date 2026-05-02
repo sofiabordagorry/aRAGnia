@@ -34,11 +34,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function getPdfUrlFromChunkId(chunkId) {
-  const docId = chunkId.split("#")[0];
-  return `${API_BASE}/pdfs/${docId}.Pdf`;
-}
-
 function toMillis(value) {
   if (!value) return null;
   if (typeof value === "number") return value;
@@ -135,6 +130,7 @@ function drawerOpen() {
 
 function drawerClose() {
   if (!els.drawerRoot) return;
+  document.activeElement?.blur();
   els.drawerRoot.classList.remove("open");
   els.drawerRoot.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
