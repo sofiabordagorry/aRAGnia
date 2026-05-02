@@ -237,13 +237,12 @@ def build_converter() -> DocumentConverter:
     pipeline_options.force_backend_text = False
 
     pipeline_options.do_table_structure = True
-    pipeline_options.table_structure_options.do_cell_matching = True
+    table_options = cast(Any, pipeline_options.table_structure_options)
+    table_options.do_cell_matching = True
 
     pipeline_options.ocr_options.lang = ["es"]
 
     # si existe en tu versión
-    pipeline_options.ocr_options.force_full_page_ocr = True
-    # Si tu versión lo soporta:
     pipeline_options.ocr_options.force_full_page_ocr = True
 
     return DocumentConverter(
