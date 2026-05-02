@@ -24,7 +24,7 @@ class GraphRAGChunk:
 
     chunk_id: str
     text: str
-    page: str
+    page: int
 
 
 @dataclass
