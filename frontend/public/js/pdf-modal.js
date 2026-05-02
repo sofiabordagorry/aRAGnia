@@ -77,7 +77,17 @@ window.PDFModal = (() => {
 
     pageWrap.appendChild(canvas);
     pageWrap.appendChild(textLayer);
-    elements.viewer.appendChild(pageWrap);
+    const existingWrap = elements.viewer.querySelector(
+      `.pdf-page-wrap[data-page="${pageNumber}"]`,
+    );
+
+    if (existingWrap) {
+      existingWrap.replaceWith(pageWrap);
+    } else {
+      elements.viewer.appendChild(pageWrap);
+    }
+
+    pageWrap.dataset.page = String(pageNumber);
 
     currentRenderTask = page.render({
       canvasContext: context,
@@ -121,6 +131,29 @@ window.PDFModal = (() => {
     }
   }
 
+  async function createPagePlaceholders(pdf) {
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const baseViewport = page.getViewport({ scale: 1 });
+
+      const availableWidth = elements.viewer.clientWidth - 48;
+      const scale = Math.max(
+        0.6,
+        Math.min(1.35, availableWidth / baseViewport.width),
+      );
+
+      const viewport = page.getViewport({ scale });
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "pdf-page-wrap pdf-page-placeholder";
+      placeholder.dataset.page = String(i);
+      placeholder.style.width = `${viewport.width}px`;
+      placeholder.style.height = `${viewport.height}px`;
+
+      elements.viewer.appendChild(placeholder);
+    }
+  }
+
   async function open({ pdfUrl, title = "PDF", text = "", page = 1 }) {
     if (!pdfUrl) {
       alert("No hay PDF asociado.");
@@ -152,28 +185,28 @@ window.PDFModal = (() => {
 
       if (elements.viewer) elements.viewer.innerHTML = "";
 
-      for (let i = 1; i <= pdf.numPages; i++) {
-        await renderPage(pdf, i, searchText);
-
-        if (i === pageNumber) {
-          const pages = elements.viewer.querySelectorAll(".pdf-page-wrap");
-          pages[pages.length - 1].dataset.targetPage = "true";
-        }
-      }
-
+      await createPagePlaceholders(pdf);
+      await renderPage(pdf, pageNumber, searchText);
       const targetPage = elements.viewer.querySelector(
-        '[data-target-page="true"]',
+        `.pdf-page-wrap[data-page="${pageNumber}"]`,
       );
-      targetPage?.scrollIntoView({ behavior: "smooth", block: "start" });
+      targetPage?.scrollIntoView({ behavior: "auto", block: "start" });
+      setTimeout(async () => {
+        for (let i = 1; i <= pdf.numPages; i++) {
+          if (i === pageNumber) continue;
+
+          await renderPage(pdf, i, searchText);
+        }
+      }, 0);
     } catch (error) {
       console.error(error);
       if (elements.viewer) {
         elements.viewer.innerHTML = `
-          <div class="pdf-error">
-            No se pudo cargar el PDF.<br>
-            ${String(error?.message || error)}
-          </div>
-        `;
+        <div class="pdf-error">
+          No se pudo cargar el PDF.<br>
+          ${String(error?.message || error)}
+        </div>
+      `;
       }
     }
   }
