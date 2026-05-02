@@ -470,11 +470,11 @@ def delete_graph_entity(payload: DeleteEntityRequest):
     try:
         reader = _get_graph_reader()
         reader.delete_graph_entity(entity_id=entity_id)
-        return {"ok": True, "message": "Entidades unificadas correctamente."}
+        return {"ok": True, "message": "Entidad eliminada correctamente."}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error("No se pudo eliminar la entidades", exc_info=True)
+        logger.error("No se pudo eliminar la entidad", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error eliminando entidad: {e}")
     finally:
         if reader is not None:
