@@ -273,30 +273,22 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         rels: List[tuple[str, str, str]] = []
 
         with self.driver.session() as session:
-            records = list(
-                session.run(
-                    """
+            records = list(session.run("""
                     MATCH (n)
                     UNWIND labels(n) AS lbl
                     UNWIND keys(n) AS prop
                     RETURN lbl AS label, collect(DISTINCT prop) AS properties
                     ORDER BY label
-                    """
-                )
-            )
+                    """))
             for r in records:
                 if r["label"]:
                     node_props[r["label"]] = r["properties"]
 
-            records = list(
-                session.run(
-                    """
+            records = list(session.run("""
                     MATCH (a)-[r]->(b)
                     RETURN DISTINCT labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target
                     ORDER BY rel
-                    """
-                )
-            )
+                    """))
             for r in records:
                 if r["source"] and r["rel"] and r["target"]:
                     rels.append((r["source"], r["rel"], r["target"]))
