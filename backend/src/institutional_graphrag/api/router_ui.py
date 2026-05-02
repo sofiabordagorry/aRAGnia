@@ -41,6 +41,7 @@ class ChunkItem(TypedDict, total=False):
     id: int | str
     chunk_id: str
     chunk_text: str
+    chunk_page: int
     score: Optional[float]
     entities: List[ChunkEntityItem]
 
@@ -235,6 +236,7 @@ def get_history():
                 "chunk_text": (
                     chunk.get("chunk_text") or chunk.get("chunk") or chunk.get("text") or ""
                 ),
+                "chunk_page": (chunk.get("chunk_page") or 0),
                 "score": chunk.get("score"),
             }
 

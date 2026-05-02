@@ -34,6 +34,11 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function getPdfUrlFromChunkId(chunkId) {
+  const docId = chunkId.split("#")[0];
+  return `${API_BASE}/pdfs/${docId}.Pdf`;
+}
+
 function toMillis(value) {
   if (!value) return null;
   if (typeof value === "number") return value;
@@ -57,8 +62,9 @@ function normalizeEntity(raw) {
 function normalizeChunk(raw) {
   return {
     id: raw?.id ?? "",
-    chunk_id: raw?.chunk_id ?? raw?.chunkId ?? "",
+    chunk_id: raw?.chunk_id ?? raw?.chunkId ?? raw?.id ?? "",
     chunk_text: raw?.chunk_text ?? raw?.chunk ?? raw?.text ?? "",
+    page: raw?.chunk_page ?? 1,
     score: raw?.score ?? null,
     entities: Array.isArray(raw?.entities)
       ? raw.entities.map(normalizeEntity)
@@ -176,11 +182,23 @@ function renderChunks(chunks) {
         <div class="chunk-top-left">
           ${scoreHtml}
         </div>
-        <span class="chunk-id">${escapeHtml(chunk.chunk_id || chunk.id || "")}</span>
+        <div class="chunk-actions">
+          <button class="open-pdf-btn" type="button">Abrir PDF</button>
+          <span class="chunk-id">${escapeHtml(chunk.chunk_id || chunk.id || "")}</span>
+        </div>
       </div>
       <div class="chunk-text">${escapeHtml(chunk.chunk_text ?? "")}</div>
       ${entitiesHtml}
     `;
+
+    card.querySelector(".open-pdf-btn")?.addEventListener("click", () => {
+      PDFModal.open({
+        pdfUrl: getPdfUrlFromChunkId(chunk.chunk_id || chunk.id),
+        title: chunk.chunk_id || chunk.id,
+        text: chunk.chunk_text,
+        page: chunk.page,
+      });
+    });
 
     els.drawerChunks.appendChild(card);
   });

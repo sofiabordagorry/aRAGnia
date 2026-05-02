@@ -98,6 +98,12 @@ function getEntitySnippet(text, entities) {
   return `${text.slice(0, 300)}${text.length > 300 ? "…" : ""}`;
 }
 
+function getPdfUrlFromChunkId(chunkId) {
+  const docId = chunkId.split("#")[0];
+
+  return `${API_BASE}/pdfs/${docId}.Pdf`;
+}
+
 function renderChunks(chunks, chunkToEntities, messageElement) {
   if (!messageElement || !Array.isArray(chunks) || chunks.length === 0) return;
 
@@ -140,13 +146,40 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
     item.innerHTML = `
       <div class="source-num">${index + 1}</div>
       <div class="source-body">
-        <div class="source-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>
+        <div class="source-title-row">
+          <div
+            class="source-title"
+            title="${escapeHtml(title)}"
+          >
+            ${escapeHtml(title)}
+          </div>
+
+          <button
+            class="open-pdf-btn"
+            type="button"
+          >
+            Abrir PDF
+          </button>
+
+        </div>
         <div class="source-preview">${escapeHtml(getEntitySnippet(text, entities))}</div>
         ${tags}
       </div>
     `;
 
     list.appendChild(item);
+    const openPdfBtn = item.querySelector(".open-pdf-btn");
+    console.log({
+      page: chunk.page,
+    });
+    openPdfBtn?.addEventListener("click", () => {
+      PDFModal.open({
+        pdfUrl: getPdfUrlFromChunkId(chunk.id),
+        title: chunk.id,
+        text: text,
+        page: chunk.page,
+      });
+    });
   });
 
   wrapper.append(toggle, list);

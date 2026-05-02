@@ -6,6 +6,7 @@
     <title>Historial</title>
     <link rel="stylesheet" href="/css/history.css" />
     <link rel="stylesheet" href="/css/topbar.css" />
+    <link rel="stylesheet" href="/css/pdf-modal.css" />
   </head>
   <body data-page="history">
     <div id="topbar"></div>
@@ -91,6 +92,23 @@
       </aside>
     </div>
 
+    <div id="pdfModal" class="pdf-modal hidden">
+      <div class="pdf-modal-box">
+        <div class="pdf-modal-head">
+          <div>
+            <strong id="pdfModalTitle">PDF</strong>
+            <div id="pdfModalSubtitle" class="pdf-modal-subtitle"></div>
+          </div>
+
+          <button id="pdfModalClose" class="pdf-modal-close">Cerrar</button>
+        </div>
+
+        <div id="pdfViewer" class="pdf-viewer"></div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="/js/pdf-modal.js"></script>
     <script src="/js/settings.js"></script>
     <script src="/js/topbar.js"></script>
     <script src="/js/history.js"></script>

@@ -24,6 +24,7 @@ class GraphRAGChunk:
 
     chunk_id: str
     text: str
+    page: str
 
 
 @dataclass
@@ -821,10 +822,13 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 # Agregar chunk si no existe
                 if chunk_id not in chunks_dict:
                     text = chunk_node.get("text", "")
+                    page_numbers = chunk_node.get("page_numbers")
+                    page = page_numbers[0] if page_numbers else None
                     if text:
                         chunks_dict[chunk_id] = GraphRAGChunk(
                             chunk_id=chunk_id,
                             text=text,
+                            page=page,
                         )
 
                 # Solo asociar entidades DIRECTAS al chunk (implican EXTRAIDO_DE/TITULO_EXTRAIDO_DE)

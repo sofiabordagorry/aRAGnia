@@ -63,19 +63,21 @@ def insert_graphrag_chunks(query_id, chunks):
         if isinstance(chunk, dict):
             chunk_id = chunk.get("chunk_id") or chunk.get("id")
             chunk_text = chunk.get("chunk_text") or chunk.get("text")
+            chunk_page = chunk.get("chunk_page") or chunk.get("page")
         else:
-            if len(chunk) < 2:
+            if len(chunk) < 3:
                 raise ValueError(f"Chunk inválido: {chunk}")
             chunk_id = chunk[0]
             chunk_text = chunk[1]
+            chunk_page = chunk[2]
 
         cur.execute(
             """
-            INSERT INTO graphrag_chunks (query_id, chunk_id, chunk_text)
-            VALUES (%s, %s, %s)
+            INSERT INTO graphrag_chunks (query_id, chunk_id, chunk_text, chunk_page)
+            VALUES (%s, %s, %s, %s)
             RETURNING id;
             """,
-            (query_id, chunk_id, chunk_text),
+            (query_id, chunk_id, chunk_text, chunk_page),
         )
         graphrag_chunk_row_id = cur.fetchone()[0]
         inserted_chunk_ids[chunk_id] = graphrag_chunk_row_id
@@ -183,7 +185,8 @@ def get_queries_with_chunks():
             id,
             query_id,
             chunk_id,
-            chunk_text
+            chunk_text,
+            chunk_page
         FROM graphrag_chunks
         ORDER BY query_id, id;
     """)
@@ -200,6 +203,7 @@ def get_queries_with_chunks():
             "id": row["id"],
             "chunk_id": row["chunk_id"],
             "chunk_text": row["chunk_text"],
+            "chunk_page": row["chunk_page"],
             "score": None,
             "entities": [],
         }

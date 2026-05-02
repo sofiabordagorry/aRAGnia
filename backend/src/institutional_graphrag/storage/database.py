@@ -58,7 +58,8 @@ def create_tables():
             id SERIAL PRIMARY KEY,
             query_id INTEGER NOT NULL REFERENCES queries(id) ON DELETE CASCADE,
             chunk_id TEXT NOT NULL,
-            chunk_text TEXT NOT NULL
+            chunk_text TEXT NOT NULL,
+            chunk_page INTEGER
         );
     """)
 
