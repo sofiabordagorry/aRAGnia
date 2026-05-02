@@ -106,11 +106,13 @@ def check_postgres_not_empty() -> None:
     )
     cur = conn.cursor()
 
-    cur.execute("""
+    cur.execute(
+        """
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = 'public';
-        """)
+        """
+    )
     existing_tables_before = {row[0] for row in cur.fetchall()}
 
     missing_tables = [t for t in expected_tables if t not in existing_tables_before]
@@ -130,11 +132,13 @@ def check_postgres_not_empty() -> None:
         )
         cur = conn.cursor()
 
-        cur.execute("""
+        cur.execute(
+            """
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public';
-            """)
+            """
+        )
 
     cur.close()
     conn.close()
