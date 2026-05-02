@@ -241,8 +241,6 @@ def build_converter() -> DocumentConverter:
     table_options.do_cell_matching = True
 
     pipeline_options.ocr_options.lang = ["es"]
-
-    # si existe en tu versión
     pipeline_options.ocr_options.force_full_page_ocr = True
 
     return DocumentConverter(
