@@ -467,6 +467,7 @@ def delete_graph_entity(payload: DeleteEntityRequest):
     entity_id = payload.entity_id.strip()
     if not entity_id:
         raise HTTPException(status_code=400, detail="entity_id vacío")
+    reader = None
     try:
         reader = _get_graph_reader()
         reader.delete_graph_entity(entity_id=entity_id)
