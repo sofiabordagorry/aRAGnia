@@ -369,7 +369,7 @@ body {
 
 .drawer-body {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
+  grid-template-columns: 1fr;
   gap: 34px;
   padding: 36px 40px 42px;
   overflow: auto;
