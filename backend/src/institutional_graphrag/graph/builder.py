@@ -480,7 +480,7 @@ class GraphBuilder:
         if label == "Investigador":
             return str(props.get("name") or props.get("id") or "Investigador")
         if label == "Proyecto":
-            return str(props.get("title") or props.get("id") or "Proyecto")
+            return str(props.get("value") or props.get("id") or "Proyecto")
         if label == "Topico":
             return str(props.get("value") or props.get("id") or "Topico")
         if label == "Anio":
@@ -869,6 +869,27 @@ class GraphBuilder:
             stats.add_counters(result.consume().counters)
 
         return stats
+
+    def delete_graph_entity(self, entity_id):
+        query = """
+            MATCH (n {id: $entity_id})
+            WITH n, labels(n) AS labels, properties(n) AS properties
+            DETACH DELETE n
+            RETURN labels, properties
+        """
+        with self.driver.session() as session:
+            result = session.run(query, entity_id=entity_id)
+            record = result.single()
+
+        if record is None:
+            raise ValueError("Entidad no encontrada")
+
+        return {
+            "status": "ok",
+            "deleted_entity_id": entity_id,
+            "deleted_labels": record["labels"],
+            "deleted_properties": record["properties"],
+        }
 
     def fetch_alias_candidates(self, *, search: Optional[str] = None) -> dict[str, Any]:
         search_text = self._normalized_search(search)

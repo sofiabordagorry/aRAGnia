@@ -117,6 +117,10 @@ class AliasSummaryResponse(BaseModel):
     entity_count: int
 
 
+class DeleteEntityRequest(BaseModel):
+    entity_id: str
+
+
 class AliasCandidatesResponse(BaseModel):
     pairs: list[AliasPairResponse]
     entities: list[AliasEntityResponse]
@@ -456,3 +460,23 @@ def get_upload_status(job_id: Optional[str] = Query(default=None)):
         )
 
     return {"ok": True, **job}
+
+
+@router.delete("/graph/entity")
+def delete_graph_entity(payload: DeleteEntityRequest):
+    entity_id = payload.entity_id.strip()
+    if not entity_id:
+        raise HTTPException(status_code=400, detail="entity_id vacío")
+    reader = None
+    try:
+        reader = _get_graph_reader()
+        reader.delete_graph_entity(entity_id=entity_id)
+        return {"ok": True, "message": "Entidad eliminada correctamente."}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("No se pudo eliminar la entidad", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error eliminando entidad: {e}")
+    finally:
+        if reader is not None:
+            reader.close()

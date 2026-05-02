@@ -674,7 +674,18 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
               <span class="entity-item-title">${escapeHtml(entity.display)}</span>
               <span class="entity-item-id">${escapeHtml(entity.id)}</span>
             </span>
-            <span class="entity-pill">${escapeHtml(entity.label)}</span>
+
+            <span class="entity-actions">
+              <span class="entity-pill">${escapeHtml(entity.label)}</span>
+              <button
+                class="entity-delete-btn"
+                type="button"
+                data-delete-entity-id="${escapeHtml(entity.id)}"
+                data-delete-entity-name="${escapeHtml(entity.display)}"
+              >
+                Eliminar
+              </button>
+            </span>
           </button>
         `,
       )
@@ -684,6 +695,17 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       button.addEventListener("click", () => {
         const entityId = button.getAttribute("data-entity-id") || "";
         selectEntity(entityId);
+      });
+    });
+
+    els.entityList.querySelectorAll(".entity-delete-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        showDeleteConfirm({
+          entityId: button.getAttribute("data-delete-entity-id") || "",
+          entityName: button.getAttribute("data-delete-entity-name") || "",
+        });
       });
     });
   }
@@ -1004,6 +1026,95 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     });
   }
 
+  const deleteModal = {
+    overlay: document.getElementById("deleteModal"),
+    text: document.getElementById("deleteModalText"),
+    confirmBtn: document.getElementById("deleteModalConfirm"),
+    cancelBtn: document.getElementById("deleteModalCancel"),
+    pending: null,
+  };
+
+  function showDeleteConfirm({ entityId, entityName }) {
+    if (!deleteModal.overlay) return;
+
+    deleteModal.pending = { entityId };
+
+    if (deleteModal.text) {
+      deleteModal.text.innerHTML = `
+        ¿Querés eliminar <strong>${escapeHtml(entityName)}</strong>?<br>
+        <span class="merge-modal-warning">
+          Se eliminará la entidad y sus relaciones. Esta acción no se puede deshacer.
+        </span>
+      `;
+    }
+
+    deleteModal.overlay.classList.remove("hidden");
+  }
+
+  function hideDeleteConfirm() {
+    if (!deleteModal.overlay) return;
+
+    deleteModal.overlay.classList.add("hidden");
+    deleteModal.pending = null;
+  }
+
+  async function executeDeleteEntity() {
+    if (!deleteModal.pending) return;
+
+    const { entityId } = deleteModal.pending;
+
+    hideDeleteConfirm();
+    setEntityStatus("Eliminando entidad...");
+
+    try {
+      const response = await fetch(apiUrl("/ui/graph/entity"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entity_id: entityId }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || `HTTP ${response.status}`);
+      }
+
+      if (state.selectedEntityId === entityId) {
+        state.selectedEntityId = null;
+        state.selectedNodeId = null;
+        state.snapshot = {
+          nodes: [],
+          edges: [],
+          summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+        };
+
+        updateMetrics(state.snapshot.summary);
+      }
+
+      await loadEntityCatalog();
+      setEntityStatus("Entidad eliminada correctamente.");
+
+      if (state.aliasLoadedOnce) {
+        await loadAliases();
+      }
+
+      renderGraph();
+    } catch (error) {
+      setEntityStatus(
+        `Error al eliminar entidad: ${error?.message || error}`,
+        true,
+      );
+    }
+  }
+
+  function bindDeleteModal() {
+    deleteModal.cancelBtn?.addEventListener("click", hideDeleteConfirm);
+    deleteModal.confirmBtn?.addEventListener("click", executeDeleteEntity);
+
+    deleteModal.overlay?.addEventListener("click", (e) => {
+      if (e.target === deleteModal.overlay) hideDeleteConfirm();
+    });
+  }
+
   function bindEvents() {
     const debouncedEntitySearch = debounce(() => {
       state.entitySearch = (els.entitySearchInput?.value || "").trim();
@@ -1063,6 +1174,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
   bindEvents();
   bindMergeModal();
+  bindDeleteModal();
   setActiveSidePanel("entities");
   renderGraph();
   loadEntityCatalog();

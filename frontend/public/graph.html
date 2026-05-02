@@ -194,6 +194,31 @@
       </div>
     </div>
 
+    <div
+      id="deleteModal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-box">
+        <h3 class="modal-title">Confirmar eliminación</h3>
+        <p id="deleteModalText" class="modal-text"></p>
+
+        <div class="modal-actions">
+          <button id="deleteModalCancel" class="secondary-btn" type="button">
+            Cancelar
+          </button>
+          <button
+            id="deleteModalConfirm"
+            class="primary-btn danger-btn"
+            type="button"
+          >
+            Eliminar entidad
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="/js/settings.js"></script>
     <script src="/js/topbar.js"></script>
     <script src="/js/graph-panel.js"></script>
