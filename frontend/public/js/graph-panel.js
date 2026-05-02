@@ -120,7 +120,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       edge_count: 0,
       alias_edge_count: 0,
     };
-
     if (els.nodeCount)
       els.nodeCount.textContent = `${safeSummary.node_count} nodos`;
     if (els.edgeCount)
@@ -217,7 +216,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     nodes.forEach((node) =>
       counts.set(node.label, (counts.get(node.label) || 0) + 1),
     );
-
     els.legend.innerHTML = Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(
@@ -295,6 +293,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       : 0;
     applyTransform();
   }
+
   function zoomAtPoint(delta, svgX, svgY) {
     const prevScale = state.zoomScale;
     const nextScale = Math.min(
@@ -320,7 +319,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const svg = els.svg;
     if (!svg) return;
 
-    // --- Mouse drag --
+    // --- Mouse drag ---
     svg.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
       // don't start pan when clicking a node
@@ -505,9 +504,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       const seenPairs = seenByType.get(type);
       if (seenPairs.has(pairKey)) return;
       seenPairs.add(pairKey);
+
       typeCount.set(type, (typeCount.get(type) || 0) + 1);
     });
-
     const orderedTypes = Array.from(typeCount.keys()).sort((a, b) =>
       a.localeCompare(b),
     );
@@ -588,7 +587,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     renderRelationFilters(snapshot);
     const width = Math.max(720, Math.round(els.svg.clientWidth || 720));
     const height = Math.max(520, Math.round(els.svg.clientHeight || 520));
-
     els.svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
     const positions = buildLayout(snapshot.nodes, width, height);
@@ -627,7 +625,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     const nodeMarkup = snapshot.nodes
       .map((node) => {
         const position = positions.get(node.id);
-
         if (!position) return "";
         if (state.selectedNodeId && !connectedNodeIds.has(node.id)) return "";
         const radius = Math.max(
@@ -830,7 +827,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     ) {
       els.aliasList.innerHTML =
         '<div class="alias-placeholder">No hay posibles alias para ese filtro.</div>';
-
       if (els.aliasEntityCount)
         els.aliasEntityCount.textContent = "0 entidades";
       return;
@@ -852,16 +848,13 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
               </div>
               <span class="metric-pill">${group.pairs.length}</span>
             </div>
-
             <div class="alias-pair-list">
               ${group.pairs
                 .map(
                   (pair) => `
                     <span class="alias-pair-item">
                       <button class="alias-pair-pill" type="button" data-node-id="${escapeHtml(pair.target_id)}">${escapeHtml(pair.target_name)}</button>
-
-                      <button
-                        class="alias-merge-btn" type="button"
+                      <button class="alias-merge-btn" type="button"
                         data-source-id="${escapeHtml(pair.target_id)}"
                         data-source-name="${escapeHtml(pair.target_name)}"
                         data-target-id="${escapeHtml(pair.source_id)}"
@@ -958,9 +951,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         edges: [],
         summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
       };
-
       updateMetrics(state.snapshot.summary);
-
       setGraphStatus(
         `No se pudo cargar la vecindad: ${error?.message || error}`,
         true,
@@ -1004,6 +995,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     if (!mergeModal.pending) return;
     const { sourceId, targetId } = mergeModal.pending;
     hideMergeConfirm();
+
     setAliasStatus("Unificando entidades...");
     try {
       const response = await fetch(apiUrl("/ui/graph/merge"), {
