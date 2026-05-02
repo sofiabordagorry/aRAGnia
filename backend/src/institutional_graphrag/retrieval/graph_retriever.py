@@ -823,7 +823,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 if chunk_id not in chunks_dict:
                     text = chunk_node.get("text", "")
                     page_numbers = chunk_node.get("page_numbers")
-                    page = page_numbers[0] if page_numbers else None
+                    page = int(page_numbers[0]) if page_numbers else 1
                     if text:
                         chunks_dict[chunk_id] = GraphRAGChunk(
                             chunk_id=chunk_id,
