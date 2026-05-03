@@ -154,7 +154,7 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
           >
             Abrir PDF
           </button>
-
+          <span class="pdf-inline-error" aria-live="polite"></span>
         </div>
         <div class="source-preview">${escapeHtml(getEntitySnippet(text, entities))}</div>
         ${tags}
@@ -165,11 +165,17 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
     const openPdfBtn = item.querySelector(".open-pdf-btn");
 
     openPdfBtn?.addEventListener("click", () => {
+      const errorEl = item.querySelector(".pdf-inline-error");
+      if (errorEl) errorEl.textContent = "";
+
       PDFModal.open({
         pdfUrl: getPdfUrlFromChunkId(chunk.id),
         title: chunk.id,
         text: text,
         page: chunk.page,
+        onError: (message) => {
+          if (errorEl) errorEl.textContent = message;
+        },
       });
     });
   });

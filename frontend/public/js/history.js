@@ -178,21 +178,33 @@ function renderChunks(chunks) {
         <div class="chunk-top-left">
           ${scoreHtml}
         </div>
-        <div class="chunk-actions">
-          <button class="open-pdf-btn" type="button">Abrir PDF</button>
-          <span class="chunk-id">${escapeHtml(chunk.chunk_id || chunk.id || "")}</span>
-        </div>
+       <div class="chunk-actions">
+        <span class="chunk-id">${escapeHtml(chunk.chunk_id || chunk.id || "")}</span>
+        <button class="open-pdf-btn" type="button">Abrir PDF</button>
+        <span class="pdf-inline-error" aria-live="polite"></span>
+      </div>
       </div>
       <div class="chunk-text">${escapeHtml(chunk.chunk_text ?? "")}</div>
       ${entitiesHtml}
     `;
 
     card.querySelector(".open-pdf-btn")?.addEventListener("click", () => {
+      const errorEl = card.querySelector(".pdf-inline-error");
+
+      if (errorEl) {
+        errorEl.textContent = "";
+      }
+
       PDFModal.open({
         pdfUrl: getPdfUrlFromChunkId(chunk.chunk_id || chunk.id),
         title: chunk.chunk_id || chunk.id,
         text: chunk.chunk_text,
         page: chunk.page,
+        onError: (message) => {
+          if (errorEl) {
+            errorEl.textContent = message;
+          }
+        },
       });
     });
 

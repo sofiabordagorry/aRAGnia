@@ -1,6 +1,7 @@
 window.PDFModal = (() => {
   let elements = {};
   let currentRenderTask = null;
+  let isClosed = false;
 
   function init() {
     elements = {
@@ -45,7 +46,9 @@ window.PDFModal = (() => {
   }
 
   async function renderPage(pdf, pageNumber, searchText) {
+    if (isClosed) return;
     const page = await pdf.getPage(pageNumber);
+    if (isClosed) return;
     const baseViewport = page.getViewport({ scale: 1 });
 
     const availableWidth = elements.viewer.clientWidth - 48;
@@ -95,8 +98,10 @@ window.PDFModal = (() => {
     });
 
     await currentRenderTask.promise;
+    if (isClosed) return;
 
     const textContent = await page.getTextContent();
+    if (isClosed) return;
 
     await pdfjsLib.renderTextLayer({
       textContentSource: textContent,
@@ -104,6 +109,7 @@ window.PDFModal = (() => {
       viewport,
       textDivs: [],
     }).promise;
+    if (isClosed) return;
 
     highlightSearch(textLayer, searchText);
   }
@@ -132,18 +138,18 @@ window.PDFModal = (() => {
   }
 
   async function createPagePlaceholders(pdf) {
+    const targetPage = await pdf.getPage(1);
+    const baseViewport = targetPage.getViewport({ scale: 1 });
+
+    const availableWidth = elements.viewer.clientWidth - 48;
+    const scale = Math.max(
+      0.6,
+      Math.min(1.35, availableWidth / baseViewport.width),
+    );
+
+    const viewport = targetPage.getViewport({ scale });
+
     for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const baseViewport = page.getViewport({ scale: 1 });
-
-      const availableWidth = elements.viewer.clientWidth - 48;
-      const scale = Math.max(
-        0.6,
-        Math.min(1.35, availableWidth / baseViewport.width),
-      );
-
-      const viewport = page.getViewport({ scale });
-
       const placeholder = document.createElement("div");
       placeholder.className = "pdf-page-wrap pdf-page-placeholder";
       placeholder.dataset.page = String(i);
@@ -154,16 +160,22 @@ window.PDFModal = (() => {
     }
   }
 
-  async function open({ pdfUrl, title = "PDF", text = "", page = 1 }) {
+  async function open({ pdfUrl, title = "PDF", text = "", page = 1, onError }) {
+    const fail = (message) => {
+      onError?.(message);
+    };
+
     if (!pdfUrl) {
-      alert("No hay PDF asociado.");
+      fail("No hay PDF asociado.");
       return;
     }
 
     if (!window.pdfjsLib) {
-      alert("pdf.js no está cargado.");
+      fail("pdf.js no está cargado.");
       return;
     }
+
+    isClosed = false;
 
     const pageNumber = Number(page || 1);
     const searchText = buildSearchText(text);
@@ -178,21 +190,32 @@ window.PDFModal = (() => {
       elements.viewer.innerHTML = `<div class="pdf-loading">Cargando PDF...</div>`;
     }
 
-    elements.modal?.classList.remove("hidden");
-
     try {
       const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+
+      if (isClosed) return;
+      elements.modal?.classList.remove("hidden");
 
       if (elements.viewer) elements.viewer.innerHTML = "";
 
       await createPagePlaceholders(pdf);
+      if (isClosed) return;
+
       await renderPage(pdf, pageNumber, searchText);
+      if (isClosed) return;
+
       const targetPage = elements.viewer.querySelector(
         `.pdf-page-wrap[data-page="${pageNumber}"]`,
       );
-      targetPage?.scrollIntoView({ behavior: "auto", block: "start" });
+      targetPage?.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+
       setTimeout(async () => {
         for (let i = 1; i <= pdf.numPages; i++) {
+          if (isClosed) return;
+
           if (i === pageNumber) continue;
 
           await renderPage(pdf, i, searchText);
@@ -200,18 +223,27 @@ window.PDFModal = (() => {
       }, 0);
     } catch (error) {
       console.error(error);
-      if (elements.viewer) {
-        elements.viewer.innerHTML = `
-        <div class="pdf-error">
-          No se pudo cargar el PDF.<br>
-          ${String(error?.message || error)}
-        </div>
-      `;
+
+      if (isClosed) return;
+      const rawMessage = String(error?.message || error || "");
+
+      let friendlyMessage = "No se pudo cargar el PDF.";
+
+      if (rawMessage.includes("Missing PDF")) {
+        friendlyMessage =
+          "El archivo PDF asociado a este documento no fue encontrado.";
+      } else if (rawMessage.includes("Failed to fetch")) {
+        friendlyMessage =
+          "No se pudo conectar con el servidor para descargar el PDF.";
       }
+
+      close();
+      fail(friendlyMessage);
     }
   }
 
   function close() {
+    isClosed = true;
     elements.modal?.classList.add("hidden");
 
     if (currentRenderTask) {

@@ -142,14 +142,14 @@
   border-radius: 2px;
 }
 
-.pdf-loading,
-.pdf-error {
+.pdf-loading {
   padding: 24px;
   border-radius: 12px;
   background: white;
   color: #0f172a;
   font-weight: 700;
 }
+
 .pdf-viewer {
   flex: 1;
   overflow: auto;

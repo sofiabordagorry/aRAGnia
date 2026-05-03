@@ -530,3 +530,20 @@ body.dark .answer {
   align-items: center;
   gap: 8px;
 }
+
+.pdf-inline-error {
+  display: inline-flex;
+  align-items: center;
+
+  max-width: 320px;
+
+  color: #dc2626;
+
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.pdf-inline-error:empty {
+  display: none;
+}
