@@ -218,8 +218,8 @@
   {
     "id": 28,
     "categoria": "Consultas Complejas",
-    "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Ciencias de la Computación y de agronomia y ciencias de cultivos?",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t1.value) CONTAINS toLower('Ciencias de la Computacion') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t2.value) CONTAINS toLower('agronomia y ciencias de cultivos') RETURN DISTINCT p",
+    "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Ciencias de la Computación y de ciencias agricolas y biologicas?",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d1:Dominio) WHERE toLower(D1.value) CONTAINS toLower('Ciencias de la Computacion') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d2:Dominio) WHERE toLower(d2.value) CONTAINS toLower('ciencias agricolas y biologicas') RETURN DISTINCT p",
     "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
     "answer": ""
   },
@@ -394,8 +394,8 @@
   {
     "id": 50,
     "categoria": "Lenguaje Natural Informal",
-    "pregunta": "proyectos inteligencia artificial y agricultura",
-    "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.value) CONTAINS toLower('agricultura') AND toLower(t1.value) CONTAINS toLower('inteligencia artificial') RETURN DISTINCT p AS proyecto",
+    "pregunta": "proyectos inteligencia artificial y agronomia",
+    "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.value) CONTAINS toLower('agronomia') AND toLower(t1.value) CONTAINS toLower('inteligencia artificial') RETURN DISTINCT p AS proyecto",
     "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
     "answer": ""
   },
