@@ -2,7 +2,10 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Optional, cast
 
-from docling.document_converter import DocumentConverter
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
+from docling.datamodel.base_models import InputFormat
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 DEFAULT_CORPUS_DIR = DATA_DIR / "corpus"
@@ -191,7 +194,7 @@ def _postprocess_doc_dict(doc_dict: dict[str, Any]) -> dict[str, Any]:
 def parse_single_document(source: Path) -> dict[str, Any] | None:
     try:
         is_already_processed(source)
-        converter = DocumentConverter()
+        converter = build_converter()
         res = converter.convert(source)
         doc_dict = cast(dict[str, Any], res.document.export_to_dict())
         return _postprocess_doc_dict(doc_dict)
@@ -226,6 +229,30 @@ def filter_unprocessed(paths: list[Path]) -> list[Path]:
     return out
 
 
+def build_converter() -> DocumentConverter:
+
+    pipeline_options = PdfPipelineOptions()
+
+    pipeline_options.do_ocr = True
+    pipeline_options.force_backend_text = False
+
+    pipeline_options.do_table_structure = True
+    table_options = cast(Any, pipeline_options.table_structure_options)
+    table_options.do_cell_matching = True
+
+    pipeline_options.ocr_options.lang = ["es"]
+    pipeline_options.ocr_options.force_full_page_ocr = True
+
+    return DocumentConverter(
+        format_options={
+            InputFormat.PDF: PdfFormatOption(
+                pipeline_options=pipeline_options,
+                backend=PyPdfiumDocumentBackend,
+            )
+        }
+    )
+
+
 def parse_corpus(
     corpus_dir: Path = DEFAULT_CORPUS_DIR,
     recursive: bool = False,
@@ -240,7 +267,7 @@ def parse_corpus(
         return iter(())
 
     def _iter_docs() -> Iterator[dict[str, Any]]:
-        converter = DocumentConverter()
+        converter = build_converter()
         for i in range(0, len(paths), batch_size):
             batch = paths[i : i + batch_size]
             results = converter.convert_all(source=batch, raises_on_error=not skip_errors)
