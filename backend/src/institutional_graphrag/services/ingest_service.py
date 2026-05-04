@@ -37,6 +37,7 @@ from institutional_graphrag.ingest.file_namer import (
 )
 from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
+from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
 
 class MissingNeo4jCredentialsError(Exception):
@@ -205,12 +206,10 @@ class IngestService:
         if prev_size is not None and prev_size != file_size:
             print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
-        self.cache_dict[full_cloud_path] = file_size
-
-        # nombre nuevo (idealmente incluye .pdf)
+        # nombre nuevo
         new_filename = generate_new_filename(full_cloud_path)
         print("NOMBRE", new_filename)
-        base_name = Path(new_filename).stem  # clave: TODO se guarda con base_name
+        base_name = Path(new_filename).stem
 
         # paths de salida
         final_pdf_path = self.output_dir / new_filename
@@ -219,8 +218,19 @@ class IngestService:
         emb_npy_path = self.embedding_dir / f"{base_name}.npy"
         emb_meta_path = self.embedding_dir / f"{base_name}_metadata.json"
 
+        bytes_source = content
+        # Convierto archivo odt a PDF
+        if Path(new_filename).suffix.lower() == ".odt":
+            print(f"Convirtiendo archivo odt a pdf: {new_filename}")
+            bytes_source = odt_bytes_to_pdf(bytes_source)
+            new_filename = str(Path(new_filename).with_suffix(".pdf"))
+            base_name = Path(new_filename).stem
+            final_pdf_path = self.output_dir / new_filename
+
+        self.cache_dict[full_cloud_path] = file_size
         # tmp siempre con bytes
-        tmp_path = save_temp_file(content, new_filename)
+        tmp_path = save_temp_file(bytes_source, new_filename)
+
         try:
             kind = classify_pdf(new_filename)
 
@@ -263,7 +273,7 @@ class IngestService:
 
             # Guardar PDF definitivo
             with open(final_pdf_path, "wb") as out:
-                out.write(content)
+                out.write(bytes_source)
 
             # Docling
             doc_dict = parse_single_document(final_pdf_path)

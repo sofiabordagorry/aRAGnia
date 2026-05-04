@@ -140,13 +140,44 @@ function renderChunks(chunks, chunkToEntities, messageElement) {
     item.innerHTML = `
       <div class="source-num">${index + 1}</div>
       <div class="source-body">
-        <div class="source-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>
+        <div class="source-title-row">
+          <div
+            class="source-title"
+            title="${escapeHtml(title)}"
+          >
+            ${escapeHtml(title)}
+          </div>
+
+          <button
+            class="open-pdf-btn"
+            type="button"
+          >
+            Abrir PDF
+          </button>
+          <span class="pdf-inline-error" aria-live="polite"></span>
+        </div>
         <div class="source-preview">${escapeHtml(getEntitySnippet(text, entities))}</div>
         ${tags}
       </div>
     `;
 
     list.appendChild(item);
+    const openPdfBtn = item.querySelector(".open-pdf-btn");
+
+    openPdfBtn?.addEventListener("click", () => {
+      const errorEl = item.querySelector(".pdf-inline-error");
+      if (errorEl) errorEl.textContent = "";
+
+      PDFModal.open({
+        pdfUrl: getPdfUrlFromChunkId(chunk.id),
+        title: chunk.id,
+        text: text,
+        page: chunk.page,
+        onError: (message) => {
+          if (errorEl) errorEl.textContent = message;
+        },
+      });
+    });
   });
 
   wrapper.append(toggle, list);

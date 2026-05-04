@@ -50,12 +50,8 @@ def graphrag_query(payload: QueryRequest):
 
         retriever.close()
         logger.info("Conexión a Neo4j cerrada")
-
         chunks = [
-            {
-                "id": chunk.chunk_id,
-                "text": chunk.text,
-            }
+            {"id": chunk.chunk_id, "text": chunk.text, "page": chunk.page}
             for chunk in result.chunks
         ]
 
