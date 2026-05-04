@@ -50,6 +50,9 @@
             </div>
 
             <div id="graphLegend" class="graph-legend"></div>
+            <div id="graphRelationFilters" class="graph-relation-filters">
+              Selecciona una entidad para filtrar tipos de relación.
+            </div>
             <div id="graphSelection" class="graph-selection">
               Selecciona un nodo para ver sus relaciones mas cercanas.
             </div>
@@ -145,6 +148,14 @@
                   type="search"
                   placeholder="Buscar posibles alias..."
                 />
+                <select
+                  id="aliasSortSelect"
+                  class="entity-select"
+                  aria-label="Ordenar posibles alias"
+                >
+                  <option value="stable" selected>Orden por id</option>
+                  <option value="connections">Orden por conexiones</option>
+                </select>
               </div>
 
               <div id="aliasList" class="alias-list">
@@ -157,6 +168,56 @@
         </section>
       </section>
     </main>
+
+    <div
+      id="mergeModal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mergeModalTitle"
+    >
+      <div class="modal-box">
+        <h3 id="mergeModalTitle" class="modal-title">Confirmar unificación</h3>
+        <p id="mergeModalText" class="modal-text"></p>
+        <div class="modal-actions">
+          <button id="mergeModalCancel" class="secondary-btn" type="button">
+            Cancelar
+          </button>
+          <button
+            id="mergeModalConfirm"
+            class="primary-btn danger-btn"
+            type="button"
+          >
+            Confirmar unificación
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="deleteModal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-box">
+        <h3 class="modal-title">Confirmar eliminación</h3>
+        <p id="deleteModalText" class="modal-text"></p>
+
+        <div class="modal-actions">
+          <button id="deleteModalCancel" class="secondary-btn" type="button">
+            Cancelar
+          </button>
+          <button
+            id="deleteModalConfirm"
+            class="primary-btn danger-btn"
+            type="button"
+          >
+            Eliminar entidad
+          </button>
+        </div>
+      </div>
+    </div>
 
     <script src="/js/settings.js"></script>
     <script src="/js/topbar.js"></script>

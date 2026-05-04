@@ -46,6 +46,10 @@ def entity_key(entity: dict, use_id: bool = False) -> Tuple:
     if use_id:
         return (label, entity.get("id", "").strip())
 
+    # Entidades estáticas (rule-based): se identifican por ID, no por valor
+    if label in {"Proyecto", "Documento", "Chunk"}:
+        return (label, entity.get("id", "").strip())
+
     value = entity.get("value")
 
     if isinstance(value, dict):
@@ -54,16 +58,6 @@ def entity_key(entity: dict, use_id: bool = False) -> Tuple:
 
         if label == "Anio":
             return (label, normalize_text(value.get("year", "")))
-
-        if label == "Documento":
-            return (
-                label,
-                value.get("base_name", ""),
-                value.get("sub_id", ""),
-                value.get("type", ""),
-                value.get("is_group", ""),
-                value.get("year_publisher","")
-            )
 
     return (label, normalize_text(value))
 

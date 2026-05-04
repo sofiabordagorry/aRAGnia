@@ -53,9 +53,7 @@
     {
       "id": "agronomia_y_ciencias_de_cultivos",
       "label": "Topico",
-      "value": {
-        "value": "agronomia y ciencias de cultivos"
-      }
+      "value": "agronomia y ciencias de cultivos"
     },
     {
       "id": "alejandro_vaisman",
@@ -68,9 +66,7 @@
     {
       "id": "algebra_y_teoria_de_numeros",
       "label": "Topico",
-      "value": {
-        "value": "algebra y teoria de numeros"
-      }
+      "value": "algebra y teoria de numeros"
     },
     {
       "id": "ana_g_lópez",
@@ -91,9 +87,7 @@
     {
       "id": "analisis_numerico",
       "label": "Topico",
-      "value": {
-        "value": "analisis numerico"
-      }
+      "value": "analisis numerico"
     },
     {
       "id": "andrea_delgado",
@@ -139,9 +133,7 @@
     {
       "id": "aplicaciones_de_ciencias_de_la_computacion",
       "label": "Topico",
-      "value": {
-        "value": "aplicaciones de ciencias de la computacion"
-      }
+      "value": "aplicaciones de ciencias de la computacion"
     },
     {
       "id": "arnaud_degroote",
@@ -154,23 +146,17 @@
     {
       "id": "arquitectura",
       "label": "Topico",
-      "value": {
-        "value": "arquitectura"
-      }
+      "value": "arquitectura"
     },
     {
       "id": "artes_y_humanidades",
       "label": "Dominio",
-      "value": {
-        "value": "artes y humanidades"
-      }
+      "value": "artes y humanidades"
     },
     {
       "id": "artes_y_humanidades_generales",
       "label": "Topico",
-      "value": {
-        "value": "artes y humanidades generales"
-      }
+      "value": "artes y humanidades generales"
     },
     {
       "id": "audio_gomes",
@@ -215,16 +201,12 @@
     {
       "id": "bioquimica",
       "label": "Topico",
-      "value": {
-        "value": "bioquimica"
-      }
+      "value": "bioquimica"
     },
     {
       "id": "bioquimica_genetica_y_biologia_molecular",
       "label": "Dominio",
-      "value": {
-        "value": "bioquimica, genetica y biologia molecular"
-      }
+      "value": "bioquimica, genetica y biologia molecular"
     },
     {
       "id": "braian_elliot",
@@ -261,114 +243,82 @@
     {
       "id": "ciencias_agricolas_y_biologicas",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias agricolas y biologicas"
-      }
+      "value": "ciencias agricolas y biologicas"
     },
     {
       "id": "ciencias_agricolas_y_biologicas_generales",
       "label": "Topico",
-      "value": {
-        "value": "ciencias agricolas y biologicas generales"
-      }
+      "value": "ciencias agricolas y biologicas generales"
     },
     {
       "id": "ciencias_ambientales",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias ambientales"
-      }
+      "value": "ciencias ambientales"
     },
     {
       "id": "ciencias_atmosfericas",
       "label": "Topico",
-      "value": {
-        "value": "ciencias atmosfericas"
-      }
+      "value": "ciencias atmosfericas"
     },
     {
       "id": "ciencias_de_la_computacion",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de la computacion"
-      }
+      "value": "ciencias de la computacion"
     },
     {
       "id": "ciencias_de_la_computacion_teoricas",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de la computacion teoricas"
-      }
+      "value": "ciencias de la computacion teoricas"
     },
     {
       "id": "ciencias_de_la_decision",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de la decision"
-      }
+      "value": "ciencias de la decision"
     },
     {
       "id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de la gestion e investigacion operativa"
-      }
+      "value": "ciencias de la gestion e investigacion operativa"
     },
     {
       "id": "ciencias_de_la_tierra_y_planetarias",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de la tierra y planetarias"
-      }
+      "value": "ciencias de la tierra y planetarias"
     },
     {
       "id": "ciencias_de_los_alimentos",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de los alimentos"
-      }
+      "value": "ciencias de los alimentos"
     },
     {
       "id": "ciencias_de_los_materiales",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias de los materiales"
-      }
+      "value": "ciencias de los materiales"
     },
     {
       "id": "ciencias_de_los_materiales_generales",
       "label": "Topico",
-      "value": {
-        "value": "ciencias de los materiales generales"
-      }
+      "value": "ciencias de los materiales generales"
     },
     {
       "id": "ciencias_del_agua_y_tecnologia",
       "label": "Topico",
-      "value": {
-        "value": "ciencias del agua y tecnologia"
-      }
+      "value": "ciencias del agua y tecnologia"
     },
     {
       "id": "ciencias_sociales",
       "label": "Dominio",
-      "value": {
-        "value": "ciencias sociales"
-      }
+      "value": "ciencias sociales"
     },
     {
       "id": "ciencias_sociales_generales",
       "label": "Topico",
-      "value": {
-        "value": "ciencias sociales generales"
-      }
+      "value": "ciencias sociales generales"
     },
     {
       "id": "comunicacion",
       "label": "Topico",
-      "value": {
-        "value": "comunicacion"
-      }
+      "value": "comunicacion"
     },
     {
       "id": "consultor_experto_en_simulaci",
@@ -405,9 +355,7 @@
     {
       "id": "desarrollo",
       "label": "Topico",
-      "value": {
-        "value": "desarrollo"
-      }
+      "value": "desarrollo"
     },
     {
       "id": "diego_kiedanski",
@@ -453,16 +401,12 @@
     {
       "id": "economia_econometria_y_finanzas",
       "label": "Dominio",
-      "value": {
-        "value": "economia, econometria y finanzas"
-      }
+      "value": "economia, econometria y finanzas"
     },
     {
       "id": "economia_y_econometria",
       "label": "Topico",
-      "value": {
-        "value": "economia y econometria"
-      }
+      "value": "economia y econometria"
     },
     {
       "id": "eduardo_gramp",
@@ -475,44 +419,32 @@
     {
       "id": "educacion",
       "label": "Topico",
-      "value": {
-        "value": "educacion"
-      }
+      "value": "educacion"
     },
     {
       "id": "energia",
       "label": "Dominio",
-      "value": {
-        "value": "energia"
-      }
+      "value": "energia"
     },
     {
       "id": "energia_general",
       "label": "Topico",
-      "value": {
-        "value": "energia general"
-      }
+      "value": "energia general"
     },
     {
       "id": "energia_nuclear_e_ingenieria",
       "label": "Topico",
-      "value": {
-        "value": "energia nuclear e ingenieria"
-      }
+      "value": "energia nuclear e ingenieria"
     },
     {
       "id": "energia_renovable_sostenibilidad_y_medio_ambiente",
       "label": "Topico",
-      "value": {
-        "value": "energia renovable, sostenibilidad y medio ambiente"
-      }
+      "value": "energia renovable, sostenibilidad y medio ambiente"
     },
     {
       "id": "estadistica_y_probabilidad",
       "label": "Topico",
-      "value": {
-        "value": "estadistica y probabilidad"
-      }
+      "value": "estadistica y probabilidad"
     },
     {
       "id": "esteban_zimanyi",
@@ -525,9 +457,7 @@
     {
       "id": "estrategia_y_gestion",
       "label": "Topico",
-      "value": {
-        "value": "estrategia y gestion"
-      }
+      "value": "estrategia y gestion"
     },
     {
       "id": "ewelina_bakala",
@@ -630,30 +560,22 @@
     {
       "id": "genetica",
       "label": "Topico",
-      "value": {
-        "value": "genetica"
-      }
+      "value": "genetica"
     },
     {
       "id": "geofisica",
       "label": "Topico",
-      "value": {
-        "value": "geofisica"
-      }
+      "value": "geofisica"
     },
     {
       "id": "geografia_planificacion_y_desarrollo",
       "label": "Topico",
-      "value": {
-        "value": "geografia, planificacion y desarrollo"
-      }
+      "value": "geografia, planificacion y desarrollo"
     },
     {
       "id": "geologia",
       "label": "Topico",
-      "value": {
-        "value": "geologia"
-      }
+      "value": "geologia"
     },
     {
       "id": "gerardo_rubino",
@@ -667,9 +589,7 @@
     {
       "id": "gestion_de_tecnologia_e_innovacion",
       "label": "Topico",
-      "value": {
-        "value": "gestion de tecnologia e innovacion"
-      }
+      "value": "gestion de tecnologia e innovacion"
     },
     {
       "id": "gi_2010_table",
@@ -5089,9 +5009,7 @@
     {
       "id": "graficos_por_computadora_y_diseno_asistido_por_computadora",
       "label": "Topico",
-      "value": {
-        "value": "graficos por computadora y diseno asistido por computadora"
-      }
+      "value": "graficos por computadora y diseno asistido por computadora"
     },
     {
       "id": "guillermo_amor",
@@ -5177,100 +5095,72 @@
     {
       "id": "ingenieria",
       "label": "Dominio",
-      "value": {
-        "value": "ingenieria"
-      }
+      "value": "ingenieria"
     },
     {
       "id": "ingenieria_aeroespacial",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria aeroespacial"
-      }
+      "value": "ingenieria aeroespacial"
     },
     {
       "id": "ingenieria_ambiental",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria ambiental"
-      }
+      "value": "ingenieria ambiental"
     },
     {
       "id": "ingenieria_biomedica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria biomedica"
-      }
+      "value": "ingenieria biomedica"
     },
     {
       "id": "ingenieria_civil_y_estructural",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria civil y estructural"
-      }
+      "value": "ingenieria civil y estructural"
     },
     {
       "id": "ingenieria_de_control_y_sistemas",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria de control y sistemas"
-      }
+      "value": "ingenieria de control y sistemas"
     },
     {
       "id": "ingenieria_de_energia_y_tecnologia_de_potencia",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria de energia y tecnologia de potencia"
-      }
+      "value": "ingenieria de energia y tecnologia de potencia"
     },
     {
       "id": "ingenieria_electrica_y_electronica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria electrica y electronica"
-      }
+      "value": "ingenieria electrica y electronica"
     },
     {
       "id": "ingenieria_general",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria general"
-      }
+      "value": "ingenieria general"
     },
     {
       "id": "ingenieria_industrial_y_de_manufactura",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria industrial y de manufactura"
-      }
+      "value": "ingenieria industrial y de manufactura"
     },
     {
       "id": "ingenieria_mecanica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria mecanica"
-      }
+      "value": "ingenieria mecanica"
     },
     {
       "id": "ingenieria_oceanica",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria oceanica"
-      }
+      "value": "ingenieria oceanica"
     },
     {
       "id": "inteligencia_artificial",
       "label": "Topico",
-      "value": {
-        "value": "inteligencia artificial"
-      }
+      "value": "inteligencia artificial"
     },
     {
       "id": "investigacion_en_seguridad",
       "label": "Topico",
-      "value": {
-        "value": "investigacion en seguridad"
-      }
+      "value": "investigacion en seguridad"
     },
     {
       "id": "ismael_caballero",
@@ -5591,23 +5481,17 @@
     {
       "id": "matematicas",
       "label": "Dominio",
-      "value": {
-        "value": "matematicas"
-      }
+      "value": "matematicas"
     },
     {
       "id": "matematicas_aplicadas",
       "label": "Topico",
-      "value": {
-        "value": "matematicas aplicadas"
-      }
+      "value": "matematicas aplicadas"
     },
     {
       "id": "matematicas_computacionales",
       "label": "Topico",
-      "value": {
-        "value": "matematicas computacionales"
-      }
+      "value": "matematicas computacionales"
     },
     {
       "id": "mateo_nogueira",
@@ -5677,16 +5561,12 @@
     {
       "id": "mecanica_computacional",
       "label": "Topico",
-      "value": {
-        "value": "mecanica computacional"
-      }
+      "value": "mecanica computacional"
     },
     {
       "id": "mecanica_de_materiales",
       "label": "Topico",
-      "value": {
-        "value": "mecanica de materiales"
-      }
+      "value": "mecanica de materiales"
     },
     {
       "id": "mercedes_marzoa",
@@ -5707,16 +5587,12 @@
     {
       "id": "modelado_y_simulacion",
       "label": "Topico",
-      "value": {
-        "value": "modelado y simulacion"
-      }
+      "value": "modelado y simulacion"
     },
     {
       "id": "negocios_gestion_y_contabilidad",
       "label": "Dominio",
-      "value": {
-        "value": "negocios, gestion y contabilidad"
-      }
+      "value": "negocios, gestion y contabilidad"
     },
     {
       "id": "nicolas_lassabe",
@@ -5747,9 +5623,7 @@
     {
       "id": "oceanografia",
       "label": "Topico",
-      "value": {
-        "value": "oceanografia"
-      }
+      "value": "oceanografia"
     },
     {
       "id": "pablo_alejandro_rodriguez_bocca",
@@ -5811,9 +5685,7 @@
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": {
-        "value": "web warehouse de datos abiertos de gobierno con gestion de calidad."
-      }
+      "value": "web warehouse de datos abiertos de gobierno con gestion de calidad."
     },
     {
       "id": "proy_2012_638_informe",
@@ -18279,9 +18151,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": {
-        "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
-      }
+      "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
     },
     {
       "id": "proy_2016_729_informe",
@@ -22745,9 +22615,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": {
-        "value": "diseño optimo de redes de ciclovias"
-      }
+      "value": "diseño optimo de redes de ciclovias"
     },
     {
       "id": "proy_2018_260_informe",
@@ -23937,9 +23805,7 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": {
-        "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
-      }
+      "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
     },
     {
       "id": "proy_2018_413_informe",
@@ -27535,9 +27401,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": {
-        "value": "co-simulacion en sistemas ciber-fisicos"
-      }
+      "value": "co-simulacion en sistemas ciber-fisicos"
     },
     {
       "id": "proy_2020_513_informe",
@@ -38230,9 +38094,7 @@
     {
       "id": "quimica_ambiental",
       "label": "Topico",
-      "value": {
-        "value": "quimica ambiental"
-      }
+      "value": "quimica ambiental"
     },
     {
       "id": "ramón_agüero",
@@ -38253,9 +38115,7 @@
     {
       "id": "redes_de_computadoras_y_comunicaciones",
       "label": "Topico",
-      "value": {
-        "value": "redes de computadoras y comunicaciones"
-      }
+      "value": "redes de computadoras y comunicaciones"
     },
     {
       "id": "rehaan_ahmad",
@@ -38292,9 +38152,7 @@
     {
       "id": "salud",
       "label": "Topico",
-      "value": {
-        "value": "salud"
-      }
+      "value": "salud"
     },
     {
       "id": "sandra_mitrovic",
@@ -38315,9 +38173,7 @@
     {
       "id": "sistemas_de_informacion",
       "label": "Topico",
-      "value": {
-        "value": "sistemas de informacion"
-      }
+      "value": "sistemas de informacion"
     },
     {
       "id": "s´_everin_lemaignan",
@@ -38330,16 +38186,12 @@
     {
       "id": "tecnologia_de_medios",
       "label": "Topico",
-      "value": {
-        "value": "tecnologia de medios"
-      }
+      "value": "tecnologia de medios"
     },
     {
       "id": "transporte",
       "label": "Topico",
-      "value": {
-        "value": "transporte"
-      }
+      "value": "transporte"
     },
     {
       "id": "tsachy_weissman",
@@ -38362,9 +38214,7 @@
     {
       "id": "vision_por_computadora_y_reconocimiento_de_patrones",
       "label": "Topico",
-      "value": {
-        "value": "vision por computadora y reconocimiento de patrones"
-      }
+      "value": "vision por computadora y reconocimiento de patrones"
     },
     {
       "id": "wilfried_lemahieu",

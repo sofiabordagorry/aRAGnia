@@ -26,7 +26,18 @@ Guía rápida de los scripts en esta carpeta.
     - `Reporte HTML de validación estructural en evaluation/ground_truth/results_knowledge_graph/report_structure_graph.html`
   - Uso:
     - `python evaluation/scripts/evaluate_kg.py evaluation/llm_extraction/Qwen_Qwen2.5-coder-14B-Instruct/entity_documents.json`
--
+
+- `evaluate_all_llms.py`
+  - Evalúa todos los modelos en `evaluation/llm_extraction/` contra el ground truth de extracción.
+  - Calcula Precision, Recall y F1 macro-promediados por proyecto, tanto global como por tipo de entidad y tipo de relación.
+  - Valida cada grafo contra el esquema definido.
+  - Requiere `matplotlib` (`pip install matplotlib`).
+  - Salida:
+    - Resumen JSON en `evaluation/results/extraction/llm_comparison_summary.json`
+    - Reporte HTML en `evaluation/results/extraction/llm_comparison_report.html`
+    - Gráficas PNG en `evaluation/results/extraction/images/`
+  - Uso:
+    - `python evaluation/scripts/evaluate_all_llms.py`
 
 - `evaluate_cypher.py`
   - Lee preguntas desde un archivo JSON.

@@ -94,6 +94,7 @@ class EntityExtractor:
                 value_filter={"source": "llm"},
             )
             self.load_subset_from_graph_json(entities_json, label="Topico")
+            self.load_subset_from_graph_json(entities_json, label="Dominio")
 
         self._extract_documents()
         self._build_doc_indexes()
@@ -461,6 +462,11 @@ class EntityExtractor:
                     {"type": "UnknownEntityType", "message": f"Label desconocido: {label}"}
                 )
                 continue
+
+            # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
+            # entidades cuyo schema espera un str (Proyecto, Topico, Dominio).
+            if label in {"Proyecto", "Topico", "Dominio"} and isinstance(value, dict):
+                value = value.get("value", value)
 
             try:
                 entities.append(cls(id=entity_id, value=value))

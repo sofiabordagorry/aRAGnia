@@ -54,32 +54,32 @@
       "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
     },
     {
-      "id": "agricultural_and_biological_sciences",
+      "id": "ciencias_agricolas_y_biologicas",
       "label": "Dominio",
       "value": "ciencias agricolas y biologicas"
     },
     {
-      "id": "artificial_intelligence",
+      "id": "inteligencia_artificial",
       "label": "Topico",
       "value": "inteligencia artificial"
     },
     {
-      "id": "agronomy_and_crop_science",
+      "id": "agronomia_y_ciencias_de_cultivos",
       "label": "Topico",
       "value": "agronomia y ciencias de cultivos"
     },
     {
-      "id": "computer_science",
+      "id": "ciencias_de_la_computacion",
       "label": "Dominio",
       "value": "ciencias de la computacion"
     },
     {
-      "id": "decision_sciences",
+      "id": "ciencias_de_la_decision",
       "label": "Dominio",
       "value": "ciencias de la decision"
     },
     {
-      "id": "engineering",
+      "id": "ingenieria",
       "label": "Dominio",
       "value": "ingenieria"
     },
@@ -89,57 +89,57 @@
       "value": "software"
     },
     {
-      "id": "control_and_systems_engineering",
+      "id": "ingenieria_de_control_y_sistemas",
       "label": "Topico",
       "value": "ingenieria de control y sistemas"
     },
     {
-      "id": "mathematics",
+      "id": "matematicas",
       "label": "Dominio",
       "value": "matematicas"
     },
     {
-      "id": "modeling_and_simulation",
+      "id": "modelado_y_simulacion",
       "label": "Topico",
       "value": "modelado y simulacion"
     },
     {
-      "id": "computational_theory_and_mathematics",
+      "id": "teoria_computacional_y_matematicas",
       "label": "Topico",
       "value": "teoria computacional y matematicas"
     },
     {
-      "id": "computer_science_applications",
+      "id": "aplicaciones_de_ciencias_de_la_computacion",
       "label": "Topico",
       "value": "aplicaciones de ciencias de la computacion"
     },
     {
-      "id": "computer_networks_and_communications",
+      "id": "redes_de_computadoras_y_comunicaciones",
       "label": "Topico",
       "value": "redes de computadoras y comunicaciones"
     },
     {
-      "id": "signal_processing",
+      "id": "procesamiento_de_senales",
       "label": "Topico",
       "value": "procesamiento de senales"
     },
     {
-      "id": "information_systems",
+      "id": "sistemas_de_informacion",
       "label": "Topico",
       "value": "sistemas de informacion"
     },
     {
-      "id": "safety_risk_reliability_and_quality",
+      "id": "seguridad_riesgo_confiabilidad_y_calidad",
       "label": "Topico",
       "value": "seguridad, riesgo, confiabilidad y calidad"
     },
     {
-      "id": "management_science_and_operations_research",
+      "id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "label": "Topico",
       "value": "ciencias de la gestion e investigacion operativa"
     },
     {
-      "id": "general_decision_sciences",
+      "id": "ciencias_de_la_decision_generales",
       "label": "Topico",
       "value": "ciencias de la decision generales"
     },
@@ -552,7 +552,7 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2012_638",
-      "target_id": "information_systems",
+      "target_id": "sistemas_de_informacion",
       "properties": {}
     },
     {
@@ -564,7 +564,7 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2020_513",
-      "target_id": "computer_networks_and_communications",
+      "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {}
     },
     {
@@ -576,145 +576,145 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2020_513",
-      "target_id": "control_and_systems_engineering",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2012_638",
-      "target_id": "safety_risk_reliability_and_quality",
+      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "signal_processing",
+      "target_id": "procesamiento_de_senales",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "computational_theory_and_mathematics",
+      "target_id": "teoria_computacional_y_matematicas",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "computer_science_applications",
+      "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "computational_theory_and_mathematics",
-      "target_id": "computer_science",
+      "source_id": "teoria_computacional_y_matematicas",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "computer_science_applications",
-      "target_id": "computer_science",
+      "source_id": "aplicaciones_de_ciencias_de_la_computacion",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "control_and_systems_engineering",
-      "target_id": "engineering",
+      "source_id": "ingenieria_de_control_y_sistemas",
+      "target_id": "ingenieria",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_260",
-      "target_id": "management_science_and_operations_research",
+      "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_260",
-      "target_id": "general_decision_sciences",
+      "target_id": "ciencias_de_la_decision_generales",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_260",
-      "target_id": "modeling_and_simulation",
+      "target_id": "modelado_y_simulacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "modeling_and_simulation",
-      "target_id": "mathematics",
+      "source_id": "modelado_y_simulacion",
+      "target_id": "matematicas",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_413",
-      "target_id": "artificial_intelligence",
+      "target_id": "inteligencia_artificial",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_413",
-      "target_id": "agronomy_and_crop_science",
+      "target_id": "agronomia_y_ciencias_de_cultivos",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_413",
-      "target_id": "management_science_and_operations_research",
+      "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "management_science_and_operations_research",
-      "target_id": "decision_sciences",
+      "source_id": "ciencias_de_la_gestion_e_investigacion_operativa",
+      "target_id": "ciencias_de_la_decision",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "artificial_intelligence",
-      "target_id": "computer_science",
+      "source_id": "inteligencia_artificial",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "computer_networks_and_communications",
-      "target_id": "computer_science",
+      "source_id": "redes_de_computadoras_y_comunicaciones",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "general_decision_sciences",
-      "target_id": "decision_sciences",
+      "source_id": "ciencias_de_la_decision_generales",
+      "target_id": "ciencias_de_la_decision",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "agronomy_and_crop_science",
-      "target_id": "agricultural_and_biological_sciences",
+      "source_id": "agronomia_y_ciencias_de_cultivos",
+      "target_id": "ciencias_agricolas_y_biologicas",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "safety_risk_reliability_and_quality",
-      "target_id": "engineering",
+      "source_id": "seguridad_riesgo_confiabilidad_y_calidad",
+      "target_id": "ingenieria",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
       "source_id": "software",
-      "target_id": "computer_science",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "signal_processing",
-      "target_id": "computer_science",
+      "source_id": "procesamiento_de_senales",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "information_systems",
-      "target_id": "computer_science",
+      "source_id": "sistemas_de_informacion",
+      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
