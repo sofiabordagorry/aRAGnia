@@ -414,7 +414,7 @@ def create_entities_and_relationships_from_llm_extraction(
         )
         investigador_name = unicodedata.normalize("NFC", investigador_name)
 
-        inv_value: InvestigadorValue = {"name": investigador_name, "source": "llm"}
+        inv_value: InvestigadorValue = {"name": investigador_name, "display_name": mention.name.strip(), "source": "llm"}
         if mention.cedula:
             inv_value["cedula"] = mention.cedula
         if mention.mail:

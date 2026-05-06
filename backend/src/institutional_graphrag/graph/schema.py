@@ -26,6 +26,7 @@ class DocumentoValue(TypedDict):
 
 class InvestigadorValue(TypedDict):
     name: str
+    display_name: NotRequired[str]
     source: Union[Literal["rule_based", "llm"], List[Literal["rule_based", "llm"]]]
     cedula: NotRequired[str]
     mail: NotRequired[str]
