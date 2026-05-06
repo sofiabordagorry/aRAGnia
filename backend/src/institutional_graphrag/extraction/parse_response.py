@@ -1,12 +1,8 @@
 import json
-import logging
 import re
 import unicodedata
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 @dataclass
