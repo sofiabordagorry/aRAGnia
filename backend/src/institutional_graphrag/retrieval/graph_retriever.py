@@ -251,7 +251,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         cypher_query = self._fix_relationship_directions(cypher_query)
 
         # Mostrar display_name si hay investigadores cuyo nombre retornar
-        cypher_query = self._use_display_name_for_investigators(cypher_query)
+        cypher_query = self._use_display_name_for_researchers(cypher_query)
 
         # Detectar caso UNSUPPORTED (pregunta fuera del alcance de una sola query)
         if cypher_query.upper() == "UNSUPPORTED":
