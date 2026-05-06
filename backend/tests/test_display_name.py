@@ -84,6 +84,9 @@ def test_neo4j_database_display_name_populated():
                     assert record["display_name"] is not None, f"Node {record['id']} has a NULL display_name! Migration Cypher query might have failed."
                     assert isinstance(record["display_name"], str), f"display_name for {record['id']} is not a string."
 
+                    expected_format = record["display_name"].title()
+                    assert record["display_name"] == expected_format, f"El display_name '{record['display_name']}' del nodo {record['id']} no respeta el formato .title() (Se esperaba: '{expected_format}')"
+
         driver.close()
 
     except Exception as e:

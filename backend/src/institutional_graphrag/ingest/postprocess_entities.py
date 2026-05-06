@@ -345,7 +345,7 @@ class Postprocessor:
             original = r["value"].get("name", "")
 
             if "display_name" not in r["value"]:
-                r["value"]["display_name"] = original.strip()
+                r["value"]["display_name"] = original.strip().title()
 
             normalized = self.normalize_name(original)
             if original != normalized:
