@@ -460,7 +460,7 @@ CRITICAL SYNTAX:
             logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
 
         return fixed
-    
+
     @staticmethod
     def _use_display_name_for_researchers(cypher_query: str) -> str:
         """
@@ -469,26 +469,28 @@ CRITICAL SYNTAX:
         """
 
         # Buscar dónde empieza el RETURN
-        parts = re.split(r'\b(RETURN)\b', cypher_query, maxsplit=1, flags=re.IGNORECASE)
-        
+        parts = re.split(r"\b(RETURN)\b", cypher_query, maxsplit=1, flags=re.IGNORECASE)
+
         if len(parts) == 3:
             before_return = parts[0]
             return_keyword = parts[1]
             after_return = parts[2]
 
             # Extraer todas las variables asignadas a Investigador (ej: x en (x:Investigador))
-            investigador_vars = set(re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE))
+            investigador_vars = set(
+                re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
+            )
 
             if not investigador_vars:
                 return cypher_query
-            
+
             for var in investigador_vars:
                 # Reemplazar var.name por var.display_name (ej: i.name -> i.display_name)
                 pattern = rf"\b{var}\.name\b"
                 after_return = re.sub(pattern, f"{var}.display_name", after_return)
-                
+
             return before_return + return_keyword + after_return
-            
+
         return cypher_query
 
     def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
@@ -563,7 +565,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             raise ValueError(
                 "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
-        
+
         fixed_query = self._use_display_name_for_researchers(fixed_query)
 
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)

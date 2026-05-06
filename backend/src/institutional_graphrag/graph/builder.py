@@ -478,7 +478,9 @@ class GraphBuilder:
     @staticmethod
     def _display_value(label: str, props: dict[str, Any]) -> str:
         if label == "Investigador":
-            return str(props.get("display_name") or props.get("name") or props.get("id") or "Investigador")
+            return str(
+                props.get("display_name") or props.get("name") or props.get("id") or "Investigador"
+            )
         if label == "Proyecto":
             return str(props.get("value") or props.get("id") or "Proyecto")
         if label == "Topico":
