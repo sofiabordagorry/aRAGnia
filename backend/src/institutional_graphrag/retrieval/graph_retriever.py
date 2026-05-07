@@ -424,9 +424,11 @@ CRITICAL SYNTAX:
             # Patrón para detectar la dirección invertida
             pattern = re.compile(
                 rf"""
-                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s*
+                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
                 \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
-                \s*-\s*\[:{rel_type}\]\s*->\s*
+                \s*-\s*
+                \[(?:(?P<rel_var>\w+)?:){re.escape(rel_type)}\]
+                \s*->\s*
                 \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
                 """,
                 re.IGNORECASE | re.VERBOSE,
@@ -530,6 +532,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             raise ValueError(
                 "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
+
+        fixed_query = self._fix_relationship_directions(fixed_query)
 
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)
         if not is_safe:
@@ -921,7 +925,10 @@ Tu respuesta (frase introductoria + lista completa):"""
                 chunk_to_entities={},
             )
 
-        entity_context = self.build_entity_context(evidence_entities, chunk_to_entities)
+        if evidence_entities:
+            entity_context = self.build_entity_context(evidence_entities, chunk_to_entities)
+        else:
+            entity_context = self._build_aggregation_context(records)
 
         messages = self.build_messages_for_answer(user_query, entity_context)
         answer = self.answer_llm_client.generate(
