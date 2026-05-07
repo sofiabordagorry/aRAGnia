@@ -4,7 +4,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
     "cypher_query": "MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto) WHERE toLower(p.value) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno') RETURN DISTINCT i AS investigador_responsable",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador_responsable (Investigador): adriana marotta",
     "answer": ""
   },
   {
@@ -12,7 +12,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿En qué proyecto participó Guillermo Dufort?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('Guillermo Dufort') RETURN DISTINCT p AS proyecto",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
     "answer": ""
   },
   {
@@ -20,7 +20,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Cuáles son los tópicos principales a los que pertenece el proyecto sobre Co-simulación en Sistemas Ciber Físicos?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(p.value) CONTAINS toLower('Co-simulacion en Sistemas Ciber Fisicos') RETURN DISTINCT t AS topico",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico (Topico): ingenieria de control y sistemas\n2. topico (Topico): software\n3. topico (Topico): redes de computadoras y comunicaciones",
     "answer": ""
   },
   {
@@ -36,7 +36,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Qué investigadores conforman el equipo del proyecto Diseño óptimo de redes de ciclovías?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.value) CONTAINS toLower('Diseño optimo de redes de ciclovias') RETURN DISTINCT i AS investigador",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): antonio mauttone\n2. investigador (Investigador): maria e. urquhart",
     "answer": ""
   },
   {
@@ -44,7 +44,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿En qué año inició oficialmente el proyecto de predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p.value) CONTAINS toLower('prediccion de NDVI dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo') RETURN DISTINCT a AS anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio (Anio): 2018",
     "answer": ""
   },
   {
@@ -60,7 +60,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "Lista todos los proyectos en los que figura la participación de Adriana Marotta.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('Adriana Marotta') RETURN DISTINCT p AS proyecto",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): web warehouse de datos abiertos de gobierno con gestion de calidad",
     "answer": ""
   },
   {
@@ -68,7 +68,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Cuáles son los tópicos específicos vinculados al proyecto liderado por Álvaro Martín?",
     "cypher_query": "MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('alvaro Martin') RETURN DISTINCT t AS topico",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico (Topico): aplicaciones de ciencias de la computacion\n2. topico (Topico): teoria computacional y matematicas\n3. topico (Topico): procesamiento de senales",
     "answer": ""
   },
   {
@@ -76,7 +76,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Quiénes figuran como responsables directos del proyecto de Diseño óptimo de redes de ciclovías?",
     "cypher_query": "MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto) WHERE toLower(p.value) CONTAINS toLower('Diseño optimo de redes de ciclovias') RETURN DISTINCT i AS responsable",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. responsable (Investigador): antonio mauttone",
     "answer": ""
   },
   {
@@ -84,15 +84,15 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo ha evolucionado la cantidad de proyectos en el dominio Ciencias de la Computación a lo largo de los años registrados?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toLower(d.value) CONTAINS toLower('Ciencias de la Computacion') RETURN a AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio (Anio): 2012, cantidad_proyectos: 1\n2. anio (Anio): 2016, cantidad_proyectos: 1\n3. anio (Anio): 2018, cantidad_proyectos: 1\n4. anio (Anio): 2020, cantidad_proyectos: 1",
     "answer": ""
   },
   {
     "id": 12,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2018?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.id) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.id) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_solo_2018",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.id) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.id) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: ['modelado_y_simulacion', 'ciencias_de_la_decision_generales', 'ciencias_de_la_gestion_e_investigacion_operativa', 'agronomia_y_ciencias_de_cultivos', 'inteligencia_artificial', 'ingenieria_de_control_y_sistemas', 'redes_de_computadoras_y_comunicaciones']",
     "answer": ""
   },
   {
@@ -100,7 +100,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuáles fueron los temas de investigación más frecuentes en los proyectos que tuvieron su inicio en 2020?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) = 2020 RETURN t AS topico, count(DISTINCT p) AS frecuencia ORDER BY frecuencia DESC",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico (Topico): ingenieria de control y sistemas, frecuencia: 1\n2. topico (Topico): software, frecuencia: 1\n3. topico (Topico): redes de computadoras y comunicaciones, frecuencia: 1",
     "answer": ""
   },
   {
@@ -108,7 +108,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿En qué años específicos comenzaron a desarrollarse proyectos relacionados con Agronomía y Ciencias de Cultivos?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('Agronomia y Ciencias de Cultivos') RETURN DISTINCT toInteger(a.year) AS anio, collect(DISTINCT p) AS proyectos ORDER BY anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]",
     "answer": ""
   },
   {
@@ -116,7 +116,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se observa un cambio en los dominios de investigación si se comparan los proyectos iniciados antes de 2018 con los de 2020?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) < 2018 WITH collect(DISTINCT d.value) AS dominios_antes_2018 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) = 2020 WITH dominios_antes_2018, collect(DISTINCT d.value) AS dominios_2020 RETURN dominios_antes_2018, dominios_2020, [x IN dominios_antes_2018 WHERE NOT x IN dominios_2020] AS solo_antes_2018, [x IN dominios_2020 WHERE NOT x IN dominios_antes_2018] AS nuevos_en_2020, [x IN dominios_antes_2018 WHERE x IN dominios_2020] AS compartidos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. dominios_antes_2018: ['ingenieria', 'ciencias de la computacion'], dominios_2020: ['ingenieria', 'ciencias de la computacion'], solo_antes_2018: [], nuevos_en_2020: [], compartidos: ['ingenieria', 'ciencias de la computacion']",
     "answer": ""
   },
   {
@@ -124,7 +124,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
     "cypher_query": "MATCH (p0:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p0.value) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno con gestion de calidad') WITH DISTINCT a MATCH (p:Proyecto)-[:INICIO_EN]->(a), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE NOT toLower(p.value) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad') RETURN t AS topico",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico (Topico): seguridad, riesgo, confiabilidad y calidad\n2. topico (Topico): software\n3. topico (Topico): sistemas de informacion",
     "answer": ""
   },
   {
@@ -132,7 +132,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuántos proyectos sobre Sistemas de Información se iniciaron cada año según los datos disponibles?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('Sistemas de Informacion') RETURN toInteger(a.year) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1",
     "answer": ""
   },
   {
@@ -140,23 +140,23 @@
     "categoria": "Análisis Temporal",
     "pregunta": "Muestra la progresión cronológica de los proyectos en los que ha participado Antonio Mauttone.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(i.name) CONTAINS toLower('Antonio Mauttone') RETURN toInteger(a.year) AS anio, collect(DISTINCT p) AS proyectos ORDER BY anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:2' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_260', 'value': 'diseño optimo de redes de ciclovias'}>]\n2. anio: 2020, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]",
     "answer": ""
   },
   {
     "id": 19,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué dominio de investigación experimentó un mayor ingreso de proyectos nuevos en el año 2020?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) = 2020 RETURN d AS dominio, count(DISTINCT p) AS nuevos_proyectos ORDER BY nuevos_proyectos DESC LIMIT 1",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) = 2020 WITH d, count(DISTINCT p) AS nuevos_proyectos WITH nuevos_proyectos, collect(d) AS dominios ORDER BY nuevos_proyectos DESC LIMIT 1 UNWIND dominios AS dominio RETURN dominio, nuevos_proyectos",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. dominio (Dominio): ingenieria, nuevos_proyectos: 1\n2. dominio (Dominio): ciencias de la computacion, nuevos_proyectos: 1",
     "answer": ""
   },
   {
     "id": 20,
     "categoria": "Análisis Temporal",
     "pregunta": "Compara los tópicos de los proyectos de 2016 con los de 2020. ¿Qué diferencias principales o nuevos enfoques se notan?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) = 2016 WITH COLLECT(DISTINCT t) AS topicos_2016 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) = 2020  WITH topicos_2016, COLLECT(DISTINCT t) AS topicos_2020 RETURN topicos_2016, topicos_2020, [x IN topicos_2016 WHERE NOT x IN topicos_2020] AS solo_topicos_2016, [x IN topicos_2020 WHERE NOT x IN topicos_2016] AS solo_topicos_2020, [x IN topicos_2020 WHERE x IN topicos_2016] AS compartidos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) = 2016 WITH COLLECT(DISTINCT t) AS topicos_2016 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) = 2020  WITH topicos_2016, COLLECT(DISTINCT t) AS topicos_2020 RETURN topicos_2016, topicos_2020",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_2016: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:20' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'aplicaciones_de_ciencias_de_la_computacion', 'value': 'aplicaciones de ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:19' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'teoria_computacional_y_matematicas', 'value': 'teoria computacional y matematicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:22' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'procesamiento_de_senales', 'value': 'procesamiento de senales'}>], topicos_2020: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:17' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ingenieria_de_control_y_sistemas', 'value': 'ingenieria de control y sistemas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:16' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'software', 'value': 'software'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:21' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'redes_de_computadoras_y_comunicaciones', 'value': 'redes de computadoras y comunicaciones'}>]",
     "answer": ""
   },
   {
@@ -171,15 +171,15 @@
     "id": 22,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuál es el año que presenta la mayor diversidad de tópicos investigados simultáneamente?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH toInteger(a.year) AS anio, count(DISTINCT t) AS diversidad_topicos, collect(DISTINCT t) AS topicos RETURN anio, diversidad_topicos, topicos ORDER BY diversidad_topicos DESC, anio LIMIT 1",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH toInteger(a.year) AS anio, count(DISTINCT t) AS diversidad_topicos, collect(DISTINCT t) AS topicos WITH diversidad_topicos, collect({anio: anio, topicos: topicos}) AS resultados ORDER BY diversidad_topicos DESC LIMIT 1 UNWIND resultados AS r RETURN r.anio AS anio, diversidad_topicos, r.topicos AS topicos ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, diversidad_topicos: 5, topicos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:18' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'modelado_y_simulacion', 'value': 'modelado y simulacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:26' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision_generales', 'value': 'ciencias de la decision generales'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:25' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ciencias_de_la_gestion_e_investigacion_operativa', 'value': 'ciencias de la gestion e investigacion operativa'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:15' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'agronomia_y_ciencias_de_cultivos', 'value': 'agronomia y ciencias de cultivos'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:14' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'inteligencia_artificial', 'value': 'inteligencia artificial'}>]",
     "answer": ""
   },
   {
     "id": 23,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
-    "cypher_query": "MATCH (a:Anio) WITH collect(DISTINCT toInteger(a.year)) AS todos_los_anios MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH t, collect(DISTINCT toInteger(a.year)) AS anios_topico, todos_los_anios WHERE size(anios_topico) = size(todos_los_anios) RETURN t AS topico, anios_topico AS anios",
+    "cypher_query": "MATCH (a:Anio) WITH collect(DISTINCT toInteger(a.year)) AS todos_los_anios MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH t, count(DISTINCT a.year) AS cantidad_anios_topico, todos_los_anios WHERE cantidad_anios_topico = size(todos_los_anios) RETURN todos_los_anios, collect(DISTINCT t) AS topicos",
     "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
     "answer": ""
   },
@@ -187,8 +187,8 @@
     "id": 24,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo ha cambiado el enfoque de investigación o los tópicos asociados a Gonzalo Tejera a lo largo del tiempo?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('Gonzalo Tejera') RETURN toInteger(a.year) AS anio, collect(DISTINCT p) AS proyectos, collect(DISTINCT t) AS topicos ORDER BY anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('Gonzalo Tejera') RETURN toInteger(a.year) AS anio, collect(DISTINCT t) AS topicos ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2020, topicos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:17' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ingenieria_de_control_y_sistemas', 'value': 'ingenieria de control y sistemas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:16' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'software', 'value': 'software'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:21' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'redes_de_computadoras_y_comunicaciones', 'value': 'redes de computadoras y comunicaciones'}>]",
     "answer": ""
   },
   {
@@ -196,7 +196,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el dominio Ciencias Agrícolas y Biológicas?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toLower(d.value) CONTAINS toLower('Ciencias Agricolas y Biologicas') RETURN DISTINCT i AS investigador, collect(DISTINCT p) AS proyectos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): guillermo ettlin, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n2. investigador (Investigador): rehaan ahmad, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n3. investigador (Investigador): martin beyer, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n4. investigador (Investigador): andres berger, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n5. investigador (Investigador): gerardo rubino, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n6. investigador (Investigador): brian yang, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n7. investigador (Investigador): pablo rodriguez bocca, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]",
     "answer": ""
   },
   {
@@ -204,7 +204,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Lista únicamente a los responsables de proyectos que abarquen el tópico Software.",
     "cypher_query": "MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('Software') RETURN DISTINCT i AS responsable, collect(DISTINCT p) AS proyectos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. responsable (Investigador): adriana marotta, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n2. responsable (Investigador): matias richart, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n3. responsable (Investigador): javier baliosian, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]",
     "answer": ""
   },
   {
@@ -212,15 +212,15 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Existen investigadores que participen en proyectos de dominios completamente distintos entre sí? ¿Quiénes son?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WITH i, collect(DISTINCT d) AS dominios, collect(DISTINCT p) AS proyectos WHERE size(dominios) > 1 RETURN i AS investigador, dominios, proyectos ORDER BY size(dominios) DESC",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): antonio mauttone, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:13' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'matematicas', 'value': 'matematicas'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:2' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_260', 'value': 'diseño optimo de redes de ciclovias'}>]\n2. investigador (Investigador): guillermo ettlin, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n3. investigador (Investigador): rehaan ahmad, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n4. investigador (Investigador): martin beyer, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n5. investigador (Investigador): andres berger, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n6. investigador (Investigador): gerardo rubino, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n7. investigador (Investigador): brian yang, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n8. investigador (Investigador): pablo rodriguez bocca, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:4' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_413', 'value': 'prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo'}>]\n9. investigador (Investigador): lorena etcheverry, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n10. investigador (Investigador): raul ruggia, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n11. investigador (Investigador): daniel callejas, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n12. investigador (Investigador): adriana marotta, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n13. investigador (Investigador): fernando carpani, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n14. investigador (Investigador): laura gonzalez, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n15. investigador (Investigador): flavia serra, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:0' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2012_638', 'value': 'web warehouse de datos abiertos de gobierno con gestion de calidad'}>]\n16. investigador (Investigador): alberto castro, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n17. investigador (Investigador): ewelina bakala, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n18. investigador (Investigador): facundo benavides, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n19. investigador (Investigador): mercedes marzoa, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n20. investigador (Investigador): guillermo amorin, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n21. investigador (Investigador): gonzalo tejera, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n22. investigador (Investigador): jorge visca, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n23. investigador (Investigador): federico andrade, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n24. investigador (Investigador): guillermo trinidad, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n25. investigador (Investigador): martin llofriu, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n26. investigador (Investigador): eduardo grampin, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:3' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2020_513', 'value': 'co-simulacion en sistemas ciber fisicos'}>]\n27. investigador (Investigador): maria e. urquhart, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:13' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'matematicas', 'value': 'matematicas'}>], proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:2' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_260', 'value': 'diseño optimo de redes de ciclovias'}>]",
     "answer": ""
   },
   {
     "id": 28,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Ciencias de la Computación y de ciencias agricolas y biologicas?",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d1:Dominio) WHERE toLower(D1.value) CONTAINS toLower('Ciencias de la Computacion') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d2:Dominio) WHERE toLower(d2.value) CONTAINS toLower('ciencias agricolas y biologicas') RETURN DISTINCT p",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d1:Dominio) WHERE toLower(d1.value) CONTAINS toLower('Ciencias de la Computacion') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d2:Dominio) WHERE toLower(d2.value) CONTAINS toLower('ciencias agricolas y biologicas') RETURN DISTINCT p",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. p (Proyecto): prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
     "answer": ""
   },
   {
@@ -228,7 +228,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Identifica a todos los investigadores asociados directa o indirectamente al tópico Modelado y Simulación.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('Modelado y Simulacion') RETURN DISTINCT i AS investigador, collect(DISTINCT p) AS proyectos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): antonio mauttone, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:2' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_260', 'value': 'diseño optimo de redes de ciclovias'}>]\n2. investigador (Investigador): maria e. urquhart, proyectos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:2' labels=frozenset({'Proyecto'}) properties={'__created__': True, 'id': 'proy_2018_260', 'value': 'diseño optimo de redes de ciclovias'}>]",
     "answer": ""
   },
   {
@@ -236,7 +236,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué áreas o tópicos investigan en conjunto Pablo Rodríguez Bocca y Andrés Berger?",
     "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i1.name) CONTAINS toLower('Pablo Rodriguez Bocca') AND toLower(i2.name) CONTAINS toLower('Andres Berger') RETURN DISTINCT p AS proyecto_compartido, collect(DISTINCT t) AS topicos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto_compartido (Proyecto): prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo, topicos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:25' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ciencias_de_la_gestion_e_investigacion_operativa', 'value': 'ciencias de la gestion e investigacion operativa'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:15' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'agronomia_y_ciencias_de_cultivos', 'value': 'agronomia y ciencias de cultivos'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:14' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'inteligencia_artificial', 'value': 'inteligencia artificial'}>]",
     "answer": ""
   },
   {
@@ -244,15 +244,15 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos dominios diferentes a la vez?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WITH p, collect(DISTINCT d) AS dominios WHERE size(dominios) > 2 RETURN p AS proyecto, dominios, size(dominios) AS cantidad_dominios ORDER BY cantidad_dominios DESC",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>], cantidad_dominios: 3",
     "answer": ""
   },
   {
     "id": 32,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué otros investigadores comparten los mismos dominios de investigación que Gadiel Seroussi?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toLower(i.name) CONTAINS toLower('Gadiel Seroussi') WITH collect(DISTINCT d) AS dominios_gadiel MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE d IN dominios_gadiel AND NOT toLower(i.name) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT i AS investigador, collect(DISTINCT d) AS dominios_compartidos, collect(DISTINCT p) AS proyectos",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toLower(i.name) CONTAINS toLower('Gadiel Seroussi') WITH collect(DISTINCT d) AS dominios_gadiel MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE d IN dominios_gadiel AND NOT toLower(i.name) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT i AS investigador, collect(DISTINCT d) AS dominios_compartidos",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): alvaro martin, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n2. investigador (Investigador): flavia serra, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n3. investigador (Investigador): lorena etcheverry, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n4. investigador (Investigador): raul ruggia, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n5. investigador (Investigador): adriana marotta, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n6. investigador (Investigador): laura gonzalez, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n7. investigador (Investigador): fernando carpani, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n8. investigador (Investigador): daniel callejas, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n9. investigador (Investigador): jose sotelo silveira, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n10. investigador (Investigador): guillermo dufort, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n11. investigador (Investigador): antonio mauttone, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n12. investigador (Investigador): guillermo ettlin, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n13. investigador (Investigador): pablo rodriguez bocca, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n14. investigador (Investigador): andres berger, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n15. investigador (Investigador): gerardo rubino, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n16. investigador (Investigador): martin beyer, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n17. investigador (Investigador): brian yang, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n18. investigador (Investigador): rehaan ahmad, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n19. investigador (Investigador): gonzalo tejera, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n20. investigador (Investigador): facundo benavides, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n21. investigador (Investigador): guillermo amorin, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n22. investigador (Investigador): federico andrade, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n23. investigador (Investigador): eduardo grampin, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n24. investigador (Investigador): jorge visca, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n25. investigador (Investigador): mercedes marzoa, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n26. investigador (Investigador): ewelina bakala, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n27. investigador (Investigador): martin llofriu, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n28. investigador (Investigador): guillermo trinidad, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n29. investigador (Investigador): alberto castro, dominios_compartidos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]",
     "answer": ""
   },
   {
@@ -267,8 +267,8 @@
     "id": 34,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Cuál es el dominio transversal más común entre todos los proyectos integrados en el sistema?",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) RETURN d AS dominio, count(DISTINCT p) AS cantidad_proyectos ORDER BY cantidad_proyectos DESC LIMIT 1",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WITH d, count(DISTINCT p) AS cantidad_proyectos WITH cantidad_proyectos, collect(DISTINCT d) AS dominios ORDER BY cantidad_proyectos DESC LIMIT 1 UNWIND dominios AS dominio RETURN dominio, cantidad_proyectos",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. dominio (Dominio): ciencias de la computacion, cantidad_proyectos: 4",
     "answer": ""
   },
   {
@@ -371,8 +371,8 @@
     "id": 47,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos año 2020",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toInteger(a.year) = 2020 RETURN DISTINCT p AS proyecto, a AS anio",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toInteger(a.year) = 2020 RETURN DISTINCT p AS proyecto",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): co-simulacion en sistemas ciber fisicos",
     "answer": ""
   },
   {
@@ -380,7 +380,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "adriana marotta temas",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('Adriana Marotta') RETURN p AS proyecto, t AS topico",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): web warehouse de datos abiertos de gobierno con gestion de calidad, topico (Topico): seguridad, riesgo, confiabilidad y calidad\n2. proyecto (Proyecto): web warehouse de datos abiertos de gobierno con gestion de calidad, topico (Topico): software\n3. proyecto (Proyecto): web warehouse de datos abiertos de gobierno con gestion de calidad, topico (Topico): sistemas de informacion",
     "answer": ""
   },
   {
@@ -388,7 +388,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "investigadores agronomía",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('agronomia') RETURN DISTINCT i AS investigador",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): guillermo ettlin\n2. investigador (Investigador): rehaan ahmad\n3. investigador (Investigador): martin beyer\n4. investigador (Investigador): andres berger\n5. investigador (Investigador): gerardo rubino\n6. investigador (Investigador): brian yang\n7. investigador (Investigador): pablo rodriguez bocca",
     "answer": ""
   },
   {
@@ -396,15 +396,15 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos inteligencia artificial y agronomia",
     "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.value) CONTAINS toLower('agronomia') AND toLower(t1.value) CONTAINS toLower('inteligencia artificial') RETURN DISTINCT p AS proyecto",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
     "answer": ""
   },
   {
     "id": 51,
     "categoria": "Lenguaje Natural Informal",
-    "pregunta": "quien investiga ciclovias",
+    "pregunta": "quien investiga el proyecto de ciclovias",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.value) CONTAINS toLower('ciclovias') RETURN DISTINCT i AS investigador, p AS proyecto ORDER BY p.value",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador (Investigador): antonio mauttone, proyecto (Proyecto): diseño optimo de redes de ciclovias\n2. investigador (Investigador): maria e. urquhart, proyecto (Proyecto): diseño optimo de redes de ciclovias",
     "answer": ""
   },
   {
@@ -412,23 +412,23 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos compartidos alvaro martin y gadiel seroussi",
     "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE toLower(i1.name) CONTAINS toLower('alvaro Martin') AND toLower(i2.name) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT p AS proyecto_compartido",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto_compartido (Proyecto): aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
     "answer": ""
   },
   {
     "id": 53,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "dominios de investigacion 2018 vs 2020",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) IN [2018,2020] RETURN toInteger(a.year) AS anio, d AS dominio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio, cantidad_proyectos DESC",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toInteger(a.year) IN [2018, 2020] RETURN toInteger(a.year) AS anio, collect(DISTINCT d) AS dominios ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:13' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'matematicas', 'value': 'matematicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:11' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_decision', 'value': 'ciencias de la decision'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:9' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas', 'value': 'ciencias agricolas y biologicas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]\n2. anio: 2020, dominios: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:12' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ingenieria', 'value': 'ingenieria'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:10' labels=frozenset({'Dominio'}) properties={'__created__': True, 'id': 'ciencias_de_la_computacion', 'value': 'ciencias de la computacion'}>]",
     "answer": ""
   },
   {
     "id": 54,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de co simulacion",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_DOMINIO]->(d:Dominio) WHERE toLower(p.value) CONTAINS toLower('simulacion') RETURN p AS proyecto, collect(DISTINCT t) AS topicos, collect(DISTINCT d) AS dominios",
-    "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_DOMINIO]->(:Dominio) WHERE toLower(p.value) CONTAINS toLower('simulacion') RETURN p AS proyecto, collect(DISTINCT t) AS topicos",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto (Proyecto): co-simulacion en sistemas ciber fisicos, topicos: [<Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:17' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ingenieria_de_control_y_sistemas', 'value': 'ingenieria de control y sistemas'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:16' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'software', 'value': 'software'}>, <Node element_id='4:71e95e7b-a619-4d8e-8643-8cb64e82ceb6:21' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'redes_de_computadoras_y_comunicaciones', 'value': 'redes de computadoras y comunicaciones'}>]",
     "answer": ""
   }
 ]

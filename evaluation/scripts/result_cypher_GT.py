@@ -74,13 +74,13 @@ def main() -> None:
         question_id = item.get("id")
         query = item.get("cypher_query")
 
+        print(f"Ejecutando pregunta {question_id}...")
         if not query:
+            print(f"No hay query")
             item["retrieved_subgraph"] = "No se encontró información relevante en el grafo para responder esta pregunta."
             continue
 
         try:
-            print(f"Ejecutando pregunta {question_id}...")
-
             records = retriever.execute_cypher_query(query)
             if records:
                 context = retriever._build_aggregation_context(records)
