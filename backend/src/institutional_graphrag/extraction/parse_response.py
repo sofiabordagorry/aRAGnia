@@ -410,7 +410,9 @@ def _match_name(
     return None
 
 
-def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
+def _name_in_chunk_validation(name: str, chunk: str) -> str:
+    if not name:
+        return ""
     # Cantidad de errores permitidos totales
     allowed_errors = max(1, len(name) // 3)
 
@@ -429,7 +431,7 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     if name_true:
         return _clean_name_edges(" ".join(name_true))
 
-    return None
+    return ""
 
 
 _NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "not mentioned"}
@@ -528,6 +530,13 @@ def parse_researcher_response(
                 errors.extend(errors_aux)
                 continue
 
+            # 2. Verificar que el nombre esté en el chunk
+            real_name = _name_in_chunk_validation(name, chunk_text)
+            if real_name:
+                name = real_name
+
+            name = normalize_researcher_name(name)
+
             if not name:
                 errors.append(
                     {
@@ -537,13 +546,6 @@ def parse_researcher_response(
                     }
                 )
                 continue
-
-            # 2. Verificar que el nombre esté en el chunk
-            real_name = _name_in_chunk_validation(name, chunk_text)
-            if real_name:
-                name = real_name
-
-            name = normalize_researcher_name(name)
 
             errors_aux = _validate_name(name, chunk_id)
             if errors_aux:
