@@ -10,6 +10,7 @@ class ResearcherMention:
     """Mención de investigador en un chunk."""
 
     name: str
+    display_name: str
     evidence: str
     chunk_id: str
     cedula: Optional[str] = None
@@ -546,10 +547,13 @@ def parse_researcher_response(
 
             afiliacion = _clean_optional_field(item.get("afiliacion"))
 
+            formatted_display_name = name.strip().title()
+
             # Si llegamos hasta acá, pasó todas las validaciones
             researchers.append(
                 ResearcherMention(
                     name=name,
+                    display_name=formatted_display_name,
                     evidence=evidence,
                     chunk_id=chunk_id,
                     cedula=cedula,
