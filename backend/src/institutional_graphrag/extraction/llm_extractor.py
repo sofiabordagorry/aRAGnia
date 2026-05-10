@@ -407,7 +407,11 @@ def create_entities_and_relationships_from_llm_extraction(
             )
             continue
 
-        inv_value: InvestigadorValue = {"name": mention.name, "display_name": mention.display_name, "source": "llm"}
+        inv_value: InvestigadorValue = {
+            "name": mention.name,
+            "display_name": mention.display_name,
+            "source": "llm",
+        }
         if mention.cedula:
             inv_value["cedula"] = mention.cedula
         if mention.mail:
