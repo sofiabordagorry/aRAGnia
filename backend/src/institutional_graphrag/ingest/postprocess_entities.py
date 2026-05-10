@@ -343,6 +343,10 @@ class Postprocessor:
         normalization_changes = []
         for r in researchers:
             original = r["value"].get("name", "")
+
+            if "display_name" not in r["value"]:
+                r["value"]["display_name"] = original.strip().title()
+
             normalized = self.normalize_name(original)
             if original != normalized:
                 normalization_changes.append(
@@ -409,7 +413,7 @@ class Postprocessor:
                 ):
                     canonical_r["value"]["source"] = ["rule_based", "llm"]
 
-                for prop in ("cedula", "mail", "afiliacion"):
+                for prop in ("display_name", "cedula", "mail", "afiliacion"):
                     if not canonical_r["value"].get(prop) and dup_r["value"].get(prop):
                         canonical_r["value"][prop] = dup_r["value"][prop]
 
