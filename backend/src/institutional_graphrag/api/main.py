@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from institutional_graphrag.services.startup_check_service import ensure_backends_ready
+from institutional_graphrag.retrieval.fewshot_store import FewShotStore
 
 from .router_graphrag import router as graphrag_router
 from .router_rag import router as rag_router
@@ -17,7 +18,13 @@ CORPUS_PATH = Path(__file__).parents[4] / "data" / "corpus"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ensure_backends_ready()
+
+    # Inicializar el embedder y store solo una vez por sesión
+    app.state.fewshot_store = FewShotStore()
     yield
+
+    # Borrar de la memoria el embedder + store
+    app.state.fewshot_store.close()
 
 
 app = FastAPI(title="Institutional GraphRAG API", lifespan=lifespan)
