@@ -100,7 +100,9 @@ class GraphRAGRetriever:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self._schema_cache: Optional[str] = None
-        self._fewshot: Optional[Any] = fewshot_store if fewshot_store is not None else self._init_fewshot()
+        self._fewshot: Optional[Any] = (
+            fewshot_store if fewshot_store is not None else self._init_fewshot()
+        )
 
     def _init_fewshot(self) -> Optional[Any]:
         try:

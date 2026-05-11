@@ -44,7 +44,7 @@ def graphrag_query(payload: QueryRequest, request: Request):
             neo4j_password=os.getenv("NEO4J_PASSWORD", "password"),
             temperature=0.3,
             max_tokens=1024,
-            fewshot_store=request.app.state.fewshot_store
+            fewshot_store=request.app.state.fewshot_store,
         )
 
         result = retriever.query(payload.query)
