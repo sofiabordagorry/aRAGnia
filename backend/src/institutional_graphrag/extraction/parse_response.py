@@ -10,6 +10,7 @@ class ResearcherMention:
     """Mención de investigador en un chunk."""
 
     name: str
+    display_name: str
     evidence: str
     chunk_id: str
     cedula: Optional[str] = None
@@ -298,6 +299,10 @@ def _validate_name(name: str, chunk_id: str) -> List[dict]:
             "Nombre inválido: todas sus partes tienen 2 letras o menos",
         ),
         _numbers_in_name_validation: ("NumbersInNameError", "Nombre inválido: contiene números"),
+        _normalized_name_has_valid_chars: (
+            "InvalidNormalizedNameCharacters",
+            "Nombre con caracteres invalidos: ",
+        ),
     }
 
     for validate, (error_type, message) in validation_rules.items():
@@ -406,7 +411,9 @@ def _match_name(
     return None
 
 
-def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
+def _name_in_chunk_validation(name: str, chunk: str) -> str:
+    if not name:
+        return ""
     # Cantidad de errores permitidos totales
     allowed_errors = max(1, len(name) // 3)
 
@@ -425,7 +432,7 @@ def _name_in_chunk_validation(name: str, chunk: str) -> Optional[str]:
     if name_true:
         return _clean_name_edges(" ".join(name_true))
 
-    return None
+    return ""
 
 
 _NULL_STRINGS = {"null", "none", "n/a", "na", "s/d", "no", "no tiene", "", "not mentioned"}
@@ -483,6 +490,27 @@ def _validate_mail(value: str) -> Optional[str]:
     return value
 
 
+def normalize_researcher_name(name: str) -> str:
+    if not name:
+        return ""
+
+    name = unicodedata.normalize("NFC", name)
+    name = name.replace("-", " ")
+    name = re.sub(r"\s+", " ", name).strip()
+
+    name = "".join(
+        c
+        for c in unicodedata.normalize("NFD", name.lower())
+        if unicodedata.category(c) != "Mn" or c == "\u0303"
+    )
+    name = unicodedata.normalize("NFC", name)
+    return _clean_name_edges(name)
+
+
+def _normalized_name_has_valid_chars(name: str) -> bool:
+    return not bool(re.fullmatch(r"[A-Za-zÑñ. ]+", name))
+
+
 def parse_researcher_response(
     response: str, chunk_id: str, chunk_text: str = ""
 ) -> LLMExtractionResult:
@@ -503,6 +531,13 @@ def parse_researcher_response(
                 errors.extend(errors_aux)
                 continue
 
+            # 2. Verificar que el nombre esté en el chunk
+            real_name = _name_in_chunk_validation(name, chunk_text)
+            if real_name:
+                name = real_name
+
+            name = normalize_researcher_name(name)
+
             if not name:
                 errors.append(
                     {
@@ -512,11 +547,6 @@ def parse_researcher_response(
                     }
                 )
                 continue
-
-            # 2. Verificar que el nombre esté en el chunk
-            real_name = _name_in_chunk_validation(name, chunk_text)
-            if real_name:
-                name = real_name
 
             errors_aux = _validate_name(name, chunk_id)
             if errors_aux:
@@ -546,10 +576,13 @@ def parse_researcher_response(
 
             afiliacion = _clean_optional_field(item.get("afiliacion"))
 
+            formatted_display_name = real_name.strip().title()
+
             # Si llegamos hasta acá, pasó todas las validaciones
             researchers.append(
                 ResearcherMention(
                     name=name,
+                    display_name=formatted_display_name,
                     evidence=evidence,
                     chunk_id=chunk_id,
                     cedula=cedula,

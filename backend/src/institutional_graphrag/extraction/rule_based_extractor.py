@@ -837,6 +837,7 @@ class RuleBasedExtractor:
                         id=candidate_id,
                         value={
                             "name": investigador_name,
+                            "display_name": candidate_in_text.strip().title(),
                             "source": "rule_based",
                         },
                     )

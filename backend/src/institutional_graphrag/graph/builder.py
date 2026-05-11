@@ -373,7 +373,7 @@ class GraphBuilder:
                 f"""
                 MATCH (a:{label} {{id: $old_id}})
                 MATCH (b:{label} {{id: $new_id}})
-                SET b += a{{.*, id: b.id, name: coalesce(b.name, a.name)}}
+                SET b += a{{.*, id: b.id, name: coalesce(b.name, a.name), display_name: coalesce(b._display_name, a.display_name)}}
                 """,
                 old_id=old_id,
                 new_id=new_id,
@@ -478,7 +478,9 @@ class GraphBuilder:
     @staticmethod
     def _display_value(label: str, props: dict[str, Any]) -> str:
         if label == "Investigador":
-            return str(props.get("name") or props.get("id") or "Investigador")
+            return str(
+                props.get("display_name") or props.get("name") or props.get("id") or "Investigador"
+            )
         if label == "Proyecto":
             return str(props.get("value") or props.get("id") or "Proyecto")
         if label == "Topico":
@@ -902,9 +904,9 @@ class GraphBuilder:
            OR toLower(coalesce(target.name, '')) CONTAINS $search
         RETURN DISTINCT
             source.id AS source_id,
-            coalesce(source.name, source.id) AS source_name,
+            coalesce(source.display_name, source.name, source.id) AS source_name,
             target.id AS target_id,
-            coalesce(target.name, target.id) AS target_name,
+            coalesce(target.display_name, target.name, target.id) AS target_name,
             properties(r) AS relationship_properties
         ORDER BY source_name, target_name
         """
