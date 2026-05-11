@@ -7,7 +7,10 @@ from .ingest.chunker import (
     chunk_document,
     get_native_chunker,
 )
-from .ingest.docling_parser import parse_corpus, parse_single_document
+try:
+    from .ingest.docling_parser import parse_corpus, parse_single_document
+except Exception:
+    pass
 from .storage.database import create_tables, get_connection
 from .storage.queries import (
     delete_all_queries,
