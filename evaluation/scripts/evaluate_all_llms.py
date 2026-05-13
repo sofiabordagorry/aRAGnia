@@ -38,6 +38,12 @@ LLM_DISPLAY_NAMES = {
     "Qwen_Qwen2.5-Coder-14B-Instruct": "Qwen2.5-Coder 14B",
     "meta-llama_Llama-3.1-8B-Instruct": "Llama 3.1 8B",
     "deepseek-ai_deepseek-coder-6.7b-instruct": "DeepSeek-Coder 6.7B",
+    "kosbu_Llama-3.3-70B-Instruct-AWQ": "Llama-3.3 70B AWQ",
+    "Qwen_Qwen2.5-32B-Instruct-AWQ": "Qwen2.5 32B AWQ",
+    "Qwen_Qwen2.5-72B-Instruct-AWQ": "Qwen2.5 72B AWQ",
+    "Qwen_Qwen2.5-72B-Instruct-AWQ2": "Qwen2.5 72B AWQ2",
+    "Qwen_Qwen2.5-Coder-32B-Instruct-AWQ": "Qwen2.5-Coder 32B AWQ",
+    "stelterlab_Mistral-Small-24B-Instruct-2501-AWQ": "Mistral 24B AWQ",
 }
 
 
