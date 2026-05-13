@@ -59,7 +59,6 @@ class HuggingFaceClient:
         if "mistral" in model_id.lower():
             tokenizer_kwargs["fix_mistral_regex"] = True
 
-
         model_kwargs = {
             "device_map": "auto" if torch.cuda.is_available() else "cpu",
             "cache_dir": cache_dir,
@@ -71,13 +70,14 @@ class HuggingFaceClient:
 
         if self.quantization == "bnb4":
             from transformers import BitsAndBytesConfig
+
             model_kwargs["quantization_config"] = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_quant_type="nf4",
                 bnb_4bit_compute_dtype=torch.bfloat16,
                 bnb_4bit_use_double_quant=True,
             )
-        
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
