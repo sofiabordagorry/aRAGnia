@@ -66,7 +66,6 @@ class HuggingFaceClient:
             "trust_remote_code": True,
         }
 
-        # En transformers nuevos se usa dtype, no torch_dtype.
         if torch.cuda.is_available():
             model_kwargs["torch_dtype"] = torch.bfloat16
 
@@ -79,14 +78,6 @@ class HuggingFaceClient:
                 bnb_4bit_use_double_quant=True,
             )
         
-        elif self.quantization == "gptq":
-            from transformers.models.qwen2.tokenization_qwen2 import Qwen2Tokenizer
-            
-            tokenizer_kwargs["use_fast"] = False
-            model_kwargs["torch_dtype"] = torch.float16
-            model_kwargs["device_map"] = {"": 0}
-        
-        print("TOKENIZER KWARGS:", tokenizer_kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -141,7 +132,6 @@ def get_llm_client(*, model: Optional[str] = None) -> OllamaClient | HuggingFace
     if backend == "huggingface":
         model_id = model or os.getenv("HF_MODEL") or "Qwen/Qwen2.5-3B-Instruct"
         if model_id not in HuggingFaceClient._instances:
-            print("Modelo utilizado:", model_id)
             HuggingFaceClient._instances[model_id] = HuggingFaceClient(model_id)
         return HuggingFaceClient._instances[model_id]
 
