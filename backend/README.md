@@ -16,10 +16,10 @@ python -m pip install transformers==4.51.3
 mistralai/Mistral-Small-24B-Instruct-2501
 ```
 
-## Variables
+## .env
 
 ```bash
-export HF_QUANTIZATION="bf16"
+HF_QUANTIZATION="None"
 ```
 
 ---
@@ -42,10 +42,10 @@ python -m pip install "bitsandbytes>=0.43.2"
 mistralai/Mistral-Small-24B-Instruct-2501
 ```
 
-## Variables
+## .env
 
 ```bash
-export HF_QUANTIZATION="bnb4"
+HF_QUANTIZATION="bnb4"
 ```
 
 ---
@@ -68,8 +68,8 @@ pip install numpy==1.26.4
 stelterlab/Mistral-Small-24B-Instruct-2501-AWQ
 ```
 
-## Variables
+## .env
 
 ```bash
-export HF_QUANTIZATION="awq"
+HF_QUANTIZATION="None"
 ```
