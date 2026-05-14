@@ -128,15 +128,15 @@ def run_batch(questions: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
 
             result["cypher_query"] = cypher_query or getattr(invalid_result, "cypher_query", "") or ""
-            result["answer"] = getattr(invalid_result, "answer", "") if invalid_result else ""
 
             chunks, _, _ = retriever.extract_chunks_and_entities_from_results(records)
             result["chunks"] = chunks
 
-            if not chunks and records:
+            if records:
                 result["cypher_result"] = retriever._build_aggregation_context(records)
 
-            if not records and not result["cypher_query"]:
+            if not records:
+                result["answer"] = getattr(invalid_result, "answer", "") if invalid_result else ""
                 result["ok"] = False
                 result["status_code"] = 204
                 result["error"] = "No se generó Cypher ni se recuperaron records"
@@ -155,7 +155,7 @@ def run_batch(questions: list[dict[str, Any]]) -> list[dict[str, Any]]:
             log(f"Error: {result['error']}")
 
         results.append(result)
-
+    retriever.close()
     return results
 
 

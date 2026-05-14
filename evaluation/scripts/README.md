@@ -25,7 +25,7 @@ Guía rápida de los scripts en esta carpeta.
     - `Reporte de validación estructural en evaluation/ground_truth/results_knowledge_graph/report_structure_graph.json`
     - `Reporte HTML de validación estructural en evaluation/ground_truth/results_knowledge_graph/report_structure_graph.html`
   - Uso:
-    - `python evaluation/scripts/evaluate_kg.py evaluation/llm_extraction/Qwen_Qwen2.5-coder-14B-Instruct/entity_documents.json`
+    - `python evaluation/scripts/evaluate_kg.py evaluation/llm_extraction/Qwen_Qwen2.5-Coder-14B-Instruct/entity_documents.json`
 
 - `evaluate_all_llms.py`
   - Evalúa todos los modelos en `evaluation/llm_extraction/` contra el ground truth de extracción.
@@ -64,4 +64,4 @@ Guía rápida de los scripts en esta carpeta.
     - Actualiza el mismo archivo JSON agregando datos en el campo `retrieved_subgraph`.
 
   - Uso:
-    - `python evaluation/scripts/result_cypher_GT.py evaluation/ground_truth/datasetQA_GT.json`
+    - `python evaluation/scripts/result_cypher_GT.py`

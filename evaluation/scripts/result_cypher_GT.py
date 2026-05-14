@@ -15,38 +15,6 @@ GT_PATH = (
     / "datasetQA_GT.json"
 )
 
-def make_json_serializable(obj: Any) -> Any:
-    """
-    Convierte resultados de Neo4j u objetos raros a algo guardable en JSON.
-    """
-    if obj is None:
-        return None
-
-    if isinstance(obj, (str, int, float, bool)):
-        return obj
-
-    if isinstance(obj, list):
-        return [make_json_serializable(x) for x in obj]
-
-    if isinstance(obj, tuple):
-        return [make_json_serializable(x) for x in obj]
-
-    if isinstance(obj, dict):
-        return {
-            str(k): make_json_serializable(v)
-            for k, v in obj.items()
-        }
-
-    # Neo4j Node / Relationship suelen tener properties/items
-    if hasattr(obj, "items"):
-        return {
-            str(k): make_json_serializable(v)
-            for k, v in dict(obj).items()
-        }
-
-    # fallback
-    return str(obj)
-
 
 def main() -> None:
     if not GT_PATH.exists():
@@ -77,7 +45,7 @@ def main() -> None:
         print(f"Ejecutando pregunta {question_id}...")
         if not query:
             print(f"No hay query")
-            item["retrieved_subgraph"] = "No se encontró información relevante en el grafo para responder esta pregunta."
+            item["retrieved_subgraph"] = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
             continue
 
         try:
@@ -94,6 +62,7 @@ def main() -> None:
             print(f"Error en pregunta {question_id}: {e}")
             item["retrieved_subgraph"] = "No se encontró información relevante en el grafo para responder esta pregunta."
 
+    retriever.close()
     with GT_PATH.open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
