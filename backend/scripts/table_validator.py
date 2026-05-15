@@ -29,6 +29,24 @@ def validate_csv(csv_path: str | Path) -> bool:
         print("\nPandas successfully loaded the CSV")
         print(f"Rows: {len(df)}")
         print(f"Columns: {len(df.columns)}")
+        print("\nRandom sample rows:")
+
+        sample_size = min(5, len(df))
+
+        sample_df = df.sample(sample_size)
+
+        columns_to_show = []
+
+        if "nombres" in df.columns:
+            columns_to_show.append("nombres")
+
+        if "titulo" in df.columns:
+            columns_to_show.append("titulo")
+
+        if columns_to_show:
+            print(sample_df[columns_to_show])
+        else:
+            print("Columns 'nombres' or 'titulo' not found")
 
     except Exception as e:
 
