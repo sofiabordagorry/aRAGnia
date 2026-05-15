@@ -456,8 +456,8 @@ class EntityExtractor:
                 continue
 
             # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
-            # entidades cuyo schema espera un str (Proyecto, Topico, Dominio).
-            if label in {"Proyecto", "Topico", "Dominio"} and isinstance(value, dict):
+            # entidades cuyo schema espera un str (Proyecto, Grupo, Topico, Dominio).
+            if label in {"Proyecto", "Grupo", "Topico", "Dominio"} and isinstance(value, dict):
                 value = value.get("value", value)
 
             try:
@@ -588,8 +588,8 @@ class EntityExtractor:
         self.reg = self.load_registry(registry_path)
         self._registry_dirty = False
 
-        # Procesar cada proyecto
-        projects = [e for e in self.res.entities if e.label == "Proyecto"]
+        # Procesar cada proyecto y grupo
+        projects = [e for e in self.res.entities if e.label in ("Proyecto", "Grupo")]
 
         docs_processed = 0
         self.docs_by_project: dict[str, list[str]] = defaultdict(list)
