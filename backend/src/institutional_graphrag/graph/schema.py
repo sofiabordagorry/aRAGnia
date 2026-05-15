@@ -374,7 +374,15 @@ def validate_relationship_endpoints(
 
     expected_source, expected_target = expected
 
-    source_ok = source_label in expected_source if isinstance(expected_source, tuple) else source_label == expected_source
-    target_ok = target_label in expected_target if isinstance(expected_target, tuple) else target_label == expected_target
+    source_ok = (
+        source_label in expected_source
+        if isinstance(expected_source, tuple)
+        else source_label == expected_source
+    )
+    target_ok = (
+        target_label in expected_target
+        if isinstance(expected_target, tuple)
+        else target_label == expected_target
+    )
 
     return source_ok and target_ok

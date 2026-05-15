@@ -669,7 +669,14 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                         chunks_in_record.append(value)
                     elif any(
                         label in labels
-                        for label in ["Investigador", "Topico", "Proyecto", "Grupo", "Documento", "Anio"]
+                        for label in [
+                            "Investigador",
+                            "Topico",
+                            "Proyecto",
+                            "Grupo",
+                            "Documento",
+                            "Anio",
+                        ]
                     ):
                         entities_direct.append(value)
 
@@ -700,7 +707,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     (
                         lbl
                         for lbl in entity_labels
-                        if lbl in ["Investigador", "Topico", "Proyecto", "Grupo", "Documento", "Anio"]
+                        if lbl
+                        in ["Investigador", "Topico", "Proyecto", "Grupo", "Documento", "Anio"]
                     ),
                     "",
                 )
