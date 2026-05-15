@@ -86,6 +86,7 @@ class GraphRAGRetriever:
         neo4j_password: str,
         temperature: float = 0.3,
         max_tokens: int = 1024,
+        fewshot_store: Optional[Any] = None,
     ):
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
@@ -99,7 +100,9 @@ class GraphRAGRetriever:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self._schema_cache: Optional[str] = None
-        self._fewshot: Optional[Any] = self._init_fewshot()
+        self._fewshot: Optional[Any] = (
+            fewshot_store if fewshot_store is not None else self._init_fewshot()
+        )
 
     def _init_fewshot(self) -> Optional[Any]:
         try:
@@ -117,8 +120,6 @@ class GraphRAGRetriever:
     def close(self):
         """Cerrar conexión a Neo4j."""
         self.driver.close()
-        if self._fewshot:
-            self._fewshot.close()
 
     def _classify_query_intent(self, user_query: str) -> str:
         """
