@@ -344,3 +344,63 @@ def _row_to_chunk(row: pd.Series) -> tuple[str, dict[str, str]]:
 
 def _parent_doc_from_filename(stem: str) -> str:
     return parent_doc_from_stem(stem)
+
+
+############################################################################
+#                   FUNCIONES DE NUEVA TABLAS POS CSIC                     #
+#                                                                          #
+############################################################################
+
+import csv
+from pathlib import Path
+
+
+def starts_new_row(line: str) -> bool:
+    first_column = line.split(",", 1)[0].strip()
+    return first_column.isdigit()
+
+
+def clean_table(input_file: str | Path, output_file: str | Path | None) -> None:
+    if not output_file:
+        output_file = input_file
+    input_file = Path(input_file)
+    output_file = Path(output_file)
+
+    with (
+        open(input_file, "r", encoding="utf-8", newline="") as infile,
+        open(output_file, "w", encoding="utf-8", newline="") as outfile,
+    ):
+
+        writer = csv.writer(outfile)
+
+        header = next(csv.reader([infile.readline()]))
+        expected_columns = len(header)
+
+        writer.writerow(header)
+
+        current_line = ""
+
+        for raw_line in infile:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if starts_new_row(line):
+
+                if current_line:
+                    row = next(csv.reader([current_line]))
+
+                    if len(row) == expected_columns:
+                        writer.writerow(row)
+
+                current_line = line
+
+            else:
+                current_line += " " + line
+
+        if current_line:
+            row = next(csv.reader([current_line]))
+
+            if len(row) == expected_columns:
+                writer.writerow(row)
