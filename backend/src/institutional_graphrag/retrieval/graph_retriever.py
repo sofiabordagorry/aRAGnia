@@ -249,6 +249,11 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         # Corregir dirección incorrecta de PARTICIPO_EN si el LLM la invirtió
         cypher_query = self._fix_relationship_directions(cypher_query)
 
+        # Detectar caso NOT_IN_SCHEMA
+        if cypher_query.upper() == "NOT_IN_SCHEMA":
+            raise ValueError(
+                "NOT_IN_SCHEMA: La información solicitada no existe en el esquema del grafo."
+            )
         # Detectar caso UNSUPPORTED (pregunta fuera del alcance de una sola query)
         if cypher_query.upper() == "UNSUPPORTED":
             raise ValueError(
@@ -346,7 +351,8 @@ RULES:
 8. Node variables must be unique and never reused for a different type
 9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
 10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
-11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
+11. If the information requested does NOT exist in the schema, respond with: <QUERY>NOT_IN_SCHEMA</QUERY>
+12. If the question cannot be answered with a single query but IS related to the schema, respond with: <QUERY>UNSUPPORTED</QUERY>
 12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
 13. ALWAYS filter values using WHERE.
 14. ALWAYS normalize text values: lowercase, no accents, never translate.
@@ -381,7 +387,9 @@ CRITICAL SYNTAX:
 - NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
 - ALWAYS use WHERE for filtering
 - ALWAYS use toLower(p.value) CONTAINS 'normalized project text' for project titles/names
-
+- If the user asks for information not represented in the schema
+  (for example salaries, emails if not stored, countries, universities, budgets, etc.),
+  respond with <QUERY>NOT_IN_SCHEMA</QUERY>
 <QUERY>
 """
 
@@ -823,6 +831,19 @@ Tu respuesta (frase introductoria + lista completa):"""
         try:
             cypher_query = self.generate_cypher_query(user_query)
         except ValueError as e:
+            if str(e).startswith("NOT_IN_SCHEMA"):
+                return (
+                    GraphRAGResult(
+                        answer=(
+                            "La consulta solicitada está fuera del alcance del esquema actual del grafo."
+                        ),
+                        chunks=[],
+                        cypher_query="",
+                        chunk_to_entities={},
+                    ),
+                    [],
+                    "",
+                )
             if str(e).startswith("UNSUPPORTED"):
                 return (
                     GraphRAGResult(
@@ -855,6 +876,8 @@ Tu respuesta (frase introductoria + lista completa):"""
         for attempt in range(MAX_SYNTAX_RETRIES):
             try:
                 records = self.execute_cypher_query(cypher_query)
+                if not records:
+                    _too_complex_result.answer = ("La consulta no puede responderse con la información del grafo.")
                 break
             except CypherSyntaxError as exc:
                 logger.warning(
