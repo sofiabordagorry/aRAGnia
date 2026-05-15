@@ -47,18 +47,9 @@
       "label": "Investigador",
       "value": {
         "name": "adriana marotta",
-        "source": "llm"
+        "source": "llm",
+        "display_name": ""
       }
-    },
-    {
-      "id": "ingenieria_aeroespacial",
-      "label": "Topico",
-      "value": "ingenieria aeroespacial"
-    },
-    {
-      "id": "ciencias_agricolas_y_biologicas",
-      "label": "Dominio",
-      "value": "ciencias agricolas y biologicas"
     },
     {
       "id": "agronomia_y_ciencias_de_cultivos",
@@ -71,14 +62,31 @@
       "value": {
         "afiliacion": "Universidad Libre de Bruselas",
         "name": "alejandro vaisman",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Dr. Alejandro Vaisman"
+      }
+    },
+    {
+      "id": "alvaro_martin",
+      "label": "Investigador",
+      "value": {
+        "name": "alvaro martin",
+        "source": "llm",
+        "display_name": "Álvaro Martín"
       }
     },
     {
       "id": "analisis_numerico",
       "label": "Topico",
+      "value": "analisis numerico"
+    },
+    {
+      "id": "andres_berger",
+      "label": "Investigador",
       "value": {
-        "value": "analisis numerico"
+        "name": "andres berger",
+        "source": "llm",
+        "display_name": "Andrés Berger"
       }
     },
     {
@@ -86,15 +94,8 @@
       "label": "Investigador",
       "value": {
         "name": "andres berger ricca",
-        "source": "rule_based"
-      }
-    },
-    {
-      "id": "andrés_berger",
-      "label": "Investigador",
-      "value": {
-        "name": "andres berger",
-        "source": "llm"
+        "source": "rule_based",
+        "display_name": "Andrés Berger Ricca"
       }
     },
     {
@@ -102,7 +103,8 @@
       "label": "Investigador",
       "value": {
         "name": "antonio daniel mauttone vidales",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Antonio Daniel Mauttone Vidales"
       }
     },
     {
@@ -111,23 +113,14 @@
       "value": {
         "afiliacion": "DT",
         "name": "antonio mauttone",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Antonio Mauttone"
       }
     },
     {
       "id": "aplicaciones_de_ciencias_de_la_computacion",
       "label": "Topico",
-      "value": "matematicas aplicadas"
-    },
-    {
-      "id": "arquitectura",
-      "label": "Topico",
-      "value": "microbiologia aplicada y biotecnologia"
-    },
-    {
-      "id": "psicologia_aplicada",
-      "label": "Topico",
-      "value": "psicologia aplicada"
+      "value": "aplicaciones de ciencias de la computacion"
     },
     {
       "id": "arquitectura",
@@ -135,16 +128,32 @@
       "value": "arquitectura"
     },
     {
+      "id": "baliosian",
+      "label": "Investigador",
+      "value": {
+        "name": "baliosian",
+        "source": "rule_based",
+        "display_name": "Baliosian"
+      }
+    },
+    {
+      "id": "bernadette_farias_loscio",
+      "label": "Investigador",
+      "value": {
+        "name": "bernadette farias loscio",
+        "source": "llm",
+        "display_name": ""
+      }
+    },
+    {
       "id": "bibliotecologia_y_ciencias_de_la_informacion",
       "label": "Topico",
-      "value": "inteligencia artificial"
+      "value": "bibliotecologia y ciencias de la informacion"
     },
     {
       "id": "bioingenieria",
       "label": "Topico",
-      "value": {
-        "value": "bioingenieria"
-      }
+      "value": "bioingenieria"
     },
     {
       "id": "bioquimica_genetica_y_biologia_molecular",
@@ -152,101 +161,52 @@
       "value": "bioquimica, genetica y biologia molecular"
     },
     {
-      "id": "ingenieria_biomedica",
-      "label": "Topico",
-      "value": "ingenieria biomedica"
+      "id": "brian_yang",
+      "label": "Investigador",
+      "value": {
+        "name": "brian yang",
+        "source": "llm",
+        "display_name": "Brian Yang"
+      }
     },
     {
       "id": "christopher_quincke",
       "label": "Investigador",
       "value": {
         "name": "christopher quincke",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Christopher Quincke"
       }
     },
     {
       "id": "ciencias_agricolas_y_biologicas",
       "label": "Dominio",
-      "value": "negocios, gestion y contabilidad"
+      "value": "ciencias agricolas y biologicas"
     },
     {
       "id": "ciencias_agricolas_y_biologicas_generales",
       "label": "Topico",
-      "value": {
-        "value": "ciencias agricolas y biologicas generales"
-      }
+      "value": "ciencias agricolas y biologicas generales"
     },
     {
-      "id": "ingenieria_civil_y_estructural",
-      "label": "Topico",
-      "value": "ingenieria civil y estructural"
+      "id": "ciencias_ambientales",
+      "label": "Dominio",
+      "value": "ciencias ambientales"
     },
     {
       "id": "ciencias_atmosfericas",
       "label": "Topico",
-      "value": "comunicacion"
+      "value": "ciencias atmosfericas"
     },
     {
-      "id": "matematicas_computacionales",
-      "label": "Topico",
-      "value": "matematicas computacionales"
-    },
-    {
-      "id": "ciencias_de_la_computacion_teoricas",
-      "label": "Topico",
-      "value": "mecanica computacional"
-    },
-    {
-      "id": "ciencias_de_la_decision",
-      "label": "Dominio",
-      "value": {
-        "value": "ciencias de la decision"
-      }
-    },
-    {
-      "id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "label": "Topico",
-      "value": "teoria computacional y matematicas"
-    },
-    {
-      "id": "ciencias_de_los_materiales",
-      "label": "Dominio",
-      "value": {
-        "value": "ciencias de los materiales"
-      }
-    },
-    {
-      "id": "ciencias_de_los_materiales_generales",
-      "label": "Topico",
-      "value": "redes de computadoras y comunicaciones"
-    },
-    {
-      "id": "ciencias_sociales",
+      "id": "ciencias_de_la_computacion",
       "label": "Dominio",
       "value": "ciencias de la computacion"
     },
     {
-      "id": "ciencias_sociales_generales",
+      "id": "ciencias_de_la_computacion_teoricas",
       "label": "Topico",
-      "value": "aplicaciones de ciencias de la computacion"
-    },
-    {
-      "id": "comportamiento_organizacional_y_gestion_de_recursos_humanos",
-      "label": "Topico",
-      "value": "vision por computadora y reconocimiento de patrones"
-    },
-    {
-      "id": "comunicacion",
-      "label": "Topico",
-      "value": "ingenieria de control y sistemas"
-    },
-    {
-      "id": "daniel_callejas",
-      "label": "Investigador",
-      "value": {
-        "name": "daniel callejas",
-        "source": "llm"
-      }
+      "value": "ciencias de la computacion teoricas"
     },
     {
       "id": "ciencias_de_la_decision",
@@ -254,11 +214,57 @@
       "value": "ciencias de la decision"
     },
     {
+      "id": "ciencias_de_la_gestion_e_investigacion_operativa",
+      "label": "Topico",
+      "value": "ciencias de la gestion e investigacion operativa"
+    },
+    {
+      "id": "ciencias_de_la_tierra_y_planetarias",
+      "label": "Dominio",
+      "value": "ciencias de la tierra y planetarias"
+    },
+    {
+      "id": "ciencias_de_los_materiales",
+      "label": "Dominio",
+      "value": "ciencias de los materiales"
+    },
+    {
+      "id": "ciencias_de_los_materiales_generales",
+      "label": "Topico",
+      "value": "ciencias de los materiales generales"
+    },
+    {
+      "id": "ciencias_sociales",
+      "label": "Dominio",
+      "value": "ciencias sociales"
+    },
+    {
+      "id": "ciencias_sociales_generales",
+      "label": "Topico",
+      "value": "ciencias sociales generales"
+    },
+    {
+      "id": "comportamiento_organizacional_y_gestion_de_recursos_humanos",
+      "label": "Topico",
+      "value": "comportamiento organizacional y gestion de recursos humanos"
+    },
+    {
+      "id": "comunicacion",
+      "label": "Topico",
+      "value": "comunicacion"
+    },
+    {
+      "id": "construccion_y_edificacion",
+      "label": "Topico",
+      "value": "construccion y edificacion"
+    },
+    {
       "id": "dr_seroussi",
       "label": "Investigador",
       "value": {
         "name": "seroussi",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Dr. Seroussi"
       }
     },
     {
@@ -267,7 +273,8 @@
       "value": {
         "afiliacion": "Universidad de Stanford",
         "name": "tsachy weissman",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Dr. Tsachy Weissman"
       }
     },
     {
@@ -275,18 +282,14 @@
       "label": "Investigador",
       "value": {
         "name": "ochoa",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Dra. Ochoa"
       }
     },
     {
       "id": "ecologia_evolucion_comportamiento_y_sistematica",
       "label": "Topico",
-      "value": "modelado ecologico"
-    },
-    {
-      "id": "economia_y_econometria",
-      "label": "Topico",
-      "value": "economia y econometria"
+      "value": "ecologia, evolucion, comportamiento y sistematica"
     },
     {
       "id": "economia_econometria_y_finanzas",
@@ -294,12 +297,18 @@
       "value": "economia, econometria y finanzas"
     },
     {
+      "id": "economia_y_econometria",
+      "label": "Topico",
+      "value": "economia y econometria"
+    },
+    {
       "id": "eduardo_gramp",
       "label": "Investigador",
       "value": {
         "afiliacion": "DT",
         "name": "eduardo gramp",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Eduardo Gramp"
       }
     },
     {
@@ -308,31 +317,22 @@
       "value": "educacion"
     },
     {
+      "id": "energia",
+      "label": "Dominio",
+      "value": "energia"
+    },
+    {
       "id": "estadistica_y_probabilidad",
       "label": "Topico",
-      "value": "ingenieria electrica y electronica"
-    },
-    {
-      "id": "ingenieria",
-      "label": "Dominio",
-      "value": "ingenieria"
-    },
-    {
-      "id": "estudios_urbanos",
-      "label": "Topico",
-      "value": "ingenieria ambiental"
-    },
-    {
-      "id": "ciencias_ambientales",
-      "label": "Dominio",
-      "value": "ciencias ambientales"
+      "value": "estadistica y probabilidad"
     },
     {
       "id": "ewelina_bakala",
       "label": "Investigador",
       "value": {
         "name": "ewelina bakala",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Ewelina Bakala"
       }
     },
     {
@@ -341,7 +341,8 @@
       "value": {
         "afiliacion": "DT",
         "name": "facundo benavides",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Facundo Benavides"
       }
     },
     {
@@ -349,7 +350,8 @@
       "label": "Investigador",
       "value": {
         "name": "federico andrade",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Federico Andrade"
       }
     },
     {
@@ -357,31 +359,26 @@
       "label": "Investigador",
       "value": {
         "name": "federico ciuffardi",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Federico Ciuffardi"
       }
     },
     {
-      "id": "federico_gómez_romero",
+      "id": "federico_gomez_romero",
       "label": "Investigador",
       "value": {
         "name": "federico gomez romero",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Federico Gómez Romero"
       }
     },
     {
-      "id": "felipe_velázquez",
+      "id": "felipe_velazquez",
       "label": "Investigador",
       "value": {
         "name": "felipe velazquez",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "fernando_carpani",
-      "label": "Investigador",
-      "value": {
-        "name": "fernando carpani",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Felipe Velázquez"
       }
     },
     {
@@ -389,7 +386,8 @@
       "label": "Investigador",
       "value": {
         "name": "flavia serra",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Flavia Serra"
       }
     },
     {
@@ -397,33 +395,9 @@
       "label": "Investigador",
       "value": {
         "name": "franco robledo",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Franco Robledo"
       }
-    },
-    {
-      "id": "genetica",
-      "label": "Topico",
-      "value": "ciencias agricolas y biologicas generales"
-    },
-    {
-      "id": "geografia_planificacion_y_desarrollo",
-      "label": "Topico",
-      "value": "economia, econometria y finanzas generales"
-    },
-    {
-      "id": "ingenieria_general",
-      "label": "Topico",
-      "value": "ingenieria general"
-    },
-    {
-      "id": "gestion_de_informacion_en_salud",
-      "label": "Topico",
-      "value": "ciencias de los materiales generales"
-    },
-    {
-      "id": "gestion_de_tecnologia_e_innovacion",
-      "label": "Topico",
-      "value": "ciencias sociales generales"
     },
     {
       "id": "genetica",
@@ -441,8 +415,19 @@
       "value": {
         "afiliacion": "INRIA, Rennes, Francia",
         "name": "gerardo rubino",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Gerardo Rubino"
       }
+    },
+    {
+      "id": "gestion_de_informacion_en_salud",
+      "label": "Topico",
+      "value": "gestion de informacion en salud"
+    },
+    {
+      "id": "gestion_de_tecnologia_e_innovacion",
+      "label": "Topico",
+      "value": "gestion de tecnologia e innovacion"
     },
     {
       "id": "gi_2010_table",
@@ -4848,22 +4833,22 @@
       "value": {
         "afiliacion": "DT",
         "name": "gonzalo tejera",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Gonzalo Tejera"
       }
     },
     {
       "id": "graficos_por_computadora_y_diseno_asistido_por_computadora",
       "label": "Topico",
-      "value": {
-        "value": "graficos por computadora y diseno asistido por computadora"
-      }
+      "value": "graficos por computadora y diseno asistido por computadora"
     },
     {
       "id": "guillermo_amor",
       "label": "Investigador",
       "value": {
         "name": "guillermo amor",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Guillermo Amor"
       }
     },
     {
@@ -4872,15 +4857,17 @@
       "value": {
         "afiliacion": "PEDECIBA",
         "name": "guillermo dufort",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Guillermo Dufort"
       }
     },
     {
-      "id": "guillermo_dufort_y_álvarez",
+      "id": "guillermo_dufort_y_alvarez",
       "label": "Investigador",
       "value": {
         "name": "guillermo dufort y alvarez",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Guillermo Dufort Y Álvarez"
       }
     },
     {
@@ -4888,7 +4875,8 @@
       "label": "Investigador",
       "value": {
         "name": "guillermo ettlin",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Guillermo Ettlin"
       }
     },
     {
@@ -4896,7 +4884,8 @@
       "label": "Investigador",
       "value": {
         "name": "guillermo trinidad",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Guillermo Trinidad"
       }
     },
     {
@@ -4905,44 +4894,88 @@
       "value": "hardware y arquitectura"
     },
     {
-      "id": "human-computer_interaction",
-      "label": "Topico",
-      "value": "interaccion humano-computadora"
-    },
-    {
       "id": "idoia_ochoa",
       "label": "Investigador",
       "value": {
         "name": "idoia ochoa",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Idoia Ochoa"
       }
+    },
+    {
+      "id": "informatica_en_salud",
+      "label": "Topico",
+      "value": "informatica en salud"
     },
     {
       "id": "ingenieria",
       "label": "Dominio",
-      "value": "inmunologia y microbiologia"
+      "value": "ingenieria"
+    },
+    {
+      "id": "ingenieria_aeroespacial",
+      "label": "Topico",
+      "value": "ingenieria aeroespacial"
+    },
+    {
+      "id": "ingenieria_ambiental",
+      "label": "Topico",
+      "value": "ingenieria ambiental"
+    },
+    {
+      "id": "ingenieria_automotriz",
+      "label": "Topico",
+      "value": "ingenieria automotriz"
+    },
+    {
+      "id": "ingenieria_biomedica",
+      "label": "Topico",
+      "value": "ingenieria biomedica"
+    },
+    {
+      "id": "ingenieria_civil_y_estructural",
+      "label": "Topico",
+      "value": "ingenieria civil y estructural"
+    },
+    {
+      "id": "ingenieria_de_control_y_sistemas",
+      "label": "Topico",
+      "value": "ingenieria de control y sistemas"
+    },
+    {
+      "id": "ingenieria_de_energia_y_tecnologia_de_potencia",
+      "label": "Topico",
+      "value": "ingenieria de energia y tecnologia de potencia"
+    },
+    {
+      "id": "ingenieria_general",
+      "label": "Topico",
+      "value": "ingenieria general"
     },
     {
       "id": "ingenieria_industrial_y_de_manufactura",
       "label": "Topico",
-      "value": {
-        "value": "ingenieria industrial y de manufactura"
-      }
+      "value": "ingenieria industrial y de manufactura"
     },
     {
-      "id": "sistemas_de_informacion",
-      "label": "Topico",
-      "value": "sistemas de informacion"
+      "id": "ingenieria_quimica",
+      "label": "Dominio",
+      "value": "ingenieria quimica"
     },
     {
       "id": "inteligencia_artificial",
       "label": "Topico",
-      "value": "sistemas de informacion y gestion"
+      "value": "inteligencia artificial"
     },
     {
       "id": "interaccion_humano-computadora",
       "label": "Topico",
-      "value": "instrumentacion"
+      "value": "interaccion humano-computadora"
+    },
+    {
+      "id": "investigacion_en_seguridad",
+      "label": "Topico",
+      "value": "investigacion en seguridad"
     },
     {
       "id": "ismael_caballero",
@@ -4950,7 +4983,8 @@
       "value": {
         "afiliacion": "Universidad de Castilla-La Mancha",
         "name": "ismael caballero",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Ismael Caballero"
       }
     },
     {
@@ -4958,15 +4992,17 @@
       "label": "Investigador",
       "value": {
         "name": "javier baliosian",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Javier Baliosian"
       }
     },
     {
-      "id": "joaquín_correa",
+      "id": "joaquin_correa",
       "label": "Investigador",
       "value": {
         "name": "joaquin correa",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Joaquín Correa"
       }
     },
     {
@@ -4974,59 +5010,62 @@
       "label": "Investigador",
       "value": {
         "name": "jorge visca",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Jorge Visca"
       }
     },
     {
-      "id": "josé_sotelo",
+      "id": "jose_sotelo",
       "label": "Investigador",
       "value": {
         "name": "jose sotelo",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "José Sotelo"
       }
-    },
-    {
-      "id": "laura_gonzález",
-      "label": "Investigador",
-      "value": {
-        "name": "laura gonzalez",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "bibliotecologia_y_ciencias_de_la_informacion",
-      "label": "Topico",
-      "value": "bibliotecologia y ciencias de la informacion"
     },
     {
       "id": "lorena_etcheverry",
       "label": "Investigador",
       "value": {
         "name": "lorena etcheverry",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Lorena Etcheverry"
       }
     },
     {
-      "id": "sistemas_de_informacion_de_gestion",
-      "label": "Topico",
-      "value": "sistemas de informacion de gestion"
-    },
-    {
-      "id": "gestion_de_tecnologia_e_innovacion",
-      "label": "Topico",
-      "value": "gestion de tecnologia e innovacion"
-    },
-    {
-      "id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "label": "Topico",
-      "value": "ciencias de la gestion e investigacion operativa"
+      "id": "maria_e_urquhart",
+      "label": "Investigador",
+      "value": {
+        "name": "maria e. urquhart",
+        "source": "llm",
+        "display_name": "María E. Urquhart"
+      }
     },
     {
       "id": "marotta_llambi",
       "label": "Investigador",
       "value": {
         "name": "marotta llambi",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Marotta Llambí"
+      }
+    },
+    {
+      "id": "martin_beracochea",
+      "label": "Investigador",
+      "value": {
+        "name": "martin beracochea",
+        "source": "llm",
+        "display_name": "Martín Beracochea"
+      }
+    },
+    {
+      "id": "martin_beyer",
+      "label": "Investigador",
+      "value": {
+        "name": "martin beyer",
+        "source": "llm",
+        "display_name": "Martín Beyer"
       }
     },
     {
@@ -5034,50 +5073,9 @@
       "label": "Investigador",
       "value": {
         "name": "martin menoni alvaro",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Martín Menoni Álvaro"
       }
-    },
-    {
-      "id": "mart´_ın_llofriu",
-      "label": "Investigador",
-      "value": {
-        "name": "mart´ ın llofriu",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "martín_beracochea",
-      "label": "Investigador",
-      "value": {
-        "name": "martin beracochea",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "martín_beyer",
-      "label": "Investigador",
-      "value": {
-        "name": "martin beyer",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "maría_e_urquhart",
-      "label": "Investigador",
-      "value": {
-        "name": "maria e. urquhart",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "matematicas",
-      "label": "Dominio",
-      "value": "ciencias de los materiales"
-    },
-    {
-      "id": "matematicas_aplicadas",
-      "label": "Topico",
-      "value": "fisica matematica"
     },
     {
       "id": "matematicas",
@@ -5085,42 +5083,51 @@
       "value": "matematicas"
     },
     {
-      "id": "matías_richart",
+      "id": "matematicas_aplicadas",
+      "label": "Topico",
+      "value": "matematicas aplicadas"
+    },
+    {
+      "id": "matematicas_computacionales",
+      "label": "Topico",
+      "value": "matematicas computacionales"
+    },
+    {
+      "id": "matias_richart",
       "label": "Investigador",
       "value": {
         "name": "matias richart",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Matías Richart"
       }
     },
     {
-      "id": "matıas_richart",
+      "id": "maurizio_palmieri",
       "label": "Investigador",
       "value": {
-        "name": "matıas richart",
-        "source": "llm"
+        "afiliacion": "Universidad de Pisa, Italia",
+        "name": "maurizio palmieri",
+        "source": "llm",
+        "display_name": "Maurizio Palmieri"
       }
-    },
-    {
-      "id": "ingenieria_mecanica",
-      "label": "Topico",
-      "value": "ingenieria mecanica"
     },
     {
       "id": "mecanica_computacional",
       "label": "Topico",
-      "value": "mecanica de materiales"
+      "value": "mecanica computacional"
     },
     {
-      "id": "tecnologia_de_medios",
-      "label": "Topico",
-      "value": "tecnologia de medios"
+      "id": "medicina",
+      "label": "Dominio",
+      "value": "medicina"
     },
     {
       "id": "mercedes_marzoa",
       "label": "Investigador",
       "value": {
         "name": "mercedes marzoa",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Mercedes Marzoa"
       }
     },
     {
@@ -5131,38 +5138,24 @@
     {
       "id": "negocios_gestion_y_contabilidad",
       "label": "Dominio",
-      "value": "enfermeria"
+      "value": "negocios, gestion y contabilidad"
     },
     {
       "id": "pablo_alejandro_rodriguez_bocca",
       "label": "Investigador",
       "value": {
         "name": "pablo alejandro rodriguez bocca",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Pablo Alejandro Rodríguez Bocca"
       }
     },
     {
-      "id": "pablo_rodríguez-bocca",
-      "label": "Investigador",
-      "value": {
-        "name": "pablo rodriguez-bocca",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "pablo_rodríguez_bocca",
+      "id": "pablo_rodriguez_bocca",
       "label": "Investigador",
       "value": {
         "name": "pablo rodriguez bocca",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "pablo_rodrı́guez-bocca",
-      "label": "Investigador",
-      "value": {
-        "name": "pablo rodrıguez-bocca",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Pablo Rodríguez Bocca"
       }
     },
     {
@@ -5170,20 +5163,24 @@
       "label": "Investigador",
       "value": {
         "name": "pablo smircich",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Pablo Smircich"
       }
     },
     {
       "id": "procesamiento_de_senales",
       "label": "Topico",
-      "value": {
-        "value": "procesamiento de senales"
-      }
+      "value": "procesamiento de senales"
     },
     {
       "id": "profesiones_de_la_salud",
       "label": "Dominio",
-      "value": "fisica y astronomia"
+      "value": "profesiones de la salud"
+    },
+    {
+      "id": "profesiones_de_la_salud_generales",
+      "label": "Topico",
+      "value": "profesiones de la salud generales"
     },
     {
       "id": "proy_2012_638",
@@ -17654,7 +17651,7 @@
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
-      "value": "aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos"
+      "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
     },
     {
       "id": "proy_2016_729_informe",
@@ -22118,7 +22115,7 @@
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
-      "value": "diseño óptimo de redes de ciclovías"
+      "value": "diseño optimo de redes de ciclovias"
     },
     {
       "id": "proy_2018_260_informe",
@@ -23308,7 +23305,7 @@
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
-      "value": "predicción de ndvi dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo"
+      "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
     },
     {
       "id": "proy_2018_413_informe",
@@ -26904,7 +26901,7 @@
     {
       "id": "proy_2020_513",
       "label": "Proyecto",
-      "value": "co-simulación en sistemas ciber-físicos"
+      "value": "co-simulacion en sistemas ciber-fisicos"
     },
     {
       "id": "proy_2020_513_informe",
@@ -37595,49 +37592,31 @@
       }
     },
     {
-      "id": "psicologia",
-      "label": "Dominio",
-      "value": "psicologia"
-    },
-    {
-      "id": "administracion_publica",
+      "id": "quimica_de_procesos_y_tecnologia",
       "label": "Topico",
-      "value": "administracion publica"
-    },
-    {
-      "id": "raúl_ruggia",
-      "label": "Investigador",
-      "value": {
-        "name": "raul ruggia",
-        "source": "llm"
-      }
+      "value": "quimica de procesos y tecnologia"
     },
     {
       "id": "redes_de_computadoras_y_comunicaciones",
       "label": "Topico",
-      "value": {
-        "value": "redes de computadoras y comunicaciones"
-      }
+      "value": "redes de computadoras y comunicaciones"
     },
     {
       "id": "rehaan_ahmad",
       "label": "Investigador",
       "value": {
         "name": "rehaan ahmad",
-        "source": "llm"
+        "source": "llm",
+        "display_name": "Rehaan Ahmad"
       }
-    },
-    {
-      "id": "investigacion_y_teoria",
-      "label": "Topico",
-      "value": "investigacion y teoria"
     },
     {
       "id": "richart",
       "label": "Investigador",
       "value": {
         "name": "richart",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Richart"
       }
     },
     {
@@ -37645,13 +37624,9 @@
       "label": "Investigador",
       "value": {
         "name": "richart gutierrez",
-        "source": "rule_based"
+        "source": "rule_based",
+        "display_name": "Richart Gutiérrez"
       }
-    },
-    {
-      "id": "investigacion_en_seguridad",
-      "label": "Topico",
-      "value": "investigacion en seguridad"
     },
     {
       "id": "seguridad_riesgo_confiabilidad_y_calidad",
@@ -37661,12 +37636,7 @@
     {
       "id": "sistemas_de_informacion",
       "label": "Topico",
-      "value": "procesamiento de senales"
-    },
-    {
-      "id": "ciencias_sociales",
-      "label": "Dominio",
-      "value": "ciencias sociales"
+      "value": "sistemas de informacion"
     },
     {
       "id": "software",
@@ -37676,17 +37646,12 @@
     {
       "id": "tecnologia_de_medios",
       "label": "Topico",
-      "value": "estadistica y probabilidad"
+      "value": "tecnologia de medios"
     },
     {
       "id": "teoria_computacional_y_matematicas",
       "label": "Topico",
-      "value": "estadistica, probabilidad e incertidumbre"
-    },
-    {
-      "id": "ciencias_de_la_computacion_teoricas",
-      "label": "Topico",
-      "value": "ciencias de la computacion teoricas"
+      "value": "teoria computacional y matematicas"
     },
     {
       "id": "transporte",
@@ -37696,24 +37661,7 @@
     {
       "id": "vision_por_computadora_y_reconocimiento_de_patrones",
       "label": "Topico",
-      "value": "estudios urbanos"
-    },
-    {
-      "id": "álvarez",
-      "label": "Investigador",
-      "value": {
-        "afiliacion": "PEDECIBA",
-        "name": "alvarez",
-        "source": "llm"
-      }
-    },
-    {
-      "id": "álvaro_martín",
-      "label": "Investigador",
-      "value": {
-        "name": "alvaro martin",
-        "source": "llm"
-      }
+      "value": "vision por computadora y reconocimiento de patrones"
     }
   ],
   "relationships": [
@@ -50998,25 +50946,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk1",
-      "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Este proyecto busca estudiar y resolver los problemas que sepresentan para desarrollar un Web Warehouse Ww) de datos abiertos de gobierno,donde se conozca,valide y gestione la calidad gestion de calidad de los datos en sus distintos componentes"
+        "evidence_text": "Calidad de datos, focalizando en su gestión en los distintos componentes del sistema"
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk1",
-      "target_id": "interaccion_humano-computadora",
+      "target_id": "tecnologia_de_medios",
       "properties": {
-        "evidence_text": "La meta final del proyecto es dar accesibilidad a los datos abiertos de gobierno, para el analisis orientado a la toma de decisiones y con el valor agregado de informacion sobre la calidad de los datos y mejora de la misma."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_informe#chunk1",
-      "target_id": "sistemas_de_informacion",
-      "properties": {
-        "evidence_text": "En base a esta arquitectura se desarrolla una plataforma de Www que soporta distintos casos particulares dentro del dominio de datos abiertos de gobierno."
+        "evidence_text": "desarrolla una plataforma de WWW que soporta distintos casos particulares dentro del dominio de datos abiertos de gobierno"
       }
     },
     {
@@ -51061,18 +51001,18 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_informe#chunk11",
-      "target_id": "mecanica_computacional",
+      "source_id": "proy_2012_638_informe#chunk12",
+      "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Desarrollo de una herramienta que permite convertir estructuras de datos multidimensionales almacenadas en formatos tradicionales en cubos expresados en 'QB4OLAP'."
+        "evidence_text": "Diseno e implementacion de un caso de estudio de Web Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk12",
-      "target_id": "ciencias_de_la_computacion_teoricas",
+      "target_id": "gestion_de_tecnologia_e_innovacion",
       "properties": {
-        "evidence_text": "Diseno e implementacion de un caso de estudio deWeb Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
+        "evidence_text": "Se realizaron varias presentaciones en el Seminario del grupo Csl del InCo de las distintas tareas realizadas en el proyecto."
       }
     },
     {
@@ -51080,7 +51020,7 @@
       "source_id": "proy_2012_638_informe#chunk12",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Diseno e implementacion de un caso de estudio deWeb Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
+        "evidence_text": "Diseno e implementacion de un caso de estudio de Web Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
       }
     },
     {
@@ -51088,7 +51028,7 @@
       "source_id": "proy_2012_638_informe#chunk12",
       "target_id": "sistemas_de_informacion",
       "properties": {
-        "evidence_text": "Diseno e implementacion de un caso de estudio deWeb Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
+        "evidence_text": "Diseno e implementacion de un caso de estudio de Web Warehouse en el dominio de aplicacion de datos abiertos de establecimientos turisticos del Uruguay y transporte publico, asociando e integrando dicha informacion."
       }
     },
     {
@@ -51111,14 +51051,6 @@
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk13",
       "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {
-        "evidence_text": "Modelado del ww a traves de BPMN2"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_informe#chunk13",
-      "target_id": "ingenieria_industrial_y_de_manufactura",
       "properties": {
         "evidence_text": "Implementacion de distintos componentes de la plataforma dewwy pruebas con casos de estudio particulares"
       }
@@ -51150,17 +51082,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk14",
-      "target_id": "ciencias_de_la_computacion_teoricas",
+      "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
-        "evidence_text": "Adicionalmente, se pondra foco en el problema de los metadatos semanticos en las publicaciones de datos abiertos de gobierno, Si tema en el cual actualmente se esta comenzando una tesis de doctorado."
+        "evidence_text": "El proyecto desarrollado tiene previsto continuar profundizando en los temas de calidad de datos en datos abiertos y en el problema de los metadatos semánticos en las publicaciones de datos abiertos de gobierno."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk14",
-      "target_id": "construccion_y_edificacion",
+      "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "apuntando a la automatizacion total de la construccion de los sistemas deww."
+        "evidence_text": "Se continuara profundizando en los temas de calidad de datos en datos abiertos y en el modelado a través de BPMN apuntando a la automatización total de la construcción de los sistemas de ww."
       }
     },
     {
@@ -51176,15 +51108,7 @@
       "source_id": "proy_2012_638_informe#chunk15",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Fusion Cubes:Towards Self-Service Business Intelligence"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_informe#chunk15",
-      "target_id": "sistemas_de_informacion",
-      "properties": {
-        "evidence_text": "Modeling and Querying Data Warehouses on the Semantic Web using QB4OLAP"
+        "evidence_text": "Automating the process of building flexible Web Warehouseswith BPM Systems"
       }
     },
     {
@@ -51192,7 +51116,7 @@
       "source_id": "proy_2012_638_informe#chunk16",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Herramienta de Gestion de Calidad de Datos para procesos de ETL"
+        "evidence_text": "An Adaptive Enterprise Service Bus Infrastructure for Service Based Systems"
       }
     },
     {
@@ -51230,17 +51154,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk3",
-      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "que incluya como caracteristica fundamental la gestion de la calidad de los datos"
+        "evidence_text": "Desarrollar una plataforma de Ww para datos abiertos de gobierno electronico"
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk3",
-      "target_id": "tecnologia_de_medios",
+      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
       "properties": {
-        "evidence_text": "Desarrollar una plataforma de Ww para datos abiertos de gobierno electronico"
+        "evidence_text": "gestion de la calidad de los datos"
       }
     },
     {
@@ -51264,7 +51188,7 @@
       "source_id": "proy_2012_638_informe#chunk6",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "lenguaje de consultas SPARQL"
+        "evidence_text": "lenguaje y modelo de datos RDF y el lenguaje de consultas SPARQL"
       }
     },
     {
@@ -51286,9 +51210,25 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk7",
-      "target_id": "bernadette_farias-loscio",
+      "target_id": "bernadette_farias_loscio",
       "properties": {
-        "evidence_text": "Visita de la Profesora Dra.Bernadette Farias-Loscio,de la Universidad Federal de Pernambuco"
+        "evidence_text": "Visita de la Profesora Dra.Bernadette Farias-Loscio,de la Universidad Federal de Pernambuco,especializada en Datos Abiertosy Web Semantica,en noviembre de"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_informe#chunk7",
+      "target_id": "ingenieria_de_control_y_sistemas",
+      "properties": {
+        "evidence_text": "Dictado de un seminario para el grupo del programa europeo de Maestria (Erasmus (snpunw IT4BI (Information Technologies for Business Intelligence, http://it4bi.univ-tours.fr/)."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_informe#chunk7",
+      "target_id": "ingenieria_general",
+      "properties": {
+        "evidence_text": "Visita, por parte de la Directora del proyecto, a la Universidad Francois-Rabelais de Tours, Francia."
       }
     },
     {
@@ -51296,7 +51236,15 @@
       "source_id": "proy_2012_638_informe#chunk7",
       "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
       "properties": {
-        "evidence_text": "Se menciona la visita del Profesor Dr. Ismael Caballero, especializado en Calidad de Datos, y su curso intensivo sobre Calidad de Datos en Data Warehouse y Web Warehouse."
+        "evidence_text": "Visita del Profesor Dr. Ismael Caballero, de la Universidad de Castilla-La Mancha, especializado en el area de Calidad de Datos."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_informe#chunk7",
+      "target_id": "tecnologia_de_medios",
+      "properties": {
+        "evidence_text": "Visita de la Profesora Dra.Bernadette Farias-Loscio, de la Universidad Federal de Pernambuco, especializada en Datos Abiertos y Web Semantica."
       }
     },
     {
@@ -51318,9 +51266,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_informe#chunk9",
-      "target_id": "sistemas_de_informacion",
+      "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
-        "evidence_text": "Fusion Cubes: Towards Self-Service Business Intelligence"
+        "evidence_text": "Articulo en revista internacional especializada 'International Journal of Data Warehousing and Mining', titulado 'Fusion Cubes: Towards Self-Service Business Intelligence'[Abell613]."
       }
     },
     {
@@ -51342,14 +51290,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk1",
-      "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {
-        "evidence_text": "El volumen de información disponible en la Web crece día a día, gracias al soporte de nuevas tecnologías y enfoques, como la Web 2.0, Cloud Computing y Web Services."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk1",
       "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
       "properties": {
         "evidence_text": "la calidad de los datos publicados es a menudo inadecuada, existiendo una amplia variedad de problemas como errores de tipeo de datos, valores faltantes, datos obsoletos, datos inconsistentes, etc."
@@ -51358,9 +51298,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk1",
-      "target_id": "tecnologia_de_medios",
+      "target_id": "sistemas_de_informacion",
       "properties": {
         "evidence_text": "los sistemas de WW, Data Warehouses (DW) que consolidan datos provenientes de la Web"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_propuesta#chunk1",
+      "target_id": "tecnologia_de_medios",
+      "properties": {
+        "evidence_text": "El volumen de información disponible en la Web crece día a día, gracias al soporte de nuevas tecnologías y enfoques, como la Web 2.0, Cloud Computing y Web Services."
       }
     },
     {
@@ -51382,17 +51330,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk11",
-      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
+      "target_id": "ingenieria_general",
       "properties": {
-        "evidence_text": "gestión de la calidad de los datos"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk11",
-      "target_id": "tecnologia_de_medios",
-      "properties": {
-        "evidence_text": "Desarrollar una plataforma de WW para datos abiertos de gobierno electrónico"
+        "evidence_text": "Desarrollar una plataforma de WW para datos abiertos de gobierno electrónico, que incluya como característica fundamental la gestión de la calidad de los datos."
       }
     },
     {
@@ -51461,42 +51401,18 @@
     },
     {
       "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_propuesta#chunk15",
+      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
+      "properties": {
+        "evidence_text": "Calidad de Datos"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk16",
       "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
         "evidence_text": "Definición de caso de estudio particular e implementación de WW sobre la plataforma implementada."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk17",
-      "target_id": "daniel_callejas",
-      "properties": {
-        "evidence_text": "Daniel Callejas, Cargo = Grado 1. Daniel Callejas, Tarea a realizar = Actividades específicas: A3, A6, A9, A10."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk17",
-      "target_id": "fernando_carpani",
-      "properties": {
-        "evidence_text": "Fernando Carpani, Cargo = Grado 3. Fernando Carpani, Tarea a realizar = Actividades específicas: A1, A7, A8."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk17",
-      "target_id": "laura_gonzález",
-      "properties": {
-        "evidence_text": "Laura González, Cargo = Grado 3. Laura González, Tarea a realizar = Dirección de proyectos de grado."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk17",
-      "target_id": "raúl_ruggia",
-      "properties": {
-        "evidence_text": "Raúl Ruggia, Cargo = Grado 5. Raúl Ruggia, Tarea a realizar = Supervisión de tesis de doctorado y maestría."
       }
     },
     {
@@ -51517,18 +51433,10 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk18",
-      "target_id": "sistemas_de_informacion",
-      "properties": {
-        "evidence_text": "Además se utilizan los servicios de disco que provee el Instituto de Computación. Este equipamiento es compartido con estudiantes que realizan sus proyectos y tesis asociados al grupo de investigación."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk2",
       "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
-        "evidence_text": "publicación y explotación de DW"
+        "evidence_text": "Publicación y explotación de DW."
       }
     },
     {
@@ -51544,7 +51452,7 @@
       "source_id": "proy_2012_638_propuesta#chunk2",
       "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
       "properties": {
-        "evidence_text": "Gestión de Calidad: Desde hace varios años se está trabajando en la dirección de los WW y su calidad"
+        "evidence_text": "Gestión de Calidad: Desde hace varios años se está trabajando en la dirección de los WW y su calidad."
       }
     },
     {
@@ -51552,7 +51460,7 @@
       "source_id": "proy_2012_638_propuesta#chunk2",
       "target_id": "tecnologia_de_medios",
       "properties": {
-        "evidence_text": "Web Semántica: También desde hace algun tiempo se están estudiando diferentes aspectos de esta propuesta"
+        "evidence_text": "Web Semántica: También desde hace algun tiempo se están estudiando diferentes aspectos de esta propuesta."
       }
     },
     {
@@ -51560,15 +51468,15 @@
       "source_id": "proy_2012_638_propuesta#chunk24",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Reportes técnicos conteniendo el estado del arte de los distintos temas involucrados en el proyecto."
+        "evidence_text": "Reporte técnico conteniendo: (i) análisis de posibles fuentes de datos en formatos de web semántica y (ii) análisis de posibilidades para la publicación de datos multidimensionales (para análisis OLAP) en formatos de web semántica. Generado a partir de tesis de doctorado que se estará realizando.."
       }
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk24",
-      "target_id": "tecnologia_de_medios",
+      "source_id": "proy_2012_638_propuesta#chunk25",
+      "target_id": "educacion",
       "properties": {
-        "evidence_text": "Reporte técnico conteniendo propuesta y especificación de modelo de calidad para datos abiertos de gobierno."
+        "evidence_text": "proyectos de grado, 2 o 3 tesis de maestría terminadas y 1 tesis de doctorado terminada, enmarcadas en el proyecto."
       }
     },
     {
@@ -51576,15 +51484,7 @@
       "source_id": "proy_2012_638_propuesta#chunk25",
       "target_id": "ingenieria_general",
       "properties": {
-        "evidence_text": "Cronograma de ejecución, especificando los resultados que se espera obtener en cada etapa."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk25",
-      "target_id": "investigacion_en_seguridad",
-      "properties": {
-        "evidence_text": "En varias de estas etapas se espera tener como resultado publicaciones en revistas internacionales y conferencias locales e internacionales especializadas en los temas del proyecto."
+        "evidence_text": "Plataforma de WW implementada y caso de estudio particular implementado sobre ésta."
       }
     },
     {
@@ -51592,15 +51492,7 @@
       "source_id": "proy_2012_638_propuesta#chunk25",
       "target_id": "tecnologia_de_medios",
       "properties": {
-        "evidence_text": "Plataforma de WW implementada y caso de estudio particular implementado sobre ésta."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk26",
-      "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
-      "properties": {
-        "evidence_text": "manejo de la calidad en el contexto de datos abiertos"
+        "evidence_text": "publicaciones en revistas internacionales y conferencias locales e internacionales especializadas en los temas del proyecto."
       }
     },
     {
@@ -51608,23 +51500,7 @@
       "source_id": "proy_2012_638_propuesta#chunk26",
       "target_id": "ciencias_sociales_generales",
       "properties": {
-        "evidence_text": "potenciales usuarios de la herramienta generada en este proyecto son: organizaciones públicas uruguayas que tienen que tomar decisiones estratégicas"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk26",
-      "target_id": "estudios_urbanos",
-      "properties": {
-        "evidence_text": "potenciales usuarios de la herramienta generada en este proyecto son: organizaciones públicas uruguayas que tienen que tomar decisiones estratégicas"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk26",
-      "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {
-        "evidence_text": "manejo de la calidad en sistemas de WW"
+        "evidence_text": "potenciales usuarios de la herramienta generada en este proyecto son: organizaciones públicas uruguayas que tienen que tomar decisiones estratégicas, empresas de software que utilicen como entrada datos abiertos y vendan servicios sobre esos datos, sociedad civil (como ONGs, sindicatos, etc.), organismos internacionales, e incluso el ciudadano común"
       }
     },
     {
@@ -51633,6 +51509,14 @@
       "target_id": "ingenieria_general",
       "properties": {
         "evidence_text": "arquitecturas de WW orientadas a servicios"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_propuesta#chunk26",
+      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
+      "properties": {
+        "evidence_text": "manejo de la calidad en el contexto de datos abiertos, manejo de la calidad en sistemas de WW"
       }
     },
     {
@@ -51673,14 +51557,6 @@
       "target_id": "investigacion_en_seguridad",
       "properties": {
         "evidence_text": "Los resultados parciales y finales del proyecto se difundirán a través de publicaciones en revistas especializadas internacionales, publicaciones y presentaciones orales en conferencias locales e internacionales, y presentaciones orales en eventos de difusión de investigación y tecnología de nuestro país."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk29",
-      "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
-      "properties": {
-        "evidence_text": "C. Bizer, T. Heath, and T. Berners-Lee, 'Linked data-the story so far'"
       }
     },
     {
@@ -51741,14 +51617,6 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2012_638_propuesta#chunk32",
-      "target_id": "sistemas_de_informacion",
-      "properties": {
-        "evidence_text": "I. Grupo CSI, 'Análisis de factores de calidad en Sistemas de Información Multifuentes.'"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk4",
       "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
@@ -51790,9 +51658,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2012_638_propuesta#chunk6",
-      "target_id": "ingenieria_de_control_y_sistemas",
+      "target_id": "ingenieria_general",
       "properties": {
         "evidence_text": "La Computación Orientada a Servicios (Service Oriented Computing, SOC) es un paradigma de computación que utiliza servicios como elementos fundamentales para dar soporte al desarrollo rápido, y de bajo costo, de aplicaciones distribuidas en ambientes heterogéneos."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2012_638_propuesta#chunk6",
+      "target_id": "interaccion_humano-computadora",
+      "properties": {
+        "evidence_text": "Algunos principios generales del paradigma de orientación a servicios son reusabilidad, bajo acoplamiento, composición y autonomía."
       }
     },
     {
@@ -51894,7 +51770,15 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_729_informe#chunk11",
-      "target_id": "josé_sotelo",
+      "target_id": "alvaro_martin",
+      "properties": {
+        "evidence_text": "dictado por parte de Álvaro Martín de una clase sobre Teoría de la Información aplicada a genómica en el cuso de posgrado de Genómica"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2016_729_informe#chunk11",
+      "target_id": "jose_sotelo",
       "properties": {
         "evidence_text": "junto a otros colegas. Adicionalmente dirigimos conjuntamente tesis de maestría en Bioinformática y estamos proyectando el desarrollo de nuevas líneas de investigación."
       }
@@ -51909,18 +51793,10 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2016_729_informe#chunk11",
-      "target_id": "álvaro_martín",
-      "properties": {
-        "evidence_text": "dictado por parte de Álvaro Martín de una clase sobre Teoría de la Información aplicada a genómica en el cuso de posgrado de Genómica"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_729_informe#chunk12",
       "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
-        "evidence_text": "Referencias... acercamiento al grupo de Teoría de la Información de la Universidad de Stanford... estudio de la aplicación de técnicas y conocimientos provenientes de la Teoría de la Información y la Informática... desarrollo de un compresor para archivos generados mediante secuenciación por nanoporos"
+        "evidence_text": "Referencias... acercamiento al grupo de Teoría de la Información de la Universidad de Stanford... estudio de la aplicación de técnicas y conocimientos provenientes de la Teoría de la Información y la Informática... desarrollo de un compresor para archivos generados mediante secuenciación por nanoporos."
       }
     },
     {
@@ -51928,7 +51804,7 @@
       "source_id": "proy_2016_729_informe#chunk12",
       "target_id": "dra_ochoa",
       "properties": {
-        "evidence_text": "la Dra. Ochoa, quien ha desempeñado un rol importante en ese desarrollo y actualmente trabaja en la Universidad de Illinois en Urbana-Champaign."
+        "evidence_text": "quien ha desempeñado un rol importante en ese desarrollo y actualmente trabaja en la Universidad de Illinois en Urbana-Champaign."
       }
     },
     {
@@ -51950,7 +51826,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_729_informe#chunk2",
-      "target_id": "ingenieria_biomedica",
+      "target_id": "informatica_en_salud",
       "properties": {
         "evidence_text": "En este proyecto nos proponemos investigar algoritmos de compresión para diversos tipos de datos de secuenciación por nanoporos y la aplicación de técnicas de reducción de ruido."
       }
@@ -51982,7 +51858,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_729_informe#chunk4",
-      "target_id": "martín_beracochea",
+      "target_id": "martin_beracochea",
       "properties": {
         "evidence_text": "Esta línea de investigación fue abordada en el marco de los estudios de Maestría en Bioinformática de Martín Beracochea"
       }
@@ -51998,7 +51874,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_729_informe#chunk5",
-      "target_id": "guillermo_dufort_y_álvarez",
+      "target_id": "guillermo_dufort_y_alvarez",
       "properties": {
         "evidence_text": "Este trabajo comenzamos a desarrollarlo en el marco del proyecto de evaluación final del curso de Reconocimiento de Patrones del estudiante de posgrado Guillermo Dufort y Álvarez, quien participó activamente de este proyecto de investigación."
       }
@@ -52008,15 +51884,7 @@
       "source_id": "proy_2016_729_informe#chunk5",
       "target_id": "quimica_de_procesos_y_tecnologia",
       "properties": {
-        "evidence_text": "Esta es la línea de trabajo en la cual encontramos mayor potencial y donde concentramos por lo tanto nuestros mayores esfuerzos. Para abordar este problema comenzamos por construir una base de datos de secuenciación por nanoporos que consta de casi 350 archivos en formato FASTQ, tomados del National Center for Biotechnology Information (NCBI)."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2016_729_informe#chunk5",
-      "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
-      "properties": {
-        "evidence_text": "Este trabajo comenzamos a desarrollarlo en el marco del proyecto de evaluación final del curso de Reconocimiento de Patrones del estudiante de posgrado Guillermo Dufort y Álvarez, quien participó activamente de este proyecto de investigación."
+        "evidence_text": "Compresión de datos de secuenciación por nanoporos."
       }
     },
     {
@@ -52032,7 +51900,7 @@
       "source_id": "proy_2016_729_informe#chunk7",
       "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Exploramos varias alternativas de compresión, lo cual concluyó con el desarrollo de"
+        "evidence_text": "A partir de esta evaluación determinamos que el compresor que en general presenta un mejor desempeño para datos de secuenciación por nanoporos en FQZComp."
       }
     },
     {
@@ -52040,7 +51908,7 @@
       "source_id": "proy_2016_729_informe#chunk7",
       "target_id": "quimica_de_procesos_y_tecnologia",
       "properties": {
-        "evidence_text": "A partir de esta evaluación determinamos que el compresor que en general presenta un mejor desempeño para datos de secuenciación por nanoporos en FQZComp."
+        "evidence_text": "Los compresores evaluados fueron: DSRC [4], QUIP [3], FQZComp [1], además de compresores de propósito general como GZIP, LZMA y BZIP."
       }
     },
     {
@@ -52085,14 +51953,6 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2016_729_informe#chunk9",
-      "target_id": "álvarez",
-      "properties": {
-        "evidence_text": "Guillermo Dufort y Álvarez defendió su pasaje directo de maestría a doctorado en el programa de posgrado en Informática de PEDECIBA."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2016_table_729",
       "target_id": "martin_menoni_alvaro",
       "properties": {
@@ -52112,7 +51972,7 @@
       "source_id": "proy_2018_260_informe#chunk1",
       "target_id": "ingenieria_civil_y_estructural",
       "properties": {
-        "evidence_text": "ACTIVIDADES ACADÉMICAS DE I+D 2018 Modalidad: Proyectos de I+D INFORME ACADÉMICO FINAL e incluye la minimización de discontinuidades, entendidas como los puntos de la red donde los usuarios deben abandonar la infraestructura específica para circular a través de las calles."
+        "evidence_text": "incluye la minimización de discontinuidades, entendidas como los puntos de la red donde los usuarios deben abandonar la infraestructura específica para circular a través de las calles."
       }
     },
     {
@@ -52120,7 +51980,7 @@
       "source_id": "proy_2018_260_informe#chunk1",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "En segundo lugar, se propone una configuración de los parámetros del modelo basada en los siguientes elementos: (i) los costos de construcción de la ciclovía y los costos de viaje de los usuarios son proporcionales a la distancia y dependen de la tecnología de ciclovía construida, a mayor costo de construcción, menor costo percibido de viaje, (ii) cada vez que un usuario experimenta una discontinuidad, incurre en un costo proporcional al largo promedio de los arcos de la red, (iii) el presupuesto disponible para la construcción de la red se configura en base a proporciones del largo total de la red vial."
+        "evidence_text": "se propone una configuración de los parámetros del modelo basada en los siguientes elementos: (i) los costos de construcción de la ciclovía y los costos de viaje de los usuarios son proporcionales a la distancia y dependen de la tecnología de ciclovía construida"
       }
     },
     {
@@ -52144,7 +52004,7 @@
       "source_id": "proy_2018_260_informe#chunk10",
       "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "También se construyó una versión detallada de la red de Montevideo (8815 nodos y 14877 aristas, Fig. 1b) cuya resolución no es soportada por métodos exactos. Por este motivo, se desarrolló completamente una heurística basada en Algoritmos Genéticos para su resolución aproximada."
+        "evidence_text": "Por este motivo, se desarrolló completamente una heurística basada en Algoritmos Genéticos para su resolución aproximada."
       }
     },
     {
@@ -52160,7 +52020,7 @@
       "source_id": "proy_2018_260_informe#chunk10",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "El modelado de la influencia de los diferentes atributos de la ciclovía sobre la percepción del costo de los usuarios se realizó utilizando el concepto de Bicycle Level of Service, BLOS, ver sección 4 (Numerical experiments) del documento Anexo1_draft_articulo.pdf. La información sobre pendientes del terreno se procesó y se incorporó a la red detallada (Fig. 2); para el segundo artículo de revista se realizarán"
+        "evidence_text": "El modelado de la influencia de los diferentes atributos de la ciclovía sobre la percepción del costo de los usuarios se realizó utilizando el concepto de Bicycle Level of Service, BLOS, ver sección 4 (Numerical experiments) del documento Anexo1_draft_articulo.pdf."
       }
     },
     {
@@ -52206,7 +52066,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_informe#chunk13",
-      "target_id": "modelado_y_simulacion",
+      "target_id": "matematicas_computacionales",
       "properties": {
         "evidence_text": "El proyecto busca responder la pregunta genérica... se decidió separar el estudio en dos artículos: por un lado, haciendo un estudio de las propiedades del problema en base a la formulación matemática y a su resolución exacta para la instancia de Montevideo con la red simplificada."
       }
@@ -52232,6 +52092,14 @@
       "source_id": "proy_2018_260_informe#chunk16",
       "target_id": "ingenieria_industrial_y_de_manufactura",
       "properties": {
+        "evidence_text": "El modelo se resuelve de forma exacta mediante el software CPLEX 2 para instancias de tamaño moderado. Para instancias de gran tamaño se diseñó e implementó totalmente un algoritmo genético ( Anexo5_algoritmo_genetico.zip )."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_informe#chunk16",
+      "target_id": "transporte",
+      "properties": {
         "evidence_text": "Se implementó un programa específico que genera ciudades aleatorias de tamaño arbitrario con estructura vial de malla y diagonales, y demanda aleatoria. Ver ejemplos en Anexo6_instancias_aleatorias.zip."
       }
     },
@@ -52254,9 +52122,25 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_informe#chunk18",
+      "target_id": "ingenieria_civil_y_estructural",
+      "properties": {
+        "evidence_text": "incluye la construcción de ciclovías."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_informe#chunk18",
+      "target_id": "ingenieria_de_control_y_sistemas",
+      "properties": {
+        "evidence_text": "estudio de metodologías para el diseño de ciclovías, en particular con un enfoque de red."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_informe#chunk18",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "el estudio de metodologías para el diseño de ciclovías, en particular con un enfoque de red, es muy escaso en comparación con los estudios existentes para otros modos de transporte, como ser el automóvil particular y el transporte público."
+        "evidence_text": "La movilidad de personas utilizando la bicicleta se identifica cada vez más como una contribución a la reducción del impacto ambiental negativo del transporte."
       }
     },
     {
@@ -52272,7 +52156,7 @@
       "source_id": "proy_2018_260_informe#chunk19",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "el estudio de la demanda de viajes en bicicleta"
+        "evidence_text": "el estudio de la demanda de viajes en bicicleta."
       }
     },
     {
@@ -52326,7 +52210,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_informe#chunk22",
-      "target_id": "federico_gómez_romero",
+      "target_id": "federico_gomez_romero",
       "properties": {
         "evidence_text": "Tesis de Maestría en Informática PEDECIBA de Federico Gómez Romero, en su etapa inicial de desarrollo."
       }
@@ -52352,13 +52236,13 @@
       "source_id": "proy_2018_260_informe#chunk22",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Tesis de Maestría en Informática PEDECIBA de Federico Gómez Romero, en su etapa inicial de desarrollo. Se aborda el problema de la estimación de demanda de viajes en bicicleta en base a información socioeconómica detallada, utilizando técnicas de inteligencia artificial."
+        "evidence_text": "Tesis de Maestría en Informática PEDECIBA de Federico Gómez Romero, en su etapa inicial de desarrollo."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_informe#chunk22",
-      "target_id": "joaquín_correa",
+      "target_id": "joaquin_correa",
       "properties": {
         "evidence_text": "Tesis de Maestría en Investigación de Operaciones de Joaquín Correa, co-dirigida junto con Franco Robledo."
       }
@@ -52369,14 +52253,6 @@
       "target_id": "antonio_mauttone",
       "properties": {
         "evidence_text": "FIRMA DE RESPONSABLE/S, 1 =. ACLARACIÓN, 1 = Antonio Mauttone. FECHA, 1 = 31/08/2021"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_informe#chunk3",
-      "target_id": "geografia_planificacion_y_desarrollo",
-      "properties": {
-        "evidence_text": "metodología se prueba con datos de la ciudad de Montevideo, en base a una red de calles simplificada e información origen-destino de transporte público."
       }
     },
     {
@@ -52430,14 +52306,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_informe#chunk9",
-      "target_id": "ingenieria_civil_y_estructural",
-      "properties": {
-        "evidence_text": "Se logró una formulación que permite modelar las discontinuidades y la reacción de los usuarios a las mismas."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_informe#chunk9",
       "target_id": "mecanica_computacional",
       "properties": {
         "evidence_text": "Esta hipótesis habilita la formulación de un modelo computacionalmente tratable."
@@ -52448,7 +52316,7 @@
       "source_id": "proy_2018_260_informe#chunk9",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "Se adoptó la hipótesis de que los usuarios se desplazan por caminos más cortos entre origen y destino en la ciclovía."
+        "evidence_text": "Se logró una formulación que permite modelar las discontinuidades y la reacción de los usuarios a las mismas."
       }
     },
     {
@@ -52488,7 +52356,7 @@
       "source_id": "proy_2018_260_propuesta#chunk11",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "los usuarios planifican sus rutas teniendo en cuenta consideraciones de distancia, aunque pueden haber otros elementos que influyen en la elección de rutas"
+        "evidence_text": "Típicamente los usuarios planifican sus rutas teniendo en cuenta consideraciones de distancia, aunque pueden haber otros elementos que influyen en la elección de rutas (Beheshtitabar et al, 2014)."
       }
     },
     {
@@ -52502,25 +52370,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk13",
-      "target_id": "ciencias_de_la_computacion_teoricas",
-      "properties": {
-        "evidence_text": "Generalmente se utilizan modelos de programación lineal entera (o binaria y eventualmente mixta), con representación explícita de los flujos de usuarios en un esquema de múltiples pares origen-destino."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk13",
-      "target_id": "investigacion_en_seguridad",
+      "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "properties": {
         "evidence_text": "La literatura en Investigación de Operaciones es prolífica en modelos matemáticos para el diseño óptimo de redes de servicio de transporte."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk13",
-      "target_id": "matematicas_aplicadas",
-      "properties": {
-        "evidence_text": "La introducción de diferentes percepciones del nivel de servicio involucra modelos de comportamiento de usuario que generalmente son difíciles de integrar a las formulaciones de programación lineal entera."
       }
     },
     {
@@ -52558,17 +52410,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk16",
-      "target_id": "construccion_y_edificacion",
-      "properties": {
-        "evidence_text": "...corresponden la validación de las metodologías desarrolladas utilizando escenarios y datos lo más realistas posible. Se debe contar con información sobre los posibles lugares para la definición de ciclovías, que están dados por la red de calles de la ciudad..."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk16",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "Aplicación a un caso real y validación de la metodología... La red de calles representa la información topológica del problema (conexiones entre arcos y nodos), que debe ser complementada con información sobre distancias y pendientes..."
+        "evidence_text": "Aplicación a un caso real y validación de la metodología... La red de calles representa la información topológica del problema (conexiones entre arcos y nodos), que debe ser complementada con información sobre distancias y pendientes, la cual debe deducirse a partir de información topográfica como ser las curvas de nivel o mapas de altura. Otro aspecto importante del problema es la estimación de la demanda de viajes entre diferentes puntos de la zona de estudio."
       }
     },
     {
@@ -52648,7 +52492,7 @@
       "source_id": "proy_2018_260_propuesta#chunk2",
       "target_id": "geografia_planificacion_y_desarrollo",
       "properties": {
-        "evidence_text": "Muchas agencias de planificación de transporte urbano (intendencias, municipalidades, secretarías) están dedicando presupuestos para construir infraestructura y promover la adopción de la bicicleta para viajes urbanos."
+        "evidence_text": "Muchas agencias de planificación de transporte urbano (intendencias, municipalidades, secretarías) están dedicando presupuestos para construir infraestructura y promover la adopción de la bicicleta para viajes urbanos"
       }
     },
     {
@@ -52680,7 +52524,7 @@
       "source_id": "proy_2018_260_propuesta#chunk22",
       "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Desarrollo de modelos y algoritmos de forma incremental respecto a su complejidad, de forma que se puedan verificar (en el sentido de la correctitud de la implementación computacional) y validar (en el sentido de la coherencia de las hipótesis asumidas y parámetros utilizados) en pasos sucesivos."
+        "evidence_text": "desarrollo de modelos y algoritmos de forma incremental"
       }
     },
     {
@@ -52688,7 +52532,7 @@
       "source_id": "proy_2018_260_propuesta#chunk22",
       "target_id": "estadistica_y_probabilidad",
       "properties": {
-        "evidence_text": "Probar los modelos y algoritmos con muchas instancias aleatorias, de forma que los análisis realizados tengan validez estadística sobre un universo lo más diverso posible."
+        "evidence_text": "probar los modelos y algoritmos con muchas instancias aleatorias"
       }
     },
     {
@@ -52696,7 +52540,7 @@
       "source_id": "proy_2018_260_propuesta#chunk22",
       "target_id": "geografia_planificacion_y_desarrollo",
       "properties": {
-        "evidence_text": "Probar las metodologías con un caso de la realidad local, lo que contribuye a la validación de los modelos mediante el análisis de escenarios construidos en base a datos conocidos."
+        "evidence_text": "caso de la realidad local, planificadores y usuarios"
       }
     },
     {
@@ -52704,7 +52548,7 @@
       "source_id": "proy_2018_260_propuesta#chunk22",
       "target_id": "ingenieria_civil_y_estructural",
       "properties": {
-        "evidence_text": "Obtener conocimiento profundo y actualizado, acerca de las decisiones que involucra el diseño de redes de ciclovías urbanas."
+        "evidence_text": "diseño de redes de ciclovías urbanas"
       }
     },
     {
@@ -52712,7 +52556,7 @@
       "source_id": "proy_2018_260_propuesta#chunk22",
       "target_id": "transporte",
       "properties": {
-        "evidence_text": "Conocer los enfoques de optimización existentes para el diseño de redes de ciclovías así como las posibles extensiones planteadas en los trabajos publicados."
+        "evidence_text": "diseño de redes de ciclovías"
       }
     },
     {
@@ -52824,7 +52668,7 @@
       "source_id": "proy_2018_260_propuesta#chunk26",
       "target_id": "matematicas_aplicadas",
       "properties": {
-        "evidence_text": "En este contexto, se propone tomar como base los modelos de tipo múltiples mercancías (multi-commodity) típicamente aplicados en transporte (Magnanti y Wong, 1984), en particular aquellos que contemplan costos fijos y variables, así como restricciones de presupuesto (e.g., Fixed Charge Network Design Problem)."
+        "evidence_text": "Se propone tomar como base los modelos de tipo múltiples mercancías (multi-commodity) típicamente aplicados en transporte (Magnanti y Wong, 1984), en particular aquellos que contemplan costos fijos y variables, así como restricciones de presupuesto (e.g., Fixed Charge Network Design Problem)."
       }
     },
     {
@@ -52848,14 +52692,6 @@
       "source_id": "proy_2018_260_propuesta#chunk27",
       "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Para la resolución aproximada del problema se hará una evaluación preliminar de metaheurísticas apropiadas (Gendreau y Potvin, 2010)."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk27",
-      "target_id": "ingenieria_industrial_y_de_manufactura",
-      "properties": {
         "evidence_text": "Se tratará de formular los modelos de forma que resulten con una estructura lineal, para poder aplicar software específico de resolución como ser CPLEX, G UROBI o EXPRESS."
       }
     },
@@ -52878,25 +52714,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk28",
-      "target_id": "ingenieria_de_control_y_sistemas",
+      "target_id": "ingenieria_civil_y_estructural",
       "properties": {
-        "evidence_text": "Para la evaluación experimental de los modelos y algoritmos a desarrollar, se construirán escenarios de tamaño reducido para verificación y análisis, y al menos un caso real para la ciudad de Montevideo (actividades 4 y 5)."
+        "evidence_text": "Para la construcción del caso que modela la realidad de la ciudad de Montevideo (actividad 5), se parte de la red de calles disponible a través de la"
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk28",
-      "target_id": "ingenieria_industrial_y_de_manufactura",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Los casos de dimensión reducida también se utilizarán para estimar la capacidad de la(s) metaheurística(s) de calcular soluciones cercanas a la óptima."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk29",
-      "target_id": "ciencias_de_la_computacion_teoricas",
-      "properties": {
-        "evidence_text": "Estos experimentos se realizarán utilizando la/las metaheurísticas a desarrollar en el proyecto, ya que existe evidencia previa de que los métodos exactos no son viables para una instancia con las dimensiones de Montevideo."
+        "evidence_text": "Para la evaluación experimental de los modelos y algoritmos a desarrollar, se construirán escenarios de tamaño reducido para verificación y análisis, y al menos un caso real para la ciudad de Montevideo (actividades 4 y 5)."
       }
     },
     {
@@ -52910,9 +52738,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk29",
-      "target_id": "ingenieria_civil_y_estructural",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Los datos abiertos también incluyen información relativa a curvas de nivel, que puede tenerse en cuenta para la estimación de pendientes"
+        "evidence_text": "Estos experimentos se realizarán utilizando la/las metaheurísticas a desarrollar en el proyecto, ya que existe evidencia previa de que los métodos exactos no son viables para una instancia con las dimensiones de Montevideo."
       }
     },
     {
@@ -52944,7 +52772,7 @@
       "source_id": "proy_2018_260_propuesta#chunk30",
       "target_id": "investigacion_en_seguridad",
       "properties": {
-        "evidence_text": "difundir los resultados del proyecto referentes la comprensión del problema"
+        "evidence_text": "actividades específicas del efecto de las pendientes sobre la solución óptima"
       }
     },
     {
@@ -52953,6 +52781,22 @@
       "target_id": "transporte",
       "properties": {
         "evidence_text": "especializados en Transporte"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_propuesta#chunk31",
+      "target_id": "ingenieria_civil_y_estructural",
+      "properties": {
+        "evidence_text": "El proyecto contribuirá a ganar conocimiento sobre el problema del diseño óptimo de redes de ciclovías."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_propuesta#chunk31",
+      "target_id": "mecanica_computacional",
+      "properties": {
+        "evidence_text": "El proyecto buscará integrar estos conceptos en un modelo de optimización, para poder analizar el problema del diseño de redes de ciclovías bajo un enfoque sistémico y poder dar respuestas con soporte cuantitativo a los planteos de los diferentes actores."
       }
     },
     {
@@ -52984,13 +52828,13 @@
       "source_id": "proy_2018_260_propuesta#chunk33",
       "target_id": "gestion_de_tecnologia_e_innovacion",
       "properties": {
-        "evidence_text": "Gestión de proyectos, Programación, Gestión de experimentos computacionales."
+        "evidence_text": "Gestión de proyectos, Gestión de experimentos computacionales."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk33",
-      "target_id": "maría_e_urquhart",
+      "target_id": "maria_e_urquhart",
       "properties": {
         "evidence_text": "María E. Urquhart, Rol / Competencias = Investigadora. Optimización combinatoria, metaheurísticas, estudios de casos para tránsito y transporte, modelos de demanda de pasajeros.. María E. Urquhart, Tareas = Definición del problema. Propuesta del modelo de optimización y de los métod os de resolución. Concepción del (los) caso(s) de estudio. Elaboración del plan de experimentación. Análisis de resultados y formulación de conclusione s. Supervisión/orientación de estudiantes. Escritura de artículos científicos.."
       }
@@ -53000,7 +52844,7 @@
       "source_id": "proy_2018_260_propuesta#chunk33",
       "target_id": "matematicas_aplicadas",
       "properties": {
-        "evidence_text": "Programación Matemática, Metaheurísticas, Optimización combinatoria, Modelos de optimización."
+        "evidence_text": "Programación Matemática, Metaheurísticas, Modelos de optimización, Optimización combinatoria."
       }
     },
     {
@@ -53040,7 +52884,7 @@
       "source_id": "proy_2018_260_propuesta#chunk35",
       "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Maestría en Investigación de Operaciones, Maestría en Informática PEDECIBA, Maestría en Ingeniería Matemática."
+        "evidence_text": "Maestría en Investigación de Operaciones, Maestría en Informática PEDECIBA y Maestría en Ingeniería Matemática."
       }
     },
     {
@@ -53049,14 +52893,6 @@
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
         "evidence_text": "El proyecto brinda una oportunidad de incursionar en una nueva aplicación de técnicas de la Investigación de Operaciones a problemas de planificación del transporte urbano."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk35",
-      "target_id": "matematicas_aplicadas",
-      "properties": {
-        "evidence_text": "Maestría en Investigación de Operaciones, Maestría en Ingeniería Matemática."
       }
     },
     {
@@ -53078,17 +52914,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk36",
-      "target_id": "hardware_y_arquitectura",
-      "properties": {
-        "evidence_text": "Se solicita presupuesto para actualizar el equipamiento, de forma de tener una PC adicional de última generación, que pueda estar dedicada exclusivamente a cálculo intensivo según los objetivos y actividades del proyecto."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk36",
       "target_id": "matematicas_aplicadas",
       "properties": {
-        "evidence_text": "Se solicita presupuesto para la compra de bibliografía reciente que eventualmente no esté disponible a través de las fuentes mencionadas."
+        "evidence_text": "Adicionalmente, en la PC más nueva se cuenta con el software AMPL para la codificación algebraica de modelos de programación matemática."
       }
     },
     {
@@ -53118,9 +52946,25 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_260_propuesta#chunk40",
+      "target_id": "ingenieria_de_control_y_sistemas",
+      "properties": {
+        "evidence_text": "modelo de optimización"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_propuesta#chunk40",
       "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {
-        "evidence_text": "modelado, diseño del método de resolución, software funcional"
+        "evidence_text": "diseño de redes de ciclovías"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_260_propuesta#chunk40",
+      "target_id": "software",
+      "properties": {
+        "evidence_text": "software funcional que resuelve el modelo de optimización"
       }
     },
     {
@@ -53145,14 +52989,6 @@
       "target_id": "transporte",
       "properties": {
         "evidence_text": "CROW (2007). Design manual for bicycle traffic. CROW publishing."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_260_propuesta#chunk43",
-      "target_id": "transporte",
-      "properties": {
-        "evidence_text": "K. Krizek, R. Roland (2005) What is at the end of the road? Understanding discontinuities of onstreet bicycle lanes in urban settings, Transportation Research Part D: Transport and Environment, 10(1):55-68."
       }
     },
     {
@@ -53288,7 +53124,7 @@
       "source_id": "proy_2018_413_informe#chunk1",
       "target_id": "agronomia_y_ciencias_de_cultivos",
       "properties": {
-        "evidence_text": "la serie histórica de la medida NDVI (Normalized Difference Vegetation Index), muy útil para el sector productivo agrícola"
+        "evidence_text": "productos procesados agregados cada 8 días con una resolución de 250 metros lineal. Uno de sus productos es la serie históricas de la medida NDVI (Normalized Difference Vegetation Index), muy útil para el sector productivo agrícola"
       }
     },
     {
@@ -53305,14 +53141,6 @@
       "target_id": "inteligencia_artificial",
       "properties": {
         "evidence_text": "A4: modelo aprendizaje profundo, 1 =. A3: estado del arte análisis de redes, 1 =. A2: estado del arte aprendizaje profundo, 1 =."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk10",
-      "target_id": "teoria_computacional_y_matematicas",
-      "properties": {
-        "evidence_text": "A5: mejora modelo análisis de redes, 1 =. A4: modelo aprendizaje profundo, 1 =."
       }
     },
     {
@@ -53350,9 +53178,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk13",
-      "target_id": "martín_beyer",
+      "target_id": "martin_beyer",
       "properties": {
-        "evidence_text": "incorporamos en el proyecto al estudiante de grado Martín Beyer bajo la modalidad de taller en investigación aplicada"
+        "evidence_text": "bajo la modalidad de taller en investigación aplicada. Con Martín retomamos el proyecto en la fase F3"
       }
     },
     {
@@ -53368,7 +53196,7 @@
       "source_id": "proy_2018_413_informe#chunk15",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "- A3) Se estudiará cómo se incorporan habitualmente el conocimiento de red en los modelos predictivos. Al menos se estudiarán los métodos 'node2vec', y la incorporación de propiedades de red en modelos ARIMA o similar. Entregable: documento estado del arte análisis de redes."
+        "evidence_text": "A3) Se estudiará cómo se incorporan habitualmente el conocimiento de red en los modelos predictivos. Al menos se estudiarán los métodos 'node2vec', y la incorporación de propiedades de red en modelos ARIMA o similar. Entregable: documento estado del arte análisis de redes."
       }
     },
     {
@@ -53377,14 +53205,6 @@
       "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {
         "evidence_text": "pruebas documentadas de estas arquitecturas muestran su potencial para resolver el problema de este proyecto"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk16",
-      "target_id": "procesamiento_de_senales",
-      "properties": {
-        "evidence_text": "hemos decidido explorar dichas arquitecturas, y no evaluar 'node2vec' o ARIMA como se proponía originalmente"
       }
     },
     {
@@ -53424,7 +53244,7 @@
       "source_id": "proy_2018_413_informe#chunk19",
       "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {
-        "evidence_text": "Mejorar la predicción final de las medidas utilizando conocimiento de red, comparando 'node2vec' con modelos tradicionales."
+        "evidence_text": "Mejorar la predicción final de las medidas utilizando conocimiento de red, comparando 'node2vec' con modelos tradicionales"
       }
     },
     {
@@ -53432,7 +53252,7 @@
       "source_id": "proy_2018_413_informe#chunk2",
       "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {
-        "evidence_text": "Una técnica basada en la arquitectura ConvLSTM, y otra basada en la arquitectura Graph Wavenet."
+        "evidence_text": "Ambas técnicas superaron en calidad a los métodos preliminares del estado del arte, utilizando la métrica RMSE (Root Mean Square Error)."
       }
     },
     {
@@ -53446,9 +53266,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk2",
-      "target_id": "matematicas_computacionales",
+      "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Ambas técnicas superaron en calidad a los métodos preliminares del estado del arte, utilizando la métrica RMSE (Root Mean Square Error)."
+        "evidence_text": "desarrollamos dos técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas. Una técnica basada en la arquitectura ConvLSTM, y otra basada en la arquitectura Graph Wavenet."
       }
     },
     {
@@ -53464,15 +53284,7 @@
       "source_id": "proy_2018_413_informe#chunk20",
       "target_id": "procesamiento_de_senales",
       "properties": {
-        "evidence_text": "detectar anomalías, apartamiento significativos entre las medidas reales y las predicciones"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk20",
-      "target_id": "teoria_computacional_y_matematicas",
-      "properties": {
-        "evidence_text": "Graph WaveNet, ConvLSTM, tiempos de entrenamiento"
+        "evidence_text": "detectar anomalías, es decir apartamiento significativos entre las medidas reales y las predicciones realizadas por el modelo"
       }
     },
     {
@@ -53480,7 +53292,7 @@
       "source_id": "proy_2018_413_informe#chunk21",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Esta actividad se iba a lanzar y realizar intensivamente durante dos semanas de pasantías de tres investigadores/estudiantes en INRIA de Francia, Rennes. A lo largo del proyecto fuimos atrasando la actividad, con intenciones de realizarla cuando la situación sanitaria mundial lo permitiese. Lamentablemente aún no se han dado estas condiciones."
+        "evidence_text": "Esta actividad se iba a lanzar y realizar intensivamente durante dos semanas de pasantías de tres investigadores/estudiantes en INRIA de Francia, Rennes. A lo largo del proyecto fuimos atrasando la actividad, con intenciones de realizarla cuando la situación sanitaria mundial lo permitiese. Lamentablemente aún no se han dado estas condiciones. En lugar de realizar esta actividad, decidimos extender y profundizar la investigación relacionada a la arquitectura Graph WaveNet."
       }
     },
     {
@@ -53489,14 +53301,6 @@
       "target_id": "teoria_computacional_y_matematicas",
       "properties": {
         "evidence_text": "Algo que consideramos más promisorio y útil en esta etapa del conocimiento del problema. Puntualmente, ampliamos las pruebas realizadas, logrando evaluar comparativamente las arquitecturas ConvLSTM y Graph WaveNet, no solo para el problema original, sino también para problemas de mayor tamaño (incluyendo problemas 50 veces más grandes aproximadamente)."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk22",
-      "target_id": "inteligencia_artificial",
-      "properties": {
-        "evidence_text": "Este trabajo resume una nueva metodología para predecir el NDVI utilizando arquitecturas de aprendizaje profundo."
       }
     },
     {
@@ -53526,22 +53330,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk23",
-      "target_id": "martín_beyer",
-      "properties": {
-        "evidence_text": "Planificamos para septiembre de 2021, enviar el trabajo: Rehaan Ahmad, Brian Yang, Martin Beyer and Pablo Rodrı́guez-Bocca."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk23",
-      "target_id": "pablo_rodrı́guez-bocca",
-      "properties": {
-        "evidence_text": "Planificamos para septiembre de 2021, enviar el trabajo: Rehaan Ahmad, Brian Yang, Martin Beyer and Pablo Rodrı́guez-Bocca."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk23",
       "target_id": "rehaan_ahmad",
       "properties": {
         "evidence_text": "Planificamos para septiembre de 2021, enviar el trabajo: Rehaan Ahmad, Brian Yang, Martin Beyer and Pablo Rodrı́guez-Bocca."
@@ -53552,7 +53340,7 @@
       "source_id": "proy_2018_413_informe#chunk23",
       "target_id": "teoria_computacional_y_matematicas",
       "properties": {
-        "evidence_text": "compararemos las arquitecturas ConvLSTM y Graph WaveNet para el problema de predecir el NDVI"
+        "evidence_text": "evaluaremos cómo se comporta la performance de ambas arquitecturas al crecer el problema"
       }
     },
     {
@@ -53560,7 +53348,7 @@
       "source_id": "proy_2018_413_informe#chunk23",
       "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
       "properties": {
-        "evidence_text": "evaluaremos cómo se comporta la performance de ambas arquitecturas al crecer el problema"
+        "evidence_text": "compararemos las arquitecturas ConvLSTM y Graph WaveNet para el problema de predecir el NDVI"
       }
     },
     {
@@ -53582,7 +53370,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk26",
-      "target_id": "andrés_berger",
+      "target_id": "andres_berger",
       "properties": {
         "evidence_text": "Respecto al relacionamiento nacional, el proyecto permitió consolidar el trabajo en equipo con el investigador Phd Ing. Andrés Berger del INIA (Instituto Nacional de Investigación Agropecuaria), corresponsable de este proyecto."
       }
@@ -53592,7 +53380,7 @@
       "source_id": "proy_2018_413_informe#chunk26",
       "target_id": "ciencias_de_la_computacion_teoricas",
       "properties": {
-        "evidence_text": "Resultados obtenidos - Guillermo Ettlin, el estudiante de la maestría en Informática PEDECIBA de este proyecto, realizó excelentes aportes relacionados al modelo predictivo ConvLSTM, y a todo lo relacionado al modelo preliminar, es decir, participó de las primeras dos fases del proyecto."
+        "evidence_text": "Resultados obtenidos\n- Guillermo Ettlin, el estudiante de la maestría en Informática PEDECIBA de este proyecto, realizó excelentes aportes relacionados al modelo predictivo ConvLSTM, y a todo lo relacionado al modelo preliminar, es decir, participó de las primeras dos fases del proyecto."
       }
     },
     {
@@ -53600,7 +53388,7 @@
       "source_id": "proy_2018_413_informe#chunk26",
       "target_id": "graficos_por_computadora_y_diseno_asistido_por_computadora",
       "properties": {
-        "evidence_text": "Resultados obtenidos - En la fase F3 del proyecto incorporamos al estudiante de grado Martin Beyer, quien realizó un modulo taller relacionado a desarrollar y evaluar la arquitectura Graph Wavenet para el problema."
+        "evidence_text": "Resultados obtenidos\n- En la fase F3 del proyecto incorporamos al estudiante de grado Martin Beyer, quien realizó un modulo taller relacionado a desarrollar y evaluar la arquitectura Graph Wavenet para el problema."
       }
     },
     {
@@ -53608,7 +53396,7 @@
       "source_id": "proy_2018_413_informe#chunk26",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Resultados obtenidos - Guillermo Ettlin, el estudiante de la maestría en Informática PEDECIBA de este proyecto, realizó excelentes aportes relacionados al modelo predictivo ConvLSTM, y a todo lo relacionado al modelo preliminar, es decir, participó de las primeras dos fases del proyecto."
+        "evidence_text": "Resultados obtenidos\n- Guillermo Ettlin, el estudiante de la maestría en Informática PEDECIBA de este proyecto, realizó excelentes aportes relacionados al modelo predictivo ConvLSTM, y a todo lo relacionado al modelo preliminar, es decir, participó de las primeras dos fases del proyecto."
       }
     },
     {
@@ -53656,7 +53444,7 @@
       "source_id": "proy_2018_413_informe#chunk29",
       "target_id": "ingenieria_general",
       "properties": {
-        "evidence_text": "Los experimentos de este proyecto se desarrollaron mayoritariamente en ClusterUY"
+        "evidence_text": "los experimentos de este proyecto se desarrollaron mayoritariamente en ClusterUY"
       }
     },
     {
@@ -53734,14 +53522,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk32",
-      "target_id": "christopher_quincke",
-      "properties": {
-        "evidence_text": "Andrés Berger, Guillermo Ettlin, Christopher Quincke, Pablo Rodríguez-Bocca, Predicting the Normalized Difference Vegetation Index (NDVI) by training a crop growth model with historical data, Computers and Electronics in Agriculture, Available online 10 May 2018, ISSN 0168-1699, https://doi.org/10.1016/j.compag.2018.04.028."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk32",
       "target_id": "ingenieria_ambiental",
       "properties": {
         "evidence_text": "Predicting the Normalized Difference Vegetation Index (NDVI) by training a crop growth model with historical data"
@@ -53753,14 +53533,6 @@
       "target_id": "mecanica_computacional",
       "properties": {
         "evidence_text": "Graph wavenet for deep spatial-temporal graph modeling"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk32",
-      "target_id": "pablo_rodríguez-bocca",
-      "properties": {
-        "evidence_text": "Andrés Berger, Guillermo Ettlin, Christopher Quincke, Pablo Rodríguez-Bocca, Predicting the Normalized Difference Vegetation Index (NDVI) by training a crop growth model with historical data, Computers and Electronics in Agriculture, Available online 10 May 2018, ISSN 0168-1699, https://doi.org/10.1016/j.compag.2018.04.028."
       }
     },
     {
@@ -53782,7 +53554,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk34",
-      "target_id": "pablo_rodríguez_bocca",
+      "target_id": "pablo_rodriguez_bocca",
       "properties": {
         "evidence_text": "FIRMA DE RESPONSABLE/S, 1 =. ACLARACIÓN, 1 = Pablo Rodríguez Bocca. FECHA, 1 = 25/08/2021"
       }
@@ -53790,7 +53562,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk4",
-      "target_id": "agronomia_y_ciencias_de_cultivos",
+      "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
         "evidence_text": "la interrelación espacio-temporal entre las parcelas. Estas nuevas técnicas mostraron muy buena precisión y lograron superar varias limitaciones de los modelos existentes. Un modelo predictivo de NDVI puede ser muy útil para el sector productivo agrícola, puesto que permite detectar anomalías, es decir, desviaciones respecto del comportamiento esperado."
       }
@@ -53798,17 +53570,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk5",
-      "target_id": "ciencias_agricolas_y_biologicas_generales",
+      "target_id": "agronomia_y_ciencias_de_cultivos",
       "properties": {
-        "evidence_text": "Para esto, entendemos que es clave extraer el conocimiento contenido en las medidas NDVI; y una de las mejores formas de hacerlo es construir modelos para predecir las medidas futuras en base a la información histórica disponible (principalmente medidas previas de NDVI)."
+        "evidence_text": "¿las medidas de NDVI (Normalized Difference Vegetation Index) disponibles en satélites públicos son útiles para apoyar al productor agrícola en la toma de sus decisiones dentro de sus parcelas?"
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk5",
-      "target_id": "ingenieria_ambiental",
+      "target_id": "bioingenieria",
       "properties": {
-        "evidence_text": "El objetivo principal de este proyecto es: 'desarrollar técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas.'"
+        "evidence_text": "desarrollar técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas."
       }
     },
     {
@@ -53816,7 +53588,7 @@
       "source_id": "proy_2018_413_informe#chunk5",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Para mejorar la precisión de la metodología aplicaremos a posteriori técnicas de análisis de redes."
+        "evidence_text": "desarrollar técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas."
       }
     },
     {
@@ -53846,9 +53618,25 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_informe#chunk8",
+      "target_id": "bioingenieria",
+      "properties": {
+        "evidence_text": "F2) La segunda fase, y principal del proyecto, se basa en diseñar y evaluar arquitecturas de aprendizaje profundo para problemas con interrelaciones espacio-temporales similares."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_informe#chunk8",
+      "target_id": "ciencias_de_la_computacion_teoricas",
+      "properties": {
+        "evidence_text": "F3) En la tercer fase se busca mejorar las arquitecturas anteriores tomando en cuenta la interrelación espacial, y en particular hacerlo utilizando técnicas derivadas del análisis de redes."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_informe#chunk8",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "F4) Finalmente, la última fase responde a evaluar el impacto del mejor modelo predictivo sobre la toma de decisiones de los productores."
+        "evidence_text": "F2) La segunda fase, y principal del proyecto, se basa en diseñar y evaluar arquitecturas de aprendizaje profundo para problemas con interrelaciones espacio-temporales similares."
       }
     },
     {
@@ -53856,7 +53644,7 @@
       "source_id": "proy_2018_413_informe#chunk9",
       "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {
-        "evidence_text": "Realizar al menos un par de publicaciones científicas respecto a los modelos desarrollados y sus calidades"
+        "evidence_text": "publicaciones científicas respecto a los modelos desarrollados y sus calidades"
       }
     },
     {
@@ -53864,7 +53652,7 @@
       "source_id": "proy_2018_413_informe#chunk9",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "arquitecturas de aprendizaje profundo"
+        "evidence_text": "arquitecturas de aprendizaje profundo, LSTM, CNN, node2vec, modelos predictivos tradicionales"
       }
     },
     {
@@ -53872,7 +53660,7 @@
       "source_id": "proy_2018_413_informe#chunk9",
       "target_id": "procesamiento_de_senales",
       "properties": {
-        "evidence_text": "arquitecturas LSTM y CNN"
+        "evidence_text": "detección de anomalías, apartamiento significativos entre las medidas reales y las predicciones"
       }
     },
     {
@@ -53880,15 +53668,7 @@
       "source_id": "proy_2018_413_informe#chunk9",
       "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {
-        "evidence_text": "evaluar la utilización del mejor modelo predictivo disponible para detectar anomalías"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_informe#chunk9",
-      "target_id": "teoria_computacional_y_matematicas",
-      "properties": {
-        "evidence_text": "métodos 'node2vec', y la incorporación de propiedades de red en modelos ARIMA o similar"
+        "evidence_text": "conocimiento de red, modelos ARIMA, propiedades de red"
       }
     },
     {
@@ -53925,14 +53705,6 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk10",
-      "target_id": "ciencias_agricolas_y_biologicas_generales",
-      "properties": {
-        "evidence_text": "Se plantea una metodología innovadora de análisis predictivo que combina modelos agronómicos y optimización en un sistema experto que predice la evolución del NDVI en cada punto observado en la imagen satelital."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk11",
       "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
@@ -53949,10 +53721,26 @@
     },
     {
       "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk11",
+      "target_id": "inteligencia_artificial",
+      "properties": {
+        "evidence_text": "Se pretende desarrollar y evaluar métodos predictivos basados en aprendizaje profundo para resolver el problema."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk12",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "En [27] también se usa una CNN para clasificar arritmias en electrocardiogramas (series de tiempo no relacionadas)."
+        "evidence_text": "Existen muchas aplicaciones recientes de aprendizaje profundo a predicciones de series de tiempo interrelacionadas"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk12",
+      "target_id": "procesamiento_de_senales",
+      "properties": {
+        "evidence_text": "En [27] también se usa una CNN para clasificar arritmias en electrocardiogramas (series de tiempo no relacionadas)"
       }
     },
     {
@@ -53968,7 +53756,7 @@
       "source_id": "proy_2018_413_propuesta#chunk13",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Existen trabajos recientes que aplican exitosamente estas técnicas a imágenes satelitales. Por ejemplo en 2017, los autores de [28] predicen la producción nacional de soja en E.E.U.U. a partir de imágenes satelitales. La metodología es reducir la dimensionalidad de las imágenes mediante aprendizaje profundo (comparando las arquitecturas LTSM y CNN) y luego aplicar un proceso Gaussiano [29] para modelar explícitamente la interrelación en los datos y mejorar la exactitud del método."
+        "evidence_text": "Existen trabajos recientes que aplican exitosamente estas técnicas a imágenes satelitales. Por ejemplo en 2017, los autores de [28] predicen la producción nacional de soja en E.E.U.U. a partir de imágenes satelitales. La metodología es reducir la dimensionalidad de las imágenes mediante aprendizaje profundo (comparando las arquitecturas LTSM y CNN)"
       }
     },
     {
@@ -53976,21 +53764,13 @@
       "source_id": "proy_2018_413_propuesta#chunk13",
       "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
       "properties": {
-        "evidence_text": "Existen trabajos recientes que aplican exitosamente estas técnicas a imágenes satelitales. Por ejemplo en 2017, los autores de [28] predicen la producción nacional de soja en E.E.U.U. a partir de imágenes satelitales."
+        "evidence_text": "La metodología es reducir la dimensionalidad de las imágenes mediante aprendizaje profundo (comparando las arquitecturas LTSM y CNN) y luego aplicar un proceso Gaussiano [29] para modelar explícitamente la interrelación en los datos y mejorar la exactitud del método."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk14",
-      "target_id": "aplicaciones_de_ciencias_de_la_computacion",
-      "properties": {
-        "evidence_text": "Un segundo objetivo de este proyecto es construir una red de interdependencias entre medidas NDVI que ayuden a predecir el NDVI futuro."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk14",
-      "target_id": "graficos_por_computadora_y_diseno_asistido_por_computadora",
+      "target_id": "ingenieria_ambiental",
       "properties": {
         "evidence_text": "Existiendo una alta interrelación temporal y espacial entre dichas medidas, pero descubrir dicha interrelación no es trivial puesto que depende de múltiples factores de contexto."
       }
@@ -53998,9 +53778,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk14",
-      "target_id": "redes_de_computadoras_y_comunicaciones",
+      "target_id": "matematicas_computacionales",
       "properties": {
-        "evidence_text": "Modelar sistemas complejos como las interacciones entre personas, proteínas, neuronas, computadoras, elementos de comunicación, sistemas de transporte, etc."
+        "evidence_text": "Entonces, la interdependencia de la medida en distintos puntos depende del contexto, por ejemplo frente a exceso/deficiencia de lluvias los puntos de igual altimetría estarán más relacionados."
       }
     },
     {
@@ -54040,7 +53820,7 @@
       "source_id": "proy_2018_413_propuesta#chunk16",
       "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {
-        "evidence_text": "desarrollar técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas"
+        "evidence_text": "desarrollar técnicas de aprendizaje profundo para predecir las medidas de NDVI futuras dentro de parcelas de cultivos agrícolas."
       }
     },
     {
@@ -54048,7 +53828,7 @@
       "source_id": "proy_2018_413_propuesta#chunk16",
       "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
-        "evidence_text": "dentro de parcelas de cultivos agrícolas"
+        "evidence_text": "dentro de parcelas de cultivos agrícolas."
       }
     },
     {
@@ -54056,7 +53836,7 @@
       "source_id": "proy_2018_413_propuesta#chunk17",
       "target_id": "agronomia_y_ciencias_de_cultivos",
       "properties": {
-        "evidence_text": "En cada grupo el modelo intentará predecir las medidas de NDVI en la última zafra conociendo las anteriores."
+        "evidence_text": "incorpora conocimiento interdisciplinario de vanguardia en agronomía"
       }
     },
     {
@@ -54072,7 +53852,7 @@
       "source_id": "proy_2018_413_propuesta#chunk17",
       "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
       "properties": {
-        "evidence_text": "En este proyecto, la metodología propuesta para la predicción de NDVI es innovadora, e incorpora conocimiento interdisciplinario de vanguardia en agronomía, inteligencia artificial e investigación operativa."
+        "evidence_text": "e investigación operativa"
       }
     },
     {
@@ -54088,7 +53868,7 @@
       "source_id": "proy_2018_413_propuesta#chunk17",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "En este proyecto, la metodología propuesta para la predicción de NDVI es innovadora, e incorpora conocimiento interdisciplinario de vanguardia en agronomía, inteligencia artificial e investigación operativa."
+        "evidence_text": "En este proyecto, la metodología propuesta para la predicción de NDVI es innovadora, e incorpora conocimiento interdisciplinario de vanguardia en agronomía, inteligencia artificial e investigación operativa"
       }
     },
     {
@@ -54104,7 +53884,7 @@
       "source_id": "proy_2018_413_propuesta#chunk19",
       "target_id": "investigacion_en_seguridad",
       "properties": {
-        "evidence_text": "Estrategia y Metodología de Investigación"
+        "evidence_text": "Realizar al menos un par de publicaciones científicas respecto a los modelos desarrollados y sus calidades."
       }
     },
     {
@@ -54112,15 +53892,7 @@
       "source_id": "proy_2018_413_propuesta#chunk2",
       "target_id": "agronomia_y_ciencias_de_cultivos",
       "properties": {
-        "evidence_text": "Cada satélite dispone de una resolución espacial y temporal máxima, por ejemplo MODIS ofrece imágenes diarias y productos procesados agregados cada 8 días con una resolución de 250 metros lineales."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk2",
-      "target_id": "ciencias_agricolas_y_biologicas_generales",
-      "properties": {
-        "evidence_text": "A partir de las imágenes satelitales se pueden obtener distintas medidas útiles para el sector productivo agrícola."
+        "evidence_text": "La medida más destacada y difundida es el NDVI (Normalized Difference Vegetation Index, [4]) de la cual se conoce su relación con variables agronómicas de relevancia (índice de área foliar, déficit de nutrientes, afectación de pestes, etc. [5,6,7,8]) y con el rendimiento final de los cultivos [9]."
       }
     },
     {
@@ -54129,14 +53901,6 @@
       "target_id": "ingenieria_aeroespacial",
       "properties": {
         "evidence_text": "Existen varios satélites que proveen, en forma gratuita y periódica, imágenes de la superficie agrícola del país."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk2",
-      "target_id": "mecanica_computacional",
-      "properties": {
-        "evidence_text": "Sin embargo la información de sensores remotos es poco utilizada por los sectores productivos a escala de chacra (o inferior) debido a dificultades tecnológicas de acceso y a los elevados requerimientos de cómputo para procesarla."
       }
     },
     {
@@ -54184,7 +53948,7 @@
       "source_id": "proy_2018_413_propuesta#chunk22",
       "target_id": "aplicaciones_de_ciencias_de_la_computacion",
       "properties": {
-        "evidence_text": "Pablo Rodríguez Bocca será responsable del proyecto, apoyará en todo el proceso científico, siendo encargado de incorporar los modelos predictivos meteorológicos y los modelos basados en análisis de redes."
+        "evidence_text": "El estudiante de maestría realizará el estado del arte en aprendizaje profundo, además de desarrollar y evaluar las arquitecturas más prometedoras."
       }
     },
     {
@@ -54206,15 +53970,31 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk22",
-      "target_id": "ingenieria_general",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "El proyecto permitirá la formación de un magíster en Informática, PEDECIBA."
+        "evidence_text": "El estudiante de maestría realizará el estado del arte en aprendizaje profundo, además de desarrollar y evaluar las arquitecturas más prometedoras."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk22",
       "target_id": "inteligencia_artificial",
+      "properties": {
+        "evidence_text": "El estudiante de maestría realizará el estado del arte en aprendizaje profundo, además de desarrollar y evaluar las arquitecturas más prometedoras."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk22",
+      "target_id": "interaccion_humano-computadora",
+      "properties": {
+        "evidence_text": "El estudiante de maestría realizará el estado del arte en aprendizaje profundo, además de desarrollar y evaluar las arquitecturas más prometedoras."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk22",
+      "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {
         "evidence_text": "El estudiante de maestría realizará el estado del arte en aprendizaje profundo, además de desarrollar y evaluar las arquitecturas más prometedoras."
       }
@@ -54245,42 +54025,10 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk25",
-      "target_id": "geografia_planificacion_y_desarrollo",
-      "properties": {
-        "evidence_text": "Bibliografía - [9] Zhang H, Chen H, Zhou G. 2012. 'The Model of Wheat Yield Forecast Based on Modis-Ndvi - a Case Study of Xinxiang'. ISPRS Annals of Photogrammetry, Remote Sensing and Spatial Information Sciences. Jul p. 25-28."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk26",
       "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
         "evidence_text": "Simplified soil-water balance models to predict crop transpiration"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk27",
-      "target_id": "aplicaciones_de_ciencias_de_la_computacion",
-      "properties": {
-        "evidence_text": "Bibliografía - [23] P. Malhotra, L. Vig, G. Shroff, P. Agarwal. 2015. 'Long Short Term Memory Networks for Anomaly Detection in Time Series'."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk27",
-      "target_id": "ciencias_agricolas_y_biologicas_generales",
-      "properties": {
-        "evidence_text": "Bibliografía - [19] Kazeem O Rauff and Rasaq Bello. 2015. 'A review of crop growth simulation models as tools for agricultural meteorology'."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk27",
-      "target_id": "ingenieria_ambiental",
-      "properties": {
-        "evidence_text": "Bibliografía - [17] Sistema de gestión de planes de uso y manejo responsable del suelo. Ministerio de Ganadería, Agricultura y Pesca."
       }
     },
     {
@@ -54296,7 +54044,7 @@
       "source_id": "proy_2018_413_propuesta#chunk29",
       "target_id": "economia_y_econometria",
       "properties": {
-        "evidence_text": "Mills, Terence C. (1990). Time Series Techniques for Economists."
+        "evidence_text": "[34] Mills, Terence C. (1990). Time Series Techniques for Economists."
       }
     },
     {
@@ -54304,7 +54052,7 @@
       "source_id": "proy_2018_413_propuesta#chunk29",
       "target_id": "estadistica_y_probabilidad",
       "properties": {
-        "evidence_text": "Kolaczyk, E.D. Statstical Analysis of Nettork Data: Methods and Models."
+        "evidence_text": "[32] Kolaczyk, E.D. Statstical Analysis of Nettork Data: Methods and Models."
       }
     },
     {
@@ -54312,7 +54060,7 @@
       "source_id": "proy_2018_413_propuesta#chunk29",
       "target_id": "ingenieria_industrial_y_de_manufactura",
       "properties": {
-        "evidence_text": "Mitrovic, Sandra, Bart Baesens, Wilfried Lemahieu, and Jochen De Weerdt. 2017. 'Churn Prediction Using Dynamic RFM-Augmented Node2vec'."
+        "evidence_text": "[35] Mitrovic, Sandra, Bart Baesens, Wilfried Lemahieu, and Jochen De Weerdt. 2017. 'Churn Prediction Using Dynamic RFM-Augmented Node2vec'."
       }
     },
     {
@@ -54320,7 +54068,15 @@
       "source_id": "proy_2018_413_propuesta#chunk29",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "Vengertsev, Dmitry, and Hemal Thakkar. 2015. 'Anomaly Detection in Graph : Unsupervised Learning, Graph-Based Features and Deep Architecture.'"
+        "evidence_text": "[36] Vengertsev, Dmitry, and Hemal Thakkar. 2015. 'Anomaly Detection in Graph : Unsupervised Learning, Graph-Based Features and Deep Architecture.'"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk29",
+      "target_id": "redes_de_computadoras_y_comunicaciones",
+      "properties": {
+        "evidence_text": "[33] Minjun Kim, Hiroki Sayama. 2017. 'Predicting stock market movements using network science: an information theoretic approach'."
       }
     },
     {
@@ -54336,7 +54092,7 @@
       "source_id": "proy_2018_413_propuesta#chunk3",
       "target_id": "geografia_planificacion_y_desarrollo",
       "properties": {
-        "evidence_text": "Menciona el uso de datos de satélite para apoyar a los productores en la toma de decisiones dentro de sus parcelas."
+        "evidence_text": "Menciona el uso de datos de satélite para la toma de decisiones agrícolas y la detección de anomalías en el campo."
       }
     },
     {
@@ -54344,13 +54100,21 @@
       "source_id": "proy_2018_413_propuesta#chunk3",
       "target_id": "ingenieria_ambiental",
       "properties": {
-        "evidence_text": "Se menciona la detección de anomalías en la producción agrícola debido a factores como deficiencia de nutrientes en el suelo y aparición de pestes."
+        "evidence_text": "Se menciona el uso de NDVI para detectar anomalías relacionadas con factores ambientales como deficiencia de nutrientes en el suelo y aparición de pestes."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk4",
-      "target_id": "agronomia_y_ciencias_de_cultivos",
+      "target_id": "christopher_quincke",
+      "properties": {
+        "evidence_text": "realizado por Guillermo Ettlin y Christopher Quincke, quienes se espera participen en este proyecto como investigadores a contratar en el marco de sus estudios de posgrado."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2018_413_propuesta#chunk4",
+      "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
         "evidence_text": "Este trabajo se considera un estudio preliminar de factibilidad para este proyecto. En el trabajo se utiliza una adaptación hecha por el INIA para soja del modelo de crecimiento presentado por G. S. Campbell y R. Díaz en 1988 [14]."
       }
@@ -54360,15 +54124,7 @@
       "source_id": "proy_2018_413_propuesta#chunk5",
       "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
-        "evidence_text": "Los datos de producción recabados por el INIA, en 38 parcelas (1945 hectáreas) bien distribuidas en la zona agrícola del país, abarcando aproximadamente el 1% de la superficie total utilizada para soja."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk5",
-      "target_id": "ingenieria_ambiental",
-      "properties": {
-        "evidence_text": "Los datos de producción recabados por el INIA, en 38 parcelas (1945 hectáreas) bien distribuidas en la zona agrícola del país, abarcando aproximadamente el 1% de la superficie total utilizada para soja."
+        "evidence_text": "Para esta evaluación, se utilizaron datos de producción recabados por el INIA, en 38 parcelas (1945 hectáreas) bien distribuidas en la zona agrícola del país, abarcando aproximadamente el 1% de la superficie total utilizada para soja."
       }
     },
     {
@@ -54376,7 +54132,7 @@
       "source_id": "proy_2018_413_propuesta#chunk5",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "El proyecto Agronóstico desarrolla una herramienta que combina inteligencia artificial con agricultura de precisión para maximizar la rentabilidad de los productores agrícolas."
+        "evidence_text": "El proyecto Agronóstico (http://agronostico.com/) desarrolla una herramienta que combina inteligencia artificial con agricultura de precisión para maximizar la rentabilidad de los productores agrícolas."
       }
     },
     {
@@ -54432,7 +54188,7 @@
       "source_id": "proy_2018_413_propuesta#chunk7",
       "target_id": "geografia_planificacion_y_desarrollo",
       "properties": {
-        "evidence_text": "Estos problemas en ocasiones llevan a descartar la medida. También, las medidas de NDVI obtenidas a partir de distintos satélites no son fáciles de fusionar debido a diferencias en los instrumentos. Por otro lado, la periodicidad y resolución de las imágenes limita la utilidad predictiva de la medida, por esta razón en la actualidad varias iniciativas comerciales ensayan la obtención de la medida mediante drones o satélites privados, sin embargo esto es más costoso, poco masificado y carece de datos históricos (imprescindible para la calibración de nuestro modelo)."
+        "evidence_text": "Al considerar estas y otras limitantes, surge que la mejor opción para el modelo experto es utilizar las imágenes MODIS, y sustituirlas en 3 años por imágenes SENTINEL (cuando se disponga de datos históricos para tres zafras)."
       }
     },
     {
@@ -54440,23 +54196,15 @@
       "source_id": "proy_2018_413_propuesta#chunk8",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "evidence_text": "explorar en este proyecto y su respectiva bibliografía."
+        "evidence_text": "explotando la interrelación espacial entre las medidas NDVI a lo largo de la historia con técnicas de aprendizaje profundo"
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2018_413_propuesta#chunk9",
-      "target_id": "ciencias_agricolas_y_biologicas_generales",
+      "target_id": "ingenieria_ambiental",
       "properties": {
         "evidence_text": "La expresión más sencilla del problema a modelar puede definirse cómo predecir los próximos valores de NDVI en base a la serie histórica reciente de medidas, es decir una predicción en una serie de tiempo para cada punto geográfico del cual se dispone medida."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2018_413_propuesta#chunk9",
-      "target_id": "mecanica_computacional",
-      "properties": {
-        "evidence_text": "Lógicamente los valores futuros de NDVI dependen de muchos factores externos, entre los más relevantes: el cultivo y su variedad, la fertilidad del suelo y los nutrientes disponibles, la situación meteorológica actual y acumulada, etc. Por esta razón, la calidad obtenida exclusivamente mediante una predicción en la serie de tiempo es limitada."
       }
     },
     {
@@ -54488,6 +54236,14 @@
       "source_id": "proy_2020_513_informe#chunk1",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
+        "evidence_text": "Experimentar con SCFs implica un número importante de desafíos, por lo que se genera la necesidad de contar con un ambiente de modelado y simulación en el que se puedan probar y validar desarrollos relacionados con los SCF."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_informe#chunk1",
+      "target_id": "ingenieria_general",
+      "properties": {
         "evidence_text": "Los Sistemas Cíber Físicos (SCF) son sistemas que integran computación, redes y procesos físicos, con bucles de realimentación donde procesos físicos impactan sobre procesos de cómputo y viceversa."
       }
     },
@@ -54497,22 +54253,6 @@
       "target_id": "mecanica_computacional",
       "properties": {
         "evidence_text": "La simulación de un sistema que integra aspectos físicos, de software y de redes de comunicaciones mediante la composición de diferentes simuladores específicos de cada una de estas áreas suele llamarse co-simulación."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_informe#chunk1",
-      "target_id": "redes_de_computadoras_y_comunicaciones",
-      "properties": {
-        "evidence_text": "Los Sistemas Cíber Físicos (SCF) son sistemas que integran computación, redes y procesos físicos, con bucles de realimentación donde procesos físicos impactan sobre procesos de cómputo y viceversa."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_informe#chunk10",
-      "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {
-        "evidence_text": "Avanzar en la extensión del co-simulador desarrollado para ser utilizado como un gemelo digital."
       }
     },
     {
@@ -54534,14 +54274,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_informe#chunk11",
-      "target_id": "ingenieria_electrica_y_electronica",
-      "properties": {
-        "evidence_text": "Ya se desarrolló una prueba inicial de este enfoque consistente en tomar datos de potencia de señal de una red inalámbrica en diversos puntos de un ambiente, inyectar esta información en el simulador y luego el simulador utiliza estos datos para modelar internamente el comportamiento de las comunicaciones."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_informe#chunk11",
       "target_id": "interaccion_humano-computadora",
       "properties": {
         "evidence_text": "Esta es una tarea en la que se está trabajando al momento de escribir este informe y que se espera continuar."
@@ -54552,7 +54284,15 @@
       "source_id": "proy_2020_513_informe#chunk11",
       "target_id": "redes_de_computadoras_y_comunicaciones",
       "properties": {
-        "evidence_text": "tomar datos de potencia de señal de una red inalámbrica en diversos puntos de un ambiente"
+        "evidence_text": "El objetivo es contar con un mecanismo de retroalimentación, donde información del mundo real pueda ser inyectada al co-simulador y luego el resultado de la simulación pueda implicar un cambio en el mundo real."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_informe#chunk11",
+      "target_id": "sistemas_de_informacion",
+      "properties": {
+        "evidence_text": "La tercera tarea consiste en el diseño y desarrollo de escenarios y casos de uso complejos que impliquen la simulación de un conjunto de robots resolviendo una tarea en un ambiente cercano a la realidad."
       }
     },
     {
@@ -54561,6 +54301,14 @@
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
         "evidence_text": "Además, en 2022 se participó en la organización del 2do Workshop en Sistemas Ciber-Físicos llevado a cabo anualmente por el grupo MINA."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_informe#chunk12",
+      "target_id": "interaccion_humano-computadora",
+      "properties": {
+        "evidence_text": "dictaron un curso corto en Co-simulación y Gemelos Digitales donde se utilizaron y expusieron los resultados del proyecto tanto a nivel teórico como práctico."
       }
     },
     {
@@ -54606,7 +54354,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_informe#chunk14",
-      "target_id": "felipe_velázquez",
+      "target_id": "felipe_velazquez",
       "properties": {
         "evidence_text": "Matías Richart, Felipe Velázquez, Federico Ciuffardi, Jorge Visca, and Javier Baliosian."
       }
@@ -54646,7 +54394,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_informe#chunk14",
-      "target_id": "matías_richart",
+      "target_id": "matias_richart",
       "properties": {
         "evidence_text": "Matías Richart, Felipe Velázquez, Federico Ciuffardi, Jorge Visca, and Javier Baliosian."
       }
@@ -54696,7 +54444,15 @@
       "source_id": "proy_2020_513_informe#chunk16",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "simulador de redes y una plataforma robótica, wrappers para orquestar la comunicación y sincronización entre ellos"
+        "evidence_text": "simulador de redes y una plataforma robótica"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_informe#chunk16",
+      "target_id": "ingenieria_industrial_y_de_manufactura",
+      "properties": {
+        "evidence_text": "desarrollo de este prototipo nos ha permitido validar nuestras ideas iniciales y ha demostrado que es posible integrar herramientas existentes para desarrollar una plataforma de co-simulación"
       }
     },
     {
@@ -54704,7 +54460,7 @@
       "source_id": "proy_2020_513_informe#chunk16",
       "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "simulador físico de motores, simulador de redes y una plataforma robótica"
+        "evidence_text": "herramienta para la co-simulación de robots cooperativos que integra un simulador físico de motores"
       }
     },
     {
@@ -54720,7 +54476,7 @@
       "source_id": "proy_2020_513_informe#chunk17",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "El concepto de Digital Twins es muy interesante y tiene muchas aplicaciones dentro del mundo de los Sistemas Ciber-Físicos."
+        "evidence_text": "El concepto de Digital Twins es muy interesante y tiene muchas aplicaciones dentro del mundo de los Sistemas Ciber-Físicos, sin embargo, el desarrollo tanto teórico como de aplicaciones concretas funcionales es muy limitado."
       }
     },
     {
@@ -54728,7 +54484,7 @@
       "source_id": "proy_2020_513_informe#chunk17",
       "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "El desarrollo tanto teórico como de aplicaciones concretas funcionales es muy limitado. En este sentido, ha resultado ser un desafío para el proyecto poder desarrollar una plataforma de co-simulación que permita contar con un Digital Twin funcional de un sistema de robots móviles cooperativos."
+        "evidence_text": "ha resultado ser un desafío para el proyecto poder desarrollar una plataforma de co-simulación que permita contar con un Digital Twin funcional de un sistema de robots móviles cooperativos."
       }
     },
     {
@@ -54737,14 +54493,6 @@
       "target_id": "ingenieria_industrial_y_de_manufactura",
       "properties": {
         "evidence_text": "Luego, ha sido difícil mantener un equipo estable durante todo el proyecto fundamentalmente debido a que no es posible competir con las opciones laborales de la industria."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_informe#chunk19",
-      "target_id": "ingenieria_general",
-      "properties": {
-        "evidence_text": "El proyecto desarrollado... Si, se espera continuar con el proyecto de forma de poder finalizar la etapa actual descrita en el punto 3. A inicios de 2023 se ha unido al proyecto un estudiante de Maestría que está trabajando en esta etapa."
       }
     },
     {
@@ -54760,7 +54508,7 @@
       "source_id": "proy_2020_513_informe#chunk2",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "probar el impacto de diferentes decisiones de control en un entorno virtual simulado sin necesidad de cambios en el sistema físico"
+        "evidence_text": "probar el impacto de diferentes decisiones de control en un entorno virtual simulado"
       }
     },
     {
@@ -54960,7 +54708,7 @@
       "source_id": "proy_2020_513_propuesta#chunk16",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Una estrategia diferente para combinar simuladores es la definida por el est´ andar Functional Mock-up Interface (FMI)"
+        "evidence_text": "Una estrategia diferente para combinar simuladores es la definida por el est´ andar Functional Mock-up Interface (FMI) [14]"
       }
     },
     {
@@ -54974,9 +54722,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk17",
-      "target_id": "mecanica_computacional",
+      "target_id": "interaccion_humano-computadora",
       "properties": {
-        "evidence_text": "integración de simuladores de forma distribuida"
+        "evidence_text": "comunicarse con el RTI"
       }
     },
     {
@@ -54984,7 +54732,7 @@
       "source_id": "proy_2020_513_propuesta#chunk17",
       "target_id": "sistemas_de_informacion",
       "properties": {
-        "evidence_text": "infraestructura de ejecución (Runtime Infraestructure, RTI)"
+        "evidence_text": "integración de simuladores de forma distribuida"
       }
     },
     {
@@ -55062,17 +54810,17 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk21",
-      "target_id": "mecanica_computacional",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "simuladores de robôtica (de pasos de tiempo constante)"
+        "evidence_text": "la sincronización se basa en dos puntos claves: en cada paso el simulador de robôtica informa las posiciones de los robots al simulador de red y el simulador de red ejecuta los eventos de red correspondientes en el intervalo entre dos pasos e informa al simulador de robôtica los resultados."
       }
     },
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk21",
-      "target_id": "redes_de_computadoras_y_comunicaciones",
+      "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "simulador de red"
+        "evidence_text": "utilizar un método de pasos variables donde el paso del tiempo es dirigido por el simulador de robôtica"
       }
     },
     {
@@ -55088,15 +54836,7 @@
       "source_id": "proy_2020_513_propuesta#chunk23",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Sistemas multi-robot (del inglés multi-robot system - MRS)"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk23",
-      "target_id": "ingenieria_mecanica",
-      "properties": {
-        "evidence_text": "Paralelismo inherente a los equipos logrando resolver las mismas más eficientemente"
+        "evidence_text": "Sistemas Robóticos Cooperativos, tolerancia a fallos individuales, diseño individual de sus miembros."
       }
     },
     {
@@ -55104,7 +54844,7 @@
       "source_id": "proy_2020_513_propuesta#chunk25",
       "target_id": "ingenieria_automotriz",
       "properties": {
-        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, cómputo y consumo de energía adicional además de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
+        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, c´ omputo y consumo de energ´ ıa adicional adem´ as de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
       }
     },
     {
@@ -55112,7 +54852,7 @@
       "source_id": "proy_2020_513_propuesta#chunk25",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, cómputo y consumo de energía adicional además de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
+        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, c´ omputo y consumo de energ´ ıa adicional adem´ as de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
       }
     },
     {
@@ -55120,15 +54860,7 @@
       "source_id": "proy_2020_513_propuesta#chunk25",
       "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, cómputo y consumo de energía adicional además de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk26",
-      "target_id": "ingenieria_automotriz",
-      "properties": {
-        "evidence_text": "expertos en robótica, en sistemas de comunicaciones, en sistemas multi-agente, en redes de sensores, IA aplicada, sistemas embebidos, y sistemas autónomos."
+        "evidence_text": "Este aspecto, no siempre ponderado adecuadamente, implica hardware, c´ omputo y consumo de energ´ ıa adicional adem´ as de afectar negativamente la confiabilidad del sistema en presencia de canales ruidosos, interferencias o agentes deshonestos [5]."
       }
     },
     {
@@ -55136,7 +54868,7 @@
       "source_id": "proy_2020_513_propuesta#chunk26",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "sistemas de comunicaciones, en sistemas multi-agente, en redes de sensores, IA aplicada, sistemas embebidos, y sistemas autónomos."
+        "evidence_text": "expertos en robótica, en sistemas de comunicaciones, en sistemas multi-agente, en redes de sensores, IA aplicada, sistemas embebidos, y sistemas autónomos."
       }
     },
     {
@@ -55153,6 +54885,14 @@
       "target_id": "inteligencia_artificial",
       "properties": {
         "evidence_text": "la inteligencia artificial"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk27",
+      "target_id": "redes_de_computadoras_y_comunicaciones",
+      "properties": {
+        "evidence_text": "las redes de computadoras y los sistemas de comunicaciones autonómicas"
       }
     },
     {
@@ -55174,7 +54914,7 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk29",
-      "target_id": "ingenieria_automotriz",
+      "target_id": "inteligencia_artificial",
       "properties": {
         "evidence_text": "Un escenario de robótica cooperativa co-simulada por cuatro diferentes simuladores, cada uno con su propia noción de paso del tiempo y sus modelos de datos y semántica, coordinados por un orquestador."
       }
@@ -55262,9 +55002,9 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk34",
-      "target_id": "ingenieria_general",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "Los simuladores de tiempo continuo son, en realidad, un mock-up de un sistema continuo y las discontinuidades en las entradas deben ser manejadas de forma que la simulaci´ on resultante tenga sentido en el mundo f´ısico que simula, por ejemplo, la energ´ıa total debe conservarse, y un robot no debe cruzar una superficie s´olida."
+        "evidence_text": "Los simuladores de tiempo continuo son, en realidad, un mock-up de un sistema continuo y las discontinuidades en las entradas deben ser manejadas de forma que la simulaci´ on resultante tenga sentido en el mundo f´ ısico que simula, por ejemplo, la energ´ ıa total debe conservarse, y un robot no debe cruzar una superficie s´ olida."
       }
     },
     {
@@ -55272,7 +55012,7 @@
       "source_id": "proy_2020_513_propuesta#chunk34",
       "target_id": "mecanica_computacional",
       "properties": {
-        "evidence_text": "Identificaci´ on y manejo de discontinuidades. En una co-simulaci´ on, un simulador de tiempo continuo puede generar, a trav´ es de su envoltorio (wraper) una secuencia de eventos de salida correspondiente al muestreo de una determinada se˜ nal."
+        "evidence_text": "Identificaci´ on y manejo de discontinuidades. En una co-simulaci´ on, un simulador de tiempo continuo puede generar, a trav´ es de su envoltorio ( wraper ) una secuencia de eventos de salida correspondiente al muestreo de una determinada se˜ nal."
       }
     },
     {
@@ -55301,10 +55041,10 @@
     },
     {
       "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk37",
-      "target_id": "ingenieria_automotriz",
+      "source_id": "proy_2020_513_propuesta#chunk36",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "evidence_text": "En ese sentido, nos proponemos responder a las siguientes preguntas:"
+        "evidence_text": "problemas de redes inalámbricas y movilidad de robots"
       }
     },
     {
@@ -55313,14 +55053,6 @@
       "target_id": "modelado_y_simulacion",
       "properties": {
         "evidence_text": "Para esto la investigación comenzará con un profundo estudio del estado del arte en el campo del modelado y simulación de SCF."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk40",
-      "target_id": "ingenieria_automotriz",
-      "properties": {
-        "evidence_text": "El caso de sistemas multi-robot con restricciones de comunicaciones en entornos exteriores (outdoor) e interiores (indoor)."
       }
     },
     {
@@ -55462,14 +55194,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk48",
-      "target_id": "hardware_y_arquitectura",
-      "properties": {
-        "evidence_text": "Aportará a la discusión general del problema, en particular de los temas de redes, y soporte en temas de infraestructura de computo y comunicaciones."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk48",
       "target_id": "interaccion_humano-computadora",
       "properties": {
         "evidence_text": "Cuenta con experiencia en diseño de interfaces de interacción persona-computadora."
@@ -55502,14 +55226,6 @@
     {
       "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk49",
-      "target_id": "mart´_ın_llofriu",
-      "properties": {
-        "evidence_text": "- Martín Llofriu. Colaborador en el exterior. Doctor en Informática, trabaja actualmente en la empresa iRobot 3, en diversos aspectos del desarrollo de los robots de limpieza Roomba. Participará en la concepción general de la solución."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk49",
       "target_id": "mecanica_computacional",
       "properties": {
         "evidence_text": "Tiene experiencia en el uso de herramientas de simulación de robots y tecnologías de realidad aumentada."
@@ -55517,10 +55233,18 @@
     },
     {
       "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk5",
+      "target_id": "investigacion_en_seguridad",
+      "properties": {
+        "evidence_text": "Se intenta brindar un panorama amplio y a la vez suficientemente profundo sobre los aspectos que serán objeto de estudio."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk50",
       "target_id": "guillermo_amor",
       "properties": {
-        "evidence_text": "El proyecto será un aspecto fundamental para los trabajos de tesis de Federico Andrade y Guillermo Amorín y aportará a de forma sustancial a su formación."
+        "evidence_text": "El proyecto será un aspecto fundamental para los trabajos de tesis de Federico Andrade y Guillermo Amorín y aportará de forma sustancial a su formación."
       }
     },
     {
@@ -55528,15 +55252,7 @@
       "source_id": "proy_2020_513_propuesta#chunk50",
       "target_id": "guillermo_trinidad",
       "properties": {
-        "evidence_text": "Además, el proyecto aportará a una herramienta de utilidad para los estudios de posgrado de Mercedes Marzoa y Guillermo Trinidad cuyos temas de tesis están relacionados con esta propuesta de proyecto."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk51",
-      "target_id": "docente_local",
-      "properties": {
-        "evidence_text": "será co-supervisado por un docente local participante del presente proyecto"
+        "evidence_text": "Además, el proyecto aportará una herramienta de utilidad para los estudios de posgrado de Mercedes Marzoa y Guillermo Trinidad cuyos temas de tesis están relacionados con esta propuesta de proyecto."
       }
     },
     {
@@ -55569,38 +55285,6 @@
       "target_id": "comportamiento_organizacional_y_gestion_de_recursos_humanos",
       "properties": {
         "evidence_text": "Formaci´ on de recursos humanos"
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk53",
-      "target_id": "ingenieria_automotriz",
-      "properties": {
-        "evidence_text": "Se dispone de un área de laboratorios aproximada de 100m2 equipado con: 30 plataformas robóticas Butiá, 5 robots Khepera III, 26 kits robóticos constructivos Lego NXT 2.0, 7 kits robóticos constructivos Bioloid Premium, 1 robot Roomba, 2 cuadrirotores ARDrone Parrot, 5 escenarios para realizar pruebas con robots, una impresora 3D, una cortadora láser, 7 puestos de trabajo, 3 servidores, 2 portátiles, 8 XO, 1 proyector, 1 impresora multifunción, herramientas de laboratorio y una oficina de aproximadamente 35m2 con 8 puestos de trabajo."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk53",
-      "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {
-        "evidence_text": "Se dispone de un área de laboratorios aproximada de 100m2 equipado con: 30 plataformas robóticas Butiá, 5 robots Khepera III, 26 kits robóticos constructivos Lego NXT 2.0, 7 kits robóticos constructivos Bioloid Premium, 1 robot Roomba, 2 cuadrirotores ARDrone Parrot, 5 escenarios para realizar pruebas con robots, una impresora 3D, una cortadora láser, 7 puestos de trabajo, 3 servidores, 2 portátiles, 8 XO, 1 proyector, 1 impresora multifunción, herramientas de laboratorio y una oficina de aproximadamente 35m2 con 8 puestos de trabajo."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk53",
-      "target_id": "ingenieria_industrial_y_de_manufactura",
-      "properties": {
-        "evidence_text": "Se dispone de un área de laboratorios aproximada de 100m2 equipado con: 30 plataformas robóticas Butiá, 5 robots Khepera III, 26 kits robóticos constructivos Lego NXT 2.0, 7 kits robóticos constructivos Bioloid Premium, 1 robot Roomba, 2 cuadrirotores ARDrone Parrot, 5 escenarios para realizar pruebas con robots, una impresora 3D, una cortadora láser, 7 puestos de trabajo, 3 servidores, 2 portátiles, 8 XO, 1 proyector, 1 impresora multifunción, herramientas de laboratorio y una oficina de aproximadamente 35m2 con 8 puestos de trabajo."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk53",
-      "target_id": "mecanica_computacional",
-      "properties": {
-        "evidence_text": "Se dispone de un área de laboratorios aproximada de 100m2 equipado con: 30 plataformas robóticas Butiá, 5 robots Khepera III, 26 kits robóticos constructivos Lego NXT 2.0, 7 kits robóticos constructivos Bioloid Premium, 1 robot Roomba, 2 cuadrirotores ARDrone Parrot, 5 escenarios para realizar pruebas con robots, una impresora 3D, una cortadora láser, 7 puestos de trabajo, 3 servidores, 2 portátiles, 8 XO, 1 proyector, 1 impresora multifunción, herramientas de laboratorio y una oficina de aproximadamente 35m2 con 8 puestos de trabajo."
       }
     },
     {
@@ -55741,6 +55425,54 @@
     },
     {
       "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "ingenieria_aeroespacial",
+      "properties": {
+        "evidence_text": "Development of air combat HDEVS model implemented in HDEVSim++ environment."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "ingenieria_automotriz",
+      "properties": {
+        "evidence_text": "Development of air combat HDEVS model implemented in HDEVSim++ environment."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "ingenieria_civil_y_estructural",
+      "properties": {
+        "evidence_text": "Optimal route reflection topology design."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "ingenieria_de_control_y_sistemas",
+      "properties": {
+        "evidence_text": "RoboNetSim: An integrated framework for multi-robot and network simulation."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "interaccion_humano-computadora",
+      "properties": {
+        "evidence_text": "LETSmath."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk64",
+      "target_id": "mecanica_computacional",
+      "properties": {
+        "evidence_text": "RoboNetSim: An integrated framework for multi-robot and network simulation."
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
       "source_id": "proy_2020_513_propuesta#chunk65",
       "target_id": "geografia_planificacion_y_desarrollo",
       "properties": {
@@ -55792,6 +55524,14 @@
       "source_id": "proy_2020_513_propuesta#chunk67",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
+        "evidence_text": "A Combined BGP and IP/MPLS Resilient Transit Backbone Design"
+      }
+    },
+    {
+      "type": "EXTRAIDO_DE",
+      "source_id": "proy_2020_513_propuesta#chunk67",
+      "target_id": "redes_de_computadoras_y_comunicaciones",
+      "properties": {
         "evidence_text": "Rauflow: Building virtual private networks with mpls and openflow"
       }
     },
@@ -55801,14 +55541,6 @@
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
         "evidence_text": "Theory of modeling and simulation: discrete event and iterative system computational foundations."
-      }
-    },
-    {
-      "type": "EXTRAIDO_DE",
-      "source_id": "proy_2020_513_propuesta#chunk68",
-      "target_id": "matıas_richart",
-      "properties": {
-        "evidence_text": "Jorge Visca, Matıas Richart, and Javier Baliosian. Stochastic Models for Opportunistic Networks."
       }
     },
     {
@@ -55887,13 +55619,19 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "andres_berger_ricca",
+      "source_id": "alvaro_martin",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "andres_berger",
       "target_id": "proy_2018_413",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "andrés_berger",
+      "source_id": "andres_berger_ricca",
       "target_id": "proy_2018_413",
       "properties": {}
     },
@@ -55923,7 +55661,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "bernadette_farias-loscio",
+      "source_id": "bernadette_farias_loscio",
       "target_id": "proy_2012_638",
       "properties": {}
     },
@@ -55937,18 +55675,6 @@
       "type": "PARTICIPO_EN",
       "source_id": "christopher_quincke",
       "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "daniel_callejas",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "docente_local",
-      "target_id": "proy_2020_513",
       "properties": {}
     },
     {
@@ -56001,20 +55727,14 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "federico_gómez_romero",
+      "source_id": "federico_gomez_romero",
       "target_id": "proy_2018_260",
       "properties": {}
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "felipe_velázquez",
+      "source_id": "felipe_velazquez",
       "target_id": "proy_2020_513",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "fernando_carpani",
-      "target_id": "proy_2012_638",
       "properties": {}
     },
     {
@@ -56055,7 +55775,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "guillermo_dufort_y_álvarez",
+      "source_id": "guillermo_dufort_y_alvarez",
       "target_id": "proy_2016_729",
       "properties": {}
     },
@@ -56091,7 +55811,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "joaquín_correa",
+      "source_id": "joaquin_correa",
       "target_id": "proy_2018_260",
       "properties": {}
     },
@@ -56103,14 +55823,8 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "josé_sotelo",
+      "source_id": "jose_sotelo",
       "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "laura_gonzález",
-      "target_id": "proy_2012_638",
       "properties": {}
     },
     {
@@ -56121,8 +55835,26 @@
     },
     {
       "type": "PARTICIPO_EN",
+      "source_id": "maria_e_urquhart",
+      "target_id": "proy_2018_260",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
       "source_id": "marotta_llambi",
       "target_id": "proy_2012_638",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "martin_beracochea",
+      "target_id": "proy_2016_729",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "martin_beyer",
+      "target_id": "proy_2018_413",
       "properties": {}
     },
     {
@@ -56133,37 +55865,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "mart´_ın_llofriu",
-      "target_id": "proy_2020_513",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "martín_beracochea",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "martín_beyer",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "maría_e_urquhart",
-      "target_id": "proy_2018_260",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "matías_richart",
-      "target_id": "proy_2020_513",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "matıas_richart",
+      "source_id": "matias_richart",
       "target_id": "proy_2020_513",
       "properties": {}
     },
@@ -56187,19 +55889,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "pablo_rodríguez-bocca",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "pablo_rodríguez_bocca",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "pablo_rodrı́guez-bocca",
+      "source_id": "pablo_rodriguez_bocca",
       "target_id": "proy_2018_413",
       "properties": {}
     },
@@ -56207,12 +55897,6 @@
       "type": "PARTICIPO_EN",
       "source_id": "pablo_smircich",
       "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "raúl_ruggia",
-      "target_id": "proy_2012_638",
       "properties": {}
     },
     {
@@ -56231,18 +55915,6 @@
       "type": "PARTICIPO_EN",
       "source_id": "richart_gutierrez",
       "target_id": "proy_2020_513",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "álvarez",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "álvaro_martín",
-      "target_id": "proy_2016_729",
       "properties": {}
     },
     {
@@ -56349,14 +56021,14 @@
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "estadistica_y_probabilidad",
-      "target_id": "matematicas",
+      "source_id": "educacion",
+      "target_id": "ciencias_sociales",
       "properties": {}
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "estudios_urbanos",
-      "target_id": "ciencias_sociales",
+      "source_id": "estadistica_y_probabilidad",
+      "target_id": "matematicas",
       "properties": {}
     },
     {
@@ -56393,6 +56065,12 @@
       "type": "PERTENECE_A_DOMINIO",
       "source_id": "hardware_y_arquitectura",
       "target_id": "ciencias_de_la_computacion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_DOMINIO",
+      "source_id": "informatica_en_salud",
+      "target_id": "medicina",
       "properties": {}
     },
     {
@@ -56439,12 +56117,6 @@
     },
     {
       "type": "PERTENECE_A_DOMINIO",
-      "source_id": "ingenieria_electrica_y_electronica",
-      "target_id": "ingenieria",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
       "source_id": "ingenieria_general",
       "target_id": "ingenieria",
       "properties": {}
@@ -56453,12 +56125,6 @@
       "type": "PERTENECE_A_DOMINIO",
       "source_id": "ingenieria_industrial_y_de_manufactura",
       "target_id": "ciencias_ambientales",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "ingenieria_mecanica",
-      "target_id": "ingenieria",
       "properties": {}
     },
     {
@@ -56571,14 +56237,14 @@
     },
     {
       "type": "POSIBLE_ALIAS",
-      "source_id": "andres_berger_ricca",
-      "target_id": "andrés_berger",
+      "source_id": "andres_berger",
+      "target_id": "andres_berger_ricca",
       "properties": {}
     },
     {
       "type": "POSIBLE_ALIAS",
-      "source_id": "andrés_berger",
-      "target_id": "andres_berger_ricca",
+      "source_id": "andres_berger_ricca",
+      "target_id": "andres_berger",
       "properties": {}
     },
     {
@@ -56608,19 +56274,13 @@
     {
       "type": "POSIBLE_ALIAS",
       "source_id": "guillermo_dufort",
-      "target_id": "guillermo_dufort_y_álvarez",
+      "target_id": "guillermo_dufort_y_alvarez",
       "properties": {}
     },
     {
       "type": "POSIBLE_ALIAS",
-      "source_id": "guillermo_dufort_y_álvarez",
+      "source_id": "guillermo_dufort_y_alvarez",
       "target_id": "guillermo_dufort",
-      "properties": {}
-    },
-    {
-      "type": "POSIBLE_ALIAS",
-      "source_id": "guillermo_dufort_y_álvarez",
-      "target_id": "álvarez",
       "properties": {}
     },
     {
@@ -56637,38 +56297,26 @@
     },
     {
       "type": "POSIBLE_ALIAS",
-      "source_id": "matías_richart",
-      "target_id": "richart",
-      "properties": {}
-    },
-    {
-      "type": "POSIBLE_ALIAS",
-      "source_id": "matıas_richart",
+      "source_id": "matias_richart",
       "target_id": "richart",
       "properties": {}
     },
     {
       "type": "POSIBLE_ALIAS",
       "source_id": "pablo_alejandro_rodriguez_bocca",
-      "target_id": "pablo_rodríguez_bocca",
+      "target_id": "pablo_rodriguez_bocca",
       "properties": {}
     },
     {
       "type": "POSIBLE_ALIAS",
-      "source_id": "pablo_rodríguez_bocca",
+      "source_id": "pablo_rodriguez_bocca",
       "target_id": "pablo_alejandro_rodriguez_bocca",
       "properties": {}
     },
     {
       "type": "POSIBLE_ALIAS",
       "source_id": "richart",
-      "target_id": "matías_richart",
-      "properties": {}
-    },
-    {
-      "type": "POSIBLE_ALIAS",
-      "source_id": "richart",
-      "target_id": "matıas_richart",
+      "target_id": "matias_richart",
       "properties": {}
     },
     {
@@ -56681,12 +56329,6 @@
       "type": "POSIBLE_ALIAS",
       "source_id": "richart_gutierrez",
       "target_id": "richart",
-      "properties": {}
-    },
-    {
-      "type": "POSIBLE_ALIAS",
-      "source_id": "álvarez",
-      "target_id": "guillermo_dufort_y_álvarez",
       "properties": {}
     },
     {
@@ -69930,7 +69572,7 @@
       "source_id": "proy_2012_638",
       "target_id": "bibliotecologia_y_ciencias_de_la_informacion",
       "properties": {
-        "mention_count": 15
+        "mention_count": 14
       }
     },
     {
@@ -69946,7 +69588,7 @@
       "source_id": "proy_2012_638",
       "target_id": "sistemas_de_informacion",
       "properties": {
-        "mention_count": 16
+        "mention_count": 12
       }
     },
     {
@@ -69976,17 +69618,17 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_260",
-      "target_id": "ciencias_de_la_computacion_teoricas",
+      "target_id": "ingenieria_civil_y_estructural",
       "properties": {
-        "mention_count": 9
+        "mention_count": 20
       }
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2018_260",
-      "target_id": "ingenieria_civil_y_estructural",
+      "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "mention_count": 19
+        "mention_count": 10
       }
     },
     {
@@ -70002,7 +69644,7 @@
       "source_id": "proy_2018_413",
       "target_id": "ciencias_agricolas_y_biologicas_generales",
       "properties": {
-        "mention_count": 16
+        "mention_count": 13
       }
     },
     {
@@ -70010,7 +69652,7 @@
       "source_id": "proy_2018_413",
       "target_id": "ingenieria_ambiental",
       "properties": {
-        "mention_count": 10
+        "mention_count": 9
       }
     },
     {
@@ -70018,7 +69660,7 @@
       "source_id": "proy_2018_413",
       "target_id": "inteligencia_artificial",
       "properties": {
-        "mention_count": 31
+        "mention_count": 32
       }
     },
     {
@@ -70026,7 +69668,7 @@
       "source_id": "proy_2020_513",
       "target_id": "ingenieria_automotriz",
       "properties": {
-        "mention_count": 21
+        "mention_count": 17
       }
     },
     {
@@ -70034,7 +69676,7 @@
       "source_id": "proy_2020_513",
       "target_id": "ingenieria_de_control_y_sistemas",
       "properties": {
-        "mention_count": 39
+        "mention_count": 41
       }
     },
     {
@@ -70042,7 +69684,7 @@
       "source_id": "proy_2020_513",
       "target_id": "mecanica_computacional",
       "properties": {
-        "mention_count": 32
+        "mention_count": 31
       }
     },
     {
@@ -70127,13 +69769,13 @@
     }
   ],
   "source_summary": {
-    "neo4j_entities": 2357,
-    "neo4j_relationships": 5191,
+    "neo4j_entities": 2347,
+    "neo4j_relationships": 5149,
     "entity_type_counts": {
       "Anio": 6,
-      "Investigador": 61,
-      "Topico": 54,
-      "Dominio": 15,
+      "Investigador": 51,
+      "Topico": 53,
+      "Dominio": 16,
       "Documento": 18,
       "Chunk": 2198,
       "Proyecto": 5
@@ -70141,11 +69783,11 @@
     "relationship_type_counts": {
       "DE_DOCUMENTO": 2198,
       "ES_DESCRITO_POR": 15,
-      "EXTRAIDO_DE": 606,
+      "EXTRAIDO_DE": 579,
       "INICIO_EN": 5,
-      "PARTICIPO_EN": 62,
-      "PERTENECE_A_DOMINIO": 54,
-      "POSIBLE_ALIAS": 20,
+      "PARTICIPO_EN": 52,
+      "PERTENECE_A_DOMINIO": 53,
+      "POSIBLE_ALIAS": 16,
       "PRIMER_CHUNK": 17,
       "RESPONSABLE_DE": 8,
       "SIGUIENTE_CHUNK": 2181,
