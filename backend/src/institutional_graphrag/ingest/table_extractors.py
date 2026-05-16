@@ -370,8 +370,9 @@ def clean_table(input_file: str | Path, output_file: str | Path | None) -> None:
     ):
 
         writer = csv.writer(outfile)
+        reader_iter = csv.reader(infile)
 
-        header = next(csv.reader([infile.readline()]))
+        header = next(reader_iter)
         expected_columns = len(header)
 
         writer.writerow(header)
