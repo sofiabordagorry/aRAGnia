@@ -206,73 +206,70 @@ If no match:
         llm_result: LLMExtractionResult,
         existing_topic_ids: Optional[set[str]] = None,
     ) -> tuple[List[Entity], List[Relationship]]:
-        """Crear entidades y relaciones de tópicos con deduplicación global.
+        """Crear relaciones EXTRAIDO_DE desde chunks hacia tópicos ya cargados.
 
-        Solo crea entidades Topico y relaciones EXTRAIDO_DE desde chunks.
-        Las relaciones TIENE_TOPICO proyecto->topico se crean después por agregación.
+        Los tópicos y dominios se cargan al inicio; esta función solo crea relaciones.
         """
-        entities: list[Entity] = []
         relationships: list[Relationship] = []
         existing_ids = existing_topic_ids or set()
-        topics_by_name: dict[str, str] = {}
+        seen_chunk_topic: set[tuple[str, str]] = set()
 
         for mention in llm_result.topics:
             topic_normalized = mention.topic.lower().strip()
             topic_id = topic_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
 
-            # El tópico ya existe globalmente
-            if topic_id in existing_ids:
-                relationships.append(
-                    EXTRAIDO_DE(
-                        mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
-                    )
-                )
+            if topic_id not in existing_ids:
                 continue
 
-            # El tópico ya fue creado en esta misma llamada
-            if topic_normalized in topics_by_name:
-                existing_topic_id = topics_by_name[topic_normalized]
-                relationships.append(
-                    EXTRAIDO_DE(
-                        mention.chunk_id,
-                        existing_topic_id,
-                        properties={"evidence_text": mention.evidence},
-                    )
-                )
+            key = (mention.chunk_id, topic_id)
+            if key in seen_chunk_topic:
                 continue
+            seen_chunk_topic.add(key)
+
+            relationships.append(
+                EXTRAIDO_DE(
+                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
+                )
+            )
+
+        return [], relationships
+
+
+def load_all_topics_and_domains() -> tuple[list, list]:
+    """Load all Topico and Dominio entities from OpenAlex topics at startup."""
+    entities: list = []
+    relationships: list = []
+
+    if not TOPICS_PATH.exists():
+        logger.warning(f"Topics file not found: {TOPICS_PATH}")
+        return entities, relationships
+
+    with open(TOPICS_PATH, encoding="utf-8") as f:
+        data = json.load(f)
+
+    for field_name, field_data in data.items():
+        field_normalized = field_name.lower().strip()
+        field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
+        domain_value = "".join(
+            c
+            for c in unicodedata.normalize("NFD", field_name.lower())
+            if unicodedata.category(c) != "Mn" or c == "̃"
+        )
+        domain_value = unicodedata.normalize("NFC", domain_value)
+        entities.append(Dominio(field_id, domain_value))
+
+        for subfield in field_data.get("subfields", []):
+            subfield_normalized = subfield.lower().strip()
+            subfield_id = subfield_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
             topic_value = "".join(
                 c
-                for c in unicodedata.normalize("NFD", mention.topic.lower())
-                if unicodedata.category(c) != "Mn" or c == "\u0303"
+                for c in unicodedata.normalize("NFD", subfield.lower())
+                if unicodedata.category(c) != "Mn" or c == "̃"
             )
             topic_value = unicodedata.normalize("NFC", topic_value)
+            entities.append(Topico(id=subfield_id, value=topic_value))
+            relationships.append(PERTENECE_A_DOMINIO(subfield_id, field_id))
 
-            entities.append(Topico(id=topic_id, value=topic_value))
-            field_name = self.subfields_map.get(topic_normalized)
-            if field_name:
-                field_normalized = field_name.lower().strip()
-                field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-                domain_value = "".join(
-                    c
-                    for c in unicodedata.normalize("NFD", field_name.lower())
-                    if unicodedata.category(c) != "Mn" or c == "\u0303"
-                )
-                domain_value = unicodedata.normalize("NFC", domain_value)
+    return entities, relationships
 
-                entities.append(Dominio(field_id, domain_value))
-                relationships.append(PERTENECE_A_DOMINIO(topic_id, field_id))
-            relationships.append(
-                EXTRAIDO_DE(
-                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
-                )
-            )
-            relationships.append(
-                EXTRAIDO_DE(
-                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
-                )
-            )
 
-            topics_by_name[topic_normalized] = topic_id
-            existing_ids.add(topic_id)
-
-        return entities, relationships
