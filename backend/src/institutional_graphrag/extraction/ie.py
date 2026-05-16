@@ -17,6 +17,7 @@ from institutional_graphrag.extraction.llm_extractor import (
     create_entities_and_relationships_from_llm_extraction,
 )
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
+from institutional_graphrag.extraction.tabular_extractor import TabularResearcherExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -52,6 +53,7 @@ class EntityExtractor:
         self.input_dir = base / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
+        self.tabular = TabularResearcherExtractor()
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -105,6 +107,7 @@ class EntityExtractor:
 
         self._extract_chunks()
         self._extract_projects_and_responsible()
+        self._extract_researchers_from_tabular()
         self._extract_with_llm(
             max_docs=max_docs,
             llm_researchers=llm_researchers,
@@ -260,7 +263,6 @@ class EntityExtractor:
                 # reemplazar la entidad existente
                 for i, existing in enumerate(self.res.entities):
                     if existing.label == e.label and str(existing.id) == str(e.id):
-                        # Si un investigador es extraido por tabla y por llm mantiene ambas fuentes
                         if (
                             e.label == "Investigador"
                             and isinstance(existing.value, dict)
@@ -269,14 +271,19 @@ class EntityExtractor:
                             old_source = existing.value.get("source")
                             new_source = e.value.get("source")
 
-                            if (
-                                isinstance(old_source, list)
-                                or isinstance(new_source, list)
-                                or (old_source and new_source and old_source != new_source)
-                            ):
-                                e.value["source"] = ["rule_based", "llm"]
+                            if old_source and new_source and old_source != new_source:
+                                sources: list[str] = []
+                                for s in (old_source, new_source):
+                                    if isinstance(s, list):
+                                        sources.extend(s)
+                                    else:
+                                        sources.append(s)
+                                e.value["source"] = sorted(set(sources))
 
-                            for prop in ("cedula", "mail", "afiliacion"):
+                            for prop in (
+                                "nombre", "apellido", "documento", "tipo_documento",
+                                "pais_documento", "sexo", "cedula", "mail", "afiliacion",
+                            ):
                                 if not e.value.get(prop) and existing.value.get(prop):
                                     e.value[prop] = existing.value[prop]
                         self.res.entities[i] = e
@@ -372,6 +379,12 @@ class EntityExtractor:
         res = self.rule_based.extract_projects_and_responsible_from_tables(
             self.doc_by_id, self.chunks_dir
         )
+        self.add_entities(res.entities)
+        self.add_relationship(res.relationships)
+        self.res.errors.extend(res.errors)
+
+    def _extract_researchers_from_tabular(self) -> None:
+        res = self.tabular.extract_from_directory(self.table_dir)
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)

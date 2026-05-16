@@ -18,18 +18,14 @@ from institutional_graphrag.document_naming import (
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
-    EXTRAIDO_DE,
     INICIO_EN,
-    PARTICIPO_EN,
     PRIMER_CHUNK,
-    RESPONSABLE_DE,
     SIGUIENTE_CHUNK,
     TITULO_EXTRAIDO_DE,
     Anio,
     Chunk,
     Documento,
     Entity,
-    Investigador,
     Proyecto,
     Relationship,
 )
@@ -775,99 +771,4 @@ class RuleBasedExtractor:
         project_id: str,
         table_chunk_id: str,
     ):
-        for full_name, fallback in people:
-            # buscar en chunks (primero full, luego fallback)
-            candidate_in_text = None
-            if full_name:
-                candidate_in_text = full_name
-
-            if not candidate_in_text and fallback:
-                candidate_in_text = fallback
-
-            if not candidate_in_text:
-                continue
-
-            # Validar que no sea un valor inválido
-            invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
-            words = candidate_in_text.lower().split()
-            if any(inv in words for inv in invalid_values):
-
-                continue
-
-            current = inv_ids_by_project.get(project_id, set())
-            if (
-                fallback
-                and any(name == fallback for _, name in current)
-                and candidate_in_text == fallback
-            ) or (full_name and any(name == full_name for _, name in current)):
-                continue
-
-            # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
-            if fallback:
-                current = inv_ids_by_project.setdefault(project_id, set())
-                to_remove = {item for item in current if item[1] == fallback}
-                if to_remove:
-                    inv_ids_by_project[project_id] -= to_remove
-
-                    for candidate_to_remove in to_remove:
-                        inv_id = candidate_to_remove[0]
-
-                        self.res.entities = [
-                            e
-                            for e in self.res.entities
-                            if not (e.label == "Investigador" and e.id == inv_id)
-                        ]
-                        self.res.relationships = [
-                            r
-                            for r in self.res.relationships
-                            if not (r.source_id == inv_id or r.target_id == inv_id)
-                        ]
-
-            candidate_id = self.make_candidate_id(candidate_in_text)
-            if candidate_id:
-                investigador_name = "".join(
-                    c
-                    for c in unicodedata.normalize("NFD", candidate_in_text.lower())
-                    if unicodedata.category(c) != "Mn" or c == "\u0303"
-                )
-                investigador_name = unicodedata.normalize("NFC", investigador_name)
-
-                self.res.entities.append(
-                    Investigador(
-                        id=candidate_id,
-                        value={
-                            "name": investigador_name,
-                            "display_name": candidate_in_text.strip().title(),
-                            "source": "rule_based",
-                        },
-                    )
-                )
-                self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                self.res.relationships.append(RESPONSABLE_DE(candidate_id, project_id))
-                self.res.relationships.append(
-                    EXTRAIDO_DE(
-                        table_chunk_id,
-                        candidate_id,
-                        properties={
-                            "evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"
-                        },
-                    )
-                )
-                inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
-
-    def make_candidate_id(self, name: str) -> str:
-        # 1) pasar a minúsculas
-        s = name.lower()
-
-        # 2) quitar acentos
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c) or c == "\u0303")
-        s = unicodedata.normalize("NFC", s)
-
-        # 3) reemplazar cualquier cosa que no sea letra o número por _
-        s = re.sub(r"[^a-z0-9]+", "_", s)
-
-        # 4) limpiar _ al inicio/final
-        s = s.strip("_")
-
-        return s
+        pass
