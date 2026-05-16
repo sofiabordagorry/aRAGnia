@@ -405,7 +405,6 @@ def test_llm_topics_and_project_aggregation(
     def mock_extract_topics(chunks_list, max_chunks=None):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
-            researchers=[],
             topics=[TopicMention(topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id)],
             errors=[],
         )
@@ -593,86 +592,25 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
 def test_ie_add_entities_source_merging_border_cases(extractor: EntityExtractor):
     """
     Border Cases: Prueba la lógica de add_entities de ie.py para la propiedad 'source'.
-    Verifica que:
-    1. Distintos -> ["rule_based", "llm"]
-    2. Iguales -> se mantiene como string ("llm" o "rule_based")
+    Verifica que agregar el mismo investigador dos veces (mismo ID tabular) mantiene
+    la fuente como "tabular" sin crear una lista.
     """
-
-    # CASO 1: rule_based + llm -> lista
-    inv1 = Investigador(id="juan_perez", value={"name": "Juan Perez", "source": "rule_based"})
+    inv1 = Investigador(id="uy_ci_12345678", value={"name": "Juan Perez", "source": "tabular"})
     extractor.add_entities([inv1])
 
-    inv2 = Investigador(id="juan_perez", value={"name": "Juan Pérez", "source": "llm"})
-    extractor.add_entities([inv2])  # Sobrescribe y fusiona
+    inv2 = Investigador(id="uy_ci_12345678", value={"name": "Juan Pérez", "source": "tabular"})
+    extractor.add_entities([inv2])
 
-    merged = next(e for e in extractor.res.entities if e.id == "juan_perez")
-    assert set(merged.value["source"]) == {"rule_based", "llm"}
-    assert merged.value["name"] == "Juan Pérez"  # Mantiene el nombre del último (LLM)
-
-    # CASO 2: llm + llm -> se mantiene como string
-    inv3 = Investigador(id="maria_gomez", value={"name": "Maria", "source": "llm"})
-    extractor.add_entities([inv3])
-
-    inv4 = Investigador(id="maria_gomez", value={"name": "María Gómez", "source": "llm"})
-    extractor.add_entities([inv4])
-
-    merged_maria = next(e for e in extractor.res.entities if e.id == "maria_gomez")
-    assert merged_maria.value["source"] == "llm", "Fuentes iguales no deben crear lista"
-def test_llm_extractor_include_headings_flag(monkeypatch):
-    """
-    Verifica que el flag include_headings formatee correctamente el texto
-    aislando la jerarquía de encabezados antes de enviarlo al LLM.
-    """
-    extractor = LLMEntityExtractor.__new__(LLMEntityExtractor)
-
-    # Lista para capturar el string exacto enviado al método singular
-    captured_texts = []
-
-    # Mock del método singular para interceptar el texto y evitar llamadas reales al LLM
-    def mock_singular_extract(chunk_text, chunk_id):
-        captured_texts.append(chunk_text)
-        return LLMExtractionResult(researchers=[], topics=[], errors=[])
-
-    monkeypatch.setattr(extractor, "extract_researchers_from_chunk", mock_singular_extract)
-
-    # --- Escenario 1: include_headings = True (Texto de cuerpo normal) ---
-    chunk_normal = {
-        "chunk_id": "c1",
-        "text": "Este es el contenido principal de la sección.",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
-    }
-
-    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=True)
-
-    assert (
-        captured_texts[-1] == "Capítulo 1\nSección A\nEste es el contenido principal de la sección."
-    )
-
-    # --- Escenario 2: include_headings = False ---
-    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=False)
-
-    # Solo debe contener el texto puro
-    assert captured_texts[-1] == "Este es el contenido principal de la sección."
-
-    # --- Escenario 3: include_headings = True pero el texto ES el encabezado ---
-    chunk_header = {
-        "chunk_id": "c2",
-        "text": "Sección A",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
-    }
-    extractor.extract_researchers_from_chunks([chunk_header], include_headings=True)
-
-    # Debe retornar la jerarquía sin duplicar "Sección A" al final
-    assert captured_texts[-1] == "Capítulo 1\nSección A"
-
-
+    merged = next(e for e in extractor.res.entities if e.id == "uy_ci_12345678")
+    assert merged.value["source"] == "tabular"
+    assert merged.value["name"] == "Juan Pérez"
 def test_investigador_value_with_extra_properties():
     """Test creating Investigador with cedula, mail, and afiliacion."""
     inv = Investigador(
-        id="juan_perez",
+        id="uy_ci_12345678",
         value={
             "name": "Juan Pérez",
-            "source": "llm",
+            "source": "tabular",
             "cedula": "1.234.567-8",
             "mail": "jperez@fing.edu.uy",
             "afiliacion": "Facultad de Ingeniería, UdelaR",

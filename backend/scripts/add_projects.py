@@ -40,7 +40,6 @@ async def main():
     service = IngestService(
         data_dir=DATA_DIR,
         env_path=ENV_PATH,
-        enable_researcher_consolidation=False,
         keep_debug_artifacts=True,
     )
     for encoded_path in url_encoded_paths:

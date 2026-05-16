@@ -253,7 +253,6 @@ def get_history():
 def get_graph_snapshot(
     node_limit: int = Query(default=160, ge=1, le=500),
     relationship_limit: int = Query(default=320, ge=1, le=1200),
-    alias_only: bool = Query(default=False),
 ):
     reader: Optional[GraphBuilder] = None
     try:
@@ -261,7 +260,6 @@ def get_graph_snapshot(
         return reader.fetch_graph_snapshot(
             node_limit=node_limit,
             relationship_limit=relationship_limit,
-            alias_only=alias_only,
         )
     except Exception as e:
         logger.error("No se pudo obtener el snapshot del grafo", exc_info=True)
@@ -299,7 +297,6 @@ def get_graph_entities(
 def get_graph_neighborhood(
     entity_id: str = Query(..., min_length=1),
     relationship_limit: int = Query(default=320, ge=1, le=1200),
-    alias_only: bool = Query(default=False),
 ):
     reader: Optional[GraphBuilder] = None
     try:
@@ -307,7 +304,6 @@ def get_graph_neighborhood(
         return reader.fetch_graph_neighborhood(
             entity_id=entity_id,
             relationship_limit=relationship_limit,
-            alias_only=alias_only,
         )
     except Exception as e:
         logger.error("No se pudo obtener la vecindad de la entidad", exc_info=True)

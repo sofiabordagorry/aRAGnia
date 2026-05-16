@@ -14,9 +14,7 @@ Opciones:
     --skip-docling          Saltear parseo Docling (si ya está hecho)
     --skip-chunks           Saltear generación de chunks
     --skip-extraction       Saltear extracción de entidades/relaciones
-    --no-llm-researchers    Desactivar extracción LLM de investigadores
     --no-llm-topics         Desactivar extracción LLM de tópicos
-    --researcher-consolidation  Activar consolidación de investigadores
     --max-docs N            Límite de documentos para extracción (debug)
     --env-file PATH         Archivo .env con variables de entorno (default: .env)
 """
@@ -144,13 +142,11 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
 def step_extraction(
     data_dir: Path,
     max_docs: int | None,
-    llm_researchers: bool,
     llm_topics: bool,
-    researcher_consolidation: bool,
     checkpoint_every: int = 5,
     llm_model: str | None = None,
 ) -> None:
-    """Extrae entidades y relaciones (reglas + LLM) y las postprocesa."""
+    """Extrae entidades y relaciones (tabular + LLM tópicos) y las postprocesa."""
     log.info("Etapa 3: Extracción")
 
     from institutional_graphrag.extraction.ie import EntityExtractor
@@ -159,7 +155,6 @@ def step_extraction(
     extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(
         max_docs=max_docs,
-        llm_researchers=llm_researchers,
         llm_topics=llm_topics,
         checkpoint_every=checkpoint_every,
     )
@@ -174,11 +169,7 @@ def step_extraction(
     )
 
     log.info("Iniciando post-procesamiento...")
-    post = Postprocessor(
-        enable_researcher_consolidation=researcher_consolidation,
-        similarity_threshold=0.85,
-    )
-    post.postprocess_file(out_path)
+    Postprocessor().postprocess_file(out_path)
 
     log.info("Etapa 3 completada — guardado en: %s", out_path)
 
@@ -210,12 +201,8 @@ def parse_args() -> argparse.Namespace:
                         help="Cantidad de documentos por lote en Docling (default: 10)")
 
     # Opciones de extracción
-    parser.add_argument("--no-llm-researchers", action="store_true",
-                        help="Desactivar LLM para investigadores")
     parser.add_argument("--no-llm-topics", action="store_true",
                         help="Desactivar LLM para tópicos")
-    parser.add_argument("--researcher-consolidation", action="store_true",
-                        help="Activar consolidación de investigadores")
     parser.add_argument("--max-docs", type=int, default=None,
                         help="Límite de documentos (None = todos)")
     parser.add_argument("--checkpoint-every", type=int, default=5,
@@ -250,9 +237,7 @@ def main() -> None:
         step_extraction(
             data_dir=data_dir,
             max_docs=args.max_docs,
-            llm_researchers=not args.no_llm_researchers,
             llm_topics=not args.no_llm_topics,
-            researcher_consolidation=args.researcher_consolidation,
             checkpoint_every=args.checkpoint_every,
         )
     else:

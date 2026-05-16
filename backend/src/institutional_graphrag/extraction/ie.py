@@ -143,7 +143,6 @@ class EntityExtractor:
                             val = v.get(k)
 
                             if k == "source" and isinstance(val, list):
-                                # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
                                 if expected not in val:
                                     match = False
                                     break

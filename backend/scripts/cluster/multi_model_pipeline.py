@@ -11,9 +11,7 @@ Opciones:
     --data-dir PATH         Directorio raíz de datos (default: ./data)
     --skip-docling          Saltear Docling (si ya está procesado)
     --skip-chunks           Saltear chunking
-    --no-llm-researchers    Desactivar extracción LLM de investigadores
     --no-llm-topics         Desactivar extracción LLM de tópicos
-    --researcher-consolidation  Activar consolidación de investigadores
     --max-docs N            Límite de documentos por modelo (None = todos)
     --env-file PATH         Archivo .env con variables de entorno
 """
@@ -71,9 +69,7 @@ def run_pipeline_for_model(
     model_name: str,
     skip_docling: bool = False,
     skip_chunks: bool = False,
-    no_llm_researchers: bool = False,
     no_llm_topics: bool = False,
-    researcher_consolidation: bool = False,
     max_docs: int | None = None,
     env_file: Path | None = None,
 ) -> None:
@@ -153,9 +149,7 @@ def run_pipeline_for_model(
     step_extraction(
         data_dir=model_data_dir,
         max_docs=max_docs,
-        llm_researchers=not no_llm_researchers,
         llm_topics=not no_llm_topics,
-        researcher_consolidation=researcher_consolidation,
         llm_model=model_name,
     )
 
@@ -212,19 +206,9 @@ def parse_args() -> argparse.Namespace:
 
     # Opciones de extracción
     parser.add_argument(
-        "--no-llm-researchers",
-        action="store_true",
-        help="Desactivar LLM para investigadores",
-    )
-    parser.add_argument(
         "--no-llm-topics",
         action="store_true",
         help="Desactivar LLM para tópicos",
-    )
-    parser.add_argument(
-        "--researcher-consolidation",
-        action="store_true",
-        help="Activar consolidación de investigadores",
     )
     parser.add_argument(
         "--max-docs",
@@ -263,9 +247,7 @@ def main() -> None:
                 model_name=model,
                 skip_docling=args.skip_docling,
                 skip_chunks=args.skip_chunks,
-                no_llm_researchers=args.no_llm_researchers,
                 no_llm_topics=args.no_llm_topics,
-                researcher_consolidation=args.researcher_consolidation,
                 max_docs=args.max_docs,
                 env_file=args.env_file,
             )

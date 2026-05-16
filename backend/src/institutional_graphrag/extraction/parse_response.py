@@ -6,19 +6,6 @@ from typing import Any, Dict, List, Optional
 
 
 @dataclass
-class ResearcherMention:
-    """Mención de investigador en un chunk."""
-
-    name: str
-    display_name: str
-    evidence: str
-    chunk_id: str
-    cedula: Optional[str] = None
-    mail: Optional[str] = None
-    afiliacion: Optional[str] = None
-
-
-@dataclass
 class TopicMention:
     """Mención de tópico en un chunk."""
 
@@ -31,7 +18,6 @@ class TopicMention:
 class LLMExtractionResult:
     """Resultado de extracción LLM."""
 
-    researchers: List[ResearcherMention]
     topics: List[TopicMention]
     errors: List[Dict[str, Any]]
 
@@ -511,92 +497,6 @@ def _normalized_name_has_valid_chars(name: str) -> bool:
     return not bool(re.fullmatch(r"[A-Za-zÑñ. ]+", name))
 
 
-def parse_researcher_response(
-    response: str, chunk_id: str, chunk_text: str = ""
-) -> LLMExtractionResult:
-    """Parsear respuesta del LLM."""
-    errors: list = []
-    researchers: list = []
-    data, errors = _extract_json(response, chunk_id)
-    if errors != []:
-        return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-    try:
-        researchers_data, errors = _valid_json_structure(data, "researchers", chunk_id)
-        if errors != []:
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
-
-        for item in researchers_data:
-            name, evidence, errors_aux = _validate_json_sub_structure(item, "name", chunk_id)
-            if errors_aux != []:
-                errors.extend(errors_aux)
-                continue
-
-            # 2. Verificar que el nombre esté en el chunk
-            real_name = _name_in_chunk_validation(name, chunk_text)
-            if real_name:
-                name = real_name
-
-            name = normalize_researcher_name(name)
-
-            if not name:
-                errors.append(
-                    {
-                        "type": "MissingName",
-                        "chunk_id": chunk_id,
-                        "message": "Falta el campo 'name' o está vacío",
-                    }
-                )
-                continue
-
-            errors_aux = _validate_name(name, chunk_id)
-            if errors_aux:
-                errors.extend(errors_aux)
-                continue
-
-            # VALIDACIÓN: Verificar que evidencia y nombre estén en el chunk
-            match_ratio = _evidence_not_in_chunk_validation(evidence, chunk_text, 1)
-            if match_ratio is not None:
-                errors.append(
-                    {
-                        "type": "EvidenceNotInChunk",
-                        "chunk_id": chunk_id,
-                        "message": f"La evidencia '{evidence[:80]}...' no está en el chunk (solo {match_ratio:.0%} de palabras coinciden)",
-                    }
-                )
-                continue
-
-            # Extraer propiedades opcionales
-            cedula = _clean_optional_field(item.get("cedula"))
-            if cedula:
-                cedula = _validate_cedula(cedula)
-
-            mail = _clean_optional_field(item.get("mail"))
-            if mail:
-                mail = _validate_mail(mail)
-
-            afiliacion = _clean_optional_field(item.get("afiliacion"))
-
-            formatted_display_name = real_name.strip().title()
-
-            # Si llegamos hasta acá, pasó todas las validaciones
-            researchers.append(
-                ResearcherMention(
-                    name=name,
-                    display_name=formatted_display_name,
-                    evidence=evidence,
-                    chunk_id=chunk_id,
-                    cedula=cedula,
-                    mail=mail,
-                    afiliacion=afiliacion,
-                )
-            )
-
-    except json.JSONDecodeError as e:
-        errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
-
-    return LLMExtractionResult(researchers=researchers, topics=[], errors=errors)
-
-
 def _list_topic_validation(topic: str, available_topics: list[str]) -> bool:
     # Validar que el tópico esté en la lista permitida
     # Comparación case-insensitive
@@ -655,12 +555,12 @@ def parse_topic_response(
 
     data, errors = _extract_json(response, chunk_id)
     if errors != []:
-        return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+        return LLMExtractionResult(topics=[], errors=errors)
 
     try:
         topics_data, errors = _valid_json_structure(data, "topics", chunk_id)
         if errors != []:
-            return LLMExtractionResult(researchers=[], topics=[], errors=errors)
+            return LLMExtractionResult(topics=[], errors=errors)
 
         for item in topics_data:
             topic, evidence, errors_aux = _validate_json_sub_structure(item, "topic", chunk_id)
@@ -705,4 +605,4 @@ def parse_topic_response(
     except json.JSONDecodeError as e:
         errors.append({"type": "JSONDecodeError", "chunk_id": chunk_id, "message": str(e)})
 
-    return LLMExtractionResult(researchers=[], topics=topics, errors=errors)
+    return LLMExtractionResult(topics=topics, errors=errors)

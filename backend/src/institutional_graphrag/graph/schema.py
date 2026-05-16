@@ -5,7 +5,7 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional
 
 from typing_extensions import NotRequired, TypedDict
 
@@ -27,10 +27,7 @@ class DocumentoValue(TypedDict):
 class InvestigadorValue(TypedDict):
     name: str
     display_name: NotRequired[str]
-    source: Union[
-        Literal["rule_based", "llm", "tabular"],
-        List[Literal["rule_based", "llm", "tabular"]],
-    ]
+    source: Literal["tabular"]
     nombre: NotRequired[str]
     apellido: NotRequired[str]
     documento: NotRequired[str]
