@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 import re
 from pathlib import Path
@@ -350,9 +351,6 @@ def _parent_doc_from_filename(stem: str) -> str:
 #                   FUNCIONES DE NUEVA TABLAS POS CSIC                     #
 #                                                                          #
 ############################################################################
-
-import csv
-from pathlib import Path
 
 
 def starts_new_row(line: str) -> bool:
