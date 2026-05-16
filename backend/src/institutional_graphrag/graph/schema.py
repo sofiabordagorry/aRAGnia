@@ -308,22 +308,6 @@ def EXTRAIDO_DE(
     )
 
 
-def POSIBLE_ALIAS(
-    investigador_id: str, investigador2_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación POSIBLE_ALIAS.
-
-    (Investigador)-[POSIBLE_ALIAS]->(Investigador)
-    """
-    return Relationship(
-        type="POSIBLE_ALIAS",
-        source_id=investigador_id,
-        target_id=investigador2_id,
-        properties=properties or {},
-    )
-
-
 def TITULO_EXTRAIDO_DE(
     proyect_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -366,7 +350,6 @@ class GraphSchema:
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EXTRAIDO_DE": EXTRAIDO_DE,
         "TITULO_EXTRAIDO_DE": TITULO_EXTRAIDO_DE,
-        "POSIBLE_ALIAS": POSIBLE_ALIAS,
     }
 
     @classmethod
@@ -417,7 +400,6 @@ def validate_relationship_endpoints(
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
-        "POSIBLE_ALIAS": ("Investigador", "Investigador"),
         "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
     }
 
