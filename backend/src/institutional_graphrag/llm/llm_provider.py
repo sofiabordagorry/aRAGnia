@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 from dotenv import load_dotenv
@@ -54,12 +54,12 @@ class HuggingFaceClient:
         self.quantization = os.getenv("HF_QUANTIZATION", "none").lower()
         cache_dir = os.getenv("HF_CACHE_DIR") or None
 
-        tokenizer_kwargs = {"cache_dir": cache_dir}
+        tokenizer_kwargs: dict[str, Any] = {"cache_dir": cache_dir}
 
         if "mistral" in model_id.lower():
             tokenizer_kwargs["fix_mistral_regex"] = True
 
-        model_kwargs = {
+        model_kwargs: dict[str, Any] = {
             "device_map": "auto" if torch.cuda.is_available() else "cpu",
             "cache_dir": cache_dir,
             "trust_remote_code": True,
