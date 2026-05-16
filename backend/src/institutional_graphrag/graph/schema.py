@@ -145,7 +145,6 @@ def PARTICIPO_EN(
     )
 
 
-
 def TIENE_TOPICO(
     proyecto_id: str, topico_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:

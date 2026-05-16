@@ -111,9 +111,7 @@ class TabularResearcherExtractor:
             errors.append(
                 {
                     "type": "MissingResearcherID",
-                    "message": (
-                        f"Fila {lineno}: faltan pais_documento/tipo_documento/documento"
-                    ),
+                    "message": (f"Fila {lineno}: faltan pais_documento/tipo_documento/documento"),
                 }
             )
             return errors

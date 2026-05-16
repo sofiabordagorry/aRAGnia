@@ -270,8 +270,15 @@ class EntityExtractor:
                                 e.value["source"] = sorted(set(sources))
 
                             for prop in (
-                                "nombre", "apellido", "documento", "tipo_documento",
-                                "pais_documento", "sexo", "cedula", "mail", "afiliacion",
+                                "nombre",
+                                "apellido",
+                                "documento",
+                                "tipo_documento",
+                                "pais_documento",
+                                "sexo",
+                                "cedula",
+                                "mail",
+                                "afiliacion",
                             ):
                                 if not e.value.get(prop) and existing.value.get(prop):
                                     e.value[prop] = existing.value[prop]

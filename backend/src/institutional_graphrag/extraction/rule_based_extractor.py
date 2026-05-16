@@ -657,4 +657,3 @@ class RuleBasedExtractor:
             pass
         s = str(v).strip()
         return s if s else None
-

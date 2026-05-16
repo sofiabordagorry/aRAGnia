@@ -158,7 +158,9 @@ class Postprocessor:
         researchers = deduped
 
         if dedup_changes:
-            print(f"[Consolidación] {len(dedup_changes)} investigadores duplicados por ID eliminados")
+            print(
+                f"[Consolidación] {len(dedup_changes)} investigadores duplicados por ID eliminados"
+            )
             transformation_log.append(
                 {
                     "step": "Deduplicación por ID",
@@ -185,7 +187,12 @@ class Postprocessor:
                     researchers_with_valid_rels.add(target_id)
 
             props = rel.get("properties") or {}
-            rel_key = (rel.get("source_id"), rel.get("target_id"), rel.get("type"), props.get("calidad"))
+            rel_key = (
+                rel.get("source_id"),
+                rel.get("target_id"),
+                rel.get("type"),
+                props.get("calidad"),
+            )
             if rel_key in seen_relationships:
                 duplicate_rels_removed += 1
                 continue

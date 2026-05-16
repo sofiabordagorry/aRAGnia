@@ -42,6 +42,7 @@ log = logging.getLogger("pipeline")
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _load_env(env_file: Path) -> None:
     """Carga variables de entorno desde un archivo .env si existe."""
     if env_file.exists():
@@ -50,7 +51,10 @@ def _load_env(env_file: Path) -> None:
         load_dotenv(env_file)
         log.info("Variables de entorno cargadas desde: %s", env_file)
     else:
-        log.warning("Archivo .env no encontrado en %s — se asume que las variables ya están en el entorno.", env_file)
+        log.warning(
+            "Archivo .env no encontrado en %s — se asume que las variables ya están en el entorno.",
+            env_file,
+        )
 
 
 def _require_dir(path: Path, name: str) -> None:
@@ -62,6 +66,7 @@ def _require_dir(path: Path, name: str) -> None:
 # ---------------------------------------------------------------------------
 # Etapas del pipeline
 # ---------------------------------------------------------------------------
+
 
 def step_docling(corpus_dir: Path, docling_dir: Path, batch_size: int = 10) -> None:
     """Parsea los PDFs del corpus con Docling y guarda JSONs estructurados."""
@@ -137,7 +142,14 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
         convert_table_to_chunks()
     except FileNotFoundError as exc:
         log.warning("No se procesaron tablas: %s", exc)
-    log.info("Etapa 2 completada — total=%d procesados=%d salteados=%d errores=%d", len(json_files), processed, skipped, errors)
+    log.info(
+        "Etapa 2 completada — total=%d procesados=%d salteados=%d errores=%d",
+        len(json_files),
+        processed,
+        skipped,
+        errors,
+    )
+
 
 def step_extraction(
     data_dir: Path,
@@ -165,7 +177,9 @@ def step_extraction(
 
     log.info(
         "Extracción completada — entidades=%d relaciones=%d errores=%d",
-        len(res.entities), len(res.relationships), len(res.errors),
+        len(res.entities),
+        len(res.relationships),
+        len(res.errors),
     )
 
     log.info("Iniciando post-procesamiento...")
@@ -178,35 +192,49 @@ def step_extraction(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Pipeline: Docling → Chunks → Extracción"
-    )
+    parser = argparse.ArgumentParser(description="Pipeline: Docling → Chunks → Extracción")
     repo_root = Path(__file__).resolve().parents[3]
     default_data = repo_root / "data"
 
-    parser.add_argument("--data-dir", type=Path, default=default_data,
-                        help="Directorio raíz de datos (default: ./data)")
-    parser.add_argument("--env-file", type=Path, default=repo_root / "backend" / ".env",
-                        help="Archivo .env con variables de entorno")
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        default=default_data,
+        help="Directorio raíz de datos (default: ./data)",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        default=repo_root / "backend" / ".env",
+        help="Archivo .env con variables de entorno",
+    )
 
     # Etapas opcionales
-    parser.add_argument("--skip-docling", action="store_true",
-                        help="Saltear etapa Docling")
-    parser.add_argument("--skip-chunks", action="store_true",
-                        help="Saltear etapa de chunking")
-    parser.add_argument("--skip-extraction", action="store_true",
-                        help="Saltear etapa de extracción")
-    parser.add_argument("--docling-batch-size", type=int, default=10,
-                        help="Cantidad de documentos por lote en Docling (default: 10)")
+    parser.add_argument("--skip-docling", action="store_true", help="Saltear etapa Docling")
+    parser.add_argument("--skip-chunks", action="store_true", help="Saltear etapa de chunking")
+    parser.add_argument(
+        "--skip-extraction", action="store_true", help="Saltear etapa de extracción"
+    )
+    parser.add_argument(
+        "--docling-batch-size",
+        type=int,
+        default=10,
+        help="Cantidad de documentos por lote en Docling (default: 10)",
+    )
 
     # Opciones de extracción
-    parser.add_argument("--no-llm-topics", action="store_true",
-                        help="Desactivar LLM para tópicos")
-    parser.add_argument("--max-docs", type=int, default=None,
-                        help="Límite de documentos (None = todos)")
-    parser.add_argument("--checkpoint-every", type=int, default=5,
-                        help="Guardar checkpoint cada N documentos en extracción LLM (default: 5)")
+    parser.add_argument("--no-llm-topics", action="store_true", help="Desactivar LLM para tópicos")
+    parser.add_argument(
+        "--max-docs", type=int, default=None, help="Límite de documentos (None = todos)"
+    )
+    parser.add_argument(
+        "--checkpoint-every",
+        type=int,
+        default=5,
+        help="Guardar checkpoint cada N documentos en extracción LLM (default: 5)",
+    )
 
     return parser.parse_args()
 

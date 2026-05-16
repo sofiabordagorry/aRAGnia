@@ -13,7 +13,6 @@ import pytest
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
     LLMExtractionResult,
     TopicMention,
 )
@@ -26,7 +25,6 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     Topico,
 )
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 # -------------------------
 # Helpers
@@ -384,17 +382,23 @@ def test_llm_topics_and_project_aggregation(
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
         source="C:/tmp/gi_2010_152_informe.pdf",
-        chunks=[{"chunk_id": "gi_2010_152_informe_chunk0", "text": "machine learning", "metadata": {}}],
+        chunks=[
+            {"chunk_id": "gi_2010_152_informe_chunk0", "text": "machine learning", "metadata": {}}
+        ],
     )
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_152_propuesta_chunks.json",
         source="C:/tmp/gi_2010_152_propuesta.pdf",
-        chunks=[{"chunk_id": "gi_2010_152_propuesta_chunk0", "text": "machine learning", "metadata": {}}],
+        chunks=[
+            {"chunk_id": "gi_2010_152_propuesta_chunk0", "text": "machine learning", "metadata": {}}
+        ],
     )
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_391_informe_chunks.json",
         source="C:/tmp/gi_2010_391_informe.pdf",
-        chunks=[{"chunk_id": "gi_2010_391_informe_chunk0", "text": "machine learning", "metadata": {}}],
+        chunks=[
+            {"chunk_id": "gi_2010_391_informe_chunk0", "text": "machine learning", "metadata": {}}
+        ],
     )
 
     extractor._extract_chunks()
@@ -405,7 +409,11 @@ def test_llm_topics_and_project_aggregation(
     def mock_extract_topics(chunks_list, max_chunks=None):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
-            topics=[TopicMention(topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id)],
+            topics=[
+                TopicMention(
+                    topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id
+                )
+            ],
             errors=[],
         )
 
@@ -422,7 +430,9 @@ def test_llm_topics_and_project_aggregation(
             evidence = m.evidence or ""
             topic_id = "machine_learning"
             if topic_id not in existing_topic_ids:
-                new_entities.append(Topico(id=topic_id, value={"value": "Machine Learning", "source": "llm"}))
+                new_entities.append(
+                    Topico(id=topic_id, value={"value": "Machine Learning", "source": "llm"})
+                )
             new_relationships.append(
                 Relationship(
                     type="EXTRAIDO_DE",
@@ -445,13 +455,15 @@ def test_llm_topics_and_project_aggregation(
     assert len(topicos) == 1, "Topic global => 1 entidad Topico"
 
     evidencia_top = [
-        r for r in extractor.res.relationships
+        r
+        for r in extractor.res.relationships
         if r.type == "EXTRAIDO_DE" and r.target_id == "machine_learning"
     ]
     assert len(evidencia_top) == 3, "3 chunks => 3 evidencias del tópico"
 
     tiene_topico_rels = [
-        r for r in extractor.res.relationships
+        r
+        for r in extractor.res.relationships
         if r.type == "TIENE_TOPICO" and r.target_id == "machine_learning"
     ]
     assert len(tiene_topico_rels) == 2, "2 proyectos => 2 relaciones TIENE_TOPICO"
@@ -487,7 +499,13 @@ def test_rule_based_tables_do_not_create_investigators(extractor: EntityExtracto
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
         source="C:/tmp/gi_2010_152_informe.pdf",
-        chunks=[{"chunk_id": "gi_2010_152_informe_chunk0", "text": "Titulo: Proyecto Gamma", "metadata": {}}],
+        chunks=[
+            {
+                "chunk_id": "gi_2010_152_informe_chunk0",
+                "text": "Titulo: Proyecto Gamma",
+                "metadata": {},
+            }
+        ],
     )
 
     df = pd.DataFrame(
@@ -567,9 +585,45 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
 
     csv_path = tmp_path / "equipos_test.csv"
     rows = [
-        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "11111", "nombres": "ANA", "apellidos": "GARCIA", "sexo": "F", "calidad": "Responsable", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
-        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "22222", "nombres": "LUIS", "apellidos": "PEREZ", "sexo": "M", "calidad": "Integrante", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
-        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "33333", "nombres": "JOSE", "apellidos": "RUIZ", "sexo": "M", "calidad": "Otros", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "11111",
+            "nombres": "ANA",
+            "apellidos": "GARCIA",
+            "sexo": "F",
+            "calidad": "Responsable",
+            "id_unico": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "22222",
+            "nombres": "LUIS",
+            "apellidos": "PEREZ",
+            "sexo": "M",
+            "calidad": "Integrante",
+            "id_unico": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "33333",
+            "nombres": "JOSE",
+            "apellidos": "RUIZ",
+            "sexo": "M",
+            "calidad": "Otros",
+            "id_unico": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
     ]
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
@@ -581,7 +635,9 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
     participo_rels = [r for r in result.relationships if r.type == "PARTICIPO_EN"]
     calidades = {r.properties.get("calidad") for r in participo_rels}
     assert calidades == {"responsable", "integrante", "otros"}
-    assert all(r.properties.get("calidad") for r in participo_rels), "Toda PARTICIPO_EN debe tener calidad"
+    assert all(
+        r.properties.get("calidad") for r in participo_rels
+    ), "Toda PARTICIPO_EN debe tener calidad"
 
 
 # -------------------------
@@ -604,6 +660,8 @@ def test_ie_add_entities_source_merging_border_cases(extractor: EntityExtractor)
     merged = next(e for e in extractor.res.entities if e.id == "uy_ci_12345678")
     assert merged.value["source"] == "tabular"
     assert merged.value["name"] == "Juan Pérez"
+
+
 def test_investigador_value_with_extra_properties():
     """Test creating Investigador with cedula, mail, and afiliacion."""
     inv = Investigador(

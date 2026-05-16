@@ -37,11 +37,11 @@ log = logging.getLogger("multi_model_pipeline")
 
 # Modelos LLM a utilizar
 LLM_MODELS = [
-    #"Qwen/Qwen2.5-7B-Instruct",
-    #"meta-llama/Llama-3.1-8B-Instruct",
-   # "Qwen/Qwen3.5-9B",
+    # "Qwen/Qwen2.5-7B-Instruct",
+    # "meta-llama/Llama-3.1-8B-Instruct",
+    # "Qwen/Qwen3.5-9B",
     "google/gemma-4-E4B-it",
-    "google/gemma-4-26B-A4B-it" 
+    "google/gemma-4-26B-A4B-it",
 ]
 
 
@@ -49,6 +49,7 @@ def _load_env(env_file: Path) -> None:
     """Carga variables de entorno desde un archivo .env si existe."""
     if env_file.exists():
         from dotenv import load_dotenv
+
         load_dotenv(env_file)
         log.info("Variables de entorno cargadas desde: %s", env_file)
     else:
@@ -75,7 +76,7 @@ def run_pipeline_for_model(
 ) -> None:
     """Ejecuta el pipeline completo para un modelo LLM específico."""
     import importlib.util
-    
+
     # Cargar dinámicamente pipeline.py
     pipeline_path = Path(__file__).parent / "pipeline.py"
     spec = importlib.util.spec_from_file_location("pipeline_module", pipeline_path)
@@ -226,13 +227,13 @@ def main() -> None:
     data_dir = args.data_dir.resolve()
     corpus_dir = data_dir / "corpus"
 
-    log.info("\n" + "="*70)
+    log.info("\n" + "=" * 70)
     log.info("PIPELINE MULTI-MODELO")
-    log.info("="*70)
+    log.info("=" * 70)
     log.info("Modelos a procesar:")
     for i, model in enumerate(LLM_MODELS, 1):
         log.info(f"  {i}. {model}")
-    log.info("="*70 + "\n")
+    log.info("=" * 70 + "\n")
 
     _require_dir(corpus_dir, "corpus")
 
@@ -262,7 +263,7 @@ def main() -> None:
             failed_models.append((model, f"{type(e).__name__}: {e}"))
             continue
 
-    log.info("\n" + "="*70)
+    log.info("\n" + "=" * 70)
     if failed_models:
         log.warning(
             "MODELOS CON ERROR (%d/%d):",
@@ -271,9 +272,9 @@ def main() -> None:
         )
         for name, err in failed_models:
             log.warning("  - %s: %s", name, err)
-        log.info("-"*70)
+        log.info("-" * 70)
     log.info("TODOS LOS MODELOS PROCESADOS")
-    log.info("="*70)
+    log.info("=" * 70)
     log.info(f"Resultados guardados en: {data_dir / 'results'}")
     log.info("\nEstructura de salida:")
     results_dir = data_dir / "results"
@@ -284,7 +285,7 @@ def main() -> None:
                 if entity_file.exists():
                     size = entity_file.stat().st_size / 1024
                     log.info(f"  - {model_dir.name}/entity_documents.json ({size:.1f} KB)")
-    log.info("="*70 + "\n")
+    log.info("=" * 70 + "\n")
 
 
 if __name__ == "__main__":

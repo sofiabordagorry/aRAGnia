@@ -276,5 +276,3 @@ If no match:
             existing_ids.add(topic_id)
 
         return entities, relationships
-
-

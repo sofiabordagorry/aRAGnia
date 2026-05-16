@@ -9,14 +9,15 @@ from institutional_graphrag.services.ingest_service import IngestService
 # ==============================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
-ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env") 
+ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
-INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"  
+INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"
 
 
 # ==============================
 # MAIN ASYNC
 # ==============================
+
 
 async def main(keep_debug_artifacts: bool, include_headings: bool):
     print("Inicializando IngestService...")
@@ -35,7 +36,6 @@ async def main(keep_debug_artifacts: bool, include_headings: bool):
         print(result)
     except Exception as e:
         print(f"Error durante el ingest: {e}")
-    
 
 
 # ==============================
