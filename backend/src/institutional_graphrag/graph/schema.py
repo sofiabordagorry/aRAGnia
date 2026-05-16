@@ -27,7 +27,16 @@ class DocumentoValue(TypedDict):
 class InvestigadorValue(TypedDict):
     name: str
     display_name: NotRequired[str]
-    source: Union[Literal["rule_based", "llm"], List[Literal["rule_based", "llm"]]]
+    source: Union[
+        Literal["rule_based", "llm", "tabular"],
+        List[Literal["rule_based", "llm", "tabular"]],
+    ]
+    nombre: NotRequired[str]
+    apellido: NotRequired[str]
+    documento: NotRequired[str]
+    tipo_documento: NotRequired[str]
+    pais_documento: NotRequired[str]
+    sexo: NotRequired[str]
     cedula: NotRequired[str]
     mail: NotRequired[str]
     afiliacion: NotRequired[str]
@@ -133,6 +142,22 @@ def PARTICIPO_EN(
     """
     return Relationship(
         type="PARTICIPO_EN",
+        source_id=investigador_id,
+        target_id=proyecto_id,
+        properties=properties or {},
+    )
+
+
+def OTROS_EN(
+    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación OTROS_EN.
+
+    (Investigador)-[OTROS_EN]->(Proyecto)
+    """
+    return Relationship(
+        type="OTROS_EN",
         source_id=investigador_id,
         target_id=proyecto_id,
         properties=properties or {},
@@ -330,6 +355,7 @@ class GraphSchema:
     # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
+        "OTROS_EN": OTROS_EN,
         "RESPONSABLE_DE": RESPONSABLE_DE,
         "TIENE_TOPICO": TIENE_TOPICO,
         "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
@@ -381,6 +407,7 @@ def validate_relationship_endpoints(
     # Definir combinaciones válidas
     valid_combinations = {
         "PARTICIPO_EN": ("Investigador", "Proyecto"),
+        "OTROS_EN": ("Investigador", "Proyecto"),
         "RESPONSABLE_DE": ("Investigador", "Proyecto"),
         "TIENE_TOPICO": ("Proyecto", "Topico"),
         "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
