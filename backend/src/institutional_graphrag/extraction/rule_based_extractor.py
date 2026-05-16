@@ -233,7 +233,6 @@ class RuleBasedExtractor:
     ) -> ExtractionResult:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         all_projects_candidates: dict[str, list[dict[str, Any]]] = defaultdict(list)
-        inv_ids_by_project = self._build_indexes()
         normalized_targets = {self._normalize_col(x) for x in TYPE_TABLE_NAME}
         self.doc_by_id = doc_by_id
 
@@ -253,7 +252,7 @@ class RuleBasedExtractor:
                 continue
 
             chunk = self._collect_candidates_from_table_df(
-                df, title_col, responsible_cols, chunk_dir, inv_ids_by_project
+                df, title_col, responsible_cols, chunk_dir
             )
             for project_id, candidates in chunk.items():
                 all_projects_candidates[project_id].extend(candidates)
@@ -338,7 +337,6 @@ class RuleBasedExtractor:
         title_col: Optional[str],
         responsible_cols: Optional[List[str]],
         chunk_dir: Path,
-        inv_ids_by_project: dict[str, set[tuple[str, str]]],
     ) -> dict[str, list[dict[str, Any]]]:
         """
         De un df de tabla:
@@ -357,7 +355,6 @@ class RuleBasedExtractor:
             cols.extend(responsible_cols)
 
         small = df[cols].dropna(subset=[id_col])
-        cols = list(small.columns)
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
             frac_title = None
@@ -392,13 +389,6 @@ class RuleBasedExtractor:
                 candidate["year"] = doc.value["year_publisher"]
                 candidate["table_chunk_id"] = table_chunk_id
                 projects[project_id].append(candidate)
-            ####
-            # Investigador
-            ####
-            people = self._extract_up_to_people(row, cols, id_col)
-            self._process_table_investigators(
-                people, inv_ids_by_project, project_id, table_chunk_id
-            )
         return projects
 
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
@@ -642,77 +632,6 @@ class RuleBasedExtractor:
             for p in projects_by_key.get(base_id, []):
                 self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
 
-    ################################
-    # Auxiliares para Responsables #
-    ################################
-
-    def _build_indexes(self) -> dict[str, set[tuple[str, str]]]:
-        inv_ids_by_project: dict[str, set[tuple[str, str]]] = defaultdict(set)
-
-        # Si no hay investigadores aún, va a quedar vacío. Está bien.
-        investigators_by_id: dict[str, str] = {
-            str(e.id): str(e.value.get("name", "")) if isinstance(e.value, dict) else str(e.value)
-            for e in self.res.entities
-            if e.label == "Investigador"
-        }
-
-        for r in self.res.relationships:
-            if r.type not in ["PARTICIPO_EN"]:
-                continue
-
-            inv_id = str(r.source_id)
-            proj_id = str(r.target_id)
-
-            name = investigators_by_id.get(inv_id)
-            if name:
-                inv_ids_by_project[proj_id].add((inv_id, name))
-
-        return dict(inv_ids_by_project)
-
-    def _extract_up_to_people(
-        self, row, cols: list[str], id_col: str
-    ) -> list[tuple[Optional[str], Optional[str]]]:
-        out: list[tuple[Optional[str], Optional[str]]] = []
-        i = 0
-
-        while i < len(cols):
-            c1 = cols[i]
-            if c1 == id_col:
-                i += 1
-                continue
-
-            c2 = cols[i + 1] if i + 1 < len(cols) else None
-
-            v1 = self.cell_str(row.get(c1))
-            v2 = self.cell_str(row.get(c2)) if c2 else None
-            # Nombre + Apellido (orden normal)
-            if c2 and self.is_name_col(c1) and self.is_lastname_col(c2):
-                full = f"{v1} {v2}" if (v1 and v2) else None
-                fallback = v2 or v1
-                out.append(self._clean_pair(full, fallback))
-                i += 2
-                continue
-
-            # Apellido + Nombre (orden invertido)
-            if c2 and self.is_lastname_col(c1) and self.is_name_col(c2):
-                full = f"{v2} {v1}" if (v1 and v2) else None
-                fallback = v1 or v2
-                out.append(self._clean_pair(full, fallback))
-                i += 2
-                continue
-
-            # Sueltos (Responsable / Nombre / Apellido)
-            if (
-                self.is_responsable_col(c1) or self.is_name_col(c1) or self.is_lastname_col(c1)
-            ) and v1:
-                out.append(self._clean_pair(None, v1))
-
-            i += 1
-
-        # eliminar pares vacíos y duplicados básicos
-        out = [(a, b) for (a, b) in out if a or b]
-        return out
-
     def _normalize_col(self, name: str) -> str:
         # mayúsculas + sin acentos + espacios simples
         if not isinstance(name, str):
@@ -728,18 +647,6 @@ class RuleBasedExtractor:
 
         return " ".join(name.split())
 
-    def is_name_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "NOMBRE" in c
-
-    def is_lastname_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "APELLIDO" in c
-
-    def is_responsable_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "RESPONSABLE" in c
-
     def cell_str(self, v) -> Optional[str]:
         if v is None:
             return None
@@ -751,24 +658,3 @@ class RuleBasedExtractor:
         s = str(v).strip()
         return s if s else None
 
-    def _clean_pair(
-        self, full: Optional[str], fallback: Optional[str]
-    ) -> tuple[Optional[str], Optional[str]]:
-        if full is not None:
-            full = full.strip()
-            if not full:
-                full = None
-        if fallback is not None:
-            fallback = fallback.strip()
-            if not fallback:
-                fallback = None
-        return full, fallback
-
-    def _process_table_investigators(
-        self,
-        people: list[tuple[Optional[str], Optional[str]]],
-        inv_ids_by_project: dict[str, set[tuple[str, str]]],
-        project_id: str,
-        table_chunk_id: str,
-    ):
-        pass
