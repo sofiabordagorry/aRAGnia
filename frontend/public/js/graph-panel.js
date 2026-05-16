@@ -331,7 +331,8 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function renderSelection(snapshot) {
     if (!els.selection) return;
     if (!state.selectedNodeId) {
-      els.selection.textContent = "Selecciona una entidad desde la card de exploración para visualizar su vecindad.";
+      els.selection.textContent =
+        "Selecciona una entidad desde la card de exploración para visualizar su vecindad.";
       return;
     }
 
@@ -807,7 +808,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       state.entityType = els.entityTypeSelect?.value || "";
       loadEntityCatalog();
     });
-
 
     els.refreshBtn?.addEventListener("click", async () => {
       const refreshTasks = [loadEntityCatalog()];
