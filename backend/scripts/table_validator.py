@@ -1,4 +1,3 @@
-from pathlib import Path
 import pandas as pd
 from pathlib import Path
 from institutional_graphrag.ingest.table_extractors import clean_table
