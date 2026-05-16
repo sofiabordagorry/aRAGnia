@@ -513,7 +513,7 @@ def test_rule_based_tables_do_not_create_investigators(extractor: EntityExtracto
 def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtractor, tmp_path: Path):
     """
     Border Case: La tabla contiene valores basura o vacíos explícitos ("N/A", "--").
-    Verifica que NO se creen investigadores basura ni relaciones RESPONSABLE_DE ni PARTICIPO_EN.
+    Verifica que NO se creen investigadores basura ni relaciones PARTICIPO_EN.
     """
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
     extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -549,12 +549,8 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
     )
     extractor._extract_projects_and_responsible()
 
-    responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
     participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
 
-    assert (
-        len(responsable_rels) == 0
-    ), "No se deben crear relaciones RESPONSABLE_DE para nombres inválidos"
     assert (
         len(participo_rels) == 0
     ), "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"

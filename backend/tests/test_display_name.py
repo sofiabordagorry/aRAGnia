@@ -25,8 +25,8 @@ load_dotenv(env_path)
         ),
         (
             "Multiple Variables",
-            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:RESPONSABLE_DE]-(y:Investigador) RETURN x.name AS investigador, y.name AS responsable",
-            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:RESPONSABLE_DE]-(y:Investigador) RETURN x.display_name AS investigador, y.display_name AS responsable",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.name AS investigador, y.name AS responsable",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.display_name AS investigador, y.display_name AS responsable",
         ),
         (
             "Query without Investigador (Should not modify)",

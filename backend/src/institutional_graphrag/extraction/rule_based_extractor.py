@@ -657,7 +657,7 @@ class RuleBasedExtractor:
         }
 
         for r in self.res.relationships:
-            if r.type not in ["PARTICIPO_EN", "RESPONSABLE_DE"]:
+            if r.type not in ["PARTICIPO_EN"]:
                 continue
 
             inv_id = str(r.source_id)

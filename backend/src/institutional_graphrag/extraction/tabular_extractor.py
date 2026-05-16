@@ -12,9 +12,7 @@ from typing import Any, Dict, List, Optional
 from institutional_graphrag.document_naming import build_project_id
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
-    OTROS_EN,
     PARTICIPO_EN,
-    RESPONSABLE_DE,
     Entity,
     Investigador,
     Proyecto,
@@ -22,12 +20,6 @@ from institutional_graphrag.graph.schema import (
 )
 
 RESEARCHER_CSV_PATTERN = re.compile(r"^equipos_.*\.csv$", re.IGNORECASE)
-
-CALIDAD_MAP: dict[str, str] = {
-    "responsable": "RESPONSABLE_DE",
-    "integrante": "PARTICIPO_EN",
-    "otros": "OTROS_EN",
-}
 
 
 @dataclass
@@ -237,9 +229,5 @@ class TabularResearcherExtractor:
     def _build_project_rel(
         self, inv_id: str, project_id: str, calidad: Optional[str]
     ) -> Relationship:
-        rel_type = CALIDAD_MAP.get((calidad or "").lower().strip(), "PARTICIPO_EN")
-        if rel_type == "RESPONSABLE_DE":
-            return RESPONSABLE_DE(inv_id, project_id)
-        if rel_type == "OTROS_EN":
-            return OTROS_EN(inv_id, project_id)
-        return PARTICIPO_EN(inv_id, project_id)
+        normalized = (calidad or "").lower().strip() or "integrante"
+        return PARTICIPO_EN(inv_id, project_id, {"calidad": normalized})

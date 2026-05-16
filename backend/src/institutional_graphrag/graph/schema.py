@@ -148,37 +148,6 @@ def PARTICIPO_EN(
     )
 
 
-def OTROS_EN(
-    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación OTROS_EN.
-
-    (Investigador)-[OTROS_EN]->(Proyecto)
-    """
-    return Relationship(
-        type="OTROS_EN",
-        source_id=investigador_id,
-        target_id=proyecto_id,
-        properties=properties or {},
-    )
-
-
-def RESPONSABLE_DE(
-    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación RESPONSABLE_DE.
-
-    (Investigador)-RESPONSABLE_DE->(Proyecto)
-    """
-    return Relationship(
-        type="RESPONSABLE_DE",
-        source_id=investigador_id,
-        target_id=proyecto_id,
-        properties=properties or {},
-    )
-
 
 def TIENE_TOPICO(
     proyecto_id: str, topico_id: str, properties: Optional[Dict[str, Any]] = None
@@ -339,8 +308,6 @@ class GraphSchema:
     # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
-        "OTROS_EN": OTROS_EN,
-        "RESPONSABLE_DE": RESPONSABLE_DE,
         "TIENE_TOPICO": TIENE_TOPICO,
         "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
@@ -390,8 +357,6 @@ def validate_relationship_endpoints(
     # Definir combinaciones válidas
     valid_combinations = {
         "PARTICIPO_EN": ("Investigador", "Proyecto"),
-        "OTROS_EN": ("Investigador", "Proyecto"),
-        "RESPONSABLE_DE": ("Investigador", "Proyecto"),
         "TIENE_TOPICO": ("Proyecto", "Topico"),
         "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
         "ES_DESCRITO_POR": ("Proyecto", "Documento"),

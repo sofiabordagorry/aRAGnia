@@ -394,8 +394,7 @@ CRITICAL SYNTAX:
         """
         Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
         Schema correcto:
-        - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-        - (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
+        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto)
         - (Proyecto)-[:TIENE_TOPICO]->(Topico)
         - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto)-[:INICIO_EN]->(Anio)
@@ -408,7 +407,6 @@ CRITICAL SYNTAX:
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
             ("Investigador", "PARTICIPO_EN", "Proyecto"),
-            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
             ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),
