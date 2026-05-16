@@ -659,5 +659,3 @@ def test_ie_add_entities_dedup_by_id(extractor: EntityExtractor):
     matches = [e for e in extractor.res.entities if e.id == "uy_ci_12345678"]
     assert len(matches) == 1
     assert matches[0].value["name"] == "Juan Pérez"
-
-

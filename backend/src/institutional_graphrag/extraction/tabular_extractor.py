@@ -19,6 +19,7 @@ from institutional_graphrag.graph.schema import (
     Relationship,
 )
 
+
 @dataclass
 class TabularExtractionResult:
     entities: List[Entity]
@@ -120,9 +121,7 @@ class TabularExtractor:
         if project_id is None:
             return errors
 
-        self._add_participation_relationships(
-            row, inv_id, project_id, relationships, seen_rel_keys
-        )
+        self._add_participation_relationships(row, inv_id, project_id, relationships, seen_rel_keys)
         return errors
 
     def _get_or_create_investigador(
