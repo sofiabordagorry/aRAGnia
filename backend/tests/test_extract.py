@@ -581,7 +581,7 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
 def test_tabular_extractor_calidad_property(tmp_path: Path):
     """La propiedad 'calidad' se guarda correctamente en la relación PARTICIPO_EN."""
     import csv
-    from institutional_graphrag.extraction.tabular_extractor import TabularResearcherExtractor
+    from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 
     csv_path = tmp_path / "equipos_test.csv"
     rows = [
@@ -630,7 +630,7 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
         writer.writeheader()
         writer.writerows(rows)
 
-    result = TabularResearcherExtractor().extract_from_csv(csv_path)
+    result = TabularExtractor().extract_from_csv(csv_path)
 
     participo_rels = [r for r in result.relationships if r.type == "PARTICIPO_EN"]
     calidades = {r.properties.get("calidad") for r in participo_rels}
@@ -645,35 +645,19 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
 # -------------------------
 
 
-def test_ie_add_entities_source_merging_border_cases(extractor: EntityExtractor):
+def test_ie_add_entities_dedup_by_id(extractor: EntityExtractor):
     """
-    Border Cases: Prueba la lógica de add_entities de ie.py para la propiedad 'source'.
-    Verifica que agregar el mismo investigador dos veces (mismo ID tabular) mantiene
-    la fuente como "tabular" sin crear una lista.
+    Agregar dos investigadores con el mismo ID reemplaza con el último visto
+    (sin crear duplicados).
     """
-    inv1 = Investigador(id="uy_ci_12345678", value={"name": "Juan Perez", "source": "tabular"})
+    inv1 = Investigador(id="uy_ci_12345678", value={"name": "Juan Perez"})
     extractor.add_entities([inv1])
 
-    inv2 = Investigador(id="uy_ci_12345678", value={"name": "Juan Pérez", "source": "tabular"})
+    inv2 = Investigador(id="uy_ci_12345678", value={"name": "Juan Pérez"})
     extractor.add_entities([inv2])
 
-    merged = next(e for e in extractor.res.entities if e.id == "uy_ci_12345678")
-    assert merged.value["source"] == "tabular"
-    assert merged.value["name"] == "Juan Pérez"
+    matches = [e for e in extractor.res.entities if e.id == "uy_ci_12345678"]
+    assert len(matches) == 1
+    assert matches[0].value["name"] == "Juan Pérez"
 
 
-def test_investigador_value_with_extra_properties():
-    """Test creating Investigador with cedula, mail, and afiliacion."""
-    inv = Investigador(
-        id="uy_ci_12345678",
-        value={
-            "name": "Juan Pérez",
-            "source": "tabular",
-            "cedula": "1.234.567-8",
-            "mail": "jperez@fing.edu.uy",
-            "afiliacion": "Facultad de Ingeniería, UdelaR",
-        },
-    )
-    assert inv.value["cedula"] == "1.234.567-8"
-    assert inv.value["mail"] == "jperez@fing.edu.uy"
-    assert inv.value["afiliacion"] == "Facultad de Ingeniería, UdelaR"

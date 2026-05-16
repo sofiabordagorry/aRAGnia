@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -75,12 +74,6 @@ def main(
         print("[OK] RUN y LOAD coinciden en conteos.")
         equal = normalize_result(res) == normalize_result(loaded)
         print("RES == LOADED ?", equal)
-
-    # 5) Post-procesamiento automático
-    print("\n" + "=" * 60)
-    print("INICIANDO POST-PROCESAMIENTO")
-    print("=" * 60)
-    Postprocessor().postprocess_file(out_path)
 
     return 0
 

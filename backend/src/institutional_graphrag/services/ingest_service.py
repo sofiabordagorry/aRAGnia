@@ -35,7 +35,6 @@ from institutional_graphrag.ingest.file_namer import (
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 from institutional_graphrag.ingest.table_extractors import extract_table
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
@@ -153,8 +152,7 @@ class IngestService:
         # Extracción con LLM (si tu EntityExtractor lo soporta)
         self.entity_extractor._extract_with_llm(include_headings=self.include_headings)
 
-        # Normalización
-        entity_dicts, rel_dicts = self._postprocess_entities()
+        entity_dicts, rel_dicts = self._collect_entity_dicts()
 
         # Guardar JSON normalizado
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
@@ -435,14 +433,9 @@ class IngestService:
                 }
             )
 
-    def _postprocess_entities(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def _collect_entity_dicts(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         entity_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
         rel_dicts = [r.to_dict() for r in self.entity_extractor.res.relationships]
-        post_processor = Postprocessor()
-
-        entity_dicts, rel_dicts, _ = post_processor.consolidate_researchers(entity_dicts, rel_dicts)
-
-        rel_dicts, _ = post_processor.add_missing_evidence_text(rel_dicts)
         return entity_dicts, rel_dicts
 
     def _save_entities_json(

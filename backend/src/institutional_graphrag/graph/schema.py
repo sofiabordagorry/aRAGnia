@@ -26,17 +26,11 @@ class DocumentoValue(TypedDict):
 
 class InvestigadorValue(TypedDict):
     name: str
-    display_name: NotRequired[str]
-    source: Literal["tabular"]
-    nombre: NotRequired[str]
-    apellido: NotRequired[str]
-    documento: NotRequired[str]
-    tipo_documento: NotRequired[str]
-    pais_documento: NotRequired[str]
-    sexo: NotRequired[str]
-    cedula: NotRequired[str]
-    mail: NotRequired[str]
-    afiliacion: NotRequired[str]
+    display_name: str
+    documento: str
+    tipo_documento: str
+    pais_documento: str
+    sexo: str
 
 
 @dataclass

@@ -8,7 +8,7 @@ import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.extraction.parse_response import (
+from institutional_graphrag.extraction.parse_topics import (
     LLMExtractionResult,
     TopicMention,
     parse_topic_response,

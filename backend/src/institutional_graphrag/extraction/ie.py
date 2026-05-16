@@ -14,7 +14,7 @@ import ijson
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.llm_extractor import LLMEntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.extraction.tabular_extractor import TabularResearcherExtractor
+from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -50,7 +50,7 @@ class EntityExtractor:
         self.input_dir = base / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
-        self.tabular = TabularResearcherExtractor()
+        self.tabular = TabularExtractor()
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -257,28 +257,11 @@ class EntityExtractor:
                             and isinstance(existing.value, dict)
                             and isinstance(e.value, dict)
                         ):
-                            old_source = existing.value.get("source")
-                            new_source = e.value.get("source")
-
-                            if old_source and new_source and old_source != new_source:
-                                sources: list[str] = []
-                                for s in (old_source, new_source):
-                                    if isinstance(s, list):
-                                        sources.extend(s)
-                                    else:
-                                        sources.append(s)
-                                e.value["source"] = sorted(set(sources))
-
                             for prop in (
-                                "nombre",
-                                "apellido",
                                 "documento",
                                 "tipo_documento",
                                 "pais_documento",
                                 "sexo",
-                                "cedula",
-                                "mail",
-                                "afiliacion",
                             ):
                                 if not e.value.get(prop) and existing.value.get(prop):
                                     e.value[prop] = existing.value[prop]
