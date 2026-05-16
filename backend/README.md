@@ -84,7 +84,7 @@ Carga un modelo previamente cuantizado con AWQ.
 pip install autoawq==0.2.6
 
 pip install transformers==4.46.3
-ee
+
 pip install numpy==1.26.4
 ```
 
