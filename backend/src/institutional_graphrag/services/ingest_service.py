@@ -50,11 +50,9 @@ class IngestService:
         *,
         data_dir: Path,
         env_path: Optional[Path] = None,
-        enable_researcher_consolidation: bool,
         keep_debug_artifacts: bool,
         include_headings: bool = True,
     ):
-        self.enable_researcher_consolidation = enable_researcher_consolidation
         self.keep_debug_artifacts = keep_debug_artifacts
         self.include_headings = include_headings
 
@@ -440,16 +438,9 @@ class IngestService:
     def _postprocess_entities(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         entity_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
         rel_dicts = [r.to_dict() for r in self.entity_extractor.res.relationships]
-        post_processor = Postprocessor(
-            enable_researcher_consolidation=self.enable_researcher_consolidation,
-            similarity_threshold=0.85,
-        )
+        post_processor = Postprocessor()
 
         entity_dicts, rel_dicts, _ = post_processor.consolidate_researchers(entity_dicts, rel_dicts)
-        entities_db = self.builder.fetch_researchers()
-        rel_dicts.extend(
-            post_processor.build_possible_alias_relationships(entities_db, entity_dicts)
-        )
 
         rel_dicts, _ = post_processor.add_missing_evidence_text(rel_dicts)
         return entity_dicts, rel_dicts

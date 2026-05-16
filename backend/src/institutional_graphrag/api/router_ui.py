@@ -61,21 +61,18 @@ class GraphNodeResponse(BaseModel):
     label: str
     display: str
     degree: int
-    is_alias_candidate: bool
 
 
 class GraphEdgeResponse(BaseModel):
     source: str
     target: str
     type: str
-    is_alias: bool
     properties: dict[str, Any] = {}
 
 
 class GraphSummaryResponse(BaseModel):
     node_count: int
     edge_count: int
-    alias_edge_count: int
 
 
 class GraphSnapshotResponse(BaseModel):
@@ -99,33 +96,8 @@ class GraphEntityCatalogResponse(BaseModel):
     summary: GraphEntityCatalogSummaryResponse
 
 
-class AliasEntityResponse(BaseModel):
-    id: str
-    name: str
-    label: str
-
-
-class AliasPairResponse(BaseModel):
-    source_id: str
-    source_name: str
-    target_id: str
-    target_name: str
-    relationship_properties: dict[str, Any] = {}
-
-
-class AliasSummaryResponse(BaseModel):
-    pair_count: int
-    entity_count: int
-
-
 class DeleteEntityRequest(BaseModel):
     entity_id: str
-
-
-class AliasCandidatesResponse(BaseModel):
-    pairs: list[AliasPairResponse]
-    entities: list[AliasEntityResponse]
-    summary: AliasSummaryResponse
 
 
 # =========================================================
@@ -187,7 +159,6 @@ def _run_ingest_job(job_id: str) -> None:
         service = IngestService(
             data_dir=DATA_DIR,
             env_path=ENV_PATH,
-            enable_researcher_consolidation=False,
             keep_debug_artifacts=False,
         )
 
@@ -365,20 +336,6 @@ def merge_researchers(body: MergeResearchersRequest):
     except Exception as e:
         logger.error("No se pudo unificar entidades", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error unificando entidades: {e}")
-    finally:
-        if reader is not None:
-            reader.close()
-
-
-@router.get("/graph/aliases", response_model=AliasCandidatesResponse)
-def get_alias_candidates(search: str = Query(default="")):
-    reader: Optional[GraphBuilder] = None
-    try:
-        reader = _get_graph_reader()
-        return reader.fetch_alias_candidates(search=search)
-    except Exception as e:
-        logger.error("No se pudieron obtener los posibles alias", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Error leyendo alias: {e}")
     finally:
         if reader is not None:
             reader.close()
