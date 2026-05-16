@@ -557,6 +557,35 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
 
 
 # -------------------------
+# Tabular extractor: propiedad calidad en PARTICIPO_EN
+# -------------------------
+
+
+def test_tabular_extractor_calidad_property(tmp_path: Path):
+    """La propiedad 'calidad' se guarda correctamente en la relación PARTICIPO_EN."""
+    import csv
+    from institutional_graphrag.extraction.tabular_extractor import TabularResearcherExtractor
+
+    csv_path = tmp_path / "equipos_test.csv"
+    rows = [
+        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "11111", "nombres": "ANA", "apellidos": "GARCIA", "sexo": "F", "calidad": "Responsable", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
+        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "22222", "nombres": "LUIS", "apellidos": "PEREZ", "sexo": "M", "calidad": "Integrante", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
+        {"pais_documento": "UY", "tipo_documento": "CI", "documento": "33333", "nombres": "JOSE", "apellidos": "RUIZ", "sexo": "M", "calidad": "Otros", "id_unico": "1", "anio": "2018", "programa": "I+D", "titulo": "Proyecto A"},
+    ]
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+    result = TabularResearcherExtractor().extract_from_csv(csv_path)
+
+    participo_rels = [r for r in result.relationships if r.type == "PARTICIPO_EN"]
+    calidades = {r.properties.get("calidad") for r in participo_rels}
+    assert calidades == {"responsable", "integrante", "otros"}
+    assert all(r.properties.get("calidad") for r in participo_rels), "Toda PARTICIPO_EN debe tener calidad"
+
+
+# -------------------------
 # Preservación de Propiedad 'source' (Reglas + LLM)
 # -------------------------
 

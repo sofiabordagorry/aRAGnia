@@ -335,7 +335,8 @@ SCHEMA:
 
 SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
-- Investigador.id follows 'lastname_firstname'; use Investigador.name for display
+- Investigador.id follows '{pais}_{tipo_documento}_{documento}'; search by Investigador.name (lowercase, no accents)
+- PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. Use it to filter by role: -[:PARTICIPO_EN {calidad: 'responsable'}]->
 - Proyecto.value contains the project title; Proyecto.id follows 'gi_2014_133'
 - Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'

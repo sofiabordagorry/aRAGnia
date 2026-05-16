@@ -184,7 +184,8 @@ class Postprocessor:
                 if isinstance(target_id, str):
                     researchers_with_valid_rels.add(target_id)
 
-            rel_key = (rel.get("source_id"), rel.get("target_id"), rel.get("type"))
+            props = rel.get("properties") or {}
+            rel_key = (rel.get("source_id"), rel.get("target_id"), rel.get("type"), props.get("calidad"))
             if rel_key in seen_relationships:
                 duplicate_rels_removed += 1
                 continue
