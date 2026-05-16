@@ -103,9 +103,8 @@ class TabularResearcherExtractor:
         apellidos = self._cell(row.get("apellidos"))
         sexo = self._cell(row.get("sexo"))
         calidad = self._cell(row.get("calidad"))
-        id_unico = self._cell(row.get("id_unico"))
+        id_formulario = self._cell(row.get("id_formulario"))
         anio = self._cell(row.get("anio"))
-        programa = self._cell(row.get("programa"))
         titulo = self._cell(row.get("titulo"))
 
         if not doc or not tipo or not pais:
@@ -119,17 +118,17 @@ class TabularResearcherExtractor:
             )
             return errors
 
-        if not id_unico or not anio:
+        if not id_formulario or not anio:
             errors.append(
                 {
                     "type": "MissingProjectID",
-                    "message": f"Fila {lineno}: faltan id_unico/anio",
+                    "message": f"Fila {lineno}: faltan id_formulario/anio",
                 }
             )
             return errors
 
         inv_id = self._make_researcher_id(pais, tipo, doc)
-        project_id = self._make_project_id(programa or "desconocido", anio, id_unico)
+        project_id = self._make_project_id(anio, id_formulario)
 
         if inv_id not in seen_investigators:
             display = self._build_display_name(nombres, apellidos)
@@ -185,16 +184,8 @@ class TabularResearcherExtractor:
         s = re.sub(r"[^a-z0-9]+", "_", s)
         return s.strip("_")
 
-    def _normalize_programa(self, programa: str) -> str:
-        s = programa.lower()
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
-        s = re.sub(r"[^a-z0-9]+", "_", s)
-        return s.strip("_")
-
-    def _make_project_id(self, programa: str, anio: str, id_unico: str) -> str:
-        group = self._normalize_programa(programa)
-        return build_project_id(group, anio, id_unico)
+    def _make_project_id(self, anio: str, id_formulario: str) -> str:
+        return build_project_id("proy", anio, id_formulario)
 
     def _build_display_name(self, nombres: Optional[str], apellidos: Optional[str]) -> str:
         parts = []
