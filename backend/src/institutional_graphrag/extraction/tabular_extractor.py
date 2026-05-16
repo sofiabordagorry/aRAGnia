@@ -47,7 +47,6 @@ class TabularResearcherExtractor:
             p for p in table_dir.iterdir() if p.is_file() and RESEARCHER_CSV_PATTERN.match(p.name)
         )
 
-        # Prefer *_clean.csv: build a map base_stem -> path, clean wins over original
         by_base: dict[str, Path] = {}
         for p in csv_files:
             base = re.sub(r"_clean$", "", p.stem, flags=re.IGNORECASE)
@@ -86,10 +85,6 @@ class TabularResearcherExtractor:
         entities.extend(seen_investigators.values())
         entities.extend(seen_projects.values())
         return TabularExtractionResult(entities, relationships, errors)
-
-    # -------------------------
-    # Row processing
-    # -------------------------
 
     def _process_row(
         self,
@@ -136,7 +131,6 @@ class TabularResearcherExtractor:
         inv_id = self._make_researcher_id(pais, tipo, doc)
         project_id = self._make_project_id(programa or "desconocido", anio, id_unico)
 
-        # --- Investigador ---
         if inv_id not in seen_investigators:
             display = self._build_display_name(nombres, apellidos)
             seen_investigators[inv_id] = Investigador(
@@ -154,16 +148,13 @@ class TabularResearcherExtractor:
                 },
             )
 
-        # --- Proyecto ---
         if project_id not in seen_projects:
             project_title = self._normalize_title(titulo or project_id)
             seen_projects[project_id] = Proyecto(id=project_id, value=project_title)
 
-        # --- Relación investigador → proyecto ---
         rel = self._build_project_rel(inv_id, project_id, calidad)
         relationships.append(rel)
 
-        # --- Evidencia ---
         evidence_text = (
             f"Investigador extraído de tabla: {nombres or ''} {apellidos or ''} "
             f"(doc: {doc}, calidad: {calidad or ''})"
@@ -178,10 +169,6 @@ class TabularResearcherExtractor:
         )
 
         return errors
-
-    # -------------------------
-    # Helpers
-    # -------------------------
 
     def _cell(self, v: Any) -> Optional[str]:
         if v is None:
