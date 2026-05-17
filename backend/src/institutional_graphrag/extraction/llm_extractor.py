@@ -271,5 +271,3 @@ def load_all_topics_and_domains() -> tuple[list, list]:
             relationships.append(PERTENECE_A_DOMINIO(subfield_id, field_id))
 
     return entities, relationships
-
-
