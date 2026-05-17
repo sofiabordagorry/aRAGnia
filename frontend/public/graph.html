@@ -13,25 +13,20 @@
     <main class="app">
       <section class="graph-page">
         <header class="graph-top">
-          <div>
-            <span class="graph-kicker">Exploración visual</span>
-            <h1 class="graph-title">Grafo de entidades</h1>
-            <p class="graph-substatus">
-              El grafo inicia vacío. Busca y selecciona una entidad para cargar
-              su vecindad.
-            </p>
-          </div>
-
-          <div class="graph-actions">
-            <button id="refreshGraphBtn" class="secondary-btn" type="button">
-              Actualizar grafo
-            </button>
-          </div>
+          <span class="graph-kicker">Exploración visual</span>
+          <h1 class="graph-title">Grafo de entidades</h1>
+          <p class="graph-substatus">
+            El grafo inicia vacío. Busca y selecciona una entidad para cargar su
+            vecindad.
+          </p>
         </header>
 
         <div class="graph-metrics">
           <span id="graphNodeCount" class="metric-pill">0 nodos</span>
           <span id="graphEdgeCount" class="metric-pill">0 relaciones</span>
+          <button id="refreshGraphBtn" class="secondary-btn" type="button">
+            Actualizar grafo
+          </button>
         </div>
 
         <section class="graph-shell">
