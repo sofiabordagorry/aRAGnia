@@ -91,10 +91,6 @@ class EntityExtractor:
         self.add_entities(topic_entities)
         self.add_relationship(topic_rels)
 
-        topic_entities, topic_rels = load_all_topics_and_domains()
-        self.add_entities(topic_entities)
-        self.add_relationship(topic_rels)
-
         entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
             self.load_subset_from_graph_json(
