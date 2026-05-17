@@ -371,8 +371,8 @@ class GraphBuilder:
             return str(
                 props.get("display_name") or props.get("name") or props.get("id") or "Investigador"
             )
-        if label == "Proyecto":
-            return str(props.get("value") or props.get("id") or "Proyecto")
+        if label in ("Proyecto", "Grupo"):
+            return str(props.get("value") or props.get("id") or label)
         if label == "Topico":
             return str(props.get("value") or props.get("id") or "Topico")
         if label == "Anio":
@@ -764,7 +764,7 @@ class GraphBuilder:
                 props.pop("__created__", None)
                 props.pop("id", None)
 
-                if label in {"Proyecto", "Topico", "Dominio"}:
+                if label in {"Proyecto", "Grupo", "Topico", "Dominio"}:
                     value = props.get("value")
 
                     if isinstance(value, dict) and "value" in value:

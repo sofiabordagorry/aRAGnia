@@ -24,6 +24,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   const LABEL_COLORS = {
     Investigador: "#0f766e",
     Proyecto: "#1d4ed8",
+    Grupo: "#1565c0",
     Topico: "#c2410c",
     Documento: "#6d28d9",
     Anio: "#334155",

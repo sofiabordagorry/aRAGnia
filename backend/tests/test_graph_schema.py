@@ -22,6 +22,7 @@ from institutional_graphrag.graph.schema import (
     Documento,
     DocumentoValue,
     GraphSchema,
+    Grupo,
     Investigador,
     InvestigadorValue,
     Proyecto,
@@ -57,6 +58,13 @@ class TestEntities:
         assert proyecto.id == "proyecto_123"
         assert proyecto.label == "Proyecto"
         assert proyecto.value == "GraphRAG Research"
+
+    def test_grupo_creation(self):
+        """Test creating a Grupo entity."""
+        grupo = Grupo(id="gi_2014_133", value="Grupo de Investigación")
+        assert grupo.id == "gi_2014_133"
+        assert grupo.label == "Grupo"
+        assert grupo.value == "Grupo de Investigación"
 
     def test_investigador_creation(self):
         """Test creating an Investigador entity."""
@@ -254,6 +262,7 @@ class TestGraphSchema:
         """Test listing all entity types."""
         entities = GraphSchema.list_entities()
         assert "Proyecto" in entities
+        assert "Grupo" in entities
         assert "Investigador" in entities
         assert "Topico" in entities
         assert "Documento" in entities
@@ -376,6 +385,22 @@ class TestValidation:
         rel = EXTRAIDO_DE("chunk_1", "inv_1")
 
         assert validate_relationship_endpoints(rel, chunk, investigador) is True
+
+    def test_validate_participo_en_grupo(self):
+        """Test validating PARTICIPO_EN relationship with Grupo."""
+        investigador = Investigador(id="inv_1", value="Dr. Smith")
+        grupo = Grupo(id="gi_2014_133", value="Grupo A")
+        rel = PARTICIPO_EN("inv_1", "gi_2014_133")
+
+        assert validate_relationship_endpoints(rel, investigador, grupo) is True
+
+    def test_validate_tiene_topico_grupo(self):
+        """Test validating TIENE_TOPICO relationship with Grupo."""
+        grupo = Grupo(id="gi_2014_133", value="Grupo A")
+        topico = Topico(id="topic_1", value="IA")
+        rel = TIENE_TOPICO("gi_2014_133", "topic_1")
+
+        assert validate_relationship_endpoints(rel, grupo, topico) is True
 
     def test_validate_invalid_relationship(self):
         """Test validating relationship with wrong entity types."""

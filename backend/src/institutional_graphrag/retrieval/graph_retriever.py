@@ -338,7 +338,9 @@ SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
 - Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
 - PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
-- Proyecto.value contains the project title; Proyecto.id follows 'proy_{{anio}}_{{id_formulario}}' (e.g., 'proy_2018_2')
+- Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
+- Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
+- Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
 - Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
@@ -396,29 +398,34 @@ CRITICAL SYNTAX:
         """
         Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
         Schema correcto:
-        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto)
-        - (Proyecto)-[:TIENE_TOPICO]->(Topico)
-        - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-        - (Proyecto)-[:INICIO_EN]->(Anio)
+        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto|Grupo)
+        - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
+        - (Proyecto|Grupo)-[:ES_DESCRITO_POR]->(Documento)
+        - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
         - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-        - (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+        - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
             ("Investigador", "PARTICIPO_EN", "Proyecto"),
+            ("Investigador", "PARTICIPO_EN", "Grupo"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
+            ("Grupo", "TIENE_TOPICO", "Topico"),
             ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),
+            ("Grupo", "ES_DESCRITO_POR", "Documento"),
             ("Proyecto", "INICIO_EN", "Anio"),
+            ("Grupo", "INICIO_EN", "Anio"),
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
             ("Chunk", "EXTRAIDO_DE", "Investigador"),
             ("Chunk", "EXTRAIDO_DE", "Topico"),
             ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
+            ("Grupo", "TITULO_EXTRAIDO_DE", "Chunk"),
         ]
         fixed = query
         corrections_made = []
@@ -662,7 +669,14 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                         chunks_in_record.append(value)
                     elif any(
                         label in labels
-                        for label in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                        for label in [
+                            "Investigador",
+                            "Topico",
+                            "Proyecto",
+                            "Grupo",
+                            "Documento",
+                            "Anio",
+                        ]
                     ):
                         entities_direct.append(value)
 
@@ -679,6 +693,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                                     "Investigador",
                                     "Topico",
                                     "Proyecto",
+                                    "Grupo",
                                     "Documento",
                                     "Anio",
                                 ]
@@ -692,14 +707,15 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     (
                         lbl
                         for lbl in entity_labels
-                        if lbl in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                        if lbl
+                        in ["Investigador", "Topico", "Proyecto", "Grupo", "Documento", "Anio"]
                     ),
                     "",
                 )
                 entity_id = props.get("id", "")
                 if entity_label == "Investigador":
                     entity_id = props.get("name", entity_id) or entity_id
-                elif entity_label == "Proyecto":
+                elif entity_label in ("Proyecto", "Grupo"):
                     raw_id = props.get("id", "")
                     title = props.get("value", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
@@ -759,6 +775,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         label_display = {
             "Proyecto": "Proyectos",
+            "Grupo": "Grupos",
             "Investigador": "Investigadores",
             "Topico": "Tópicos",
             "Documento": "Documentos",
@@ -767,7 +784,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
 
-        for label in ["Proyecto", "Investigador", "Topico", "Documento", "Anio"]:
+        for label in ["Proyecto", "Grupo", "Investigador", "Topico", "Documento", "Anio"]:
             entries = [
                 ((eid, lbl), props)
                 for (eid, lbl), props in evidence_entities.items()
@@ -777,7 +794,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 continue
             lines.append(f"\n{label_display[label]}:")
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
-                if label == "Proyecto":
+                if label in ("Proyecto", "Grupo"):
                     pid = props.get("id", "")
                     title = props.get("value", "") or props.get("name", "")
                     if title and pid:

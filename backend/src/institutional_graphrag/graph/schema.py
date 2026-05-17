@@ -94,6 +94,11 @@ class Proyecto(Entity):
 
 
 @dataclass
+class Grupo(Entity):
+    value: str
+
+
+@dataclass
 class Anio(Entity):
     value: AnioValue
 
@@ -287,6 +292,7 @@ class GraphSchema:
     # Tipos de entidades
     ENTITIES = {
         "Proyecto": Proyecto,
+        "Grupo": Grupo,
         "Anio": Anio,
         "Investigador": Investigador,
         "Topico": Topico,
@@ -344,18 +350,19 @@ def validate_relationship_endpoints(
     """
     Validar que una relación tiene los tipos de entidad origen y destino correctos.
     """
-    # Definir combinaciones válidas
-    valid_combinations = {
-        "PARTICIPO_EN": ("Investigador", "Proyecto"),
-        "TIENE_TOPICO": ("Proyecto", "Topico"),
+    PROJECT_TYPES = ("Proyecto", "Grupo")
+
+    valid_combinations: Dict[str, tuple] = {
+        "PARTICIPO_EN": ("Investigador", PROJECT_TYPES),
+        "TIENE_TOPICO": (PROJECT_TYPES, "Topico"),
         "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
-        "ES_DESCRITO_POR": ("Proyecto", "Documento"),
-        "INICIO_EN": ("Proyecto", "Anio"),
+        "ES_DESCRITO_POR": (PROJECT_TYPES, "Documento"),
+        "INICIO_EN": (PROJECT_TYPES, "Anio"),
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
-        "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
+        "TITULO_EXTRAIDO_DE": (PROJECT_TYPES, "Chunk"),
     }
 
     expected = valid_combinations.get(relationship.type)
@@ -365,7 +372,17 @@ def validate_relationship_endpoints(
     source_label = source_entity.label
     target_label = target_entity.label
 
-    if relationship.type == "EXTRAIDO_DE":
-        return source_label == expected[0] and target_label in expected[1]
+    expected_source, expected_target = expected
 
-    return source_label == expected[0] and target_label == expected[1]
+    source_ok = (
+        source_label in expected_source
+        if isinstance(expected_source, tuple)
+        else source_label == expected_source
+    )
+    target_ok = (
+        target_label in expected_target
+        if isinstance(expected_target, tuple)
+        else target_label == expected_target
+    )
+
+    return source_ok and target_ok

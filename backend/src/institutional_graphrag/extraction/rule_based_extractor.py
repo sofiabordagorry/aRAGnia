@@ -26,6 +26,7 @@ from institutional_graphrag.graph.schema import (
     Chunk,
     Documento,
     Entity,
+    Grupo,
     Proyecto,
     Relationship,
 )
@@ -493,6 +494,10 @@ class RuleBasedExtractor:
 
         return min(candidatos, key=_score)
 
+    @staticmethod
+    def _entity_class_for_id(project_id: str):
+        return Grupo if project_id.lower().startswith("gi_") else Proyecto
+
     def _add_project_from_best(self, project_id: str, best: dict[str, Any]) -> None:
         # mismo comportamiento que tu bloque
         project_title = "".join(
@@ -502,7 +507,8 @@ class RuleBasedExtractor:
         )
         project_title = unicodedata.normalize("NFC", project_title)
 
-        self.res.entities.append(Proyecto(id=project_id, value=project_title))
+        entity_class = self._entity_class_for_id(project_id)
+        self.res.entities.append(entity_class(id=project_id, value=project_title))
 
         year = best.get("year")
         if not year:
@@ -593,7 +599,8 @@ class RuleBasedExtractor:
             )
             fallback_title = unicodedata.normalize("NFC", fallback_title)
 
-            self.res.entities.append(Proyecto(id=project_id, value=fallback_title))
+            entity_class = self._entity_class_for_id(project_id)
+            self.res.entities.append(entity_class(id=project_id, value=fallback_title))
 
             if year:
                 self.res.relationships.append(INICIO_EN(project_id, best["year"]))
@@ -615,7 +622,7 @@ class RuleBasedExtractor:
 
     def _link_table_docs_to_projects(self, unrelated_docs: list[str]) -> None:
         projects_table: list[Proyecto] = [
-            cast(Proyecto, e) for e in self.res.entities if e.label == "Proyecto"
+            cast(Proyecto, e) for e in self.res.entities if e.label in ("Proyecto", "Grupo")
         ]
 
         projects_by_key: defaultdict[str, list[Proyecto]] = defaultdict(list)
