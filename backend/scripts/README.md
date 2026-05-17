@@ -49,9 +49,7 @@ cd backend
   - Uso básico: `python scripts/run_extraction.py`
   - Opciones útiles:
     - `--max-docs N`
-    - `--no-llm-researchers`
     - `--no-llm-topics`
-    - `--enable_researcher_consolidation`
 
 - `extract_end_to_end.py`
   - Corre un flujo de ingest end-to-end para un input configurado dentro del script.
@@ -60,7 +58,7 @@ cd backend
   - Uso: `python scripts/extract_end_to_end.py`
   - Opciones:
     - `--debug`
-    - `--enable_researcher_consolidation`
+    - `--no-headings`
 
 - `add_projects.py`
   - Ingresa varios proyectos predefinidos (paths hardcodeados en el script).

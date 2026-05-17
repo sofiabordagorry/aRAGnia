@@ -18,18 +18,14 @@ from institutional_graphrag.document_naming import (
 from institutional_graphrag.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
-    EXTRAIDO_DE,
     INICIO_EN,
-    PARTICIPO_EN,
     PRIMER_CHUNK,
-    RESPONSABLE_DE,
     SIGUIENTE_CHUNK,
     TITULO_EXTRAIDO_DE,
     Anio,
     Chunk,
     Documento,
     Entity,
-    Investigador,
     Proyecto,
     Relationship,
 )
@@ -237,7 +233,6 @@ class RuleBasedExtractor:
     ) -> ExtractionResult:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         all_projects_candidates: dict[str, list[dict[str, Any]]] = defaultdict(list)
-        inv_ids_by_project = self._build_indexes()
         normalized_targets = {self._normalize_col(x) for x in TYPE_TABLE_NAME}
         self.doc_by_id = doc_by_id
 
@@ -257,7 +252,7 @@ class RuleBasedExtractor:
                 continue
 
             chunk = self._collect_candidates_from_table_df(
-                df, title_col, responsible_cols, chunk_dir, inv_ids_by_project
+                df, title_col, responsible_cols, chunk_dir
             )
             for project_id, candidates in chunk.items():
                 all_projects_candidates[project_id].extend(candidates)
@@ -342,7 +337,6 @@ class RuleBasedExtractor:
         title_col: Optional[str],
         responsible_cols: Optional[List[str]],
         chunk_dir: Path,
-        inv_ids_by_project: dict[str, set[tuple[str, str]]],
     ) -> dict[str, list[dict[str, Any]]]:
         """
         De un df de tabla:
@@ -361,7 +355,6 @@ class RuleBasedExtractor:
             cols.extend(responsible_cols)
 
         small = df[cols].dropna(subset=[id_col])
-        cols = list(small.columns)
         for _, row in small.iterrows():
             doc_id = str(row[id_col]).strip()
             frac_title = None
@@ -396,13 +389,6 @@ class RuleBasedExtractor:
                 candidate["year"] = doc.value["year_publisher"]
                 candidate["table_chunk_id"] = table_chunk_id
                 projects[project_id].append(candidate)
-            ####
-            # Investigador
-            ####
-            people = self._extract_up_to_people(row, cols, id_col)
-            self._process_table_investigators(
-                people, inv_ids_by_project, project_id, table_chunk_id
-            )
         return projects
 
     def _search_title(self, path: Path, title: Optional[str]) -> Optional[dict[str, Any]]:
@@ -646,77 +632,6 @@ class RuleBasedExtractor:
             for p in projects_by_key.get(base_id, []):
                 self.res.relationships.append(ES_DESCRITO_POR(p.id, doc_id))
 
-    ################################
-    # Auxiliares para Responsables #
-    ################################
-
-    def _build_indexes(self) -> dict[str, set[tuple[str, str]]]:
-        inv_ids_by_project: dict[str, set[tuple[str, str]]] = defaultdict(set)
-
-        # Si no hay investigadores aún, va a quedar vacío. Está bien.
-        investigators_by_id: dict[str, str] = {
-            str(e.id): str(e.value.get("name", "")) if isinstance(e.value, dict) else str(e.value)
-            for e in self.res.entities
-            if e.label == "Investigador"
-        }
-
-        for r in self.res.relationships:
-            if r.type not in ["PARTICIPO_EN", "RESPONSABLE_DE"]:
-                continue
-
-            inv_id = str(r.source_id)
-            proj_id = str(r.target_id)
-
-            name = investigators_by_id.get(inv_id)
-            if name:
-                inv_ids_by_project[proj_id].add((inv_id, name))
-
-        return dict(inv_ids_by_project)
-
-    def _extract_up_to_people(
-        self, row, cols: list[str], id_col: str
-    ) -> list[tuple[Optional[str], Optional[str]]]:
-        out: list[tuple[Optional[str], Optional[str]]] = []
-        i = 0
-
-        while i < len(cols):
-            c1 = cols[i]
-            if c1 == id_col:
-                i += 1
-                continue
-
-            c2 = cols[i + 1] if i + 1 < len(cols) else None
-
-            v1 = self.cell_str(row.get(c1))
-            v2 = self.cell_str(row.get(c2)) if c2 else None
-            # Nombre + Apellido (orden normal)
-            if c2 and self.is_name_col(c1) and self.is_lastname_col(c2):
-                full = f"{v1} {v2}" if (v1 and v2) else None
-                fallback = v2 or v1
-                out.append(self._clean_pair(full, fallback))
-                i += 2
-                continue
-
-            # Apellido + Nombre (orden invertido)
-            if c2 and self.is_lastname_col(c1) and self.is_name_col(c2):
-                full = f"{v2} {v1}" if (v1 and v2) else None
-                fallback = v1 or v2
-                out.append(self._clean_pair(full, fallback))
-                i += 2
-                continue
-
-            # Sueltos (Responsable / Nombre / Apellido)
-            if (
-                self.is_responsable_col(c1) or self.is_name_col(c1) or self.is_lastname_col(c1)
-            ) and v1:
-                out.append(self._clean_pair(None, v1))
-
-            i += 1
-
-        # eliminar pares vacíos y duplicados básicos
-        out = [(a, b) for (a, b) in out if a or b]
-        return out
-
     def _normalize_col(self, name: str) -> str:
         # mayúsculas + sin acentos + espacios simples
         if not isinstance(name, str):
@@ -732,18 +647,6 @@ class RuleBasedExtractor:
 
         return " ".join(name.split())
 
-    def is_name_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "NOMBRE" in c
-
-    def is_lastname_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "APELLIDO" in c
-
-    def is_responsable_col(self, col: str) -> bool:
-        c = self._normalize_col(col).upper()
-        return "RESPONSABLE" in c
-
     def cell_str(self, v) -> Optional[str]:
         if v is None:
             return None
@@ -754,120 +657,3 @@ class RuleBasedExtractor:
             pass
         s = str(v).strip()
         return s if s else None
-
-    def _clean_pair(
-        self, full: Optional[str], fallback: Optional[str]
-    ) -> tuple[Optional[str], Optional[str]]:
-        if full is not None:
-            full = full.strip()
-            if not full:
-                full = None
-        if fallback is not None:
-            fallback = fallback.strip()
-            if not fallback:
-                fallback = None
-        return full, fallback
-
-    def _process_table_investigators(
-        self,
-        people: list[tuple[Optional[str], Optional[str]]],
-        inv_ids_by_project: dict[str, set[tuple[str, str]]],
-        project_id: str,
-        table_chunk_id: str,
-    ):
-        for full_name, fallback in people:
-            # buscar en chunks (primero full, luego fallback)
-            candidate_in_text = None
-            if full_name:
-                candidate_in_text = full_name
-
-            if not candidate_in_text and fallback:
-                candidate_in_text = fallback
-
-            if not candidate_in_text:
-                continue
-
-            # Validar que no sea un valor inválido
-            invalid_values = ["--", "unnamed:", "n/a", "na", "s/d"]
-            words = candidate_in_text.lower().split()
-            if any(inv in words for inv in invalid_values):
-
-                continue
-
-            current = inv_ids_by_project.get(project_id, set())
-            if (
-                fallback
-                and any(name == fallback for _, name in current)
-                and candidate_in_text == fallback
-            ) or (full_name and any(name == full_name for _, name in current)):
-                continue
-
-            # si existe el investigador con un nombre pero ahora aparece con nombre+apellido elimino la entidad anterior
-            if fallback:
-                current = inv_ids_by_project.setdefault(project_id, set())
-                to_remove = {item for item in current if item[1] == fallback}
-                if to_remove:
-                    inv_ids_by_project[project_id] -= to_remove
-
-                    for candidate_to_remove in to_remove:
-                        inv_id = candidate_to_remove[0]
-
-                        self.res.entities = [
-                            e
-                            for e in self.res.entities
-                            if not (e.label == "Investigador" and e.id == inv_id)
-                        ]
-                        self.res.relationships = [
-                            r
-                            for r in self.res.relationships
-                            if not (r.source_id == inv_id or r.target_id == inv_id)
-                        ]
-
-            candidate_id = self.make_candidate_id(candidate_in_text)
-            if candidate_id:
-                investigador_name = "".join(
-                    c
-                    for c in unicodedata.normalize("NFD", candidate_in_text.lower())
-                    if unicodedata.category(c) != "Mn" or c == "\u0303"
-                )
-                investigador_name = unicodedata.normalize("NFC", investigador_name)
-
-                self.res.entities.append(
-                    Investigador(
-                        id=candidate_id,
-                        value={
-                            "name": investigador_name,
-                            "display_name": candidate_in_text.strip().title(),
-                            "source": "rule_based",
-                        },
-                    )
-                )
-                self.res.relationships.append(PARTICIPO_EN(candidate_id, project_id))
-                self.res.relationships.append(RESPONSABLE_DE(candidate_id, project_id))
-                self.res.relationships.append(
-                    EXTRAIDO_DE(
-                        table_chunk_id,
-                        candidate_id,
-                        properties={
-                            "evidence_text": f"Investigador extraído de tabla: {candidate_in_text}"
-                        },
-                    )
-                )
-                inv_ids_by_project[project_id].add((candidate_id, candidate_in_text))
-
-    def make_candidate_id(self, name: str) -> str:
-        # 1) pasar a minúsculas
-        s = name.lower()
-
-        # 2) quitar acentos
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c) or c == "\u0303")
-        s = unicodedata.normalize("NFC", s)
-
-        # 3) reemplazar cualquier cosa que no sea letra o número por _
-        s = re.sub(r"[^a-z0-9]+", "_", s)
-
-        # 4) limpiar _ al inicio/final
-        s = s.strip("_")
-
-        return s

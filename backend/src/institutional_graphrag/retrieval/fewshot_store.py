@@ -18,7 +18,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "de cuántos proyectos fue responsable X?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'\nMATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)\nRETURN count(p) AS total",
+        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nRETURN count(p) AS total",
     ),
     (
         "cuántos proyectos hay en 2018?",
@@ -47,7 +47,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "quién fue el responsable del proyecto gi_2014_133?",
-        "MATCH (i:Investigador)-[:RESPONSABLE_DE]->(p:Proyecto)\nWHERE p.id = 'gi_2014_133'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nWHERE p.id = 'gi_2014_133'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos hay de ciencias naturales?",
@@ -63,7 +63,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "de qué proyectos fue responsable perez?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:RESPONSABLE_DE]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
+        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
     ),
     (
         "qué documentos tiene el proyecto gi_2014_133?",
@@ -71,7 +71,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "describí el proyecto gi_2014_133",
-        "MATCH (p:Proyecto {id: 'gi_2014_133'})\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nOPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)\nOPTIONAL MATCH (maininv:Investigador)-[:RESPONSABLE_DE]->(p)\nOPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1",
+        "MATCH (p:Proyecto {id: 'gi_2014_133'})\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nOPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)\nOPTIONAL MATCH (maininv:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p)\nOPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1",
     ),
     (
         "qué proyectos iniciaron en 2018?",

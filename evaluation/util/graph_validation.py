@@ -40,7 +40,6 @@ ALLOWED_ENTITY_LABELS = {
 
 ALLOWED_REL_TYPES = {
     "PARTICIPO_EN",
-    "RESPONSABLE_DE",
     "TIENE_TOPICO",
     "PERTENECE_A_DOMINIO",
     "ES_DESCRITO_POR",
@@ -50,12 +49,10 @@ ALLOWED_REL_TYPES = {
     "DE_DOCUMENTO",
     "EXTRAIDO_DE",
     "TITULO_EXTRAIDO_DE",
-    "POSIBLE_ALIAS",
 }
 
 VALID_REL_ENDPOINTS = {
     "PARTICIPO_EN": ("Investigador", "Proyecto"),
-    "RESPONSABLE_DE": ("Investigador", "Proyecto"),
     "TIENE_TOPICO": ("Proyecto", "Topico"),
     "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
     "ES_DESCRITO_POR": ("Proyecto", "Documento"),
@@ -64,12 +61,11 @@ VALID_REL_ENDPOINTS = {
     "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
     "DE_DOCUMENTO": ("Chunk", "Documento"),
     "EXTRAIDO_DE": ("Chunk", {"Topico", "Investigador"}),
-    "POSIBLE_ALIAS": ("Investigador", "Investigador"),
     "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
 }
 
 ALLOWED_DOCUMENT_TYPES = {"informe", "propuesta", "resumen", "tabla"}
-ALLOWED_INVESTIGADOR_SOURCES = {"rule_based", "llm","human_annotation"}
+ALLOWED_INVESTIGADOR_SOURCES = {"tabular", "human_annotation"}
 
 
 # =========================================================

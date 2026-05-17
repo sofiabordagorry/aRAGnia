@@ -275,7 +275,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             return self._schema_cache
 
         node_props: Dict[str, List[str]] = {}
-        rels: List[tuple[str, str, str]] = []
+        rels_props: Dict[tuple[str, str, str], set[str]] = {}
 
         with self.driver.session() as session:
             records = list(session.run("""
@@ -291,20 +291,21 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
             records = list(session.run("""
                     MATCH (a)-[r]->(b)
-                    RETURN DISTINCT labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target
-                    ORDER BY rel
+                    RETURN labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target, keys(r) AS props
                     """))
             for r in records:
                 if r["source"] and r["rel"] and r["target"]:
-                    rels.append((r["source"], r["rel"], r["target"]))
+                    key = (r["source"], r["rel"], r["target"])
+                    rels_props.setdefault(key, set()).update(r["props"] or [])
 
         lines = ["Nodes and their key properties:"]
         for label, props in sorted(node_props.items()):
             lines.append(f"- {label:<15} → {', '.join(props)}")
 
         lines.append("\nRelationships:")
-        for source, rel, target in rels:
-            lines.append(f"- ({source})-[:{rel}]->({target})")
+        for (source, rel, target), rel_props in sorted(rels_props.items()):
+            props_str = " {" + ", ".join(sorted(rel_props)) + "}" if rel_props else ""
+            lines.append(f"- ({source})-[:{rel}{props_str}]->({target})")
 
         self._schema_cache = "\n".join(lines)
         logger.info("Schema cargado desde Neo4j y cacheado")
@@ -335,8 +336,9 @@ SCHEMA:
 
 SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
-- Investigador.id follows 'lastname_firstname'; use Investigador.name for display
-- Proyecto.value contains the project title; Proyecto.id follows 'gi_2014_133'
+- Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
+- PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
+- Proyecto.value contains the project title; Proyecto.id follows 'proy_{{anio}}_{{id_formulario}}' (e.g., 'proy_2018_2')
 - Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
@@ -394,8 +396,7 @@ CRITICAL SYNTAX:
         """
         Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
         Schema correcto:
-        - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-        - (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
+        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto)
         - (Proyecto)-[:TIENE_TOPICO]->(Topico)
         - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto)-[:INICIO_EN]->(Anio)
@@ -408,7 +409,6 @@ CRITICAL SYNTAX:
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
             ("Investigador", "PARTICIPO_EN", "Proyecto"),
-            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
             ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),

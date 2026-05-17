@@ -5,7 +5,7 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional
 
 from typing_extensions import NotRequired, TypedDict
 
@@ -26,11 +26,11 @@ class DocumentoValue(TypedDict):
 
 class InvestigadorValue(TypedDict):
     name: str
-    display_name: NotRequired[str]
-    source: Union[Literal["rule_based", "llm"], List[Literal["rule_based", "llm"]]]
-    cedula: NotRequired[str]
-    mail: NotRequired[str]
-    afiliacion: NotRequired[str]
+    display_name: str
+    documento: str
+    tipo_documento: str
+    pais_documento: str
+    sexo: str
 
 
 @dataclass
@@ -133,22 +133,6 @@ def PARTICIPO_EN(
     """
     return Relationship(
         type="PARTICIPO_EN",
-        source_id=investigador_id,
-        target_id=proyecto_id,
-        properties=properties or {},
-    )
-
-
-def RESPONSABLE_DE(
-    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación RESPONSABLE_DE.
-
-    (Investigador)-RESPONSABLE_DE->(Proyecto)
-    """
-    return Relationship(
-        type="RESPONSABLE_DE",
         source_id=investigador_id,
         target_id=proyecto_id,
         properties=properties or {},
@@ -283,22 +267,6 @@ def EXTRAIDO_DE(
     )
 
 
-def POSIBLE_ALIAS(
-    investigador_id: str, investigador2_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación POSIBLE_ALIAS.
-
-    (Investigador)-[POSIBLE_ALIAS]->(Investigador)
-    """
-    return Relationship(
-        type="POSIBLE_ALIAS",
-        source_id=investigador_id,
-        target_id=investigador2_id,
-        properties=properties or {},
-    )
-
-
 def TITULO_EXTRAIDO_DE(
     proyect_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -330,7 +298,6 @@ class GraphSchema:
     # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
-        "RESPONSABLE_DE": RESPONSABLE_DE,
         "TIENE_TOPICO": TIENE_TOPICO,
         "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
@@ -340,7 +307,6 @@ class GraphSchema:
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EXTRAIDO_DE": EXTRAIDO_DE,
         "TITULO_EXTRAIDO_DE": TITULO_EXTRAIDO_DE,
-        "POSIBLE_ALIAS": POSIBLE_ALIAS,
     }
 
     @classmethod
@@ -381,7 +347,6 @@ def validate_relationship_endpoints(
     # Definir combinaciones válidas
     valid_combinations = {
         "PARTICIPO_EN": ("Investigador", "Proyecto"),
-        "RESPONSABLE_DE": ("Investigador", "Proyecto"),
         "TIENE_TOPICO": ("Proyecto", "Topico"),
         "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
         "ES_DESCRITO_POR": ("Proyecto", "Documento"),
@@ -390,7 +355,6 @@ def validate_relationship_endpoints(
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
         "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
-        "POSIBLE_ALIAS": ("Investigador", "Investigador"),
         "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
     }
 

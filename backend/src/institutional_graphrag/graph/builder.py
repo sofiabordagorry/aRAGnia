@@ -336,116 +336,6 @@ class GraphBuilder:
 
         return entities
 
-    def merge_node_id(
-        self,
-        *,
-        label: str,
-        old_id: str,
-        new_id: str,
-        sample_ids: int = 50,
-    ) -> Neo4jStats:
-        stats = Neo4jStats()
-        if old_id == new_id:
-            return stats
-
-        with self.driver.session() as session:
-            result = session.run(
-                f"""
-                MATCH (a:{label} {{id: $old_id}})
-                MERGE (b:{label} {{id: $new_id}})
-                RETURN elementId(a) AS a_eid, elementId(b) AS b_eid
-                """,
-                old_id=old_id,
-                new_id=new_id,
-            )
-            record = result.single()
-            summary = result.consume()
-            stats.add_counters(summary.counters)
-
-            if record is not None:
-                self._extend_sample(
-                    stats.node_eids,
-                    [record["a_eid"], record["b_eid"]],
-                    sample_ids,
-                )
-
-            result = session.run(
-                f"""
-                MATCH (a:{label} {{id: $old_id}})
-                MATCH (b:{label} {{id: $new_id}})
-                SET b += a{{.*, id: b.id, name: coalesce(b.name, a.name), display_name: coalesce(b._display_name, a.display_name)}}
-                """,
-                old_id=old_id,
-                new_id=new_id,
-            )
-            stats.add_counters(result.consume().counters)
-
-            rel_types = [
-                row["type"]
-                for row in session.run(
-                    "CALL db.relationshipTypes() YIELD relationshipType AS type RETURN type"
-                ).data()
-            ]
-
-            for rel_type in rel_types:
-                result = session.run(
-                    f"""
-                    MATCH (a:{label} {{id: $old_id}})-[r:{rel_type}]->(x)
-                    MATCH (b:{label} {{id: $new_id}})
-                    MERGE (b)-[r2:{rel_type}]->(x)
-                    SET r2 += properties(r)
-                    DELETE r
-                    RETURN collect(elementId(r2)) AS moved_rel_eids,
-                           collect([b.id, x.id]) AS pairs
-                    """,
-                    old_id=old_id,
-                    new_id=new_id,
-                )
-                record = result.single()
-                summary = result.consume()
-                stats.add_counters(summary.counters)
-
-                if record is not None:
-                    self._extend_sample(
-                        stats.rel_eids,
-                        record["moved_rel_eids"] or [],
-                        sample_ids,
-                    )
-
-                result = session.run(
-                    f"""
-                    MATCH (y)-[r:{rel_type}]->(a:{label} {{id: $old_id}})
-                    MATCH (b:{label} {{id: $new_id}})
-                    MERGE (y)-[r2:{rel_type}]->(b)
-                    SET r2 += properties(r)
-                    DELETE r
-                    RETURN collect(elementId(r2)) AS moved_rel_eids
-                    """,
-                    old_id=old_id,
-                    new_id=new_id,
-                )
-                record = result.single()
-                summary = result.consume()
-                stats.add_counters(summary.counters)
-
-                if record is not None:
-                    self._extend_sample(
-                        stats.rel_eids,
-                        record["moved_rel_eids"] or [],
-                        sample_ids,
-                    )
-
-            result = session.run(
-                f"""
-                MATCH (a:{label} {{id: $old_id}})
-                DETACH DELETE a
-                """,
-                old_id=old_id,
-            )
-            stats.add_counters(result.consume().counters)
-
-        return stats
-
     def fetch_entity_by_id(self, entity_id: str) -> list[Entity]:
         query = """
         MATCH (n {id: $id})
@@ -567,7 +457,6 @@ class GraphBuilder:
         *,
         entity_id: str,
         relationship_limit: int = 320,
-        alias_only: bool = False,
     ) -> dict[str, Any]:
         safe_relationship_limit = max(1, min(relationship_limit, 1200))
         entity_id = entity_id.strip()
@@ -578,7 +467,6 @@ class GraphBuilder:
                 "summary": {
                     "node_count": 0,
                     "edge_count": 0,
-                    "alias_edge_count": 0,
                 },
             }
 
@@ -599,7 +487,6 @@ class GraphBuilder:
                     "summary": {
                         "node_count": 0,
                         "edge_count": 0,
-                        "alias_edge_count": 0,
                     },
                 }
 
@@ -608,7 +495,6 @@ class GraphBuilder:
                 MATCH (n {id: $entity_id})-[r]-(m)
                 WHERE NOT n:Chunk
                   AND NOT m:Chunk
-                  AND ($alias_only = false OR type(r) = 'POSIBLE_ALIAS')
                 RETURN startNode(r).id AS source_id,
                        endNode(r).id AS target_id,
                        type(r) AS type,
@@ -616,7 +502,6 @@ class GraphBuilder:
                 LIMIT $relationship_limit
                 """,
                 entity_id=entity_id,
-                alias_only=alias_only,
                 relationship_limit=safe_relationship_limit,
             ).data()
 
@@ -626,14 +511,12 @@ class GraphBuilder:
                 WHERE NOT n:Chunk
                 OPTIONAL MATCH (n)-[r]-(m)
                 WHERE NOT m:Chunk
-                  AND ($alias_only = false OR type(r) = 'POSIBLE_ALIAS')
                 WITH collect(DISTINCT n) + collect(DISTINCT m) AS node_list
                 UNWIND node_list AS node
                 WITH DISTINCT node
                 RETURN node, labels(node) AS labels
                 """,
                 entity_id=entity_id,
-                alias_only=alias_only,
             ).data()
 
         edges = [
@@ -641,7 +524,6 @@ class GraphBuilder:
                 "source": str(row.get("source_id") or ""),
                 "target": str(row.get("target_id") or ""),
                 "type": str(row.get("type") or "RELACION"),
-                "is_alias": str(row.get("type") or "") == "POSIBLE_ALIAS",
                 "properties": row.get("properties") or {},
             }
             for row in edge_rows
@@ -675,21 +557,9 @@ class GraphBuilder:
                     "label": primary_label,
                     "display": self._display_value(primary_label, props),
                     "degree": degree_by_id.get(node_id, 0),
-                    "is_alias_candidate": False,
                 }
             )
             node_ids.append(node_id)
-
-        alias_node_ids: set[str] = set()
-        for edge in edges:
-            if bool(edge["is_alias"]):
-                alias_node_ids.add(str(edge["source"]))
-                alias_node_ids.add(str(edge["target"]))
-
-        for node in nodes:
-            node["is_alias_candidate"] = node["id"] in alias_node_ids
-
-        alias_edge_count = sum(1 for edge in edges if bool(edge["is_alias"]))
 
         return {
             "nodes": nodes,
@@ -697,7 +567,6 @@ class GraphBuilder:
             "summary": {
                 "node_count": len(nodes),
                 "edge_count": len(edges),
-                "alias_edge_count": alias_edge_count,
             },
         }
 
@@ -706,22 +575,11 @@ class GraphBuilder:
         *,
         node_limit: int = 160,
         relationship_limit: int = 320,
-        alias_only: bool = False,
     ) -> dict[str, Any]:
         safe_node_limit = max(1, min(node_limit, 500))
         safe_relationship_limit = max(1, min(relationship_limit, 1200))
 
-        node_query = (
-            """
-            MATCH (n:Investigador)-[:POSIBLE_ALIAS]-()
-            OPTIONAL MATCH (n)-[r]-()
-            WITH DISTINCT n, count(r) AS degree
-            ORDER BY degree DESC, coalesce(n.id, "") ASC
-            LIMIT $node_limit
-            RETURN n, labels(n) AS labels, degree
-            """
-            if alias_only
-            else """
+        node_query = """
             MATCH (n)
                         WHERE NOT n:Chunk
             OPTIONAL MATCH (n)-[r]-()
@@ -732,7 +590,6 @@ class GraphBuilder:
             LIMIT $node_limit
             RETURN n, labels(n) AS labels, degree
             """
-        )
 
         with self.driver.session() as session:
             node_rows = session.run(node_query, node_limit=safe_node_limit).data()
@@ -744,7 +601,6 @@ class GraphBuilder:
                     "summary": {
                         "node_count": 0,
                         "edge_count": 0,
-                        "alias_edge_count": 0,
                     },
                 }
 
@@ -772,19 +628,16 @@ class GraphBuilder:
                         "label": primary_label,
                         "display": self._display_value(primary_label, props),
                         "degree": degree,
-                        "is_alias_candidate": False,
                     }
                 )
                 node_ids.append(node_id)
                 seen_node_ids.add(node_id)
 
-            edge_filter = "AND type(r) = 'POSIBLE_ALIAS'" if alias_only else ""
-            edge_query = f"""
+            edge_query = """
             MATCH (source)-[r]->(target)
                         WHERE source.id IN $node_ids AND target.id IN $node_ids
                             AND NOT source:Chunk
                             AND NOT target:Chunk
-            {edge_filter}
             RETURN source.id AS source_id,
                    target.id AS target_id,
                    type(r) AS type,
@@ -799,40 +652,16 @@ class GraphBuilder:
                 relationship_limit=safe_relationship_limit,
             ).data()
 
-            alias_rows = session.run(
-                """
-                MATCH (source:Investigador)-[r:POSIBLE_ALIAS]->(target:Investigador)
-                WHERE source.id IN $node_ids AND target.id IN $node_ids
-                RETURN DISTINCT source.id AS source_id, target.id AS target_id
-                """,
-                node_ids=node_ids,
-            ).data()
-
-        alias_node_ids: set[str] = set()
-        for row in alias_rows:
-            source_id = str(row.get("source_id") or "")
-            target_id = str(row.get("target_id") or "")
-            if source_id:
-                alias_node_ids.add(source_id)
-            if target_id:
-                alias_node_ids.add(target_id)
-
-        for node in nodes:
-            node["is_alias_candidate"] = node["id"] in alias_node_ids
-
         edges = [
             {
                 "source": str(row.get("source_id") or ""),
                 "target": str(row.get("target_id") or ""),
                 "type": str(row.get("type") or "RELACION"),
-                "is_alias": str(row.get("type") or "") == "POSIBLE_ALIAS",
                 "properties": row.get("properties") or {},
             }
             for row in edge_rows
             if row.get("source_id") and row.get("target_id")
         ]
-
-        alias_edge_count = sum(1 for edge in edges if edge["is_alias"])
 
         return {
             "nodes": nodes,
@@ -840,37 +669,8 @@ class GraphBuilder:
             "summary": {
                 "node_count": len(nodes),
                 "edge_count": len(edges),
-                "alias_edge_count": alias_edge_count,
             },
         }
-
-    def merge_researchers(self, *, source_id: str, target_id: str) -> Neo4jStats:
-        """
-        Unifica dos nodos Investigador: transfiere todas las relaciones de source a target
-        y elimina el nodo source. Usa Cypher nativo (sin APOC).
-        """
-        if source_id == target_id:
-            raise ValueError("source_id y target_id deben ser diferentes")
-
-        stats = self.merge_node_id(
-            label="Investigador",
-            old_id=source_id,
-            new_id=target_id,
-        )
-
-        # Eliminar self-loops que puedan haber quedado en el nodo target
-        # (e.g. si source tenía POSIBLE_ALIAS -> target)
-        with self.driver.session() as session:
-            result = session.run(
-                """
-                MATCH (b:Investigador {id: $target_id})-[r]-(b)
-                DELETE r
-                """,
-                target_id=target_id,
-            )
-            stats.add_counters(result.consume().counters)
-
-        return stats
 
     def delete_graph_entity(self, entity_id):
         query = """
@@ -891,69 +691,6 @@ class GraphBuilder:
             "deleted_entity_id": entity_id,
             "deleted_labels": record["labels"],
             "deleted_properties": record["properties"],
-        }
-
-    def fetch_alias_candidates(self, *, search: Optional[str] = None) -> dict[str, Any]:
-        search_text = self._normalized_search(search)
-        query = """
-        MATCH (source:Investigador)-[r:POSIBLE_ALIAS]->(target:Investigador)
-        WHERE $search = ''
-           OR toLower(coalesce(source.id, '')) CONTAINS $search
-           OR toLower(coalesce(source.name, '')) CONTAINS $search
-           OR toLower(coalesce(target.id, '')) CONTAINS $search
-           OR toLower(coalesce(target.name, '')) CONTAINS $search
-        RETURN DISTINCT
-            source.id AS source_id,
-            coalesce(source.display_name, source.name, source.id) AS source_name,
-            target.id AS target_id,
-            coalesce(target.display_name, target.name, target.id) AS target_name,
-            properties(r) AS relationship_properties
-        ORDER BY source_name, target_name
-        """
-
-        with self.driver.session() as session:
-            rows = session.run(query, search=search_text).data()
-
-        alias_entities: dict[str, dict[str, Any]] = {}
-        pairs: list[dict[str, Any]] = []
-
-        for row in rows:
-            source_id = str(row.get("source_id") or "").strip()
-            target_id = str(row.get("target_id") or "").strip()
-            source_name = str(row.get("source_name") or source_id)
-            target_name = str(row.get("target_name") or target_id)
-            if not source_id or not target_id:
-                continue
-
-            alias_entities[source_id] = {
-                "id": source_id,
-                "name": source_name,
-                "label": "Investigador",
-            }
-            alias_entities[target_id] = {
-                "id": target_id,
-                "name": target_name,
-                "label": "Investigador",
-            }
-            pairs.append(
-                {
-                    "source_id": source_id,
-                    "source_name": source_name,
-                    "target_id": target_id,
-                    "target_name": target_name,
-                    "relationship_properties": row.get("relationship_properties") or {},
-                }
-            )
-
-        return {
-            "pairs": pairs,
-            "entities": sorted(
-                alias_entities.values(), key=lambda item: (item["name"], item["id"])
-            ),
-            "summary": {
-                "pair_count": len(pairs),
-                "entity_count": len(alias_entities),
-            },
         }
 
     def ingest(

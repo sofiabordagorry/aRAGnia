@@ -13,9 +13,7 @@ import pytest
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
     LLMExtractionResult,
-    ResearcherMention,
     TopicMention,
 )
 from institutional_graphrag.graph.schema import (
@@ -27,7 +25,6 @@ from institutional_graphrag.graph.schema import (
     Relationship,
     Topico,
 )
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
 
 # -------------------------
 # Helpers
@@ -305,7 +302,7 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
     )
 
     # correr SIN LLM para no depender de ollama en tests
-    res = ex.run(llm_researchers=False, llm_topics=False)
+    res = ex.run(llm_topics=False)
 
     assert any(e.label == "Documento" for e in res.entities)
     assert any(e.label == "Chunk" for e in res.entities)
@@ -316,14 +313,12 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
 # -------------------------
 
 
-def test_llm_researchers_and_topics_and_project_aggregation(
+def test_llm_topics_and_project_aggregation(
     extractor: EntityExtractor, tmp_path: Path, monkeypatch
 ):
     """
-    Testea la funcionalidad actual:
-    - Investigador se deduplica POR PROYECTO (distintos proyectos => entidades distintas)
-    - Tópicos se deduplican GLOBALMENTE (mismo topic => 1 entidad)
-    - _aggregate_topics_for_project crea TIENE_TOPICO con mention_count por proyecto
+    Tópicos se deduplican GLOBALMENTE (mismo topic => 1 entidad).
+    _aggregate_topics_for_project crea TIENE_TOPICO con mention_count por proyecto.
     """
     # ---- setup dirs ----
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
@@ -383,68 +378,37 @@ def test_llm_researchers_and_topics_and_project_aggregation(
         ]
     )
 
-    # ---- chunks + DE_DOCUMENTO ----
-    # proyecto1: 2 docs => 2 chunks que mencionan Machine Learning
+    # ---- chunks ----
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
         source="C:/tmp/gi_2010_152_informe.pdf",
         chunks=[
-            {
-                "chunk_id": "gi_2010_152_informe_chunk0",
-                "text": "Juan Pérez investiga machine learning.",
-                "metadata": {},
-            }
+            {"chunk_id": "gi_2010_152_informe_chunk0", "text": "machine learning", "metadata": {}}
         ],
     )
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_152_propuesta_chunks.json",
         source="C:/tmp/gi_2010_152_propuesta.pdf",
         chunks=[
-            {
-                "chunk_id": "gi_2010_152_propuesta_chunk0",
-                "text": "Juan Pérez investiga machine learning.",
-                "metadata": {},
-            }
+            {"chunk_id": "gi_2010_152_propuesta_chunk0", "text": "machine learning", "metadata": {}}
         ],
     )
-    # proyecto2: 1 doc => 1 chunk
     write_chunks_file(
         extractor.chunks_dir / "gi_2010_391_informe_chunks.json",
         source="C:/tmp/gi_2010_391_informe.pdf",
         chunks=[
-            {
-                "chunk_id": "gi_2010_391_informe_chunk0",
-                "text": "Juan Pérez investiga machine learning.",
-                "metadata": {},
-            }
+            {"chunk_id": "gi_2010_391_informe_chunk0", "text": "machine learning", "metadata": {}}
         ],
     )
 
-    # cargar chunks en el grafo (Chunk + DE_DOCUMENTO, etc.)
     extractor._extract_chunks()
 
-    # ---- registry: evitar que marque cache en el path real ----
-    # forzamos a que nunca esté cacheado y que mark_success no escriba
     monkeypatch.setattr(extractor, "already_run", lambda *args, **kwargs: False)
     monkeypatch.setattr(extractor, "mark_success", lambda *args, **kwargs: None)
-
-    # ---- mock LLM extractor ----
-    def mock_extract_researchers(chunks_list, max_chunks=None):
-        chunk_id = chunks_list[0].get("chunk_id")
-        return LLMExtractionResult(
-            researchers=[
-                ResearcherMention(
-                    name="Juan Pérez", evidence="Juan Pérez investiga", chunk_id=chunk_id
-                )
-            ],
-            topics=[],
-            errors=[],
-        )
 
     def mock_extract_topics(chunks_list, max_chunks=None):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
-            researchers=[],
             topics=[
                 TopicMention(
                     topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id
@@ -454,53 +418,10 @@ def test_llm_researchers_and_topics_and_project_aggregation(
         )
 
     monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_researchers_from_chunks",
-        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_researchers(
-            chunks, max_chunks
-        ),
-    )
-    monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_topics_from_chunks",
         lambda self, chunks, max_chunks=None, **kwargs: mock_extract_topics(chunks, max_chunks),
     )
 
-    # ---- mock factories para controlar IDs ----
-    # investigador: id distinto por proyecto (porque tu comentario actual dice eso)
-    def fake_create_entities_and_relationships_from_llm_extraction(
-        llm_result, project_id, existing_ids
-    ):
-        new_entities = []
-        new_relationships = []
-        for m in llm_result.researchers:
-            name = m.name
-            chunk_id = m.chunk_id
-            evidence = m.evidence or ""
-            inv_id = f"juan_perez__{project_id}"  # 👈 distinto por proyecto
-
-            if inv_id not in existing_ids:
-                new_entities.append(Investigador(id=inv_id, value={"name": name, "source": "llm"}))
-
-            new_relationships.append(
-                Relationship(
-                    type="PARTICIPO_EN", source_id=inv_id, target_id=project_id, properties={}
-                )
-            )
-            new_relationships.append(
-                Relationship(
-                    type="EXTRAIDO_DE",
-                    source_id=chunk_id,
-                    target_id=inv_id,
-                    properties={"evidence_text": evidence},
-                )
-            )
-        return new_entities, new_relationships
-
-    monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.create_entities_and_relationships_from_llm_extraction",
-        fake_create_entities_and_relationships_from_llm_extraction,
-    )
-
-    # tópico: id global (compartido)
     def fake_create_topics_from_llm_extraction(self, llm_result, existing_topic_ids):
         new_entities = []
         new_relationships = []
@@ -527,18 +448,7 @@ def test_llm_researchers_and_topics_and_project_aggregation(
         fake_create_topics_from_llm_extraction,
     )
 
-    # ---- ejecutar pipeline LLM actual ----
-    extractor._extract_with_llm(llm_researchers=True, llm_topics=True)
-
-    # ---- asserts investigadores ----
-    investigadores = [e for e in extractor.res.entities if e.label == "Investigador"]
-    assert len(investigadores) == 2, "Distintos proyectos => 2 entidades Investigador"
-    inv_ids = {inv.id for inv in investigadores}
-    assert inv_ids == {"juan_perez__gi_2010_152", "juan_perez__gi_2010_391"}
-
-    participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
-    assert len(participo_rels) == 2
-    assert {r.target_id for r in participo_rels} == {"gi_2010_152", "gi_2010_391"}
+    extractor._extract_with_llm(llm_topics=True)
 
     # ---- asserts tópicos ----
     topicos = [e for e in extractor.res.entities if e.label == "Topico"]
@@ -551,7 +461,6 @@ def test_llm_researchers_and_topics_and_project_aggregation(
     ]
     assert len(evidencia_top) == 3, "3 chunks => 3 evidencias del tópico"
 
-    # ---- asserts agregación proyecto->tópico ----
     tiene_topico_rels = [
         r
         for r in extractor.res.relationships
@@ -561,25 +470,19 @@ def test_llm_researchers_and_topics_and_project_aggregation(
 
     rel_p1 = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_152")
     rel_p2 = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_391")
-    assert rel_p1.properties.get("mention_count") == 2, "Proyecto 152 tiene 2 menciones (2 chunks)"
-    assert rel_p2.properties.get("mention_count") == 1, "Proyecto 391 tiene 1 mención (1 chunk)"
+    assert rel_p1.properties.get("mention_count") == 2
+    assert rel_p2.properties.get("mention_count") == 1
 
 
-# -------------------------
-# Relación RESPONSABLE_DE (Extracción de Tablas)
-# -------------------------
-
-
-def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_path: Path):
+def test_rule_based_tables_do_not_create_investigators(extractor: EntityExtractor, tmp_path: Path):
     """
-    Border Case: Una fila de tabla tiene múltiples responsables (ej. titular y co-titular).
-    Verifica que se generen múltiples relaciones RESPONSABLE_DE y PARTICIPO_EN hacia el mismo proyecto.
+    Los investigadores ya no se extraen de tablas parquet por rule-based.
+    Verifica que _extract_projects_and_responsible NO genera entidades Investigador.
     """
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
     extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
     extractor.table_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Setup Documento y Chunks
     doc = Documento(
         id="doc1",
         value={
@@ -605,42 +508,29 @@ def test_extract_projects_multiple_responsables(extractor: EntityExtractor, tmp_
         ],
     )
 
-    # 2. Setup Tabla con múltiples columnas de responsables
     df = pd.DataFrame(
         {
             "ID": ["152"],
             "TITULO": ["Proyecto Gamma"],
             "NOMBRE RESPONSABLE": ["Ema"],
             "APELLIDO RESPONSABLE": ["García"],
-            "NOMBRE RESPONSABLE_2": ["Carlos"],
-            "APELLIDO RESPONSABLE_2": ["López"],
         }
     )
     df.to_parquet(extractor.table_dir / "gi_2010_table.parquet")
 
-    # 3. Ejecutar extracción
     extractor.rule_based.associate_tables_with_documents(
         extractor.docs_by_group_year, extractor.table_dir
     )
     extractor._extract_projects_and_responsible()
 
-    # 4. Validar
-    responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
-    participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
-
-    assert len(responsable_rels) == 2, "Deben existir 2 relaciones RESPONSABLE_DE"
-    assert len(participo_rels) == 2, "Deben existir 2 relaciones PARTICIPO_EN"
-
-    source_ids = {r.source_id for r in responsable_rels}
-    assert "ema_garcia" in source_ids
-    assert "carlos_lopez" in source_ids
-    assert all(r.target_id == "gi_2010_152" for r in responsable_rels)
+    investigators = [e for e in extractor.res.entities if e.label == "Investigador"]
+    assert investigators == [], "Rule-based parquet tables no deben crear entidades Investigador"
 
 
 def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtractor, tmp_path: Path):
     """
     Border Case: La tabla contiene valores basura o vacíos explícitos ("N/A", "--").
-    Verifica que NO se creen investigadores basura ni relaciones RESPONSABLE_DE ni PARTICIPO_EN.
+    Verifica que NO se creen investigadores basura ni relaciones PARTICIPO_EN.
     """
     extractor.documents_dir.mkdir(parents=True, exist_ok=True)
     extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
@@ -676,15 +566,78 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
     )
     extractor._extract_projects_and_responsible()
 
-    responsable_rels = [r for r in extractor.res.relationships if r.type == "RESPONSABLE_DE"]
     participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
 
     assert (
-        len(responsable_rels) == 0
-    ), "No se deben crear relaciones RESPONSABLE_DE para nombres inválidos"
-    assert (
         len(participo_rels) == 0
     ), "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"
+
+
+# -------------------------
+# Tabular extractor: propiedad calidad en PARTICIPO_EN
+# -------------------------
+
+
+def test_tabular_extractor_calidad_property(tmp_path: Path):
+    """La propiedad 'calidad' se guarda correctamente en la relación PARTICIPO_EN."""
+    import csv
+    from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
+
+    csv_path = tmp_path / "equipos_test.csv"
+    rows = [
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "11111",
+            "nombres": "ANA",
+            "apellidos": "GARCIA",
+            "sexo": "F",
+            "calidad": "Responsable",
+            "id_formulario": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "22222",
+            "nombres": "LUIS",
+            "apellidos": "PEREZ",
+            "sexo": "M",
+            "calidad": "Integrante",
+            "id_formulario": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
+        {
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "33333",
+            "nombres": "JOSE",
+            "apellidos": "RUIZ",
+            "sexo": "M",
+            "calidad": "Otros",
+            "id_formulario": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+        },
+    ]
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+    result = TabularExtractor().extract_from_csv(csv_path)
+
+    participo_rels = [r for r in result.relationships if r.type == "PARTICIPO_EN"]
+    calidades = {r.properties.get("calidad") for r in participo_rels}
+    assert calidades == {"responsable", "integrante", "otros"}
+    assert all(
+        r.properties.get("calidad") for r in participo_rels
+    ), "Toda PARTICIPO_EN debe tener calidad"
 
 
 # -------------------------
@@ -692,252 +645,17 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
 # -------------------------
 
 
-def test_ie_add_entities_source_merging_border_cases(extractor: EntityExtractor):
+def test_ie_add_entities_dedup_by_id(extractor: EntityExtractor):
     """
-    Border Cases: Prueba la lógica de add_entities de ie.py para la propiedad 'source'.
-    Verifica que:
-    1. Distintos -> ["rule_based", "llm"]
-    2. Iguales -> se mantiene como string ("llm" o "rule_based")
+    Agregar dos investigadores con el mismo ID reemplaza con el último visto
+    (sin crear duplicados).
     """
-
-    # CASO 1: rule_based + llm -> lista
-    inv1 = Investigador(id="juan_perez", value={"name": "Juan Perez", "source": "rule_based"})
+    inv1 = Investigador(id="uy_ci_12345678", value={"name": "Juan Perez"})
     extractor.add_entities([inv1])
 
-    inv2 = Investigador(id="juan_perez", value={"name": "Juan Pérez", "source": "llm"})
-    extractor.add_entities([inv2])  # Sobrescribe y fusiona
-
-    merged = next(e for e in extractor.res.entities if e.id == "juan_perez")
-    assert merged.value["source"] == ["rule_based", "llm"]
-    assert merged.value["name"] == "Juan Pérez"  # Mantiene el nombre del último (LLM)
-
-    # CASO 2: llm + llm -> se mantiene como string
-    inv3 = Investigador(id="maria_gomez", value={"name": "Maria", "source": "llm"})
-    extractor.add_entities([inv3])
-
-    inv4 = Investigador(id="maria_gomez", value={"name": "María Gómez", "source": "llm"})
-    extractor.add_entities([inv4])
-
-    merged_maria = next(e for e in extractor.res.entities if e.id == "maria_gomez")
-    assert merged_maria.value["source"] == "llm", "Fuentes iguales no deben crear lista"
-
-
-def test_postprocess_preserves_dual_source_on_merge():
-    """
-    Border Case en postprocess_entities.py:
-    Si hay dos nodos idénticos extraídos por canales separados (uno llm, otro rule_based)
-    y tienen distintos IDs al inicio, pero se fusionan porque el nombre normalizado es exacto,
-    ¿se preservan ambas fuentes en el nodo canónico?
-    """
-    postprocessor = Postprocessor(enable_researcher_consolidation=True)
-
-    payload = {
-        "entities": [
-            {
-                "id": "inv_1",
-                "label": "Investigador",
-                "value": {"name": "JUAN PEREZ", "source": "rule_based"},
-            },
-            {
-                "id": "inv_2",
-                "label": "Investigador",
-                "value": {"name": "Juan Perez", "source": "llm"},
-            },
-        ],
-        "relationships": [
-            {
-                "type": "EXTRAIDO_DE",
-                "source_id": "chunk_001",
-                "target_id": "inv_1",  # El postprocesador renombrará esto al fusionar
-                "properties": {"evidence_text": "responsable valido extraido"},
-            }
-        ],
-    }
-
-    # Procesar
-    data, log = postprocessor.postprocess_payload(payload)
-
-    entities = data["entities"]
-
-    # Deben haberse consolidado en 1 solo investigador
-    assert len(entities) == 1
-
-    # La fuente debe haber heredado el array ["rule_based", "llm"]
-    final_source = entities[0]["value"].get("source")
-    assert isinstance(final_source, list), "El source en postprocess debe ser lista tras merge"
-    assert set(final_source) == {"rule_based", "llm"}
-
-
-def test_llm_extractor_include_headings_flag(monkeypatch):
-    """
-    Verifica que el flag include_headings formatee correctamente el texto
-    aislando la jerarquía de encabezados antes de enviarlo al LLM.
-    """
-    extractor = LLMEntityExtractor.__new__(LLMEntityExtractor)
-
-    # Lista para capturar el string exacto enviado al método singular
-    captured_texts = []
-
-    # Mock del método singular para interceptar el texto y evitar llamadas reales al LLM
-    def mock_singular_extract(chunk_text, chunk_id):
-        captured_texts.append(chunk_text)
-        return LLMExtractionResult(researchers=[], topics=[], errors=[])
-
-    monkeypatch.setattr(extractor, "extract_researchers_from_chunk", mock_singular_extract)
-
-    # --- Escenario 1: include_headings = True (Texto de cuerpo normal) ---
-    chunk_normal = {
-        "chunk_id": "c1",
-        "text": "Este es el contenido principal de la sección.",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
-    }
-
-    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=True)
-
-    assert (
-        captured_texts[-1] == "Capítulo 1\nSección A\nEste es el contenido principal de la sección."
-    )
-
-    # --- Escenario 2: include_headings = False ---
-    extractor.extract_researchers_from_chunks([chunk_normal], include_headings=False)
-
-    # Solo debe contener el texto puro
-    assert captured_texts[-1] == "Este es el contenido principal de la sección."
-
-    # --- Escenario 3: include_headings = True pero el texto ES el encabezado ---
-    chunk_header = {
-        "chunk_id": "c2",
-        "text": "Sección A",
-        "metadata": {"headings": ["Capítulo 1", "Sección A"]},
-    }
-    extractor.extract_researchers_from_chunks([chunk_header], include_headings=True)
-
-    # Debe retornar la jerarquía sin duplicar "Sección A" al final
-    assert captured_texts[-1] == "Capítulo 1\nSección A"
-
-
-def test_investigador_value_with_extra_properties():
-    """Test creating Investigador with cedula, mail, and afiliacion."""
-    inv = Investigador(
-        id="juan_perez",
-        value={
-            "name": "Juan Pérez",
-            "source": "llm",
-            "cedula": "1.234.567-8",
-            "mail": "jperez@fing.edu.uy",
-            "afiliacion": "Facultad de Ingeniería, UdelaR",
-        },
-    )
-    assert inv.value["cedula"] == "1.234.567-8"
-    assert inv.value["mail"] == "jperez@fing.edu.uy"
-    assert inv.value["afiliacion"] == "Facultad de Ingeniería, UdelaR"
-
-
-def test_investigador_value_without_extra_properties():
-    """Test that Investigador still works without the new optional fields."""
-    inv = Investigador(
-        id="juan_perez",
-        value={"name": "Juan Pérez", "source": "rule_based"},
-    )
-    assert inv.value.get("cedula") is None
-    assert inv.value.get("mail") is None
-    assert inv.value.get("afiliacion") is None
-
-
-def test_researcher_mention_with_extra_properties():
-    """Test ResearcherMention carries cedula, mail, and afiliacion."""
-    mention = ResearcherMention(
-        name="Ana López",
-        evidence="Ana López, CI 3.456.789-0, alopez@fcien.edu.uy",
-        chunk_id="chunk_1",
-        cedula="3.456.789-0",
-        mail="alopez@fcien.edu.uy",
-        afiliacion="Facultad de Ciencias",
-    )
-    assert mention.cedula == "3.456.789-0"
-    assert mention.mail == "alopez@fcien.edu.uy"
-    assert mention.afiliacion == "Facultad de Ciencias"
-
-
-def test_researcher_mention_defaults_none():
-    """Test ResearcherMention defaults extra properties to None."""
-    mention = ResearcherMention(
-        name="Pedro Gómez",
-        evidence="Pedro Gómez participa",
-        chunk_id="chunk_1",
-    )
-    assert mention.cedula is None
-    assert mention.mail is None
-    assert mention.afiliacion is None
-
-
-def test_ie_add_entities_preserves_extra_properties_on_merge(extractor: EntityExtractor):
-    """Test that merging investigators preserves cedula/mail/afiliacion from existing entity."""
-    inv1 = Investigador(
-        id="ana_lopez",
-        value={
-            "name": "Ana López",
-            "source": "rule_based",
-            "cedula": "3.456.789-0",
-            "mail": "alopez@fcien.edu.uy",
-        },
-    )
-    extractor.add_entities([inv1])
-
-    # LLM extraction finds same person without extra properties
-    inv2 = Investigador(
-        id="ana_lopez",
-        value={"name": "Ana López", "source": "llm"},
-    )
+    inv2 = Investigador(id="uy_ci_12345678", value={"name": "Juan Pérez"})
     extractor.add_entities([inv2])
 
-    merged = next(e for e in extractor.res.entities if e.id == "ana_lopez")
-    assert merged.value["source"] == ["rule_based", "llm"]
-    assert merged.value["cedula"] == "3.456.789-0"
-    assert merged.value["mail"] == "alopez@fcien.edu.uy"
-
-
-def test_postprocess_preserves_extra_properties_on_consolidation():
-    """Test that postprocessor preserves cedula/mail/afiliacion when consolidating researchers."""
-    postprocessor = Postprocessor(enable_researcher_consolidation=True)
-
-    payload = {
-        "entities": [
-            {
-                "id": "inv_1",
-                "label": "Investigador",
-                "value": {
-                    "name": "MARIA GARCIA",
-                    "source": "rule_based",
-                    "cedula": "1.111.111-1",
-                },
-            },
-            {
-                "id": "inv_2",
-                "label": "Investigador",
-                "value": {
-                    "name": "Maria Garcia",
-                    "source": "llm",
-                    "mail": "mgarcia@fmed.edu.uy",
-                    "afiliacion": "Facultad de Medicina",
-                },
-            },
-        ],
-        "relationships": [
-            {
-                "type": "EXTRAIDO_DE",
-                "source_id": "chunk_001",
-                "target_id": "inv_1",
-                "properties": {"evidence_text": "responsable valido extraido"},
-            },
-        ],
-    }
-
-    data, log = postprocessor.postprocess_payload(payload)
-    entities = data["entities"]
-
-    assert len(entities) == 1
-    value = entities[0]["value"]
-    assert value["cedula"] == "1.111.111-1"
-    assert value["mail"] == "mgarcia@fmed.edu.uy"
-    assert value["afiliacion"] == "Facultad de Medicina"
+    matches = [e for e in extractor.res.entities if e.id == "uy_ci_12345678"]
+    assert len(matches) == 1
+    assert matches[0].value["name"] == "Juan Pérez"

@@ -12,11 +12,9 @@ from typing import Any, Dict, List, Optional, cast
 import ijson
 
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
-from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
-    create_entities_and_relationships_from_llm_extraction,
-)
+from institutional_graphrag.extraction.llm_extractor import LLMEntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
+from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.schema import (
     Documento,
     Entity,
@@ -52,6 +50,7 @@ class EntityExtractor:
         self.input_dir = base / "entities_relations"
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
+        self.tabular = TabularExtractor()
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -81,18 +80,12 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        llm_researchers: bool = True,
         llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
-            self.load_subset_from_graph_json(
-                entities_json,
-                label="Investigador",
-                value_filter={"source": "llm"},
-            )
             self.load_subset_from_graph_json(entities_json, label="Topico")
             self.load_subset_from_graph_json(entities_json, label="Dominio")
 
@@ -105,9 +98,9 @@ class EntityExtractor:
 
         self._extract_chunks()
         self._extract_projects_and_responsible()
+        self._extract_researchers_from_tabular()
         self._extract_with_llm(
             max_docs=max_docs,
-            llm_researchers=llm_researchers,
             llm_topics=llm_topics,
             include_headings=include_headings,
             checkpoint_every=checkpoint_every,
@@ -150,7 +143,6 @@ class EntityExtractor:
                             val = v.get(k)
 
                             if k == "source" and isinstance(val, list):
-                                # Si un investigador tiene fuente "llm" y "rule_based" tambien queremos conseguirlo
                                 if expected not in val:
                                     match = False
                                     break
@@ -260,23 +252,17 @@ class EntityExtractor:
                 # reemplazar la entidad existente
                 for i, existing in enumerate(self.res.entities):
                     if existing.label == e.label and str(existing.id) == str(e.id):
-                        # Si un investigador es extraido por tabla y por llm mantiene ambas fuentes
                         if (
                             e.label == "Investigador"
                             and isinstance(existing.value, dict)
                             and isinstance(e.value, dict)
                         ):
-                            old_source = existing.value.get("source")
-                            new_source = e.value.get("source")
-
-                            if (
-                                isinstance(old_source, list)
-                                or isinstance(new_source, list)
-                                or (old_source and new_source and old_source != new_source)
+                            for prop in (
+                                "documento",
+                                "tipo_documento",
+                                "pais_documento",
+                                "sexo",
                             ):
-                                e.value["source"] = ["rule_based", "llm"]
-
-                            for prop in ("cedula", "mail", "afiliacion"):
                                 if not e.value.get(prop) and existing.value.get(prop):
                                     e.value[prop] = existing.value[prop]
                         self.res.entities[i] = e
@@ -372,6 +358,12 @@ class EntityExtractor:
         res = self.rule_based.extract_projects_and_responsible_from_tables(
             self.doc_by_id, self.chunks_dir
         )
+        self.add_entities(res.entities)
+        self.add_relationship(res.relationships)
+        self.res.errors.extend(res.errors)
+
+    def _extract_researchers_from_tabular(self) -> None:
+        res = self.tabular.extract_from_directory(self.table_dir)
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)
@@ -576,12 +568,11 @@ class EntityExtractor:
     def _extract_with_llm(
         self,
         max_docs: int | None = None,
-        llm_researchers: bool = True,
         llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
-        """Extraer entidades y relaciones usando LLM con deduplicación por proyecto.
+        """Extraer tópicos usando LLM.
         Args:
             max_docs: Límite opcional de documentos a procesar.
             checkpoint_every: Guardar a disco cada N documentos procesados.
@@ -609,9 +600,6 @@ class EntityExtractor:
         for project in projects:
             project_id = project.id
 
-            # Inicializar set vacío para este proyecto
-            existing_researcher_ids: set[str] = set()
-
             # Obtener documentos del proyecto
             project_docs = self.docs_by_project.get(project_id, [])
 
@@ -632,8 +620,6 @@ class EntityExtractor:
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
-                researcher_cache = self.already_run(doc_id, "Investigador")
-                # logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
                 topic_cache = self.already_run(doc_id, "Topico")
 
                 # Cargar chunks del documento
@@ -655,37 +641,6 @@ class EntityExtractor:
                     if not isinstance(chunks, list):
                         continue
 
-                    if researcher_cache or not llm_researchers:
-                        logger.info(f"[LLM Researchers] Archivo en cache: {doc_id}")
-                    else:
-                        # Extraer investigadores usando LLM de todos los chunks
-                        logger.info(
-                            f"[LLM Researchers] Procesando {len(chunks)} chunks de {base_name}..."
-                        )
-                        llm_result_researcher = llm_extractor.extract_researchers_from_chunks(
-                            chunks, max_chunks=None, include_headings=include_headings
-                        )
-                        # Agregar errores
-                        self.res.errors.extend(llm_result_researcher.errors)
-                        # Crear entidades y relaciones
-                        # NOTA: existing_researcher_ids resetea por proyecto
-                        # Mismo investigador en docs del mismo proyecto = misma entidad
-                        # Mismo investigador en diferentes proyectos = entidades distintas
-                        new_entities, new_relationships = (
-                            create_entities_and_relationships_from_llm_extraction(
-                                llm_result_researcher, project_id, existing_researcher_ids
-                            )
-                        )
-                        # Agregar al resultado
-                        self.add_entities(new_entities)
-                        self.add_relationship(new_relationships)
-
-                        # Actualizar el set de IDs existentes para este proyecto
-                        existing_researcher_ids.update(e.id for e in new_entities)
-                        self.mark_success(doc_id, "Investigador")
-                        logger.info(
-                            f"[LLM Researchers] ✓ {base_name}: encontrados {len(llm_result_researcher.researchers)} investigadores, {len(llm_result_researcher.errors)} errores"
-                        )
                     if topic_cache or not llm_topics:
                         logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
                     else:

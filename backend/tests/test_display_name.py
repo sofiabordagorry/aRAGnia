@@ -24,9 +24,9 @@ load_dotenv(env_path)
             "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS 'garcia' RETURN i.display_name, p.value",
         ),
         (
-            "Multiple Variables (Alias)",
-            "MATCH (x:Investigador)-[:POSIBLE_ALIAS]->(y:Investigador) RETURN x.name AS source, y.name AS target",
-            "MATCH (x:Investigador)-[:POSIBLE_ALIAS]->(y:Investigador) RETURN x.display_name AS source, y.display_name AS target",
+            "Multiple Variables",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.name AS investigador, y.name AS responsable",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.display_name AS investigador, y.display_name AS responsable",
         ),
         (
             "Query without Investigador (Should not modify)",
