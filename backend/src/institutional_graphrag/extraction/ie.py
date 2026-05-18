@@ -123,7 +123,7 @@ class EntityExtractor:
         matched_ids: set[str] = set()
         matched_entities: list[Entity] = []
 
-        # Entidades 
+        # Entidades
         try:
             with json_path.open("rb") as f:
                 for raw in ijson.items(f, "entities.item"):

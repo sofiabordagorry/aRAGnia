@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Literal, Optional
 
 from typing_extensions import NotRequired, TypedDict
 
+
 class AnioValue(TypedDict):
     year: str
 
