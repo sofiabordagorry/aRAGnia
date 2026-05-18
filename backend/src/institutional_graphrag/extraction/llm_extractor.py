@@ -55,16 +55,16 @@ class LLMEntityExtractor:
         self.available_topics = available_topics
 
     def get_topics(self, file_path: Path) -> tuple[list, dict]:
+        """Crea un mapeo de fields y subfields para búsqueda rápida."""
         with open(file_path, "r", encoding="utf-8") as f:
             fields_dict = json.load(f)
-        """Crea un mapeo de fields y subfields para búsqueda rápida."""
-        subfield_to_field = {}  # Mapeo de subfields a fields
-        subfields_list = []  # Lista de subfields
+        subfield_to_field = {}
+        subfields_list = []
         for field, details in fields_dict.items():
             for subfield in details.get("subfields", []):
                 subfield_normalized = subfield.lower().strip()
-                subfield_to_field[subfield_normalized] = field  # Mapear subfield a field
-                subfields_list.append(subfield)  # Agregar subfield a la lista
+                subfield_to_field[subfield_normalized] = field
+                subfields_list.append(subfield)
         return subfields_list, subfield_to_field
 
     def extract_topics_from_chunk(self, chunk_text: str, chunk_id: str) -> LLMExtractionResult:

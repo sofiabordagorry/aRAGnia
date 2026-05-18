@@ -4,15 +4,6 @@ from .database import get_connection
 
 
 def insert_query(type, query_text, response, cypher_query=None):
-    """
-    Insert a query into the queries table and return its ID.
-
-    Args:
-        type: 'rag' or 'graph_rag'
-        query_text: user query text
-        response: generated response
-        cypher_query: cypher query executed in Neo4j (optional)
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
@@ -90,10 +81,6 @@ def insert_graphrag_chunks(query_id, chunks):
 
 
 def insert_graphrag_chunk_entities(query_id, chunk_to_entities):
-    """
-    chunk_to_entities:
-        Dict[str, List[tuple[str, str]]]
-    """
     conn = get_connection()
     cur = conn.cursor()
 
@@ -118,12 +105,6 @@ def insert_graphrag_chunk_entities(query_id, chunk_to_entities):
 
 
 def get_queries_with_chunks():
-    """
-    Return all queries with their associated chunks.
-    Supports both:
-    - RAG -> chunks
-    - GraphRAG -> graphrag_chunks + graphrag_chunk_entities
-    """
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -244,12 +225,7 @@ def get_queries_with_chunks():
 
 
 def delete_query_by_id(query_id: int) -> bool:
-    """
-    Delete a query by id.
-    If foreign keys use ON DELETE CASCADE, associated chunks/entities
-    are deleted automatically.
-    Returns True if the query existed.
-    """
+    # El ON DELETE CASCADE en las tablas hijas elimina chunks y entidades automáticamente.
     conn = get_connection()
     cur = conn.cursor()
 
@@ -264,12 +240,6 @@ def delete_query_by_id(query_id: int) -> bool:
 
 
 def delete_all_queries() -> int:
-    """
-    Delete all queries.
-    If foreign keys use ON DELETE CASCADE, associated chunks/entities
-    are deleted automatically.
-    Returns the number of deleted queries.
-    """
     conn = get_connection()
     cur = conn.cursor()
 

@@ -37,9 +37,7 @@ class GraphRAGResult:
     answer: str
     chunks: List[GraphRAGChunk]
     cypher_query: str
-    chunk_to_entities: Dict[
-        str, List[tuple[str, str]]
-    ]  # Mapeo chunk_id -> [(entity_id, entity_label)] - TRAZABILIDAD COMPLETA
+    chunk_to_entities: Dict[str, List[tuple[str, str]]]  # chunk_id -> [(entity_id, entity_label)]
 
 
 class CypherQueryValidator:
@@ -64,12 +62,10 @@ class CypherQueryValidator:
 
         query_upper = query.upper()
 
-        # Verificar palabras clave prohibidas
         for pattern in cls.FORBIDDEN_KEYWORDS:
             if re.search(pattern, query_upper):
                 return False, f"Query contiene operación prohibida: {pattern}"
 
-        # Debe contener MATCH o RETURN
         if "MATCH" not in query_upper and "RETURN" not in query_upper:
             return False, "Query debe contener MATCH o RETURN"
 
@@ -93,9 +89,7 @@ class GraphRAGRetriever:
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
         answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
-        # LLM para Cypher
         self.cypher_llm_client = get_llm_client(model=cypher_model)
-        # LLM para clasificación y respuestas finales
         self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
@@ -155,7 +149,6 @@ Classification (answer only SEARCH or CHAT):"""
             .upper()
         )
 
-        # Parse response - debe ser SEARCH o CHAT
         if "SEARCH" in response:
             return "SEARCH"
         elif "CHAT" in response:
@@ -218,7 +211,6 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 max_tokens=self.max_tokens,
             )
 
-            # Extraer query entre tags <QUERY>
             query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
 
             if query_match:
@@ -261,7 +253,6 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 "alcance de esta solución. Por favor, reformule su pregunta de forma más específica."
             )
 
-        # Validar query
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
             raise ValueError(f"Query generada no es segura: {error}")
@@ -270,7 +261,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         return cypher_query
 
     def _fetch_schema(self) -> str:
-        """Fetches node labels/properties and relationships from Neo4j. Cached after first call."""
+        """Obtiene labels/propiedades de nodos y relaciones de Neo4j. Se cachea tras la primera llamada."""
         if self._schema_cache is not None:
             return self._schema_cache
 
@@ -312,7 +303,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         return self._schema_cache
 
     def _fetch_fewshot_examples(self, user_query: str) -> str:
-        """Returns a formatted block of similar (question, cypher) examples."""
+        """Retorna un bloque formateado de ejemplos similares (pregunta, cypher)."""
         if self._fewshot:
             try:
                 examples = self._fewshot.search(user_query, top_k=3)
@@ -495,7 +486,6 @@ CRITICAL SYNTAX:
                 return cypher_query
 
             for var in investigador_vars:
-                # Reemplazar var.name por var.display_name (ej: i.name -> i.display_name)
                 pattern = rf"\b{var}\.name\b"
                 after_return = re.sub(pattern, f"{var}.display_name", after_return)
 
@@ -591,7 +581,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         """
         Ejecuta una query Cypher y retorna resultados (como neo4j Record objects).
         """
-        # Validar nuevamente antes de ejecutar
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
             raise ValueError(f"Query no pasó validación de seguridad: {error}")
@@ -606,7 +595,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
     def _is_aggregation_query(self, cypher_query: str) -> bool:
         """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.) o devuelve valores simples."""
         query_upper = cypher_query.upper()
-        # Agregaciones numéricas
         aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN("]
         # También considerar queries que devuelven propiedades simples sin COLLECT
         has_aggregation = any(func in query_upper for func in aggregation_functions)
@@ -651,18 +639,15 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         chunk_to_entities: Dict[str, List[tuple[str, str]]] = {}  # chunk_id -> [(entity_id, label)]
 
         for record in records:
-            # Recopilar chunks y entidades de este record
             chunks_in_record = []
             # direct = vienen de MATCH directo (implica relación EXTRAIDO_DE/TITULO_EXTRAIDO_DE)
             entities_direct = []
             # collected = vienen de COLLECT() — son del proyecto/consulta, no del chunk
             entities_collected = []
 
-            # Iterar sobre los valores del record
             for key in record.keys():
                 value = record[key]
 
-                # Verificar si es un nodo de Neo4j (directo, no en lista)
                 if isinstance(value, Node):
                     labels = list(value.labels)
                     if "Chunk" in labels:
@@ -734,13 +719,11 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 if entity_id and entity_label:
                     evidence_entities[(entity_id, entity_label)] = props
 
-            # Procesar chunks encontrados
             for chunk_node in chunks_in_record:
                 chunk_id = chunk_node.get("id", "")
                 if not chunk_id:
                     continue
 
-                # Agregar chunk si no existe
                 if chunk_id not in chunks_dict:
                     text = chunk_node.get("text", "")
                     page_numbers = chunk_node.get("page_numbers")
@@ -853,11 +836,9 @@ Tu respuesta (frase introductoria + lista completa):"""
 
         logger.info(f"Query recibida: '{user_query}'")
 
-        # Clasificar intención del usuario
         intent = self._classify_query_intent(user_query)
         logger.info(f"Intención clasificada: {intent}")
 
-        # Si es conversacional, generar respuesta directa sin búsqueda en grafo
         if intent == "CHAT":
             logger.info("Modo conversacional activado (usando llama)")
             conversational_answer = self._generate_conversational_response(user_query)
@@ -884,7 +865,6 @@ Tu respuesta (frase introductoria + lista completa):"""
                 )
             raise
 
-        # Ejecutar query con reintentos en caso de error de sintaxis
         MAX_SYNTAX_RETRIES = 3
         _too_complex_result = GraphRAGResult(
             answer=(
@@ -913,7 +893,6 @@ Tu respuesta (frase introductoria + lista completa):"""
                     logger.error(f"No se pudo corregir la query: {fix_err}")
                     return _too_complex_result
 
-        # Extraer chunks y evidencia
         chunks, evidence_entities, chunk_to_entities = (
             self._extract_chunks_and_entities_from_results(records)
         )

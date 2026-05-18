@@ -96,10 +96,6 @@ class GraphBuilder:
                 raise
         raise ValueError("No se pudo conectar a Neo4j")
 
-    # -------------------------
-    # Constraints
-    # -------------------------
-
     def _create_constraints(self, max_attempts: int = 5, sleep_s: int = 2) -> None:
         last_err = None
         for attempt in range(1, max_attempts + 1):
@@ -125,10 +121,6 @@ class GraphBuilder:
             "Neo4j no respondió al crear constraints. "
             "Probablemente el contenedor se reinició o todavía no terminó de iniciar."
         ) from last_err
-
-    # -------------------------
-    # Utilidades de batching
-    # -------------------------
 
     @staticmethod
     def _chunks(iterable: Iterable[Any], size: int) -> Iterable[List[Any]]:
@@ -159,9 +151,6 @@ class GraphBuilder:
             props["value"] = entity.value
         return props
 
-    # -------------------------
-    # Entidades
-    # -------------------------
     def upsert_entities(self, entities: Iterable[Entity], *, sample_ids: int = 50) -> Neo4jStats:
         stats = Neo4jStats()
 
@@ -196,10 +185,6 @@ class GraphBuilder:
                     self._extend_sample(stats.node_eids, record["eids"] or [], sample_ids)
 
         return stats
-
-    # -------------------------
-    # Relaciones
-    # -------------------------
 
     def _prepare_relationships(
         self,
@@ -735,16 +720,11 @@ class GraphBuilder:
     ) -> Dict[str, Any]:
         output_json_path = Path(output_json_path)
 
-        # -----------------------------
-        # 2) Extracción desde Neo4j
-        # -----------------------------
-
         neo4j_entities: List[Dict[str, Any]] = []
         neo4j_relationships: List[Dict[str, Any]] = []
         entity_type_counts: Dict[str, int] = {}
         relationship_type_counts: Dict[str, int] = {}
         with self.driver.session() as session:
-            # Entidades
             node_query = """
             MATCH (n)
             RETURN
@@ -786,7 +766,6 @@ class GraphBuilder:
 
                 entity_type_counts[label] = entity_type_counts.get(label, 0) + 1
 
-            # Relaciones
             rel_query = """
             MATCH (a)-[r]->(b)
             RETURN
@@ -802,7 +781,6 @@ class GraphBuilder:
                 rel_type = record["type"]
                 properties = dict(record["properties"]) if record["properties"] is not None else {}
 
-                # eliminar propiedad
                 properties.pop("__created__", None)
 
                 neo4j_relationships.append(
@@ -816,9 +794,6 @@ class GraphBuilder:
 
                 relationship_type_counts[rel_type] = relationship_type_counts.get(rel_type, 0) + 1
 
-        # -----------------------------
-        # 3) Guardado final
-        # -----------------------------
         output_data = {
             "entities": neo4j_entities,
             "relationships": neo4j_relationships,

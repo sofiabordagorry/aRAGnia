@@ -135,7 +135,6 @@ def get_llm_client(*, model: Optional[str] = None) -> OllamaClient | HuggingFace
             HuggingFaceClient._instances[model_id] = HuggingFaceClient(model_id)
         return HuggingFaceClient._instances[model_id]
 
-    # Default: Ollama
     resolved_model = model or os.getenv("OLLAMA_MODEL") or "qwen2.5:3b-instruct"
     if resolved_model not in _ollama_instances:
         _ollama_instances[resolved_model] = OllamaClient(model=resolved_model)
