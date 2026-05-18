@@ -373,5 +373,12 @@
       "Flujo de Fluidos y Procesos de Transferencia",
       "Quimica de Procesos y Tecnologia"
     ]
+  },
+  "Veterinaria": {
+    "id": "https://openalex.org/fields/34",
+    "subfields": [
+      "Animales Pequeños",
+      "Equinos"
+    ]
   }
 }

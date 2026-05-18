@@ -373,5 +373,12 @@
       "Fluid Flow and Transfer Processes",
       "Process Chemistry and Technology"
     ]
+  },
+  "Veterinary": {
+    "id": "https://openalex.org/fields/34",
+    "subfields": [
+      "Small Animals",
+      "Equine"
+    ]
   }
 }

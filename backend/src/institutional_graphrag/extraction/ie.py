@@ -12,7 +12,10 @@ from typing import Any, Dict, List, Optional, cast
 import ijson
 
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
-from institutional_graphrag.extraction.llm_extractor import LLMEntityExtractor
+from institutional_graphrag.extraction.llm_extractor import (
+    LLMEntityExtractor,
+    load_all_topics_and_domains,
+)
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.schema import (
@@ -84,8 +87,17 @@ class EntityExtractor:
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
+        topic_entities, topic_rels = load_all_topics_and_domains()
+        self.add_entities(topic_entities)
+        self.add_relationship(topic_rels)
+
         entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
+            self.load_subset_from_graph_json(
+                entities_json,
+                label="Investigador",
+                value_filter={"source": "llm"},
+            )
             self.load_subset_from_graph_json(entities_json, label="Topico")
             self.load_subset_from_graph_json(entities_json, label="Dominio")
 
