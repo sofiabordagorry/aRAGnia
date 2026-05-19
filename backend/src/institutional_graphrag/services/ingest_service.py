@@ -24,7 +24,6 @@ from institutional_graphrag.document_naming import (
 )
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker

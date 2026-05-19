@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
