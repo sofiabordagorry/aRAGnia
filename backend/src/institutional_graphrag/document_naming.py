@@ -123,7 +123,7 @@ def parent_doc_from_stem(stem: str) -> str:
     if project_key:
         return project_key
 
-    # Fallback for older/non-standard stems: "gi_124_texto" -> "gi_124"
+    # Fallback para stems no estándar: "gi_124_texto" -> "gi_124"
     parts = stem.split("_")
     if len(parts) >= 2:
         return f"{parts[0]}_{parts[1]}"

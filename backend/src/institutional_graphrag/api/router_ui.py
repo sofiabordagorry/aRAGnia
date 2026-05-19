@@ -1,4 +1,3 @@
-# router_ui.py
 from __future__ import annotations
 
 import asyncio
@@ -99,10 +98,6 @@ class GraphEntityCatalogResponse(BaseModel):
 class DeleteEntityRequest(BaseModel):
     entity_id: str
 
-
-# =========================================================
-# Estado en memoria de jobs de upload
-# =========================================================
 
 UPLOAD_JOBS: Dict[str, dict] = {}
 UPLOAD_JOBS_LOCK = threading.Lock()

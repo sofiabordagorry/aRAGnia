@@ -1,4 +1,3 @@
-# src/extraction/ie.py
 from __future__ import annotations
 
 import json
@@ -136,7 +135,7 @@ class EntityExtractor:
         matched_ids: set[str] = set()
         matched_entities: list[Entity] = []
 
-        # -------- 1) ENTITIES (streaming) --------
+        # Entidades
         try:
             with json_path.open("rb") as f:
                 for raw in ijson.items(f, "entities.item"):
@@ -195,7 +194,7 @@ class EntityExtractor:
 
         self.add_entities(matched_entities)
 
-        # -------- 2) RELATIONSHIPS (segunda pasada) --------
+        # Relaciones (segunda pasada)
         try:
             with json_path.open("rb") as f:
                 for raw in ijson.items(f, "relationships.item"):
@@ -520,7 +519,7 @@ class EntityExtractor:
                 )
                 continue
             if not isinstance(props, dict):
-                props = {}  # normalizar
+                props = {}
 
             try:
                 relationships.append(
@@ -600,7 +599,6 @@ class EntityExtractor:
         self.reg = self.load_registry(registry_path)
         self._registry_dirty = False
 
-        # Procesar cada proyecto y grupo
         projects = [e for e in self.res.entities if e.label in ("Proyecto", "Grupo")]
 
         docs_processed = 0
@@ -625,7 +623,7 @@ class EntityExtractor:
                     logger.info(f"[LLM] Límite de {max_docs} documentos alcanzado")
                     return
 
-                # Skipear documentos de tabla
+                # Los documentos de tabla no tienen chunks de texto
                 if doc_id.endswith("_table"):
                     continue
 
@@ -683,10 +681,9 @@ class EntityExtractor:
                             f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
                         )
 
-                    # Incrementar contador de documentos procesados
                     docs_processed += 1
 
-                    # Checkpoint periódico para no perder progreso
+                    # Checkpoint periódico para no perder progreso ante un fallo
                     if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
                         self._save_checkpoint(registry_path=registry_path)
 
@@ -733,10 +730,9 @@ class EntityExtractor:
         for chunk_id in project_chunks:
             chunk_topics = topic_by_chunk.get(chunk_id, [])
             topic_ids = [tid for tid in chunk_topics if tid in topic_entity_ids]
-
             topic_counts.update(topic_ids)
 
-        # Crear relaciones proyecto->topico para los top 3 tópicos más mencionados
+        # Top 3 tópicos más mencionados en los chunks del proyecto
         top_topics = topic_counts.most_common(3)
         relationships_to_add = []
         for topic_id, count in top_topics:
@@ -748,5 +744,4 @@ class EntityExtractor:
             )
             relationships_to_add.append(rel)
 
-        # 3️⃣ Llamar una sola vez al método
         self.add_relationship(relationships_to_add)

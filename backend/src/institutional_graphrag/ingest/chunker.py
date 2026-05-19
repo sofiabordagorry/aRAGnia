@@ -9,7 +9,6 @@ from ..config import EMBED_MODEL_ID
 
 
 def get_native_chunker(tokenizer: Any = EMBED_MODEL_ID, merge_peers: bool = True) -> HybridChunker:
-    # En tu versión, HybridChunker no acepta max_tokens y tokenizer no está tipado como str.
     return HybridChunker(tokenizer=tokenizer, merge_peers=merge_peers)
 
 

@@ -176,7 +176,6 @@ class RuleBasedExtractor:
             entities.append(Chunk(id=chunk_id, value=meta))
         return ExtractionResult(entities, relationships, errors)
 
-    #  LEER TABLAS ASOCIADAS A UN CONJUNTO DE DOCUMENTOS
     def associate_tables_with_documents(
         self, docs_by_group_year: dict[tuple[str, str], list[Documento]], table_dir: Path
     ) -> ExtractionResult:
@@ -276,10 +275,6 @@ class RuleBasedExtractor:
 
         return self.res
 
-    ##############################
-    #       AUXILIARES
-    ##############################
-
     def _read_json(self, path: Path) -> ReadJsonResult:
         errors: dict[str, Any] = {}
         try:
@@ -329,9 +324,6 @@ class RuleBasedExtractor:
             else pd.DataFrame(columns=df.columns)
         )
 
-    #############################
-    # Auxiliares para proyectos #
-    #############################
     def _collect_candidates_from_table_df(
         self,
         df: pd.DataFrame,
@@ -414,15 +406,12 @@ class RuleBasedExtractor:
 
         results: list[dict[str, Any]] = []
 
-        ### Funcion para agregar un titulo candidato
         def add(chunk_id: Any, candidate_title: Any, grade: int) -> None:
             if chunk_id is None or candidate_title is None:
                 return
             results.append(
                 {"chunk_id": chunk_id, "candidate_title": candidate_title, "best_grade": grade}
             )
-
-        ###
 
         rx1 = rx2 = None
         title_esc = None
@@ -499,7 +488,6 @@ class RuleBasedExtractor:
         return Grupo if project_id.lower().startswith("gi_") else Proyecto
 
     def _add_project_from_best(self, project_id: str, best: dict[str, Any]) -> None:
-        # mismo comportamiento que tu bloque
         project_title = "".join(
             c
             for c in unicodedata.normalize("NFD", best["candidate_title"].lower())
@@ -562,7 +550,6 @@ class RuleBasedExtractor:
                 str(doc.value["sub_id"]),
             )
 
-            # misma relación que tenías
             self.res.relationships.append(ES_DESCRITO_POR(project_id, doc_id))
 
             candidates_for_projects[project_id].append(

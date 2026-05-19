@@ -1,4 +1,3 @@
-# institutional_graphrag/services/ingest_service.py
 from __future__ import annotations
 
 import csv
@@ -146,25 +145,17 @@ class IngestService:
             except Exception:
                 pass
 
-        # Post-loop: proyectos + responsables
         self._extract_projects_and_responsibles()
-
-        # Extracción con LLM (si tu EntityExtractor lo soporta)
         self.entity_extractor._extract_with_llm(include_headings=self.include_headings)
 
         entity_dicts, rel_dicts = self._collect_entity_dicts()
-
-        # Guardar JSON normalizado
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 
-        # Persistir a Neo4j
         if entity_json_path is not None:
             self._ingest_neo4j(entity_json_path)
 
-        # Guardar en cache los documentos extraidos
         self.save_cache()
 
-        # Cleanup al final
         if not self.keep_debug_artifacts:
             for base in processed:
                 self._cleanup_processed_file(base)
@@ -184,7 +175,6 @@ class IngestService:
         if zi.is_dir():
             return None
 
-        # bytes reales del archivo dentro del zip
         content = zf.read(zi)
 
         relative_path = Path(zi.filename)
@@ -202,12 +192,10 @@ class IngestService:
         if prev_size is not None and prev_size != file_size:
             print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
-        # nombre nuevo
         new_filename = generate_new_filename(full_cloud_path)
         print("NOMBRE", new_filename)
         base_name = Path(new_filename).stem
 
-        # paths de salida
         final_pdf_path = self.output_dir / new_filename
         docling_json_path = self.docling_dir / f"{base_name}.json"
         chunk_json_path = self.chunks_dir / f"{base_name}_chunks.json"
@@ -224,20 +212,15 @@ class IngestService:
             final_pdf_path = self.output_dir / new_filename
 
         self.cache_dict[full_cloud_path] = file_size
-        # tmp siempre con bytes
         tmp_path = save_temp_file(bytes_source, new_filename)
 
         try:
             kind = classify_pdf(new_filename)
 
-            # ---------------------------
-            # TABLAS
-            # ---------------------------
             if kind == PdfKind.TABULAR:
-                # Extraer tablas desde el PDF temporal
                 extract_table(tmp_path, self.tables_dir)
 
-                # Crear entidad Documento(tabla) (sin chunks)
+                # Crear entidad Documento(tabla) sin chunks
                 def value_builder(base, m):
                     return {
                         "base_name": base,
@@ -246,8 +229,6 @@ class IngestService:
                         "type": "tabla",
                     }
 
-                # Para el extractor por reglas, pasamos un path "representativo".
-                # Si tu extractor matchea por nombre, esto funciona.
                 self._extract_document_only(
                     file_path=Path(new_filename),
                     kind=kind,
@@ -255,9 +236,6 @@ class IngestService:
                 )
                 return base_name
 
-            # ---------------------------
-            # NARRATIVE
-            # ---------------------------
             def value_builder(base, m):
                 return {
                     "base_name": base,
@@ -267,18 +245,15 @@ class IngestService:
                     "type": m.group("kind"),
                 }
 
-            # Guardar PDF definitivo
             with open(final_pdf_path, "wb") as out:
                 out.write(bytes_source)
 
-            # Docling
             doc_dict = parse_single_document(final_pdf_path)
             docling_json_path.write_text(
                 json.dumps(doc_dict, indent=2, ensure_ascii=False),
                 encoding="utf-8",
             )
 
-            # Chunking
             doc = DoclingDocument.model_validate(doc_dict)
             chunks = chunk_document(doc=doc, chunker=self.chunker)
             chunk_json_path.write_text(
@@ -295,7 +270,6 @@ class IngestService:
                 encoding="utf-8",
             )
 
-            # Embeddings
             embeddings = self.embedder.embed_passages([c["text"] for c in chunks])
             np.save(emb_npy_path, embeddings)
             emb_meta_path.write_text(
@@ -303,7 +277,6 @@ class IngestService:
                 encoding="utf-8",
             )
 
-            # Extracción estática: Documento + Año + Chunk + relaciones
             self._extract_doc_and_chunks(
                 file_path=final_pdf_path,  # path real
                 kind=kind,

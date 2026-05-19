@@ -20,7 +20,7 @@ from .schema import (
 )
 
 __all__ = [
-    # Entities
+    # Entidades
     "Anio",
     "Chunk",
     "Documento",
@@ -28,7 +28,7 @@ __all__ = [
     "Investigador",
     "Proyecto",
     "Topico",
-    # Relationships
+    # Relaciones
     "PARTICIPO_EN",
     "TIENE_TOPICO",
     "ES_DESCRITO_POR",
