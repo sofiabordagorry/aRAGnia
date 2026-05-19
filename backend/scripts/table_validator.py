@@ -106,7 +106,7 @@ if __name__ == "__main__":
     print("Cleaning CSV...")
     print("=" * 60)
 
-    clean_table(input_csv, clean_csv_path)
+    clean_csv_path = clean_table(input_csv, clean_csv_path, "Proyecto")
 
     # Validate cleaned CSV
     cleaned_ok = validate_csv(clean_csv_path)

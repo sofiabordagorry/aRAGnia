@@ -58,7 +58,7 @@ class EntityExtractor:
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
         self.docs_by_group_year: dict[tuple[str, str], list[Documento]] = defaultdict(list)
-
+        self.id_projects: set[str] = set()
         # Configuración LLM
         self.llm_model = llm_model
 
@@ -79,6 +79,7 @@ class EntityExtractor:
         self.doc_by_basename = {}
         self.doc_by_id = {}
         self.docs_by_group_year = defaultdict(list)
+        self.id_projects = set()
 
     def run(
         self,
@@ -103,14 +104,9 @@ class EntityExtractor:
 
         self._extract_documents()
         self._build_doc_indexes()
-        res = self.rule_based.associate_tables_with_documents(
-            self.docs_by_group_year, self.table_dir
-        )
-        self.res.errors.extend(res.errors)
 
         self._extract_chunks()
-        self._extract_projects_and_responsible()
-        self._extract_researchers_from_tabular()
+        self._extract_projects_and_researchers_from_tabular()
         self._extract_with_llm(
             max_docs=max_docs,
             llm_topics=llm_topics,
@@ -249,12 +245,18 @@ class EntityExtractor:
         self.doc_by_id = {str(d.id): d for d in docs}
 
         self.doc_by_basename = {}
-        self.docs_by_group_year = defaultdict(list)
+        self.id_projects = set()
         for d in docs:
             base = d.value["base_name"]
             self.doc_by_basename[base] = d
-            key = (d.value["is_group"], d.value["year_publisher"])
-            self.docs_by_group_year[key].append(d)
+
+            if d.value.get("type") == "tabla":
+                continue
+            else:
+                key_project = (
+                    f'{d.value["is_group"]}_{d.value["year_publisher"]}_{d.value["sub_id"]}'
+                )
+            self.id_projects.add(key_project)
 
     def add_entities(self, entities: List[Entity]) -> bool:
         for e in entities:
@@ -323,6 +325,15 @@ class EntityExtractor:
                 self.res.errors.extend(res.errors)
 
         add_docs_from_dir(
+            self.table_dir,
+            PATTERN_TABLE,
+            lambda base, _: {
+                "base_name": base,
+                "type": "tabla",
+            },
+            create_year_entity=False,
+        )
+        add_docs_from_dir(
             self.documents_dir,
             PATTERN_DOCUMENT,
             lambda base, m: {
@@ -331,17 +342,6 @@ class EntityExtractor:
                 "year_publisher": m.group("year"),
                 "sub_id": m.group("doc_id"),
                 "type": m.group("kind"),
-            },
-        )
-
-        add_docs_from_dir(
-            self.table_dir,
-            PATTERN_TABLE,
-            lambda base, m: {
-                "base_name": base,
-                "is_group": m.group("group"),
-                "year_publisher": m.group("year"),
-                "type": "tabla",
             },
             create_year_entity=True,
         )
@@ -366,16 +366,8 @@ class EntityExtractor:
             self.add_relationship(res.relationships)
             self.res.errors.extend(res.errors)
 
-    def _extract_projects_and_responsible(self) -> None:
-        res = self.rule_based.extract_projects_and_responsible_from_tables(
-            self.doc_by_id, self.chunks_dir
-        )
-        self.add_entities(res.entities)
-        self.add_relationship(res.relationships)
-        self.res.errors.extend(res.errors)
-
-    def _extract_researchers_from_tabular(self) -> None:
-        res = self.tabular.extract_from_directory(self.table_dir)
+    def _extract_projects_and_researchers_from_tabular(self) -> None:
+        res = self.tabular.extract_from_directory(self.table_dir, self.id_projects)
         self.add_entities(res.entities)
         self.add_relationship(res.relationships)
         self.res.errors.extend(res.errors)
@@ -614,7 +606,6 @@ class EntityExtractor:
 
             # Obtener documentos del proyecto
             project_docs = self.docs_by_project.get(project_id, [])
-
             if not project_docs:
                 continue
 

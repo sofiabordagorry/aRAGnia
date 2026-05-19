@@ -5,8 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from institutional_graphrag.services.startup_check_service import ensure_backends_ready
 from institutional_graphrag.retrieval.fewshot_store import FewShotStore
+from institutional_graphrag.services.startup_check_service import ensure_backends_ready
 
 from .router_graphrag import router as graphrag_router
 from .router_rag import router as rag_router

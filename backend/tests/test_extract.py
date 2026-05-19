@@ -107,7 +107,7 @@ def test_extract_documents_valid_creates_documento(extractor: EntityExtractor):
     extractor.documents_dir.mkdir(parents=True)
     extractor.table_dir.mkdir(parents=True)
 
-    (extractor.documents_dir / "gi_2010_152_informe.pdf").write_text("x", encoding="utf-8")
+    (extractor.documents_dir / "proy_2014_148_informe.pdf").write_text("x", encoding="utf-8")
 
     extractor._extract_documents()
 
@@ -115,10 +115,10 @@ def test_extract_documents_valid_creates_documento(extractor: EntityExtractor):
     assert len(docs) == 1
     d = docs[0]
     assert isinstance(d, Documento)
-    assert d.value["base_name"] == "gi_2010_152_informe"
-    assert str(d.value["is_group"]).lower() == "gi"
-    assert d.value["year_publisher"] == "2010"
-    assert d.value["sub_id"] == "152"
+    assert d.value["base_name"] == "proy_2014_148_informe"
+    assert str(d.value["is_group"]).lower() == "proy"
+    assert d.value["year_publisher"] == "2014"
+    assert d.value["sub_id"] == "148"
     assert str(d.value["type"]).lower() == "informe"
 
 
@@ -132,10 +132,10 @@ def test_build_doc_indexes(extractor: EntityExtractor):
         Documento(
             id="doc1",
             value={
-                "base_name": "gi_2010_152_informe",
-                "is_group": "gi",
-                "year_publisher": "2010",
-                "sub_id": "152",
+                "base_name": "proy_2014_148_informe",
+                "is_group": "proy",
+                "year_publisher": "2014",
+                "sub_id": "148",
                 "type": "informe",
             },
         )
@@ -143,9 +143,9 @@ def test_build_doc_indexes(extractor: EntityExtractor):
     extractor._build_doc_indexes()
 
     assert "doc1" in extractor.doc_by_id
-    assert "gi_2010_152_informe" in extractor.doc_by_basename
-    assert ("gi", "2010") in extractor.docs_by_group_year
-    assert len(extractor.docs_by_group_year[("gi", "2010")]) == 1
+    assert "proy_2014_148_informe" in extractor.doc_by_basename
+    assert "proy_2014_148" in extractor.id_projects
+    assert len(extractor.id_projects) == 1
 
 
 # -------------------------
@@ -183,10 +183,10 @@ def test_extract_chunks_links_document_and_chunks(extractor: EntityExtractor):
         Documento(
             id="doc1",
             value={
-                "base_name": "gi_2010_152_informe",
-                "is_group": "gi",
-                "year_publisher": "2010",
-                "sub_id": "152",
+                "base_name": "proy_2014_148_informe",
+                "is_group": "proy",
+                "year_publisher": "2014",
+                "sub_id": "148",
                 "type": "informe",
             },
         )
@@ -195,15 +195,15 @@ def test_extract_chunks_links_document_and_chunks(extractor: EntityExtractor):
 
     chunks = [
         {
-            "chunk_id": "gi_2010_152_informe_chunk0",
+            "chunk_id": "proy_2014_148_informe_chunk0",
             "text": "hola",
             "metadata": {"headings": ["Titulo X"]},
         },
-        {"chunk_id": "gi_2010_152_informe_chunk1", "text": "mundo", "metadata": {}},
+        {"chunk_id": "proy_2014_148_informe_chunk1", "text": "mundo", "metadata": {}},
     ]
     write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="C:/tmp/gi_2010_152_informe.pdf",
+        extractor.chunks_dir / "proy_2014_148_informe_chunks.json",
+        source="C:/tmp/proy_2014_148_informe.pdf",
         chunks=chunks,
     )
 
@@ -225,8 +225,8 @@ def test_extract_chunks_missing_document_for_chunks_adds_error(extractor: Entity
     extractor._build_doc_indexes()  # doc_by_basename vacío
 
     write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="C:/tmp/gi_2010_152_informe.pdf",
+        extractor.chunks_dir / "proy_2014_148_informe_chunks.json",
+        source="C:/tmp/proy_2014_148_informe.pdf",
         chunks=[{"chunk_id": "x", "text": "t", "metadata": {}}],
     )
 
@@ -287,14 +287,14 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
     ex.table_dir.mkdir()
     ex.input_dir.mkdir()
 
-    (ex.documents_dir / "gi_2010_152_informe.pdf").write_text("x", encoding="utf-8")
+    (ex.documents_dir / "proy_2014_148_informe.pdf").write_text("x", encoding="utf-8")
 
     write_chunks_file(
-        ex.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="C:/tmp/gi_2010_152_informe.pdf",
+        ex.chunks_dir / "proy_2014_148_informe_chunks.json",
+        source="C:/tmp/proy_2014_148_informe.pdf",
         chunks=[
             {
-                "chunk_id": "gi_2010_152_informe_chunk0",
+                "chunk_id": "proy_2014_148_informe_chunk0",
                 "text": "Titulo: Proyecto X",
                 "metadata": {"headings": ["Proyecto X"]},
             },
@@ -330,74 +330,78 @@ def test_llm_topics_and_project_aggregation(
     doc1 = Documento(
         id="doc1",
         value={
-            "base_name": "gi_2010_152_informe",
-            "is_group": "gi",
-            "year_publisher": "2010",
-            "sub_id": "152",
+            "base_name": "proy_2014_148_informe",
+            "is_group": "proy",
+            "year_publisher": "2014",
+            "sub_id": "148",
             "type": "informe",
         },
     )
     doc2 = Documento(
         id="doc2",
         value={
-            "base_name": "gi_2010_152_propuesta",
-            "is_group": "gi",
-            "year_publisher": "2010",
-            "sub_id": "152",
+            "base_name": "proy_2014_148_propuesta",
+            "is_group": "proy",
+            "year_publisher": "2014",
+            "sub_id": "148",
             "type": "propuesta",
         },
     )
     doc3 = Documento(
         id="doc3",
         value={
-            "base_name": "gi_2010_391_informe",
-            "is_group": "gi",
-            "year_publisher": "2010",
-            "sub_id": "391",
+            "base_name": "proy_2012_28_informe",
+            "is_group": "proy",
+            "year_publisher": "2012",
+            "sub_id": "28",
             "type": "informe",
         },
     )
     extractor.add_entities([doc1, doc2, doc3])
     extractor._build_doc_indexes()
 
-    proyecto1 = Proyecto(id="gi_2010_152", value="Proyecto 152")
-    proyecto2 = Proyecto(id="gi_2010_391", value="Proyecto 391")
+    proyecto1 = Proyecto(id="proy_2014_148", value="Proyecto 148")
+    proyecto2 = Proyecto(id="proy_2012_28", value="Proyecto 28")
     extractor.add_entities([proyecto1, proyecto2])
 
     extractor.add_relationship(
         [
             Relationship(
-                type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc1", properties={}
+                type="ES_DESCRITO_POR", source_id="proy_2014_148", target_id="doc1", properties={}
             ),
             Relationship(
-                type="ES_DESCRITO_POR", source_id="gi_2010_152", target_id="doc2", properties={}
+                type="ES_DESCRITO_POR", source_id="proy_2014_148", target_id="doc2", properties={}
             ),
             Relationship(
-                type="ES_DESCRITO_POR", source_id="gi_2010_391", target_id="doc3", properties={}
+                type="ES_DESCRITO_POR", source_id="proy_2012_28", target_id="doc3", properties={}
             ),
         ]
     )
 
     # ---- chunks ----
     write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="C:/tmp/gi_2010_152_informe.pdf",
+        extractor.chunks_dir / "proy_2014_148_informe_chunks.json",
+        source="C:/tmp/proy_2014_148_informe.pdf",
         chunks=[
-            {"chunk_id": "gi_2010_152_informe_chunk0", "text": "machine learning", "metadata": {}}
+            {"chunk_id": "proy_2014_148_informe_chunk0", "text": "machine learning", "metadata": {}}
         ],
     )
     write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_propuesta_chunks.json",
-        source="C:/tmp/gi_2010_152_propuesta.pdf",
+        extractor.chunks_dir / "proy_2014_148_propuesta_chunks.json",
+        source="C:/tmp/proy_2014_148_propuesta.pdf",
         chunks=[
-            {"chunk_id": "gi_2010_152_propuesta_chunk0", "text": "machine learning", "metadata": {}}
+            {
+                "chunk_id": "proy_2014_148_propuesta_chunk0",
+                "text": "machine learning",
+                "metadata": {},
+            }
         ],
     )
     write_chunks_file(
-        extractor.chunks_dir / "gi_2010_391_informe_chunks.json",
-        source="C:/tmp/gi_2010_391_informe.pdf",
+        extractor.chunks_dir / "proy_2012_28_informe_chunks.json",
+        source="C:/tmp/proy_2012_28_informe.pdf",
         chunks=[
-            {"chunk_id": "gi_2010_391_informe_chunk0", "text": "machine learning", "metadata": {}}
+            {"chunk_id": "proy_2012_28_informe_chunk0", "text": "machine learning", "metadata": {}}
         ],
     )
 
@@ -468,109 +472,10 @@ def test_llm_topics_and_project_aggregation(
     ]
     assert len(tiene_topico_rels) == 2, "2 proyectos => 2 relaciones TIENE_TOPICO"
 
-    rel_p1 = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_152")
-    rel_p2 = next(r for r in tiene_topico_rels if r.source_id == "gi_2010_391")
+    rel_p1 = next(r for r in tiene_topico_rels if r.source_id == "proy_2014_148")
+    rel_p2 = next(r for r in tiene_topico_rels if r.source_id == "proy_2012_28")
     assert rel_p1.properties.get("mention_count") == 2
     assert rel_p2.properties.get("mention_count") == 1
-
-
-def test_rule_based_tables_do_not_create_investigators(extractor: EntityExtractor, tmp_path: Path):
-    """
-    Los investigadores ya no se extraen de tablas parquet por rule-based.
-    Verifica que _extract_projects_and_responsible NO genera entidades Investigador.
-    """
-    extractor.documents_dir.mkdir(parents=True, exist_ok=True)
-    extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
-    extractor.table_dir.mkdir(parents=True, exist_ok=True)
-
-    doc = Documento(
-        id="doc1",
-        value={
-            "base_name": "gi_2010_152_informe",
-            "is_group": "gi",
-            "year_publisher": "2010",
-            "sub_id": "152",
-            "type": "informe",
-        },
-    )
-    extractor.add_entities([doc])
-    extractor._build_doc_indexes()
-
-    write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="C:/tmp/gi_2010_152_informe.pdf",
-        chunks=[
-            {
-                "chunk_id": "gi_2010_152_informe_chunk0",
-                "text": "Titulo: Proyecto Gamma",
-                "metadata": {},
-            }
-        ],
-    )
-
-    df = pd.DataFrame(
-        {
-            "ID": ["152"],
-            "TITULO": ["Proyecto Gamma"],
-            "NOMBRE RESPONSABLE": ["Ema"],
-            "APELLIDO RESPONSABLE": ["García"],
-        }
-    )
-    df.to_parquet(extractor.table_dir / "gi_2010_table.parquet")
-
-    extractor.rule_based.associate_tables_with_documents(
-        extractor.docs_by_group_year, extractor.table_dir
-    )
-    extractor._extract_projects_and_responsible()
-
-    investigators = [e for e in extractor.res.entities if e.label == "Investigador"]
-    assert investigators == [], "Rule-based parquet tables no deben crear entidades Investigador"
-
-
-def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtractor, tmp_path: Path):
-    """
-    Border Case: La tabla contiene valores basura o vacíos explícitos ("N/A", "--").
-    Verifica que NO se creen investigadores basura ni relaciones PARTICIPO_EN.
-    """
-    extractor.documents_dir.mkdir(parents=True, exist_ok=True)
-    extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
-    extractor.table_dir.mkdir(parents=True, exist_ok=True)
-
-    doc = Documento(
-        id="doc1",
-        value={
-            "base_name": "gi_2010_152_informe",
-            "is_group": "gi",
-            "year_publisher": "2010",
-            "sub_id": "152",
-            "type": "informe",
-        },
-    )
-    extractor.add_entities([doc])
-    extractor._build_doc_indexes()
-
-    write_chunks_file(
-        extractor.chunks_dir / "gi_2010_152_informe_chunks.json",
-        source="doc",
-        chunks=[{"chunk_id": "chunk0", "text": "Titulo: Proyecto X", "metadata": {}}],
-    )
-
-    # Tabla con valores explícitamente ignorados en rule_based_extractor
-    df = pd.DataFrame(
-        {"ID": ["152"], "TITULO": ["Proyecto X"], "RESPONSABLE": ["--"], "NOMBRE": ["N/A"]}
-    )
-    df.to_parquet(extractor.table_dir / "gi_2010_table.parquet")
-
-    extractor.rule_based.associate_tables_with_documents(
-        extractor.docs_by_group_year, extractor.table_dir
-    )
-    extractor._extract_projects_and_responsible()
-
-    participo_rels = [r for r in extractor.res.relationships if r.type == "PARTICIPO_EN"]
-
-    assert (
-        len(participo_rels) == 0
-    ), "No se deben crear relaciones PARTICIPO_EN para nombres inválidos"
 
 
 # -------------------------
@@ -581,11 +486,13 @@ def test_extract_projects_ignores_garbage_responsables(extractor: EntityExtracto
 def test_tabular_extractor_calidad_property(tmp_path: Path):
     """La propiedad 'calidad' se guarda correctamente en la relación PARTICIPO_EN."""
     import csv
+
     from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 
     csv_path = tmp_path / "equipos_test.csv"
     rows = [
         {
+            "row_id": "0",
             "pais_documento": "UY",
             "tipo_documento": "CI",
             "documento": "11111",
@@ -597,8 +504,10 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
+            "file_id": "proy_2018_1",
         },
         {
+            "row_id": "1",
             "pais_documento": "UY",
             "tipo_documento": "CI",
             "documento": "22222",
@@ -610,8 +519,10 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
+            "file_id": "proy_2018_1",
         },
         {
+            "row_id": "2",
             "pais_documento": "UY",
             "tipo_documento": "CI",
             "documento": "33333",
@@ -623,17 +534,21 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
+            "file_id": "proy_2018_1",
         },
     ]
+    id_projects: set[str] = set()
+    id_projects.add("proy_2018_1")
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
         writer.writeheader()
         writer.writerows(rows)
 
-    result = TabularExtractor().extract_from_csv(csv_path)
+    result = TabularExtractor().extract_from_csv(csv_path, id_projects)
 
     participo_rels = [r for r in result.relationships if r.type == "PARTICIPO_EN"]
     calidades = {r.properties.get("calidad") for r in participo_rels}
+    print("calidad", calidades)
     assert calidades == {"responsable", "integrante", "otros"}
     assert all(
         r.properties.get("calidad") for r in participo_rels
@@ -659,3 +574,62 @@ def test_ie_add_entities_dedup_by_id(extractor: EntityExtractor):
     matches = [e for e in extractor.res.entities if e.id == "uy_ci_12345678"]
     assert len(matches) == 1
     assert matches[0].value["name"] == "Juan Pérez"
+
+
+def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_path: Path):
+    """Crea Proyecto y relación TITULO_EXTRAIDO_DE hacia el chunk de la fila."""
+    import csv
+
+    from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
+
+    csv_path = tmp_path / "equipos_test.csv"
+    rows = [
+        {
+            "row_id": "0",
+            "pais_documento": "UY",
+            "tipo_documento": "CI",
+            "documento": "11111",
+            "nombres": "ANA",
+            "apellidos": "GARCIA",
+            "sexo": "F",
+            "calidad": "Responsable",
+            "id_formulario": "1",
+            "anio": "2018",
+            "programa": "I+D",
+            "titulo": "Proyecto A",
+            "palabras_claves2": "salud",
+            "descripcion": "AA",
+            "file_id": "proy_2018_1",
+        },
+    ]
+
+    id_projects: set[str] = set()
+    id_projects.add("proy_2018_1")
+
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+    result = TabularExtractor().extract_from_csv(csv_path, id_projects)
+
+    proyectos = [e for e in result.entities if e.label == "Proyecto"]
+    assert len(proyectos) == 1
+
+    proyecto = proyectos[0]
+    assert proyecto.id == "proy_2018_1"
+    assert isinstance(proyecto.value, dict)
+    assert proyecto.value == {
+        "title": "proyecto a",
+        "keywords": ["salud"],
+        "description": "AA",
+    }
+    titulo_rels = [r for r in result.relationships if r.type == "TITULO_EXTRAIDO_DE"]
+
+    assert len(titulo_rels) == 1
+
+    rel = titulo_rels[0]
+    assert rel.source_id == "proy_2018_1"
+
+    # El target debe ser un Chunk creado desde la fila del CSV
+    assert rel.target_id == "equipos_test#Chunk0"

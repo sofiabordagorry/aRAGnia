@@ -24,6 +24,7 @@ from institutional_graphrag.document_naming import (
 )
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
+from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
@@ -37,6 +38,8 @@ from institutional_graphrag.ingest.file_namer import (
 )
 from institutional_graphrag.ingest.table_extractors import extract_table
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
+
+DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 
 
 class MissingNeo4jCredentialsError(Exception):
@@ -149,7 +152,7 @@ class IngestService:
         # Post-loop: proyectos + responsables
         self._extract_projects_and_responsibles()
 
-        # Extracción con LLM (si tu EntityExtractor lo soporta)
+        # Extracción con LLM
         self.entity_extractor._extract_with_llm(include_headings=self.include_headings)
 
         entity_dicts, rel_dicts = self._collect_entity_dicts()
@@ -411,15 +414,8 @@ class IngestService:
 
     def _extract_projects_and_responsibles(self) -> None:
         try:
-            res = self.rule_based_extractor.associate_tables_with_documents(
-                self.entity_extractor.docs_by_group_year,
-                self.tables_dir,
-            )
-            self.entity_extractor.res.errors.extend(res.errors)
-
-            res = self.rule_based_extractor.extract_projects_and_responsible_from_tables(
-                self.entity_extractor.doc_by_id,
-                self.entity_extractor.chunks_dir,
+            res = self.entity_extractor.tabular.extract_from_directory(
+                self.entity_extractor.table_dir, self.entity_extractor.id_projects
             )
             self.entity_extractor.add_entities(res.entities)
             self.entity_extractor.add_relationship(res.relationships)

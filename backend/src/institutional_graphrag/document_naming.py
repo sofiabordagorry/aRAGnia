@@ -32,7 +32,7 @@ PATTERN_DOCUMENT_WITH_OPTIONAL_PDF = re.compile(
     re.IGNORECASE,
 )
 
-PATTERN_TABLE = re.compile(r"^(?P<group>[^_]+)_(?P<year>\d{4})_.*$", re.IGNORECASE)
+PATTERN_TABLE = re.compile(r".+", re.IGNORECASE)
 
 PROJECT_KEY_RE = re.compile(rf"((?:{_GROUP_REGEX})_\d{{4}})_\d+", re.IGNORECASE)
 
