@@ -117,9 +117,10 @@ class Topico(Entity):
 class Dominio(Entity):
     value: str
 
+
 @dataclass
 class Area(Entity):
-    value: str   
+    value: str
 
 
 @dataclass
@@ -179,6 +180,7 @@ def PERTENECE_A_DOMINIO(
         properties=properties or {},
     )
 
+
 def PERTENECE_A_AREA(
     proyecto_id: str, area_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -193,6 +195,7 @@ def PERTENECE_A_AREA(
         target_id=area_id,
         properties=properties or {},
     )
+
 
 def ES_DESCRITO_POR(
     proyecto_id: str, documento_id: str, properties: Optional[Dict[str, Any]] = None
