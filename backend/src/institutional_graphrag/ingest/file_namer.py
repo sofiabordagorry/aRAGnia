@@ -106,9 +106,7 @@ def generate_new_filename(path_str):
                     return f"{prefix}_{year}_{file_id}_{type_suffix}{filename_path.suffix}"
                 break
 
-        # Rule for 'admin' (Fallback for paths not following the above structure)
-        # Logic: admin_year_filename
-
+        # Fallback para paths que no siguen la estructura esperada: admin_año_archivo
         return f"admin_{year}_{filename}"
 
     except Exception as e:

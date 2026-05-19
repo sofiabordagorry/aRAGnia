@@ -192,10 +192,6 @@ class RuleBasedExtractor:
             entities.append(Chunk(id=chunk_id, value=meta))
         return ExtractionResult(entities, relationships, errors)
 
-    ##############################
-    #       AUXILIARES
-    ##############################
-
     def _read_json(self, path: Path) -> ReadJsonResult:
         errors: dict[str, Any] = {}
         try:

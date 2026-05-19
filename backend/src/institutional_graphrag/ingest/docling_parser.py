@@ -188,9 +188,6 @@ def _postprocess_doc_dict(doc_dict: dict[str, Any]) -> dict[str, Any]:
     return doc_dict
 
 
-#### Parsear documento
-
-
 def parse_single_document(source: Path) -> dict[str, Any] | None:
     try:
         is_already_processed(source)
@@ -201,9 +198,6 @@ def parse_single_document(source: Path) -> dict[str, Any] | None:
     except Exception as e:
         print(f"Info:{e}")
         return None
-
-
-#### Parsear Carpeta
 
 
 def get_input_paths(corpus_dir: Path, recursive: bool = False) -> list[Path]:

@@ -9,8 +9,6 @@ from typing import Any, Dict, List, Literal, Optional
 
 from typing_extensions import NotRequired, TypedDict
 
-# Definiciones del campo Value
-
 
 class AnioValue(TypedDict):
     year: str
@@ -295,7 +293,6 @@ def TITULO_EXTRAIDO_DE(
 
 
 class GraphSchema:
-    # Tipos de entidades
     ENTITIES = {
         "Proyecto": Proyecto,
         "Grupo": Grupo,
@@ -307,7 +304,6 @@ class GraphSchema:
         "Chunk": Chunk,
     }
 
-    # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
         "TIENE_TOPICO": TIENE_TOPICO,

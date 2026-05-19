@@ -47,7 +47,6 @@ def persist_all_embeddings_and_metadata(database: VectorStore) -> None:
         )
         total.add(stats["rows"], stats["skipped"], stats["inserted"])
 
-    # ✅ resumen final (1 solo print)
     print("\n" + "=" * 100)
     print("✅ INGEST FINALIZADO")
     print(f"Archivos procesados: {total.files_total}")
@@ -118,7 +117,6 @@ def persist_embedding_and_metadata(
     keep_idxs = [i for i, sid in enumerate(semantic_ids) if sid not in existing]
     skipped = len(semantic_ids) - len(keep_idxs)
 
-    # Si todo existía, devolver stats
     if not keep_idxs:
         if verbose:
             print("✅ Todo ya estaba cargado. Nada para insertar.")

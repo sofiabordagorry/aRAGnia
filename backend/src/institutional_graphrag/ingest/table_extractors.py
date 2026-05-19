@@ -133,7 +133,6 @@ def _is_auto_col(name: str) -> bool:
 
 
 def fix_merged_header_columns(df: pd.DataFrame) -> pd.DataFrame:
-    # Mantengo la misma lógica que tenías (solo afecta "Primer/Segundo Responsable")
     df = df.copy()
     cols = list(df.columns)
 
@@ -146,7 +145,6 @@ def fix_merged_header_columns(df: pd.DataFrame) -> pd.DataFrame:
 
             s = (left + " " + right).str.replace(r"\s+", " ", regex=True).str.strip()
 
-            # 👇 en vez de .replace({"": None})
             df[prev] = s.mask(s.eq(""), None)
 
             df = df.drop(columns=[curr])
@@ -207,7 +205,7 @@ def pdf_table(path: Path) -> pd.DataFrame:
     for idx, df in enumerate(dfs):
         df = df.copy()
         if idx > 0:
-            # Mantengo tu lógica tal cual
+            # Las páginas siguientes traen el encabezado como primera fila
             new_first_row = list(df.columns)
             df = df.reset_index(drop=True)
             df.loc[-1] = new_first_row
@@ -241,9 +239,6 @@ def extract_table(path: Path, output_dir: Path) -> None:
         raise ValueError(f"Extensión no soportada para extracción tabular: {ext}")
 
     save_table(clean_x000d_df(df), output_dir, base_name)
-
-
-############# Converti la tabla a chunks ###############
 
 
 def convert_table_to_chunks() -> None:
@@ -345,12 +340,6 @@ def _row_to_chunk(row: pd.Series) -> tuple[str, dict[str, str]]:
 
 def _parent_doc_from_filename(stem: str) -> str:
     return parent_doc_from_stem(stem)
-
-
-############################################################################
-#                   FUNCIONES DE NUEVA TABLAS POS CSIC                     #
-#                                                                          #
-############################################################################
 
 
 def starts_new_row(line: str) -> bool:

@@ -514,9 +514,9 @@ body.dark .topbar-toast.loading {
   min-height: 36px;
 
   border: 2px solid #ffffff;
-  border-radius: 8px; /* más cuadrado */
+  border-radius: 8px;
 
-  background: #2f6ea3; /* azul de Consultas */
+  background: #2f6ea3;
   color: #ffffff;
 
   font-size: 14px;
@@ -535,16 +535,15 @@ body.dark .topbar-toast.loading {
   appearance: none;
   -webkit-appearance: none;
 
-  padding: 4px 12px; /* lo hace más chico */
+  padding: 4px 12px;
   height: 32px;
 
   font-size: 13px;
   font-weight: 700;
 
-  border-radius: 10px; /* menos cuadrado */
+  border-radius: 10px;
 }
 
-/* Asegura que los links tengan el mismo alto */
 .topbar-nav .nav-link {
   height: 32px;
   padding: 4px 12px;
