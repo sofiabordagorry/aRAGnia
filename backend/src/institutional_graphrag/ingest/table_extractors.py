@@ -403,7 +403,7 @@ def clean_table(input_file: str | Path, output_file: str | Path | None, doc_type
                         doc_id = f"{type}_{year}_{form_id}"
 
                         row.extend([doc_type, doc_id])
-                        row.insert(0, row_counter)
+                        row.insert(0, str(row_counter))
                         row_counter += 1
                         writer.writerow(row)
 
@@ -420,7 +420,7 @@ def clean_table(input_file: str | Path, output_file: str | Path | None, doc_type
                 form_id = row[form_id_idx]
                 doc_id = f"{doc_type}_{year}_{form_id}"
                 row.extend([doc_type, doc_id])
-                row.insert(0, row_counter)
+                row.insert(0, str(row_counter))
                 writer.writerow(row)
     return output_file
 

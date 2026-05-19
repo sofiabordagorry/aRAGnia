@@ -7,7 +7,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from institutional_graphrag.document_naming import build_project_id
 from institutional_graphrag.graph.schema import (
@@ -16,6 +16,7 @@ from institutional_graphrag.graph.schema import (
     PARTICIPO_EN,
     TITULO_EXTRAIDO_DE,
     Entity,
+    FileValue,
     Grupo,
     Investigador,
     Proyecto,
@@ -43,7 +44,7 @@ class TabularExtractor:
         relationships: List[Relationship] = []
         errors: List[Dict[str, Any]] = []
         seen_investigators: dict[str, Investigador] = {}
-        seen_projects: dict[str, Proyecto] = {}
+        seen_projects: dict[str, Entity] = {}
         seen_rel_keys: set[tuple] = set()
 
         if not table_dir.exists():
@@ -76,7 +77,7 @@ class TabularExtractor:
         """Extrae de un único CSV. Para mergear varios usar extract_from_directory."""
         relationships: List[Relationship] = []
         seen_investigators: dict[str, Investigador] = {}
-        seen_projects: dict[str, Proyecto] = {}
+        seen_projects: dict[str, Entity] = {}
         seen_rel_keys: set[tuple] = set()
         errors = self._process_csv(
             csv_path, seen_investigators, seen_projects, relationships, seen_rel_keys, id_projects
@@ -90,7 +91,7 @@ class TabularExtractor:
         self,
         csv_path: Path,
         seen_investigators: dict[str, Investigador],
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         relationships: List[Relationship],
         seen_rel_keys: set[tuple],
         id_projects: set[str],
@@ -123,7 +124,7 @@ class TabularExtractor:
         row: dict[str, Optional[str]],
         row_number: int,
         seen_investigators: dict[str, Investigador],
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         relationships: list[Relationship],
         seen_rel_keys: set[tuple],
         filename: str,
@@ -199,7 +200,7 @@ class TabularExtractor:
         self,
         row: dict[str, Optional[str]],
         row_number: int,
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         errors: list[dict[str, Any]],
     ) -> Optional[str]:
         id_formulario = self._cell(row.get("id_formulario"))
@@ -215,6 +216,7 @@ class TabularExtractor:
             if k and k.strip()
         ]
         description = self._cell(row.get("descripcion"))
+        entity: Entity
         entity = Grupo if self._cell(row.get("document_type")) == "Grupo" else Proyecto
         title = self._cell(row.get("titulo"))
         if not id_formulario or not anio or not title:
@@ -228,11 +230,14 @@ class TabularExtractor:
         project_id = self._make_project_id(document_type, anio, id_formulario)
         if project_id not in seen_projects:
             project_title = self._normalize_title(title)
-            value = {
-                "title": project_title,
-                "keywords": keywords,
-                "description": description,
-            }
+            value = cast(
+                FileValue,
+                {
+                    "title": project_title,
+                    "keywords": keywords,
+                    "description": description,
+                },
+            )
             seen_projects[project_id] = entity(id=project_id, value=value)
         return project_id
 
