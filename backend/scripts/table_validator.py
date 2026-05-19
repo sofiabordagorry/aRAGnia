@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 tables_dir = BASE_DIR / "data" / "tables"
 input_csv = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
-clean_csv_path = tables_dir / "equipos_i+d_2012_2018_pinco_clean.csv"
+clean_csv_path = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
 
 
 def validate_csv(csv_path: str | Path) -> bool:
