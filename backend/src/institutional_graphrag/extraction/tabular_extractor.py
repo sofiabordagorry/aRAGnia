@@ -216,7 +216,7 @@ class TabularExtractor:
             if k and k.strip()
         ]
         description = self._cell(row.get("descripcion"))
-        entity: Entity
+        entity: type[Entity]
         entity = Grupo if self._cell(row.get("document_type")) == "Grupo" else Proyecto
         title = self._cell(row.get("titulo"))
         if not id_formulario or not anio or not title:
