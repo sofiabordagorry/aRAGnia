@@ -36,6 +36,10 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
         "cuántos proyectos hay de ciencias naturales?",
         "MATCH (d:Dominio)\nWHERE d.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(DISTINCT p) AS total",
     ),
+    (
+        "cuántos proyectos hay del área tecnológica?",
+        "MATCH (a:Area)\nWHERE a.value = 'tecnologica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN count(p) AS total",
+    ),
     # LIST queries
     (
         "qué proyectos hay de biotecnología?",
@@ -76,6 +80,10 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     (
         "qué proyectos iniciaron en 2018?",
         "MATCH (a:Anio {year: '2018'})\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
+    ),
+    (
+        "qué proyectos hay en el área básica?",
+        "MATCH (a:Area)\nWHERE a.value = 'basica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN DISTINCT p, a",
     ),
     # AGGREGATION
     (

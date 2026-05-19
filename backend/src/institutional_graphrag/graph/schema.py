@@ -117,6 +117,10 @@ class Topico(Entity):
 class Dominio(Entity):
     value: str
 
+@dataclass
+class Area(Entity):
+    value: str   
+
 
 @dataclass
 class Documento(Entity):
@@ -175,6 +179,20 @@ def PERTENECE_A_DOMINIO(
         properties=properties or {},
     )
 
+def PERTENECE_A_AREA(
+    proyecto_id: str, area_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación PERTENECE_A_AREA.
+
+    (Proyecto)-[PERTENECE_A_AREA]->(Area)
+    """
+    return Relationship(
+        type="PERTENECE_A_AREA",
+        source_id=proyecto_id,
+        target_id=area_id,
+        properties=properties or {},
+    )
 
 def ES_DESCRITO_POR(
     proyecto_id: str, documento_id: str, properties: Optional[Dict[str, Any]] = None
@@ -297,6 +315,7 @@ class GraphSchema:
         "Investigador": Investigador,
         "Topico": Topico,
         "Dominio": Dominio,
+        "Area": Area,
         "Documento": Documento,
         "Chunk": Chunk,
     }
@@ -306,6 +325,7 @@ class GraphSchema:
         "PARTICIPO_EN": PARTICIPO_EN,
         "TIENE_TOPICO": TIENE_TOPICO,
         "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
+        "PERTENECE_A_AREA": PERTENECE_A_AREA,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
         "INICIO_EN": INICIO_EN,
         "PRIMER_CHUNK": PRIMER_CHUNK,
@@ -356,6 +376,7 @@ def validate_relationship_endpoints(
         "PARTICIPO_EN": ("Investigador", PROJECT_TYPES),
         "TIENE_TOPICO": (PROJECT_TYPES, "Topico"),
         "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
+        "PERTENECE_A_AREA": ("Proyecto", "Area"),
         "ES_DESCRITO_POR": (PROJECT_TYPES, "Documento"),
         "INICIO_EN": (PROJECT_TYPES, "Anio"),
         "PRIMER_CHUNK": ("Documento", "Chunk"),
