@@ -41,7 +41,7 @@ class TabularExtractor:
         errors: List[Dict[str, Any]] = []
         seen_investigators: dict[str, Investigador] = {}
         seen_projects: dict[str, Proyecto] = {}
-        seen_areas: dict[str,Area] = {}
+        seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
 
         if not table_dir.exists():
@@ -55,7 +55,12 @@ class TabularExtractor:
         for csv_path in csv_files:
             errors.extend(
                 self._process_csv(
-                    csv_path, seen_investigators, seen_projects, seen_areas, relationships, seen_rel_keys
+                    csv_path,
+                    seen_investigators,
+                    seen_projects,
+                    seen_areas,
+                    relationships,
+                    seen_rel_keys,
                 )
             )
 
@@ -86,7 +91,7 @@ class TabularExtractor:
         csv_path: Path,
         seen_investigators: dict[str, Investigador],
         seen_projects: dict[str, Proyecto],
-        seen_areas: dict[str,Area],
+        seen_areas: dict[str, Area],
         relationships: List[Relationship],
         seen_rel_keys: set[tuple],
     ) -> List[Dict[str, Any]]:
@@ -129,12 +134,12 @@ class TabularExtractor:
         project_id = self._get_or_create_proyecto(row, row_number, seen_projects, errors)
         if project_id is None:
             return errors
-        
+
         area_id = self._get_or_create_area(row, row_number, seen_areas, errors)
         if area_id is None:
             return errors
         self._add_relationship(
-            PERTENECE_A_AREA(proyecto_id=project_id,area_id=area_id),
+            PERTENECE_A_AREA(proyecto_id=project_id, area_id=area_id),
             relationships,
             seen_rel_keys,
         )
@@ -217,7 +222,7 @@ class TabularExtractor:
             project_title = self._normalize_title(titulo or project_id)
             seen_projects[project_id] = Proyecto(id=project_id, value=project_title)
         return project_id
-    
+
     def _get_or_create_area(
         self,
         row: dict[str, Optional[str]],
@@ -236,7 +241,7 @@ class TabularExtractor:
             )
             return None
 
-        area_id = self._make_area_id(area) #create
+        area_id = self._make_area_id(area)  # create
         if area_id not in seen_areas:
             area_value = self._normalize_title(area)
             seen_areas[area_id] = Area(id=area_id, value=area_value)
@@ -305,7 +310,7 @@ class TabularExtractor:
 
     def _make_project_id(self, anio: str, id_formulario: str) -> str:
         return build_project_id("proy", anio, id_formulario)
-    
+
     def _make_area_id(self, area: str) -> str:
         intermediate_id = self._strip_accents_lowercase(area)
         return intermediate_id.strip().replace(" ", "_")
