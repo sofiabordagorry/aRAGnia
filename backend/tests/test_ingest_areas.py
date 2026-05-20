@@ -38,11 +38,11 @@ def test_areas_were_ingested_correctly(neo4j_session):
     areas_in_db = {record["id"]: record["value"] for record in result}
 
     expected_areas = {
-        "basica": "basica",
-        "salud": "salud",
-        "agraria": "agraria",
-        "social_y_artistica": "social y artistica",
-        "tecnologica": "tecnologica",
+        "area_basica": "basica",
+        "area_salud": "salud",
+        "area_agraria": "agraria",
+        "area_social_y_artistica": "social y artistica",
+        "area_tecnologica": "tecnologica",
     }
 
     # Assert that each expected area exists and matches
