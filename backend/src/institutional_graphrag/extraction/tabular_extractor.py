@@ -56,7 +56,6 @@ class TabularExtractor:
         )
 
         for csv_path in csv_files:
-            print("proyectos", id_projects)
             errors.extend(
                 self._process_csv(
                     csv_path,
@@ -209,7 +208,7 @@ class TabularExtractor:
         keywords = [
             k
             for k in [
-                self._cell(row.get("palabras_claves1")),
+                self._cell(row.get("palabras_claves")),
                 self._cell(row.get("palabras_claves2")),
                 self._cell(row.get("palabras_claves3")),
             ]
