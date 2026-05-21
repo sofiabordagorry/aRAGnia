@@ -204,7 +204,7 @@ class TabularExtractor:
     ) -> Optional[str]:
         id_formulario = self._cell(row.get("id_formulario"))
         anio = self._cell(row.get("anio"))
-        document_type = "gi" if self._cell(row.get("document_type")) == "Grupo" else "proy"
+        document_type = "gi" if self._cell(row.get("file_type")) == "Grupo" else "proy"
         keywords = [
             k
             for k in [
