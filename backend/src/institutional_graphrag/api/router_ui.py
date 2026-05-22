@@ -366,24 +366,15 @@ async def upload_files(request: Request):
             },
         )
 
-    content_length = request.headers.get("content-length", "?")
-    content_type = request.headers.get("content-type", "?")
-    logger.info("UPLOAD REQ: content-length=%s content-type=%s", content_length, content_type)
-
     form = await request.form(
         max_files=100_000,
         max_fields=100_000,
         max_part_size=500 * 1024 * 1024,  # 500 MB por archivo
     )
 
-    form_keys = list(form.keys())
-    logger.info("UPLOAD FORM keys=%s total_items=%d", form_keys, len(list(form.multi_items())))
-
     files = form.getlist("files")
     file_paths = form.getlist("file_paths")
     csv_file = form.get("csv_file")
-    logger.info("UPLOAD parsed: files=%d file_paths=%d csv=%r",
-                len(files), len(file_paths), getattr(csv_file, "filename", None))
 
     folder_data: List[tuple] = []
     for i, f in enumerate(files):
@@ -391,14 +382,12 @@ async def upload_files(request: Request):
             continue
         data = await f.read()
         filename = file_paths[i] if i < len(file_paths) else (getattr(f, "filename", "") or "")
-        logger.info("ARCHIVO RECIBIDO: filename=%r size=%d", filename, len(data))
         if not data or not filename:
             continue
 
         if filename.lower().endswith(".zip"):
             try:
                 with zipfile.ZipFile(io.BytesIO(data)) as zf:
-                    extracted = 0
                     for zip_info in zf.infolist():
                         if zip_info.is_dir():
                             continue
@@ -412,18 +401,14 @@ async def upload_files(request: Request):
                             inner_data = fp.read()
                         if inner_data:
                             folder_data.append((inner_path, inner_data))
-                            extracted += 1
-                logger.info("ZIP EXTRAIDO: %r -> %d archivos", filename, extracted)
             except zipfile.BadZipFile:
                 logger.error("ZIP inválido: %r", filename)
         else:
             folder_data.append((filename, data))
-    logger.info("TOTAL folder_data: %d archivos", len(folder_data))
 
     csv_data: Optional[tuple] = None
     if csv_file is not None and hasattr(csv_file, "read") and getattr(csv_file, "filename", None):
         csv_bytes = await csv_file.read()
-        logger.info("CSV RECIBIDO: filename=%r size=%d", csv_file.filename, len(csv_bytes))
         if csv_bytes:
             csv_data = (csv_file.filename, csv_bytes)
 

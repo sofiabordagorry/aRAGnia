@@ -215,7 +215,6 @@ class IngestService:
             print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
         new_filename = generate_new_filename(full_cloud_path)
-        print("NOMBRE", new_filename)
         base_name = Path(new_filename).stem
 
         final_pdf_path = self.output_dir / new_filename
@@ -303,7 +302,6 @@ class IngestService:
             fieldnames = list(reader.fieldnames or [])
 
             if not new_rows:
-                print(f"CSV '{csv_filename}': sin filas, no se guarda")
                 return
 
             existing_csv_path: Optional[Path] = None
@@ -315,7 +313,6 @@ class IngestService:
             if existing_csv_path is None:
                 dest = self.tables_dir / Path(csv_filename).name
                 dest.write_text(content, encoding="utf-8")
-                print(f"CSV guardado (nuevo): {dest}")
                 return
 
             existing_rows: List[Dict[str, Any]] = []
@@ -332,7 +329,6 @@ class IngestService:
             ]
 
             if not rows_to_add:
-                print(f"CSV '{csv_filename}': no hay filas nuevas para agregar")
                 return
 
             merged_fieldnames = existing_fieldnames[:]
@@ -346,10 +342,6 @@ class IngestService:
             writer.writerows(existing_rows + rows_to_add)
 
             existing_csv_path.write_text(out.getvalue(), encoding="utf-8")
-            print(
-                f"CSV '{csv_filename}': {len(rows_to_add)} filas nuevas "
-                f"añadidas a {existing_csv_path}"
-            )
 
         except Exception as e:
             self.entity_extractor.res.errors.append(
