@@ -382,10 +382,6 @@ class TabularExtractor:
         intermediate_id = f"area {self._strip_accents_lowercase(area)}"
         return intermediate_id.strip().replace(" ", "_")
 
-    def _make_area_id(self, area: str) -> str:
-        intermediate_id = f"area {self._strip_accents_lowercase(area)}"
-        return intermediate_id.strip().replace(" ", "_")
-
     def _build_display_name(self, nombres: Optional[str], apellidos: Optional[str]) -> str:
         parts = []
         if nombres:
