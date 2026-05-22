@@ -108,8 +108,12 @@
 
   function formatEntityLabel({ proyectos, grupos }) {
     const parts = [];
-    if (proyectos > 0) parts.push(`${proyectos} ${proyectos === 1 ? "proyecto" : "proyectos"}`);
-    if (grupos > 0) parts.push(`${grupos} ${grupos === 1 ? "grupo de investigación" : "grupos de investigación"}`);
+    if (proyectos > 0)
+      parts.push(`${proyectos} ${proyectos === 1 ? "proyecto" : "proyectos"}`);
+    if (grupos > 0)
+      parts.push(
+        `${grupos} ${grupos === 1 ? "grupo de investigación" : "grupos de investigación"}`,
+      );
     return parts.length > 0 ? parts.join(" y ") : null;
   }
 
@@ -123,12 +127,15 @@
     if (alreadyVisible) toast.classList.add("show");
     toast.classList.remove("hidden");
 
-    const subtitleUpload = uploadLabel ? `Subiendo ${uploadLabel}…` : "Subiendo archivos…";
-    const subtitle = (current === null || total === 0 || current === 0)
-      ? subtitleUpload
-      : (current >= total && total > 0)
-        ? `${current} de ${total} archivos — construyendo grafo…`
-        : `${current} de ${total} archivos`;
+    const subtitleUpload = uploadLabel
+      ? `Subiendo ${uploadLabel}…`
+      : "Subiendo archivos…";
+    const subtitle =
+      current === null || total === 0 || current === 0
+        ? subtitleUpload
+        : current >= total && total > 0
+          ? `${current} de ${total} archivos — construyendo grafo…`
+          : `${current} de ${total} archivos`;
 
     toast.innerHTML = `
       <div class="topbar-toast-content">
@@ -149,7 +156,8 @@
         hideToast();
       });
     }
-    if (!alreadyVisible) requestAnimationFrame(() => toast.classList.add("show"));
+    if (!alreadyVisible)
+      requestAnimationFrame(() => toast.classList.add("show"));
   }
 
   function maybeShowLoadingToast(current, total, uploadLabel = null) {
@@ -164,7 +172,8 @@
       xhr.open("POST", url);
 
       xhr.upload.addEventListener("progress", (e) => {
-        if (e.lengthComputable) onProgress({ loaded: e.loaded, total: e.total });
+        if (e.lengthComputable)
+          onProgress({ loaded: e.loaded, total: e.total });
       });
 
       xhr.addEventListener("load", () => {
@@ -178,13 +187,18 @@
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve(data);
         } else {
-          const detail = data.detail || data.message || text || `HTTP ${xhr.status}`;
+          const detail =
+            data.detail || data.message || text || `HTTP ${xhr.status}`;
           reject(new Error(`${url} -> ${xhr.status} ${detail}`.trim()));
         }
       });
 
-      xhr.addEventListener("error", () => reject(new Error("Error de red durante la carga.")));
-      xhr.addEventListener("abort", () => reject(new Error("Carga cancelada.")));
+      xhr.addEventListener("error", () =>
+        reject(new Error("Error de red durante la carga.")),
+      );
+      xhr.addEventListener("abort", () =>
+        reject(new Error("Carga cancelada.")),
+      );
 
       xhr.send(formData);
     });
@@ -309,7 +323,9 @@
       const items = fileErrors
         .map((e) => {
           const { filename, projectId } = _fileRefFromPath(e.file || "");
-          const ref = projectId ? ` <span class="results-dim">· proyecto ${escapeHtml(projectId)}</span>` : "";
+          const ref = projectId
+            ? ` <span class="results-dim">· proyecto ${escapeHtml(projectId)}</span>`
+            : "";
           return `<li class="results-friendly-item">${escapeHtml(filename)}${ref}</li>`;
         })
         .join("");
@@ -451,7 +467,11 @@
 
       updateReloadButtonUI();
       const prog = statusData?.progress ?? null;
-      maybeShowLoadingToast(prog ? prog.current : 0, prog ? prog.total : 0, storedLabel);
+      maybeShowLoadingToast(
+        prog ? prog.current : 0,
+        prog ? prog.total : 0,
+        storedLabel,
+      );
       scheduleStatusPoll(jobId);
       return;
     }
@@ -474,9 +494,12 @@
       showToast(formatReloadSuccessMessage(statusData), "success");
 
       const skipped = statusData?.result?.skipped ?? [];
-      const allErrors = Array.isArray(statusData?.result?.errors) ? statusData.result.errors : [];
-      const userErrors = allErrors.filter((e) =>
-        e.type === "ProcessFileError" || e.type === "MissingProyectosCSV"
+      const allErrors = Array.isArray(statusData?.result?.errors)
+        ? statusData.result.errors
+        : [];
+      const userErrors = allErrors.filter(
+        (e) =>
+          e.type === "ProcessFileError" || e.type === "MissingProyectosCSV",
       );
       if (skipped.length > 0 || userErrors.length > 0) {
         openResultsModal(skipped, userErrors);
@@ -568,7 +591,9 @@
     if (statusEl) {
       statusEl.textContent = "";
       try {
-        const data = await fetch(`${getApiBase()}/ui/csv/status`).then((r) => r.json());
+        const data = await fetch(`${getApiBase()}/ui/csv/status`).then((r) =>
+          r.json(),
+        );
         statusEl.textContent = data.has_proyectos_csv
           ? "(ya hay una en el sistema)"
           : "(requerida, no hay ninguna en el sistema)";
@@ -640,7 +665,7 @@
         const file = await entry.getFile();
         result.push({ path: prefix + name, file });
       } else if (entry.kind === "directory") {
-        result.push(...await collectFilesFromHandle(entry, prefix));
+        result.push(...(await collectFilesFromHandle(entry, prefix)));
       }
     }
     return result;
@@ -757,7 +782,11 @@
 
       updateReloadButtonUI();
       const prog = data?.progress ?? null;
-      maybeShowLoadingToast(prog ? prog.current : 0, prog ? prog.total : 0, uploadLabel);
+      maybeShowLoadingToast(
+        prog ? prog.current : 0,
+        prog ? prog.total : 0,
+        uploadLabel,
+      );
       emitReloadEvent("reload:start", {
         job_id: jobId,
         status: data?.status ?? "queued",
@@ -843,14 +872,28 @@
     button.addEventListener("click", openUploadModal);
     updateReloadButtonUI();
 
-    document.getElementById("uploadModalClose")?.addEventListener("click", closeUploadModal);
-    document.getElementById("uploadBackdrop")?.addEventListener("click", closeUploadModal);
-    document.getElementById("uploadCancelBtn")?.addEventListener("click", closeUploadModal);
-    document.getElementById("uploadSubmitBtn")?.addEventListener("click", submitUpload);
+    document
+      .getElementById("uploadModalClose")
+      ?.addEventListener("click", closeUploadModal);
+    document
+      .getElementById("uploadBackdrop")
+      ?.addEventListener("click", closeUploadModal);
+    document
+      .getElementById("uploadCancelBtn")
+      ?.addEventListener("click", closeUploadModal);
+    document
+      .getElementById("uploadSubmitBtn")
+      ?.addEventListener("click", submitUpload);
 
-    document.getElementById("resultsModalClose")?.addEventListener("click", closeResultsModal);
-    document.getElementById("resultsBackdrop")?.addEventListener("click", closeResultsModal);
-    document.getElementById("resultsCloseBtn")?.addEventListener("click", closeResultsModal);
+    document
+      .getElementById("resultsModalClose")
+      ?.addEventListener("click", closeResultsModal);
+    document
+      .getElementById("resultsBackdrop")
+      ?.addEventListener("click", closeResultsModal);
+    document
+      .getElementById("resultsCloseBtn")
+      ?.addEventListener("click", closeResultsModal);
 
     const formatToggle = document.getElementById("uploadFormatToggle");
     const formatHelp = document.getElementById("uploadFormatHelp");
@@ -893,15 +936,24 @@
       });
 
       dropzone.addEventListener("click", async (e) => {
-        if (e.target !== dropzone && !dropzone.querySelector(".upload-dropzone-content")?.contains(e.target)) return;
+        if (
+          e.target !== dropzone &&
+          !dropzone
+            .querySelector(".upload-dropzone-content")
+            ?.contains(e.target)
+        )
+          return;
         if (window.showDirectoryPicker) {
           try {
-            const dirHandle = await window.showDirectoryPicker({ mode: "read" });
+            const dirHandle = await window.showDirectoryPicker({
+              mode: "read",
+            });
             const files = await collectFilesFromHandle(dirHandle, "");
             collectedFolderFiles.push(...files);
             updateFoldersDisplay();
           } catch (err) {
-            if (err.name !== "AbortError") console.warn("Error seleccionando carpeta:", err);
+            if (err.name !== "AbortError")
+              console.warn("Error seleccionando carpeta:", err);
           }
         } else {
           document.getElementById("foldersInput")?.click();
@@ -914,7 +966,10 @@
     foldersInput?.addEventListener("change", () => {
       for (const file of Array.from(foldersInput.files ?? [])) {
         if (!isAcceptedFile(file.name)) continue;
-        collectedFolderFiles.push({ path: file.webkitRelativePath || file.name, file });
+        collectedFolderFiles.push({
+          path: file.webkitRelativePath || file.name,
+          file,
+        });
       }
       foldersInput.value = "";
       updateFoldersDisplay();

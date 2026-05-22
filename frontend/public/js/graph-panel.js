@@ -662,7 +662,9 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       if (state.entityCatalog.length === 0) {
         setEntityStatus("El grafo está vacío. Cargue archivos para comenzar.");
       } else {
-        setEntityStatus("Seleccione una entidad para visualizarla en el grafo.");
+        setEntityStatus(
+          "Seleccione una entidad para visualizarla en el grafo.",
+        );
       }
       renderEntityList();
     } catch (error) {

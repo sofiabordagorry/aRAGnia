@@ -588,8 +588,14 @@ body.dark .topbar-toast-close:hover {
 }
 
 @keyframes topbar-indeterminate {
-  0%   { left: -50%; width: 50%; }
-  100% { left: 100%; width: 50%; }
+  0% {
+    left: -50%;
+    width: 50%;
+  }
+  100% {
+    left: 100%;
+    width: 50%;
+  }
 }
 
 .topbar-progress-indeterminate {
@@ -688,7 +694,10 @@ body.dark .topbar-toast-close:hover {
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .upload-format-toggle:hover {
@@ -805,7 +814,9 @@ body.dark .topbar-toast-close:hover {
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .upload-file-label:hover {
@@ -942,7 +953,9 @@ body.dark .upload-csv-missing {
   color: #06314a;
   font-weight: 950;
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
 }
 
 .upload-modal .close-modal:hover,
@@ -966,7 +979,10 @@ body.dark .upload-csv-missing {
   cursor: pointer;
   font-size: clamp(13px, 0.95vw, 15px);
   font-weight: 950;
-  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .upload-modal .modal-actions button:hover,
