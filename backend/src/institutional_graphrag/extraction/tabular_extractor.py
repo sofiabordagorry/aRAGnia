@@ -14,14 +14,14 @@ from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
     PARTICIPO_EN,
-    TITULO_EXTRAIDO_DE,
     PERTENECE_A_AREA,
+    TITULO_EXTRAIDO_DE,
+    Area,
     Entity,
     FileValue,
     Grupo,
     Investigador,
     Proyecto,
-    Area,
     Relationship,
 )
 
@@ -85,7 +85,13 @@ class TabularExtractor:
         seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
         errors = self._process_csv(
-            csv_path, seen_investigators, seen_projects, seen_areas, relationships, seen_rel_keys, id_projects
+            csv_path,
+            seen_investigators,
+            seen_projects,
+            seen_areas,
+            relationships,
+            seen_rel_keys,
+            id_projects,
         )
         entities: List[Entity] = []
         entities.extend(seen_investigators.values())
@@ -147,7 +153,6 @@ class TabularExtractor:
         project_id = self._get_or_create_proyecto(row, row_number, seen_projects, errors)
         if project_id is None:
             return errors
-
 
         self._add_participation_relationships(
             row, inv_id, project_id, relationships, seen_rel_keys, filename
@@ -372,7 +377,7 @@ class TabularExtractor:
 
     def _make_project_id(self, type: str, anio: str, id_formulario: str) -> str:
         return build_project_id(type, anio, id_formulario)
-    
+
     def _make_area_id(self, area: str) -> str:
         intermediate_id = f"area {self._strip_accents_lowercase(area)}"
         return intermediate_id.strip().replace(" ", "_")
