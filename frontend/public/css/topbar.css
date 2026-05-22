@@ -600,8 +600,6 @@ body.dark .topbar-toast-close:hover {
   animation: topbar-indeterminate 1.4s ease-in-out infinite;
 }
 
-/* ── Upload modal ─────────────────────────────────────────── */
-
 .upload-backdrop {
   position: fixed;
   inset: 0;
@@ -677,7 +675,6 @@ body.dark .topbar-toast-close:hover {
   font-size: 12px;
 }
 
-/* Tooltip botón */
 .upload-format-toggle {
   display: inline-flex;
   align-items: center;
@@ -700,7 +697,6 @@ body.dark .topbar-toast-close:hover {
   box-shadow: 0 2px 8px rgba(11, 95, 136, 0.12);
 }
 
-/* Tooltip contenido */
 .upload-format-help {
   margin: 0 0 10px;
   padding: 10px 12px;
@@ -728,7 +724,6 @@ body.dark .topbar-toast-close:hover {
   color: #1e3a52;
 }
 
-/* Dropzone */
 .upload-dropzone {
   position: relative;
   display: flex;
@@ -776,7 +771,6 @@ body.dark .topbar-toast-close:hover {
   color: #06314a;
 }
 
-/* Folder tags list */
 .upload-selected-list {
   display: flex;
   flex-wrap: wrap;
@@ -799,7 +793,6 @@ body.dark .topbar-toast-close:hover {
   white-space: nowrap;
 }
 
-/* CSV label button */
 .upload-file-label {
   display: inline-flex;
   align-items: center;
@@ -852,7 +845,6 @@ body.dark .topbar-toast-close:hover {
   min-height: 16px;
 }
 
-/* dark mode */
 body.dark .upload-modal {
   border-color: var(--border) !important;
   background: rgba(15, 23, 42, 0.96) !important;
@@ -933,8 +925,6 @@ body.dark .upload-csv-ok {
 body.dark .upload-csv-missing {
   color: #fbbf24 !important;
 }
-
-/* ── Shared button/close styles for upload-modal & results-modal ── */
 
 .upload-modal .close-modal,
 .results-modal .close-modal {
@@ -1020,8 +1010,6 @@ body.dark #resultsCloseBtn {
   border-color: #0b5f86 !important;
   color: #fff !important;
 }
-
-/* ── Results modal (skipped files) ─────────────────────────── */
 
 .results-modal {
   position: fixed;
@@ -1116,7 +1104,6 @@ body.dark #resultsCloseBtn {
   font-weight: 400;
 }
 
-/* dark mode */
 body.dark .results-modal-body {
   scrollbar-color: #334155 transparent;
 }

@@ -554,7 +554,6 @@
     }, nextPollInterval());
   }
 
-  // Archivos acumulados por drag & drop / selección de carpeta
   let collectedFolderFiles = []; // [{ path: string, file: File }]
 
   async function openUploadModal() {
@@ -610,7 +609,6 @@
       return;
     }
 
-    // Agrupar por carpeta raíz (primer segmento del path)
     const rootFolders = new Map();
     for (const { path } of collectedFolderFiles) {
       const root = path.split("/")[0];
@@ -632,7 +630,6 @@
     return lower.endsWith(".pdf") || lower.endsWith(".odt");
   }
 
-  // Recorre recursivamente una FileSystemEntry (drag-and-drop de carpetas).
   async function collectFilesFromHandle(dirHandle, pathPrefix) {
     const result = [];
     const prefix = pathPrefix + dirHandle.name + "/";
@@ -846,18 +843,15 @@
     button.addEventListener("click", openUploadModal);
     updateReloadButtonUI();
 
-    // Modal upload: controles básicos
     document.getElementById("uploadModalClose")?.addEventListener("click", closeUploadModal);
     document.getElementById("uploadBackdrop")?.addEventListener("click", closeUploadModal);
     document.getElementById("uploadCancelBtn")?.addEventListener("click", closeUploadModal);
     document.getElementById("uploadSubmitBtn")?.addEventListener("click", submitUpload);
 
-    // Modal de resultados (archivos salteados)
     document.getElementById("resultsModalClose")?.addEventListener("click", closeResultsModal);
     document.getElementById("resultsBackdrop")?.addEventListener("click", closeResultsModal);
     document.getElementById("resultsCloseBtn")?.addEventListener("click", closeResultsModal);
 
-    // Tooltip de formato
     const formatToggle = document.getElementById("uploadFormatToggle");
     const formatHelp = document.getElementById("uploadFormatHelp");
     formatToggle?.addEventListener("click", () => {
@@ -866,7 +860,6 @@
       formatToggle.setAttribute("aria-expanded", String(isHidden));
     });
 
-    // Drop zone: drag & drop de carpetas
     const dropzone = document.getElementById("foldersDropzone");
     if (dropzone) {
       dropzone.addEventListener("dragover", (e) => {
@@ -927,14 +920,12 @@
       updateFoldersDisplay();
     });
 
-    // CSV input
     const csvInput = document.getElementById("csvInput");
     csvInput?.addEventListener("change", () => {
       const sel = document.getElementById("csvSelected");
       if (sel) sel.textContent = csvInput.files?.[0]?.name ?? "";
     });
 
-    // Escape cierra los modales
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
       const uploadModal = document.getElementById("uploadModal");
