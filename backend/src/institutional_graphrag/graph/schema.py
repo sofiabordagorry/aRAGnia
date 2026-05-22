@@ -31,6 +31,12 @@ class InvestigadorValue(TypedDict):
     sexo: str
 
 
+class FileValue(TypedDict):
+    title: str
+    keywords: List[str]
+    description: str
+
+
 @dataclass
 class Entity:
     """Clase base para entidades del grafo (nodos)."""
@@ -88,12 +94,12 @@ class Relationship:
 
 @dataclass
 class Proyecto(Entity):
-    value: str
+    value: FileValue
 
 
 @dataclass
 class Grupo(Entity):
-    value: str
+    value: FileValue
 
 
 @dataclass
@@ -381,7 +387,7 @@ def validate_relationship_endpoints(
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
-        "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
+        "EXTRAIDO_DE": ("Chunk", ("Topico", "Investigador")),
         "TITULO_EXTRAIDO_DE": (PROJECT_TYPES, "Chunk"),
     }
 

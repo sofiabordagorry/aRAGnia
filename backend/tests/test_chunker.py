@@ -101,18 +101,22 @@ class TestNativeDoclingChunker:
         chunk_iter = chunker.chunk(dl_doc=sample_doc)
 
         def smart_reconstruct(raw_text: str, headings: list) -> str:
-            clean_text = raw_text.strip()
             if not headings:
-                return clean_text
+                return raw_text.strip()
 
+            clean_text = raw_text.strip()
             last_heading = headings[-1].strip()
 
             # Evitar duplicación si el chunk ES el encabezado
             if clean_text == last_heading:
                 return "\n".join(headings)
-            else:
-                # Usar \n\n para separar la jerarquía del cuerpo del texto
-                return "\n".join(headings) + "\n" + clean_text
+
+            # Si ya arranca con \n o espacio, preservar exactamente
+            if raw_text.startswith(("\n", " ")):
+                return "\n".join(headings) + "\n" + raw_text
+
+            # Caso normal
+            return "\n".join(headings) + "\n" + clean_text
 
         diffs_found = 0
 

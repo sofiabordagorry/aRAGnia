@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-import pytest
 
+import pytest
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 

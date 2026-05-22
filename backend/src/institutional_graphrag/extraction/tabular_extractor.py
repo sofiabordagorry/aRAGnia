@@ -7,17 +7,21 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from institutional_graphrag.document_naming import build_project_id
 from institutional_graphrag.graph.schema import (
+    ES_DESCRITO_POR,
     EXTRAIDO_DE,
     PARTICIPO_EN,
     PERTENECE_A_AREA,
+    TITULO_EXTRAIDO_DE,
+    Area,
     Entity,
+    FileValue,
+    Grupo,
     Investigador,
     Proyecto,
-    Area,
     Relationship,
 )
 
@@ -30,7 +34,9 @@ class TabularExtractionResult:
 
 
 class TabularExtractor:
-    def extract_from_directory(self, table_dir: Path) -> TabularExtractionResult:
+    def extract_from_directory(
+        self, table_dir: Path, id_projects: set[str]
+    ) -> TabularExtractionResult:
         """Extrae investigadores y proyectos de todos los CSV del directorio.
 
         Si hay varios CSVs (ej: distintos años), mergea los resultados deduplicando
@@ -40,7 +46,7 @@ class TabularExtractor:
         relationships: List[Relationship] = []
         errors: List[Dict[str, Any]] = []
         seen_investigators: dict[str, Investigador] = {}
-        seen_projects: dict[str, Proyecto] = {}
+        seen_projects: dict[str, Entity] = {}
         seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
 
@@ -61,6 +67,7 @@ class TabularExtractor:
                     seen_areas,
                     relationships,
                     seen_rel_keys,
+                    id_projects,
                 )
             )
 
@@ -70,15 +77,21 @@ class TabularExtractor:
         entities.extend(seen_areas.values())
         return TabularExtractionResult(entities, relationships, errors)
 
-    def extract_from_csv(self, csv_path: Path) -> TabularExtractionResult:
+    def extract_from_csv(self, csv_path: Path, id_projects: set[str]) -> TabularExtractionResult:
         """Extrae de un único CSV. Para mergear varios usar extract_from_directory."""
         relationships: List[Relationship] = []
         seen_investigators: dict[str, Investigador] = {}
-        seen_projects: dict[str, Proyecto] = {}
+        seen_projects: dict[str, Entity] = {}
         seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
         errors = self._process_csv(
-            csv_path, seen_investigators, seen_projects, seen_areas, relationships, seen_rel_keys
+            csv_path,
+            seen_investigators,
+            seen_projects,
+            seen_areas,
+            relationships,
+            seen_rel_keys,
+            id_projects,
         )
         entities: List[Entity] = []
         entities.extend(seen_investigators.values())
@@ -90,16 +103,20 @@ class TabularExtractor:
         self,
         csv_path: Path,
         seen_investigators: dict[str, Investigador],
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         seen_areas: dict[str, Area],
         relationships: List[Relationship],
         seen_rel_keys: set[tuple],
+        id_projects: set[str],
     ) -> List[Dict[str, Any]]:
         errors: List[Dict[str, Any]] = []
         try:
             with open(csv_path, encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
                 for row_number, row in enumerate(reader, start=2):
+                    doc_id = row["file_id"]
+                    if doc_id not in id_projects:
+                        continue
                     errors.extend(
                         self._process_row(
                             row,
@@ -109,6 +126,7 @@ class TabularExtractor:
                             seen_areas,
                             relationships,
                             seen_rel_keys,
+                            csv_path.stem,
                         )
                     )
         except Exception as exc:
@@ -120,10 +138,11 @@ class TabularExtractor:
         row: dict[str, Optional[str]],
         row_number: int,
         seen_investigators: dict[str, Investigador],
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         seen_areas: dict[str, Area],
         relationships: list[Relationship],
         seen_rel_keys: set[tuple],
+        filename: str,
     ) -> list[dict[str, Any]]:
         errors: list[dict[str, Any]] = []
 
@@ -135,6 +154,11 @@ class TabularExtractor:
         if project_id is None:
             return errors
 
+        self._add_participation_relationships(
+            row, inv_id, project_id, relationships, seen_rel_keys, filename
+        )
+
+        self._add_project_relationships(row, project_id, relationships, seen_rel_keys, filename)
         area_id = self._get_or_create_area(row, row_number, seen_areas, errors)
         if area_id is None:
             return errors
@@ -143,8 +167,6 @@ class TabularExtractor:
             relationships,
             seen_rel_keys,
         )
-
-        self._add_participation_relationships(row, inv_id, project_id, relationships, seen_rel_keys)
         return errors
 
     def _get_or_create_investigador(
@@ -201,27 +223,70 @@ class TabularExtractor:
         self,
         row: dict[str, Optional[str]],
         row_number: int,
-        seen_projects: dict[str, Proyecto],
+        seen_projects: dict[str, Entity],
         errors: list[dict[str, Any]],
     ) -> Optional[str]:
         id_formulario = self._cell(row.get("id_formulario"))
         anio = self._cell(row.get("anio"))
-
-        if not id_formulario or not anio:
+        document_type = "gi" if self._cell(row.get("file_type")) == "Grupo" else "proy"
+        keywords = [
+            k
+            for k in [
+                self._cell(row.get("palabras_claves")),
+                self._cell(row.get("palabras_claves2")),
+                self._cell(row.get("palabras_claves3")),
+            ]
+            if k and k.strip()
+        ]
+        description = self._cell(row.get("descripcion"))
+        entity: type[Entity]
+        entity = Grupo if self._cell(row.get("document_type")) == "Grupo" else Proyecto
+        title = self._cell(row.get("titulo"))
+        if not id_formulario or not anio or not title:
             errors.append(
                 {
                     "type": "MissingProjectID",
-                    "message": f"Fila {row_number}: faltan id_formulario/anio",
+                    "message": f"Fila {row_number}: faltan id_formulario/anio/titulo",
                 }
             )
             return None
-
-        project_id = self._make_project_id(anio, id_formulario)
+        project_id = self._make_project_id(document_type, anio, id_formulario)
         if project_id not in seen_projects:
-            titulo = self._cell(row.get("titulo"))
-            project_title = self._normalize_title(titulo or project_id)
-            seen_projects[project_id] = Proyecto(id=project_id, value=project_title)
+            project_title = self._normalize_title(title)
+            value = cast(
+                FileValue,
+                {
+                    "title": project_title,
+                    "keywords": keywords,
+                    "description": description,
+                },
+            )
+            seen_projects[project_id] = entity(id=project_id, value=value)
         return project_id
+
+    def _add_project_relationships(
+        self,
+        row: dict[str, Optional[str]],
+        project_id: str,
+        relationships: list[Relationship],
+        seen_rel_keys: set[tuple],
+        filename: str,
+    ):
+        column_id = self._cell(row.get("row_id"))
+        table_chunk_id = f"{filename}#Chunk{column_id}"
+        title = self._cell(row.get("titulo"))
+        evidence_text = (f"Titulo extraído de tabla: {title or ''}").strip()
+        self._add_relationship(
+            TITULO_EXTRAIDO_DE(
+                project_id,
+                table_chunk_id,
+                properties={"evidence_text": evidence_text},
+            ),
+            relationships,
+            seen_rel_keys,
+        )
+
+        self._add_relationship(ES_DESCRITO_POR(project_id, filename), relationships, seen_rel_keys)
 
     def _get_or_create_area(
         self,
@@ -254,6 +319,7 @@ class TabularExtractor:
         project_id: str,
         relationships: list[Relationship],
         seen_rel_keys: set[tuple],
+        filename: str,
     ) -> None:
         calidad = self._cell(row.get("calidad"))
         self._add_relationship(
@@ -265,11 +331,12 @@ class TabularExtractor:
         nombres = self._cell(row.get("nombres"))
         apellidos = self._cell(row.get("apellidos"))
         doc = self._cell(row.get("documento"))
+        column_id = self._cell(row.get("row_id"))
         evidence_text = (
             f"Investigador extraído de tabla: {nombres or ''} {apellidos or ''} "
             f"(doc: {doc or ''}, calidad: {calidad or ''})"
         ).strip()
-        table_chunk_id = f"tabular_{project_id}"
+        table_chunk_id = f"{filename}#Chunk{column_id}"
         self._add_relationship(
             EXTRAIDO_DE(
                 table_chunk_id,
@@ -308,8 +375,8 @@ class TabularExtractor:
         s = re.sub(r"[^a-z0-9]+", "_", s)
         return s.strip("_")
 
-    def _make_project_id(self, anio: str, id_formulario: str) -> str:
-        return build_project_id("proy", anio, id_formulario)
+    def _make_project_id(self, type: str, anio: str, id_formulario: str) -> str:
+        return build_project_id(type, anio, id_formulario)
 
     def _make_area_id(self, area: str) -> str:
         intermediate_id = f"area {self._strip_accents_lowercase(area)}"

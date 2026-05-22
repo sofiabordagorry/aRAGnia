@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 tables_dir = BASE_DIR / "data" / "tables"
 input_csv = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
-clean_csv_path = tables_dir / "equipos_i+d_2012_2018_pinco_clean.csv"
+clean_csv_path = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
 
 
 def validate_csv(csv_path: str | Path) -> bool:
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     print("Cleaning CSV...")
     print("=" * 60)
 
-    clean_table(input_csv, clean_csv_path)
+    clean_csv_path = clean_table(input_csv, clean_csv_path, "Proyecto")
 
     # Validate cleaned CSV
     cleaned_ok = validate_csv(clean_csv_path)
