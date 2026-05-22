@@ -332,7 +332,7 @@ SCHEMA NOTES:
 - Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
 - Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
 - Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
-- Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Topico.value, Dominio.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
@@ -393,6 +393,7 @@ CRITICAL SYNTAX:
         - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
         - (Proyecto|Grupo)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
+        - (Proyecto)-[:PERTENECE_A_AREA]->(Area)
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
@@ -410,6 +411,7 @@ CRITICAL SYNTAX:
             ("Grupo", "ES_DESCRITO_POR", "Documento"),
             ("Proyecto", "INICIO_EN", "Anio"),
             ("Grupo", "INICIO_EN", "Anio"),
+            ("Proyecto", "PERTENECE_A_AREA", "Area"),
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
@@ -661,6 +663,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                             "Grupo",
                             "Documento",
                             "Anio",
+                            "Area",
                         ]
                     ):
                         entities_direct.append(value)
@@ -681,6 +684,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                                     "Grupo",
                                     "Documento",
                                     "Anio",
+                                    "Area",
                                 ]
                             ):
                                 entities_collected.append(item)
@@ -693,7 +697,15 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                         lbl
                         for lbl in entity_labels
                         if lbl
-                        in ["Investigador", "Topico", "Proyecto", "Grupo", "Documento", "Anio"]
+                        in [
+                            "Investigador",
+                            "Topico",
+                            "Proyecto",
+                            "Grupo",
+                            "Documento",
+                            "Anio",
+                            "Area",
+                        ]
                     ),
                     "",
                 )
@@ -706,7 +718,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
                     entity_id = props.get("id", entity_id) or entity_id
-                elif entity_label == "Topico":
+                elif entity_label in ("Topico", "Area"):
                     entity_id = props.get("value", entity_id) or entity_id
                 elif entity_label == "Anio":
                     entity_id = props.get("year", entity_id) or entity_id
@@ -763,11 +775,12 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             "Topico": "Tópicos",
             "Documento": "Documentos",
             "Anio": "Año",
+            "Area": "Áreas",
         }
 
         lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
 
-        for label in ["Proyecto", "Grupo", "Investigador", "Topico", "Documento", "Anio"]:
+        for label in ["Proyecto", "Grupo", "Investigador", "Topico", "Documento", "Anio", "Area"]:
             entries = [
                 ((eid, lbl), props)
                 for (eid, lbl), props in evidence_entities.items()
