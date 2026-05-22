@@ -243,6 +243,15 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
                     value=value,
                 )
 
+            if "display_name" in value and not is_non_empty_str(value.get("display_name")):
+                add_issue(
+                    issues, "error", "value", "Investigador.value.display_name",
+                    "Investigador.value.display_name debe ser string no vacío si está presente.",
+                    entity_id=eid,
+                    label=label,
+                    value=value,
+                )
+
             source = value.get("source")
             if isinstance(source, str):
                 if source not in ALLOWED_INVESTIGADOR_SOURCES:

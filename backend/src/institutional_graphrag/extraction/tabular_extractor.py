@@ -15,11 +15,13 @@ from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PARTICIPO_EN,
     TITULO_EXTRAIDO_DE,
+    PERTENECE_A_AREA,
     Entity,
     FileValue,
     Grupo,
     Investigador,
     Proyecto,
+    Area,
     Relationship,
 )
 
@@ -45,6 +47,7 @@ class TabularExtractor:
         errors: List[Dict[str, Any]] = []
         seen_investigators: dict[str, Investigador] = {}
         seen_projects: dict[str, Entity] = {}
+        seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
 
         if not table_dir.exists():
@@ -61,6 +64,7 @@ class TabularExtractor:
                     csv_path,
                     seen_investigators,
                     seen_projects,
+                    seen_areas,
                     relationships,
                     seen_rel_keys,
                     id_projects,
@@ -70,6 +74,7 @@ class TabularExtractor:
         entities: List[Entity] = []
         entities.extend(seen_investigators.values())
         entities.extend(seen_projects.values())
+        entities.extend(seen_areas.values())
         return TabularExtractionResult(entities, relationships, errors)
 
     def extract_from_csv(self, csv_path: Path, id_projects: set[str]) -> TabularExtractionResult:
@@ -77,13 +82,15 @@ class TabularExtractor:
         relationships: List[Relationship] = []
         seen_investigators: dict[str, Investigador] = {}
         seen_projects: dict[str, Entity] = {}
+        seen_areas: dict[str, Area] = {}
         seen_rel_keys: set[tuple] = set()
         errors = self._process_csv(
-            csv_path, seen_investigators, seen_projects, relationships, seen_rel_keys, id_projects
+            csv_path, seen_investigators, seen_projects, seen_areas, relationships, seen_rel_keys, id_projects
         )
         entities: List[Entity] = []
         entities.extend(seen_investigators.values())
         entities.extend(seen_projects.values())
+        entities.extend(seen_areas.values())
         return TabularExtractionResult(entities, relationships, errors)
 
     def _process_csv(
@@ -91,6 +98,7 @@ class TabularExtractor:
         csv_path: Path,
         seen_investigators: dict[str, Investigador],
         seen_projects: dict[str, Entity],
+        seen_areas: dict[str, Area],
         relationships: List[Relationship],
         seen_rel_keys: set[tuple],
         id_projects: set[str],
@@ -109,6 +117,7 @@ class TabularExtractor:
                             row_number,
                             seen_investigators,
                             seen_projects,
+                            seen_areas,
                             relationships,
                             seen_rel_keys,
                             csv_path.stem,
@@ -124,6 +133,7 @@ class TabularExtractor:
         row_number: int,
         seen_investigators: dict[str, Investigador],
         seen_projects: dict[str, Entity],
+        seen_areas: dict[str, Area],
         relationships: list[Relationship],
         seen_rel_keys: set[tuple],
         filename: str,
@@ -138,11 +148,20 @@ class TabularExtractor:
         if project_id is None:
             return errors
 
+
         self._add_participation_relationships(
             row, inv_id, project_id, relationships, seen_rel_keys, filename
         )
 
         self._add_project_relationships(row, project_id, relationships, seen_rel_keys, filename)
+        area_id = self._get_or_create_area(row, row_number, seen_areas, errors)
+        if area_id is None:
+            return errors
+        self._add_relationship(
+            PERTENECE_A_AREA(proyecto_id=project_id, area_id=area_id),
+            relationships,
+            seen_rel_keys,
+        )
         return errors
 
     def _get_or_create_investigador(
@@ -264,6 +283,30 @@ class TabularExtractor:
 
         self._add_relationship(ES_DESCRITO_POR(project_id, filename), relationships, seen_rel_keys)
 
+    def _get_or_create_area(
+        self,
+        row: dict[str, Optional[str]],
+        row_number: int,
+        seen_areas: dict[str, Area],
+        errors: list[dict[str, Any]],
+    ) -> Optional[str]:
+        area = self._cell(row.get("area"))
+
+        if not area:
+            errors.append(
+                {
+                    "type": "MissingAreaID",
+                    "message": f"Fila {row_number}: falta area",
+                }
+            )
+            return None
+
+        area_id = self._make_area_id(area)  # create
+        if area_id not in seen_areas:
+            area_value = self._normalize_title(area)
+            seen_areas[area_id] = Area(id=area_id, value=area_value)
+        return area_id
+
     def _add_participation_relationships(
         self,
         row: dict[str, Optional[str]],
@@ -329,6 +372,14 @@ class TabularExtractor:
 
     def _make_project_id(self, type: str, anio: str, id_formulario: str) -> str:
         return build_project_id(type, anio, id_formulario)
+    
+    def _make_area_id(self, area: str) -> str:
+        intermediate_id = f"area {self._strip_accents_lowercase(area)}"
+        return intermediate_id.strip().replace(" ", "_")
+
+    def _make_area_id(self, area: str) -> str:
+        intermediate_id = f"area {self._strip_accents_lowercase(area)}"
+        return intermediate_id.strip().replace(" ", "_")
 
     def _build_display_name(self, nombres: Optional[str], apellidos: Optional[str]) -> str:
         parts = []
