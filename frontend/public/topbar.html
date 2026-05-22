@@ -16,10 +16,10 @@
         id="reloadFilesBtn"
         class="nav-link"
         type="button"
-        title="Recargar archivos"
-        aria-label="Recargar archivos"
+        title="Cargar archivos"
+        aria-label="Cargar archivos"
       >
-        Recargar archivos
+        Cargar archivos
       </button>
 
       <button
@@ -40,6 +40,108 @@
 </div>
 
 <div id="modalBackdrop" class="modal-backdrop hidden"></div>
+
+<div id="uploadBackdrop" class="upload-backdrop hidden"></div>
+
+<div
+  id="uploadModal"
+  class="upload-modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Cargar archivos"
+>
+  <button
+    id="uploadModalClose"
+    class="close-modal"
+    type="button"
+    aria-label="Cerrar"
+  >
+    ✕
+  </button>
+
+  <h2>Cargar archivos</h2>
+
+  <div class="upload-section">
+    <div class="upload-section-header">
+      <p class="upload-section-title">Carpetas de proyectos</p>
+      <button
+        type="button"
+        class="upload-format-toggle"
+        id="uploadFormatToggle"
+        aria-expanded="false"
+        aria-controls="uploadFormatHelp"
+        title="Ver formato esperado"
+      >
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="flex-shrink:0">
+          <circle cx="8" cy="8" r="7.25" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="7.25" y="7" width="1.5" height="5" rx="0.75" fill="currentColor"/>
+          <circle cx="8" cy="4.5" r="0.85" fill="currentColor"/>
+        </svg>
+        Formato esperado
+      </button>
+    </div>
+
+    <div id="uploadFormatHelp" class="upload-format-help hidden" role="region">
+      <p class="upload-format-title">Estructura esperada de las carpetas:</p>
+      <pre class="upload-format-tree">📁 proyectos_2018/
+  📁 informes_propuestas_XXX/
+    📁 63/            ← id_formulario
+      📁 informe_XXX/
+        📄 archivo.pdf / archivo.odt
+      📁 postulacion_XXX/
+        📄 archivo.pdf / archivo.odt
+📁 proyectos_2022/
+  ...</pre>
+      <p class="upload-hint">
+        Arrastre una o varias carpetas de proyectos (ej:
+        <code>proyectos_2018</code>, <code>proyectos_2022</code>).
+        Cada carpeta debe tener el año en el nombre y contener
+        subcarpetas con el <code>id_formulario</code> numérico.
+      </p>
+    </div>
+
+    <div
+      class="upload-dropzone"
+      id="foldersDropzone"
+      role="button"
+      tabindex="0"
+      aria-label="Zona de arrastrar carpetas"
+    >
+      <div class="upload-dropzone-content">
+        <span class="upload-dropzone-icon" aria-hidden="true">📂</span>
+        <p class="upload-dropzone-label">Arrastre una o más carpetas</p>
+        <p class="upload-hint">o haga clic para seleccionar</p>
+      </div>
+      <input type="file" id="foldersInput" webkitdirectory class="upload-file-input" />
+    </div>
+    <div id="foldersSelected" class="upload-selected-list"></div>
+  </div>
+
+  <div class="upload-section">
+    <p class="upload-section-title">
+      Planilla CSV
+      <span id="csvSystemStatus" class="upload-optional"></span>
+    </p>
+    <label class="upload-file-label" for="csvInput">
+      Seleccionar CSV
+      <input
+        type="file"
+        id="csvInput"
+        accept=".csv"
+        class="upload-file-input"
+      />
+    </label>
+    <p class="upload-hint">
+      El CSV debe tener <code>proyectos</code> en el nombre. Si ya hay uno en el sistema, solo se agregan las filas que no estén presentes.
+    </p>
+    <p id="csvSelected" class="upload-selected"></p>
+  </div>
+
+  <div class="modal-actions">
+    <button id="uploadCancelBtn" type="button">Cancelar</button>
+    <button id="uploadSubmitBtn" type="button">Cargar</button>
+  </div>
+</div>
 
 <div
   id="settingsModal"
@@ -72,6 +174,33 @@
   <div class="modal-actions">
     <button id="resetBtn" type="button">Reset</button>
     <button id="saveBtn" type="button">Guardar</button>
+  </div>
+</div>
+
+<div id="resultsBackdrop" class="modal-backdrop hidden"></div>
+
+<div
+  id="resultsModal"
+  class="modal results-modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Resultados de la carga"
+>
+  <button
+    id="resultsModalClose"
+    class="close-modal"
+    type="button"
+    aria-label="Cerrar"
+  >
+    ✕
+  </button>
+
+  <h2>Resultado de la carga</h2>
+
+  <div id="resultsModalBody" class="results-modal-body"></div>
+
+  <div class="modal-actions">
+    <button id="resultsCloseBtn" type="button">Cerrar</button>
   </div>
 </div>
 

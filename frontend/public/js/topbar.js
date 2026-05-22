@@ -87,9 +87,107 @@
     }
   }
 
-  function maybeShowReloadToast(message) {
+  function countEntities(files) {
+    const proyectos = new Set();
+    const grupos = new Set();
+    for (const { path } of files) {
+      const parts = path.replace(/\\/g, "/").split("/");
+      const root = parts[0] || "";
+      const isProyecto = /^proyectos[_\s]?\d{4}/i.test(root);
+      const isGrupo = /grupos/i.test(root) || /^gi[_\s]/i.test(root);
+      for (let i = 1; i < parts.length - 1; i++) {
+        if (/^\d+$/.test(parts[i])) {
+          if (isProyecto) proyectos.add(`${root}/${parts[i]}`);
+          else if (isGrupo) grupos.add(`${root}/${parts[i]}`);
+          break;
+        }
+      }
+    }
+    return { proyectos: proyectos.size, grupos: grupos.size };
+  }
+
+  function formatEntityLabel({ proyectos, grupos }) {
+    const parts = [];
+    if (proyectos > 0) parts.push(`${proyectos} ${proyectos === 1 ? "proyecto" : "proyectos"}`);
+    if (grupos > 0) parts.push(`${grupos} ${grupos === 1 ? "grupo de investigación" : "grupos de investigación"}`);
+    return parts.length > 0 ? parts.join(" y ") : null;
+  }
+
+  function showLoadingToast(current, total, uploadLabel = null) {
+    const toast = getToast();
+    if (!toast) return;
+    const alreadyVisible = toast.classList.contains("show");
+
+    clearTimeout(toastHideTimer);
+    toast.className = "topbar-toast loading";
+    if (alreadyVisible) toast.classList.add("show");
+    toast.classList.remove("hidden");
+
+    const subtitleUpload = uploadLabel ? `Subiendo ${uploadLabel}…` : "Subiendo archivos…";
+    const subtitle = (current === null || total === 0 || current === 0)
+      ? subtitleUpload
+      : (current >= total && total > 0)
+        ? `${current} de ${total} archivos — construyendo grafo…`
+        : `${current} de ${total} archivos`;
+
+    toast.innerHTML = `
+      <div class="topbar-toast-content">
+        <div class="topbar-toast-message">
+          <div style="margin-bottom:6px;font-weight:700">Cargando archivos…</div>
+          <div style="font-size:12px;opacity:0.85;margin-bottom:6px">${subtitle}</div>
+          <div style="background:rgba(0,0,0,0.08);border-radius:999px;height:6px;overflow:hidden;position:relative">
+            <div class="topbar-progress-indeterminate"></div>
+          </div>
+        </div>
+        <button type="button" class="topbar-toast-close" aria-label="Cerrar mensaje" title="Cerrar">✕</button>
+      </div>
+    `;
+    const closeBtn = toast.querySelector(".topbar-toast-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        markReloadToastDismissed();
+        hideToast();
+      });
+    }
+    if (!alreadyVisible) requestAnimationFrame(() => toast.classList.add("show"));
+  }
+
+  function maybeShowLoadingToast(current, total, uploadLabel = null) {
     if (isReloadToastDismissed()) return;
-    showToast(message, "loading", { sticky: true });
+    showLoadingToast(current, total, uploadLabel);
+  }
+
+  // Hace el POST con FormData usando XMLHttpRequest para poder reportar progreso de upload.
+  function uploadWithProgress(url, formData, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) onProgress({ loaded: e.loaded, total: e.total });
+      });
+
+      xhr.addEventListener("load", () => {
+        const text = xhr.responseText || "";
+        let data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          data = {};
+        }
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(data);
+        } else {
+          const detail = data.detail || data.message || text || `HTTP ${xhr.status}`;
+          reject(new Error(`${url} -> ${xhr.status} ${detail}`.trim()));
+        }
+      });
+
+      xhr.addEventListener("error", () => reject(new Error("Error de red durante la carga.")));
+      xhr.addEventListener("abort", () => reject(new Error("Carga cancelada.")));
+
+      xhr.send(formData);
+    });
   }
 
   function hideToast() {
@@ -135,7 +233,7 @@
 
     const isRunning = Boolean(reloadJob);
     button.disabled = isRunning;
-    button.textContent = isRunning ? "Recargando…" : "Recargar archivos";
+    button.textContent = isRunning ? "Cargando…" : "Cargar archivos";
     button.dataset.loading = String(isRunning);
   }
 
@@ -167,11 +265,18 @@
     const errorsCount =
       result.errors_count ??
       (Array.isArray(result.errors) ? result.errors.length : undefined);
+    const skippedCount = Array.isArray(result.skipped)
+      ? result.skipped.length
+      : 0;
 
-    const parts = ["Recarga finalizada."];
+    const parts = ["Carga finalizada."];
 
     if (typeof processedCount === "number") {
       parts.push(`Procesados: <strong>${processedCount}</strong>.`);
+    }
+
+    if (skippedCount > 0) {
+      parts.push(`Salteados: <strong>${skippedCount}</strong>.`);
     }
 
     if (typeof errorsCount === "number" && errorsCount > 0) {
@@ -179,6 +284,82 @@
     }
 
     return parts.join(" ");
+  }
+
+  function _fileRefFromPath(path) {
+    const parts = path.replace(/\\/g, "/").split("/");
+    const filename = parts[parts.length - 1];
+    const projectId = parts.slice(1).find((p) => /^\d+$/.test(p));
+    return { filename, projectId };
+  }
+
+  function _buildResultsHTML(skipped, errors) {
+    const sections = [];
+
+    const missingCsv = errors.find((e) => e.type === "MissingProyectosCSV");
+    if (missingCsv) {
+      sections.push(`
+        <div class="results-warning-banner">
+          No hay un CSV de proyectos cargado en el sistema. Subí uno antes de cargar archivos.
+        </div>`);
+    }
+
+    const fileErrors = errors.filter((e) => e.type === "ProcessFileError");
+    if (fileErrors.length > 0) {
+      const items = fileErrors
+        .map((e) => {
+          const { filename, projectId } = _fileRefFromPath(e.file || "");
+          const ref = projectId ? ` <span class="results-dim">· proyecto ${escapeHtml(projectId)}</span>` : "";
+          return `<li class="results-friendly-item">${escapeHtml(filename)}${ref}</li>`;
+        })
+        .join("");
+      sections.push(`
+        <div class="results-friendly-section">
+          <p class="results-friendly-label results-label-error">
+            Los siguientes archivos no pudieron procesarse:
+          </p>
+          <ul class="results-friendly-list">${items}</ul>
+        </div>`);
+    }
+
+    if (skipped.length > 0) {
+      const items = skipped
+        .map((s) => {
+          const id = escapeHtml(s.id_formulario);
+          const year = escapeHtml(s.year);
+          return `<li class="results-friendly-item">Proyecto ${id} <span class="results-dim">· ${year}</span></li>`;
+        })
+        .join("");
+      sections.push(`
+        <div class="results-friendly-section">
+          <p class="results-friendly-label results-label-warning">
+            Los siguientes proyectos no están registrados en el CSV y sus archivos fueron ignorados:
+          </p>
+          <ul class="results-friendly-list">${items}</ul>
+        </div>`);
+    }
+
+    return sections.join("");
+  }
+
+  function openResultsModal(skipped, errors) {
+    const modal = document.getElementById("resultsModal");
+    const backdrop = document.getElementById("resultsBackdrop");
+    const body = document.getElementById("resultsModalBody");
+    if (!modal || !backdrop || !body) return;
+    if (!skipped.length && !errors.length) return;
+
+    body.innerHTML = _buildResultsHTML(skipped, errors);
+    backdrop.classList.remove("hidden");
+    modal.classList.remove("hidden");
+  }
+
+  function closeResultsModal() {
+    const modal = document.getElementById("resultsModal");
+    const backdrop = document.getElementById("resultsBackdrop");
+    if (!modal || !backdrop) return;
+    backdrop.classList.add("hidden");
+    modal.classList.add("hidden");
   }
 
   function stopPolling(resetAttempt = true) {
@@ -214,19 +395,21 @@
       ) {
         reloadJob = { job_id: data.job_id, status: data.status };
 
+        const prevState = readReloadState();
+        const storedLabel = prevState?.uploadLabel ?? null;
         saveReloadState({
           job_id: data.job_id,
           status: data.status,
           startedAt: data?.started_at ?? null,
           createdAt: data?.created_at ?? null,
-          message: data?.message ?? "Recarga en curso...",
+          message: data?.message ?? "Carga en curso...",
+          uploadLabel: storedLabel,
         });
 
         updateReloadButtonUI();
         scheduleStatusPoll(data.job_id);
-        maybeShowReloadToast(
-          "Hay una recarga en curso… Podés seguir usando el chat mientras termina.",
-        );
+        const p = data?.progress ?? null;
+        maybeShowLoadingToast(p ? p.current : 0, p ? p.total : 0, storedLabel);
         return;
       }
 
@@ -255,18 +438,20 @@
     if (status === "queued" || status === "running") {
       reloadJob = { job_id: jobId, status };
 
+      const prevState = readReloadState();
+      const storedLabel = prevState?.uploadLabel ?? null;
       saveReloadState({
         job_id: jobId,
         status,
         startedAt: statusData?.started_at ?? null,
         createdAt: statusData?.created_at ?? null,
-        message: statusData?.message ?? "Recarga en curso...",
+        message: statusData?.message ?? "Carga en curso...",
+        uploadLabel: storedLabel,
       });
 
       updateReloadButtonUI();
-      maybeShowReloadToast(
-        "Recargando archivos en segundo plano… Podés seguir usando el chat mientras termina.",
-      );
+      const prog = statusData?.progress ?? null;
+      maybeShowLoadingToast(prog ? prog.current : 0, prog ? prog.total : 0, storedLabel);
       scheduleStatusPoll(jobId);
       return;
     }
@@ -287,14 +472,24 @@
       updateReloadButtonUI();
       stopPolling();
       showToast(formatReloadSuccessMessage(statusData), "success");
+
+      const skipped = statusData?.result?.skipped ?? [];
+      const allErrors = Array.isArray(statusData?.result?.errors) ? statusData.result.errors : [];
+      const userErrors = allErrors.filter((e) =>
+        e.type === "ProcessFileError" || e.type === "MissingProyectosCSV"
+      );
+      if (skipped.length > 0 || userErrors.length > 0) {
+        openResultsModal(skipped, userErrors);
+      }
+
       emitReloadEvent("reload:finish", state);
       return;
     }
 
     if (status === "error") {
       const message = statusData?.message
-        ? `Error al recargar archivos.<br><span style="font-weight:700;opacity:.9">${escapeHtml(statusData.message)}</span>`
-        : "Error al recargar archivos.";
+        ? `Error al cargar archivos.<br><span style="font-weight:700;opacity:.9">${escapeHtml(statusData.message)}</span>`
+        : "Error al cargar archivos.";
 
       const state = {
         job_id: jobId,
@@ -333,7 +528,7 @@
 
         if (
           errMessage.includes("404") &&
-          errMessage.includes("No hay recargas registradas")
+          errMessage.includes("No hay cargas registradas")
         ) {
           clearReloadState();
           clearReloadToastDismissed();
@@ -344,7 +539,7 @@
           return;
         }
 
-        const message = `Error consultando estado de recarga.<br><span style="font-weight:700;opacity:.9">${escapeHtml(errMessage)}</span>`;
+        const message = `Error consultando estado de carga.<br><span style="font-weight:700;opacity:.9">${escapeHtml(errMessage)}</span>`;
         clearReloadToastDismissed();
         showToast(message, "error", { sticky: true });
         emitReloadEvent("reload:error", {
@@ -359,7 +554,178 @@
     }, nextPollInterval());
   }
 
-  async function startReloadInBackground() {
+  // Archivos acumulados por drag & drop / selección de carpeta
+  let collectedFolderFiles = []; // [{ path: string, file: File }]
+
+  async function openUploadModal() {
+    const modal = document.getElementById("uploadModal");
+    const backdrop = document.getElementById("uploadBackdrop");
+    if (!modal || !backdrop) return;
+    backdrop.classList.remove("hidden");
+    modal.classList.remove("hidden");
+    document.body.classList.add("upload-modal-open");
+
+    const statusEl = document.getElementById("csvSystemStatus");
+    if (statusEl) {
+      statusEl.textContent = "";
+      try {
+        const data = await fetch(`${getApiBase()}/ui/csv/status`).then((r) => r.json());
+        statusEl.textContent = data.has_proyectos_csv
+          ? "(ya hay una en el sistema)"
+          : "(requerida, no hay ninguna en el sistema)";
+        statusEl.className = data.has_proyectos_csv
+          ? "upload-optional upload-csv-ok"
+          : "upload-optional upload-csv-missing";
+      } catch {
+        statusEl.textContent = "";
+      }
+    }
+  }
+
+  function closeUploadModal() {
+    const modal = document.getElementById("uploadModal");
+    const backdrop = document.getElementById("uploadBackdrop");
+    if (!modal || !backdrop) return;
+    backdrop.classList.add("hidden");
+    modal.classList.add("hidden");
+    document.body.classList.remove("upload-modal-open");
+
+    collectedFolderFiles = [];
+    const foldersInput = document.getElementById("foldersInput");
+    const csvInput = document.getElementById("csvInput");
+    const foldersSelected = document.getElementById("foldersSelected");
+    const csvSelected = document.getElementById("csvSelected");
+    if (foldersInput) foldersInput.value = "";
+    if (csvInput) csvInput.value = "";
+    if (foldersSelected) foldersSelected.innerHTML = "";
+    if (csvSelected) csvSelected.textContent = "";
+  }
+
+  function updateFoldersDisplay() {
+    const container = document.getElementById("foldersSelected");
+    if (!container) return;
+
+    if (collectedFolderFiles.length === 0) {
+      container.innerHTML = "";
+      return;
+    }
+
+    // Agrupar por carpeta raíz (primer segmento del path)
+    const rootFolders = new Map();
+    for (const { path } of collectedFolderFiles) {
+      const root = path.split("/")[0];
+      rootFolders.set(root, (rootFolders.get(root) ?? 0) + 1);
+    }
+
+    const parts = [];
+    for (const [folder, count] of rootFolders) {
+      parts.push(
+        `<span class="upload-folder-tag">${escapeHtml(folder)} (${count} archivo${count !== 1 ? "s" : ""})</span>`,
+      );
+    }
+    container.innerHTML = parts.join("");
+  }
+
+  function isAcceptedFile(name) {
+    if (name.startsWith(".")) return false;
+    const lower = name.toLowerCase();
+    return lower.endsWith(".pdf") || lower.endsWith(".odt");
+  }
+
+  // Recorre recursivamente una FileSystemEntry (drag-and-drop de carpetas).
+  async function collectFilesFromHandle(dirHandle, pathPrefix) {
+    const result = [];
+    const prefix = pathPrefix + dirHandle.name + "/";
+    for await (const [name, entry] of dirHandle) {
+      if (name.startsWith(".") || name === "__MACOSX") continue;
+      if (entry.kind === "file") {
+        if (!isAcceptedFile(name)) continue;
+        const file = await entry.getFile();
+        result.push({ path: prefix + name, file });
+      } else if (entry.kind === "directory") {
+        result.push(...await collectFilesFromHandle(entry, prefix));
+      }
+    }
+    return result;
+  }
+
+  async function collectFilesFromEntry(entry, pathPrefix) {
+    if (entry.isFile) {
+      if (!isAcceptedFile(entry.name)) return [];
+      return new Promise((resolve, reject) => {
+        entry.file(
+          (file) => resolve([{ path: pathPrefix + file.name, file }]),
+          reject,
+        );
+      });
+    }
+
+    if (entry.isDirectory) {
+      const prefix = pathPrefix + entry.name + "/";
+      const reader = entry.createReader();
+      const allFiles = [];
+
+      await new Promise((resolve, reject) => {
+        function readNextBatch() {
+          reader.readEntries(async (entries) => {
+            if (!entries.length) {
+              resolve();
+              return;
+            }
+            for (const e of entries) {
+              const files = await collectFilesFromEntry(e, prefix);
+              allFiles.push(...files);
+            }
+            readNextBatch();
+          }, reject);
+        }
+        readNextBatch();
+      });
+
+      return allFiles;
+    }
+
+    return [];
+  }
+
+  async function submitUpload() {
+    const csvInput = document.getElementById("csvInput");
+    const csvFile = csvInput?.files?.[0] ?? null;
+
+    if (collectedFolderFiles.length === 0 && !csvFile) {
+      showToast("Arrastre al menos una carpeta o seleccione un CSV.", "error");
+      return;
+    }
+
+    // Solo enviar archivos dentro de una subcarpeta numérica (ID de proyecto/grupo).
+    // Archivos sueltos en la raíz de la carpeta (planillas, resultados, etc.) se excluyen.
+    const projectFiles = collectedFolderFiles.filter(({ path }) => {
+      const parts = path.replace(/\\/g, "/").split("/");
+      return parts.slice(1, -1).some((p) => /^\d+$/.test(p));
+    });
+
+    if (projectFiles.length === 0 && !csvFile) {
+      showToast("No se encontraron archivos de proyectos o grupos.", "error");
+      return;
+    }
+
+    // Construir el FormData ANTES de cerrar el modal, porque closeUploadModal
+    // resetea collectedFolderFiles a [] y limpia los inputs.
+    const formData = new FormData();
+    for (const { path, file } of projectFiles) {
+      formData.append("files", file);
+      formData.append("file_paths", path);
+    }
+    if (csvFile) {
+      formData.append("csv_file", csvFile);
+    }
+
+    const uploadLabel = formatEntityLabel(countEntities(projectFiles));
+    closeUploadModal();
+    await startReloadInBackground(formData, uploadLabel);
+  }
+
+  async function startReloadInBackground(formData, uploadLabel = null) {
     if (reloadJob) return reloadJob;
 
     const base = getApiBase();
@@ -373,13 +739,10 @@
     pollAttempt = 0;
     clearReloadToastDismissed();
     updateReloadButtonUI();
-    maybeShowReloadToast("Iniciando recarga en segundo plano…");
+    showLoadingToast(null, 0, uploadLabel);
 
     try {
-      const data = await parseJsonResponse(
-        await fetch(endpoint, { method: "POST" }),
-        endpoint,
-      );
+      const data = await uploadWithProgress(endpoint, formData, () => {});
       const jobId = data?.job_id;
 
       if (!jobId) throw new Error("La API no devolvió job_id.");
@@ -391,13 +754,13 @@
         status: data?.status ?? "queued",
         startedAt: null,
         createdAt: new Date().toISOString(),
-        message: data?.message ?? "Recarga iniciada en segundo plano.",
+        message: data?.message ?? "Carga iniciada en segundo plano.",
+        uploadLabel: uploadLabel ?? null,
       });
 
       updateReloadButtonUI();
-      maybeShowReloadToast(
-        "Recargando archivos en segundo plano… Podés seguir usando el chat mientras termina.",
-      );
+      const prog = data?.progress ?? null;
+      maybeShowLoadingToast(prog ? prog.current : 0, prog ? prog.total : 0, uploadLabel);
       emitReloadEvent("reload:start", {
         job_id: jobId,
         status: data?.status ?? "queued",
@@ -411,12 +774,8 @@
       updateReloadButtonUI();
       stopPolling();
 
-      const message = `Error al iniciar la recarga.<br><span style="font-weight:700;opacity:.9">${escapeHtml(error?.message || String(error))}</span>`;
-      saveReloadState({
-        status: "error",
-        error: error?.message || String(error),
-        message,
-      });
+      const message = `Error al iniciar la carga.<br><span style="font-weight:700;opacity:.9">${escapeHtml(error?.message || String(error))}</span>`;
+      clearReloadState();
       showToast(message, "error", { sticky: true });
       emitReloadEvent("reload:error", {
         error: error?.message || String(error),
@@ -456,16 +815,19 @@
 
     if (state.status === "success") {
       clearReloadToastDismissed();
-      showToast(state.message || "Recarga finalizada.", "success");
+      showToast(state.message || "Carga finalizada.", "success");
+      const skipped = state?.result?.skipped ?? [];
+      if (skipped.length > 0) {
+        openResultsModal(skipped);
+      }
       clearReloadState();
       return;
     }
 
     if (state.status === "error") {
       clearReloadToastDismissed();
-      showToast(state.message || "Error al recargar archivos.", "error", {
-        sticky: true,
-      });
+      showToast(state.message || "Error al cargar archivos.", "error");
+      clearReloadState();
       return;
     }
 
@@ -481,8 +843,110 @@
     }
 
     button.dataset.bound = "true";
-    button.addEventListener("click", startReloadInBackground);
+    button.addEventListener("click", openUploadModal);
     updateReloadButtonUI();
+
+    // Modal upload: controles básicos
+    document.getElementById("uploadModalClose")?.addEventListener("click", closeUploadModal);
+    document.getElementById("uploadBackdrop")?.addEventListener("click", closeUploadModal);
+    document.getElementById("uploadCancelBtn")?.addEventListener("click", closeUploadModal);
+    document.getElementById("uploadSubmitBtn")?.addEventListener("click", submitUpload);
+
+    // Modal de resultados (archivos salteados)
+    document.getElementById("resultsModalClose")?.addEventListener("click", closeResultsModal);
+    document.getElementById("resultsBackdrop")?.addEventListener("click", closeResultsModal);
+    document.getElementById("resultsCloseBtn")?.addEventListener("click", closeResultsModal);
+
+    // Tooltip de formato
+    const formatToggle = document.getElementById("uploadFormatToggle");
+    const formatHelp = document.getElementById("uploadFormatHelp");
+    formatToggle?.addEventListener("click", () => {
+      const isHidden = formatHelp?.classList.contains("hidden");
+      formatHelp?.classList.toggle("hidden", !isHidden);
+      formatToggle.setAttribute("aria-expanded", String(isHidden));
+    });
+
+    // Drop zone: drag & drop de carpetas
+    const dropzone = document.getElementById("foldersDropzone");
+    if (dropzone) {
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+      dropzone.addEventListener("dragleave", (e) => {
+        if (!dropzone.contains(e.relatedTarget)) {
+          dropzone.classList.remove("dragover");
+        }
+      });
+      dropzone.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        const items = e.dataTransfer?.items;
+        if (!items) return;
+        const newFiles = [];
+        for (const item of items) {
+          if (item.kind !== "file") continue;
+          const entry = item.webkitGetAsEntry?.();
+          if (!entry) continue;
+          try {
+            const files = await collectFilesFromEntry(entry, "");
+            newFiles.push(...files);
+          } catch (err) {
+            console.warn("Error leyendo entrada:", err);
+          }
+        }
+        collectedFolderFiles.push(...newFiles);
+        updateFoldersDisplay();
+      });
+
+      dropzone.addEventListener("click", async (e) => {
+        if (e.target !== dropzone && !dropzone.querySelector(".upload-dropzone-content")?.contains(e.target)) return;
+        if (window.showDirectoryPicker) {
+          try {
+            const dirHandle = await window.showDirectoryPicker({ mode: "read" });
+            const files = await collectFilesFromHandle(dirHandle, "");
+            collectedFolderFiles.push(...files);
+            updateFoldersDisplay();
+          } catch (err) {
+            if (err.name !== "AbortError") console.warn("Error seleccionando carpeta:", err);
+          }
+        } else {
+          document.getElementById("foldersInput")?.click();
+        }
+      });
+    }
+
+    // Fallback input webkitdirectory (cuando showDirectoryPicker no está disponible)
+    const foldersInput = document.getElementById("foldersInput");
+    foldersInput?.addEventListener("change", () => {
+      for (const file of Array.from(foldersInput.files ?? [])) {
+        if (!isAcceptedFile(file.name)) continue;
+        collectedFolderFiles.push({ path: file.webkitRelativePath || file.name, file });
+      }
+      foldersInput.value = "";
+      updateFoldersDisplay();
+    });
+
+    // CSV input
+    const csvInput = document.getElementById("csvInput");
+    csvInput?.addEventListener("change", () => {
+      const sel = document.getElementById("csvSelected");
+      if (sel) sel.textContent = csvInput.files?.[0]?.name ?? "";
+    });
+
+    // Escape cierra los modales
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const uploadModal = document.getElementById("uploadModal");
+      if (uploadModal && !uploadModal.classList.contains("hidden")) {
+        closeUploadModal();
+        return;
+      }
+      const resultsModal = document.getElementById("resultsModal");
+      if (resultsModal && !resultsModal.classList.contains("hidden")) {
+        closeResultsModal();
+      }
+    });
   }
 
   async function loadTopbar() {
@@ -511,6 +975,8 @@
 
   window.TopbarUI = {
     startReloadInBackground,
+    openUploadModal,
+    closeUploadModal,
     showToast,
     hideToast,
     getReloadState: readReloadState,
