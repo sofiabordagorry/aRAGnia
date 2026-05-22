@@ -124,21 +124,23 @@ class IngestService:
 
         if folder_files:
             has_proyectos_csv = any(
-                "proyectos" in p.name.lower()
-                for p in self.tables_dir.glob("*.csv")
+                "proyectos" in p.name.lower() for p in self.tables_dir.glob("*.csv")
             )
             if not has_proyectos_csv:
-                self.entity_extractor.res.errors.append({
-                    "type": "MissingProyectosCSV",
-                    "message": (
-                        "No hay CSV de proyectos en el sistema. "
-                        "Subí un CSV con 'proyectos' en el nombre."
-                    ),
-                })
+                self.entity_extractor.res.errors.append(
+                    {
+                        "type": "MissingProyectosCSV",
+                        "message": (
+                            "No hay CSV de proyectos en el sistema. "
+                            "Subí un CSV con 'proyectos' en el nombre."
+                        ),
+                    }
+                )
             else:
                 valid_pairs = self._load_valid_project_pairs()
                 total_files = sum(
-                    1 for rel_path, _ in folder_files
+                    1
+                    for rel_path, _ in folder_files
                     if (
                         self._extract_project_key_from_path(rel_path) is None
                         or self._extract_project_key_from_path(rel_path) in valid_pairs
@@ -148,26 +150,28 @@ class IngestService:
                 for rel_path, content in folder_files:
                     project_key = self._extract_project_key_from_path(rel_path)
                     if project_key is not None and project_key not in valid_pairs:
-                        skipped.append({
-                            "path": rel_path,
-                            "year": project_key[0],
-                            "id_formulario": project_key[1],
-                        })
+                        skipped.append(
+                            {
+                                "path": rel_path,
+                                "year": project_key[0],
+                                "id_formulario": project_key[1],
+                            }
+                        )
                         continue
                     processed_count += 1
                     try:
                         full_cloud_path = "\\" + rel_path.replace("/", "\\")
-                        base_name = await self._process_file(
-                            full_cloud_path, content, len(content)
-                        )
+                        base_name = await self._process_file(full_cloud_path, content, len(content))
                         if base_name:
                             processed.append(base_name)
                     except Exception as e:
-                        self.entity_extractor.res.errors.append({
-                            "type": "ProcessFileError",
-                            "file": rel_path,
-                            "message": str(e),
-                        })
+                        self.entity_extractor.res.errors.append(
+                            {
+                                "type": "ProcessFileError",
+                                "file": rel_path,
+                                "message": str(e),
+                            }
+                        )
                     if progress_callback:
                         progress_callback(processed_count, total_files)
 
@@ -324,8 +328,7 @@ class IngestService:
 
             existing_row_set = {frozenset(row.items()) for row in existing_rows}
             rows_to_add = [
-                row for row in new_rows
-                if frozenset(row.items()) not in existing_row_set
+                row for row in new_rows if frozenset(row.items()) not in existing_row_set
             ]
 
             if not rows_to_add:
@@ -344,9 +347,7 @@ class IngestService:
             existing_csv_path.write_text(out.getvalue(), encoding="utf-8")
 
         except Exception as e:
-            self.entity_extractor.res.errors.append(
-                {"type": "CSVMergeError", "message": str(e)}
-            )
+            self.entity_extractor.res.errors.append({"type": "CSVMergeError", "message": str(e)})
 
     def _load_valid_project_pairs(self) -> Set[Tuple[str, str]]:
         """Return the set of (anio, id_formulario) pairs from all proyectos CSVs."""
@@ -365,9 +366,7 @@ class IngestService:
                 pass
         return pairs
 
-    def _extract_project_key_from_path(
-        self, rel_path: str
-    ) -> Optional[Tuple[str, str]]:
+    def _extract_project_key_from_path(self, rel_path: str) -> Optional[Tuple[str, str]]:
         """Extract (year, id_formulario) from a path like 'proyectos_2018/.../63/...'."""
         parts = rel_path.replace("\\", "/").split("/")
         year_match = _PROYECTOS_YEAR_RE.match(parts[0])

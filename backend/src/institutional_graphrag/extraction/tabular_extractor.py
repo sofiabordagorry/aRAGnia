@@ -395,9 +395,7 @@ class TabularExtractor:
         """Lowercase + saca tildes (mantiene ñ). Usado en name e índices de búsqueda."""
         s = text.lower()
         s = "".join(
-            c
-            for c in unicodedata.normalize("NFD", s)
-            if unicodedata.category(c) != "Mn" or c == "̃"
+            c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn" or c == "̃"
         )
         return unicodedata.normalize("NFC", s)
 

@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing_extensions import TypedDict
@@ -181,9 +181,7 @@ def _run_ingest_job_from_uploads(
         )
 
         errors = result.get("errors", []) if isinstance(result, dict) else []
-        message = (
-            "Carga finalizada con errores." if errors else "Carga completada correctamente."
-        )
+        message = "Carga finalizada con errores." if errors else "Carga completada correctamente."
 
         _set_job(
             job_id,
@@ -381,7 +379,7 @@ async def upload_files(request: Request):
         if not hasattr(f, "read"):
             continue
         data = await f.read()
-        filename = file_paths[i] if i < len(file_paths) else (getattr(f, "filename", "") or "")
+        filename = str(file_paths[i]) if i < len(file_paths) else (getattr(f, "filename", "") or "")
         if not data or not filename:
             continue
 
@@ -407,7 +405,7 @@ async def upload_files(request: Request):
             folder_data.append((filename, data))
 
     csv_data: Optional[tuple] = None
-    if csv_file is not None and hasattr(csv_file, "read") and getattr(csv_file, "filename", None):
+    if isinstance(csv_file, UploadFile) and csv_file.filename:
         csv_bytes = await csv_file.read()
         if csv_bytes:
             csv_data = (csv_file.filename, csv_bytes)
