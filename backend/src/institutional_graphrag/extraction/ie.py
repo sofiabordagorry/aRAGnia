@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, cast
 import ijson
 
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
+from institutional_graphrag.extraction.bert_extractor import BertTopicExtractor
 from institutional_graphrag.extraction.llm_extractor import (
     LLMEntityExtractor,
     load_all_topics_and_domains,
@@ -83,7 +84,6 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
@@ -105,10 +105,10 @@ class EntityExtractor:
         self._build_doc_indexes()
 
         self._extract_chunks()
-        self._extract_projects_and_researchers_from_tabular()
-        self._extract_with_llm(
+        self._extract_projects_and_responsible()
+        self._extract_researchers_from_tabular()
+        self._extract_with_bert(
             max_docs=max_docs,
-            llm_topics=llm_topics,
             include_headings=include_headings,
             checkpoint_every=checkpoint_every,
         )
@@ -568,25 +568,16 @@ class EntityExtractor:
             self._flush_registry(registry_path)
         logger.info("[Checkpoint] Guardado intermedio en %s", filename)
 
-    def _extract_with_llm(
+    def _extract_with_bert(
         self,
         max_docs: int | None = None,
-        llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
-        """Extraer tópicos usando LLM.
-        Args:
-            max_docs: Límite opcional de documentos a procesar.
-            checkpoint_every: Guardar a disco cada N documentos procesados.
-        """
+        """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
         existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
 
-        llm_extractor = LLMEntityExtractor(
-            llm_model=self.llm_model,
-            temperature=0.1,
-            max_tokens=1024,
-        )
+        bert_extractor = BertTopicExtractor()
         registry_path = self.input_dir / "llm_registry.json"
         self.reg = self.load_registry(registry_path)
         self._registry_dirty = False
@@ -601,29 +592,24 @@ class EntityExtractor:
 
         for project in projects:
             project_id = project.id
-
-            # Obtener documentos del proyecto
             project_docs = self.docs_by_project.get(project_id, [])
             if not project_docs:
                 continue
 
-            # Procesar chunks de cada documento del proyecto
             for doc_id in project_docs:
-                # Verificar límite de documentos
                 if max_docs is not None and docs_processed >= max_docs:
-                    logger.info(f"[LLM] Límite de {max_docs} documentos alcanzado")
+                    logger.info(f"[BERT] Límite de {max_docs} documentos alcanzado")
                     return
 
-                # Los documentos de tabla no tienen chunks de texto
                 if doc_id.endswith("_table"):
                     continue
 
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
+
                 topic_cache = self.already_run(doc_id, "Topico")
 
-                # Cargar chunks del documento
                 base_name = doc.value.get("base_name", "")
                 if not base_name:
                     continue
@@ -633,7 +619,6 @@ class EntityExtractor:
                     continue
 
                 try:
-                    # Cargar chunks del archivo
                     payload = self._read_json(chunks_file)
                     if payload is None:
                         continue
@@ -642,57 +627,42 @@ class EntityExtractor:
                     if not isinstance(chunks, list):
                         continue
 
-                    if topic_cache or not llm_topics:
-                        logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
+                    if topic_cache:
+                        logger.info(f"[BERT Topics] Cache: {doc_id}")
                     else:
-                        # Extraer tópicos usando LLM de todos los chunks
-                        logger.info(
-                            f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}..."
-                        )
-                        llm_result_topic = llm_extractor.extract_topics_from_chunks(
+                        logger.info(f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}...")
+                        bert_result = bert_extractor.extract_topics_from_chunks(
                             chunks, max_chunks=None, include_headings=include_headings
                         )
-                        # Agregar errores
-                        self.res.errors.extend(llm_result_topic.errors)
-                        # Crear entidades y relaciones chunk->topico
-                        new_entities, new_relationships = (
-                            llm_extractor.create_topics_from_llm_extraction(
-                                llm_result_topic, existing_topic_ids
-                            )
+                        self.res.errors.extend(bert_result.errors)
+                        new_entities, new_relationships = bert_extractor.create_topics_from_bert_extraction(
+                            bert_result, existing_topic_ids
                         )
-                        # Agregar al resultado
                         self.add_entities(new_entities)
                         self.add_relationship(new_relationships)
-
-                        # Actualizar el set de IDs globales
                         existing_topic_ids.update(e.id for e in new_entities)
                         self.mark_success(doc_id, "Topico")
-
-                        logger.info(
-                            f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
-                        )
+                        logger.info(f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos")
 
                     docs_processed += 1
-
-                    # Checkpoint periódico para no perder progreso ante un fallo
                     if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
                         self._save_checkpoint(registry_path=registry_path)
 
                 except Exception as e:
                     self.res.errors.append(
                         {
-                            "type": "LLMExtractionError",
+                            "type": "BertExtractionError",
                             "document": base_name,
-                            "message": f"Error procesando documento con LLM: {str(e)}",
+                            "message": str(e),
                         }
                     )
                     docs_processed += 1
+
             self._aggregate_topics_for_project(project_id)
 
-        # Checkpoint final tras toda la extracción LLM
         if docs_processed > 0:
             self._save_checkpoint(registry_path=registry_path)
-            logger.info("[LLM] Extracción completada — %d documentos procesados", docs_processed)
+            logger.info("[BERT] Extracción completada — %d documentos procesados", docs_processed)
 
     def _aggregate_topics_for_project(self, project_id: str) -> None:
         """Agregar tópicos a nivel de proyecto basándose en los chunks.
