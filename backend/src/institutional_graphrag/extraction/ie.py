@@ -674,24 +674,32 @@ class EntityExtractor:
         project_docs = self.docs_by_project.get(project_id, [])
         topic_entity_ids = {e.id for e in self.res.entities if e.label == "Topico"}
         chunk_by_doc: dict[str, list[str]] = defaultdict(list)
-        topic_by_chunk: dict[str, list[str]] = defaultdict(list)
         for r in self.res.relationships:
             if r.type == "DE_DOCUMENTO":
                 chunk_by_doc[r.target_id].append(r.source_id)
-            elif r.type == "EXTRAIDO_DE":
-                topic_by_chunk[r.source_id].append(r.target_id)
 
         project_chunks = set()
         for doc_id in project_docs:
-            doc_chunks = chunk_by_doc.get(doc_id, [])
-            project_chunks.update(doc_chunks)
+            project_chunks.update(chunk_by_doc.get(doc_id, []))
 
-        # Contar tópicos de los chunks del proyecto
+        # Contar tópicos usando el chunk_count guardado en evidence_text
         topic_counts: Counter[str] = Counter()
-        for chunk_id in project_chunks:
-            chunk_topics = topic_by_chunk.get(chunk_id, [])
-            topic_ids = [tid for tid in chunk_topics if tid in topic_entity_ids]
-            topic_counts.update(topic_ids)
+        for r in self.res.relationships:
+            if r.type != "EXTRAIDO_DE":
+                continue
+            if r.target_id not in topic_entity_ids:
+                continue
+            if r.source_id not in project_chunks:
+                continue
+            ev = r.properties.get("evidence_text", "")
+            if "count=" in ev:
+                try:
+                    count = int(ev.split("count=")[1].split(" ")[0])
+                except (ValueError, IndexError):
+                    count = 1
+            else:
+                count = 1
+            topic_counts[r.target_id] += count
 
         # Top 3 tópicos más mencionados en los chunks del proyecto
         top_topics = topic_counts.most_common(3)

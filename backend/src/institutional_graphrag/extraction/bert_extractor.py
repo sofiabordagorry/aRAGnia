@@ -17,7 +17,7 @@ TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 DEFAULT_THRESHOLD = 0.04
-DEFAULT_TOP_K = 5
+DEFAULT_TOP_K = 2
 
 
 class BertTopicExtractor:
@@ -153,10 +153,10 @@ class BertTopicExtractor:
         max_chunks: Optional[int] = None,
         include_headings: bool = True,
     ) -> LLMExtractionResult:
-        """Clasifica tópicos sobre una lista de chunks, agrega scores por tópico."""
-        # Scores acumulados por tópico (máximo entre chunks)
-        topic_scores: Dict[str, float] = {}
-        topic_chunk_ids: Dict[str, List[str]] = {}
+        """Clasifica tópicos sobre una lista de chunks, agrega por frecuencia entre chunks."""
+        topic_chunk_count: Dict[str, int] = {}
+        topic_first_chunk: Dict[str, str] = {}
+        topic_max_score: Dict[str, float] = {}
         all_errors = []
 
         chunks_to_process = chunks[:max_chunks] if max_chunks else chunks
@@ -176,21 +176,22 @@ class BertTopicExtractor:
 
             for mention in result.topics:
                 score = float(mention.evidence.replace("score=", ""))
-                current = topic_scores.get(mention.topic, 0.0)
-                if score > current:
-                    topic_scores[mention.topic] = score
-                    topic_chunk_ids[mention.topic] = [chunk_id]
-                elif score == current:
-                    topic_chunk_ids.setdefault(mention.topic, []).append(chunk_id)
+                topic_chunk_count[mention.topic] = topic_chunk_count.get(mention.topic, 0) + 1
+                if mention.topic not in topic_first_chunk:
+                    topic_first_chunk[mention.topic] = chunk_id
+                if score > topic_max_score.get(mention.topic, 0.0):
+                    topic_max_score[mention.topic] = score
 
-        # Construir TopicMention con el chunk donde el score fue máximo
+        # Ordenar por frecuencia (chunks en que apareció), desempatar por score máximo
         final_topics = [
             TopicMention(
                 topic=topic,
-                evidence=f"score={score:.4f}",
-                chunk_id=topic_chunk_ids[topic][0],
+                evidence=f"count={count} max_score={topic_max_score[topic]:.4f}",
+                chunk_id=topic_first_chunk[topic],
             )
-            for topic, score in sorted(topic_scores.items(), key=lambda x: x[1], reverse=True)
+            for topic, count in sorted(
+                topic_chunk_count.items(), key=lambda x: (x[1], topic_max_score[x[0]]), reverse=True
+            )
         ]
 
         return LLMExtractionResult(topics=final_topics, errors=all_errors)
