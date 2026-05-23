@@ -7,7 +7,7 @@ import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.extraction.parse_response import LLMExtractionResult, TopicMention
+from institutional_graphrag.extraction.parse_topics import LLMExtractionResult, TopicMention
 from institutional_graphrag.graph.schema import EXTRAIDO_DE, PERTENECE_A_SUBCAMPO, Subcampo, Entity, Relationship, Topico
 
 logger = logging.getLogger(__name__)
@@ -126,7 +126,7 @@ class BertTopicExtractor:
     def extract_topics_from_chunk(self, chunk_text: str, chunk_id: str, heading: str = "") -> LLMExtractionResult:
         """Extrae tópicos de un chunk usando BERT."""
         if not chunk_text.strip():
-            return LLMExtractionResult(researchers=[], topics=[], errors=[])
+            return LLMExtractionResult(topics=[], errors=[])
 
         try:
             predictions = self._predict_chunk(heading, chunk_text)
@@ -138,12 +138,11 @@ class BertTopicExtractor:
                 )
                 for pred in predictions
             ]
-            return LLMExtractionResult(researchers=[], topics=topics, errors=[])
+            return LLMExtractionResult(topics=topics, errors=[])
 
         except Exception as e:
             logger.error(f"Error BERT en chunk {chunk_id}: {e}")
             return LLMExtractionResult(
-                researchers=[],
                 topics=[],
                 errors=[{"type": "BertExtractionError", "chunk_id": chunk_id, "message": str(e)}],
             )
@@ -194,7 +193,7 @@ class BertTopicExtractor:
             for topic, score in sorted(topic_scores.items(), key=lambda x: x[1], reverse=True)
         ]
 
-        return LLMExtractionResult(researchers=[], topics=final_topics, errors=all_errors)
+        return LLMExtractionResult(topics=final_topics, errors=all_errors)
 
     def create_topics_from_bert_extraction(
         self,
