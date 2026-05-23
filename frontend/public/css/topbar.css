@@ -857,7 +857,6 @@ body.dark .topbar-toast-close:hover {
   background: rgba(11, 95, 136, 0.15);
 }
 
-
 .upload-file-label {
   display: inline-flex;
   align-items: center;
@@ -954,7 +953,6 @@ body.dark .upload-format-csv-table .upload-format-csv-group td {
   background: rgba(255, 255, 255, 0.04) !important;
   color: var(--ink) !important;
 }
-
 
 body.dark .upload-dropzone {
   border-color: rgba(148, 163, 184, 0.3) !important;

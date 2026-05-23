@@ -653,11 +653,11 @@
           `${proyectos} ${proyectos === 1 ? "proyecto" : "proyectos"}`,
         );
       if (grupos > 0)
-        labelParts.push(
-          `${grupos} ${grupos === 1 ? "grupo" : "grupos"}`,
-        );
+        labelParts.push(`${grupos} ${grupos === 1 ? "grupo" : "grupos"}`);
       const label =
-        labelParts.length > 0 ? labelParts.join(" y ") : `${files.length} archivo${files.length !== 1 ? "s" : ""}`;
+        labelParts.length > 0
+          ? labelParts.join(" y ")
+          : `${files.length} archivo${files.length !== 1 ? "s" : ""}`;
       parts.push(
         `<span class="upload-folder-tag" data-folder="${escapeHtml(folder)}">` +
           `${escapeHtml(folder)} (${label})` +
@@ -763,7 +763,9 @@
       if (collectedFolderFiles.length > 0) {
         const invalidRoots = [
           ...new Set(
-            collectedFolderFiles.map((f) => f.path.replace(/\\/g, "/").split("/")[0]),
+            collectedFolderFiles.map(
+              (f) => f.path.replace(/\\/g, "/").split("/")[0],
+            ),
           ),
         ];
         const names = invalidRoots.map((r) => `"${r}"`).join(", ");
@@ -773,7 +775,10 @@
           { sticky: true },
         );
       } else {
-        showToast("Arrastre al menos una carpeta o seleccione un CSV.", "error");
+        showToast(
+          "Arrastre al menos una carpeta o seleccione un CSV.",
+          "error",
+        );
       }
       return;
     }
