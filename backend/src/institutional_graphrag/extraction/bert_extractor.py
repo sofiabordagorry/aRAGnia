@@ -235,7 +235,6 @@ class BertTopicExtractor:
                 )
             )
 
-            # Crear Subcampo si el tópico pertenece a un subfield conocido
             subfield = self._topic_to_subfield.get(mention.topic)
             if subfield:
                 subcampo_id = (
