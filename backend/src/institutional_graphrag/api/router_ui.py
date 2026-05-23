@@ -463,10 +463,7 @@ def get_upload_status(job_id: Optional[str] = Query(default=None)):
     job = _get_job(job_id) if job_id else _get_latest_job()
 
     if job is None:
-        return JSONResponse(
-            status_code=404,
-            content={"ok": False, "detail": "No hay cargas registradas."},
-        )
+        return {"ok": False, "status": "none"}
 
     return {"ok": True, **job}
 
