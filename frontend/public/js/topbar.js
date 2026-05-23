@@ -317,7 +317,7 @@
     if (missingCsv) {
       sections.push(`
         <div class="results-warning-banner">
-          No hay un CSV de proyectos cargado en el sistema. Subí uno antes de cargar archivos.
+          No hay un CSV de proyectos cargado en el sistema. Suba uno antes de cargar archivos.
         </div>`);
     }
 
@@ -638,18 +638,44 @@
     }
 
     const rootFolders = new Map();
-    for (const { path } of collectedFolderFiles) {
-      const root = path.split("/")[0];
-      rootFolders.set(root, (rootFolders.get(root) ?? 0) + 1);
+    for (const f of collectedFolderFiles) {
+      const root = f.path.split("/")[0];
+      if (!rootFolders.has(root)) rootFolders.set(root, []);
+      rootFolders.get(root).push(f);
     }
 
     const parts = [];
-    for (const [folder, count] of rootFolders) {
+    for (const [folder, files] of rootFolders) {
+      const { proyectos, grupos } = countEntities(files);
+      const labelParts = [];
+      if (proyectos > 0)
+        labelParts.push(
+          `${proyectos} ${proyectos === 1 ? "proyecto" : "proyectos"}`,
+        );
+      if (grupos > 0)
+        labelParts.push(
+          `${grupos} ${grupos === 1 ? "grupo" : "grupos"}`,
+        );
+      const label =
+        labelParts.length > 0 ? labelParts.join(" y ") : `${files.length} archivo${files.length !== 1 ? "s" : ""}`;
       parts.push(
-        `<span class="upload-folder-tag">${escapeHtml(folder)} (${count} archivo${count !== 1 ? "s" : ""})</span>`,
+        `<span class="upload-folder-tag" data-folder="${escapeHtml(folder)}">` +
+          `${escapeHtml(folder)} (${label})` +
+          `<button type="button" class="upload-folder-tag-remove" aria-label="Quitar ${escapeHtml(folder)}" data-folder="${escapeHtml(folder)}">✕</button>` +
+          `</span>`,
       );
     }
     container.innerHTML = parts.join("");
+
+    container.querySelectorAll(".upload-folder-tag-remove").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const folder = btn.dataset.folder;
+        collectedFolderFiles = collectedFolderFiles.filter(
+          ({ path }) => path.split("/")[0] !== folder,
+        );
+        updateFoldersDisplay();
+      });
+    });
   }
 
   function isAcceptedFile(name) {
@@ -722,15 +748,33 @@
       return;
     }
 
-    // Solo enviar archivos dentro de una subcarpeta numérica (ID de proyecto/grupo).
-    // Archivos sueltos en la raíz de la carpeta (planillas, resultados, etc.) se excluyen.
+    // Solo enviar archivos cuya carpeta raíz sea proyectos_YYYY o grupos/gi,
+    // y que además tengan una subcarpeta numérica (id_formulario).
     const projectFiles = collectedFolderFiles.filter(({ path }) => {
       const parts = path.replace(/\\/g, "/").split("/");
+      const root = parts[0] || "";
+      const isProyecto = /^proyectos[_\s]?\d{4}/i.test(root);
+      const isGrupo = /grupos/i.test(root) || /^gi[_\s]/i.test(root);
+      if (!isProyecto && !isGrupo) return false;
       return parts.slice(1, -1).some((p) => /^\d+$/.test(p));
     });
 
     if (projectFiles.length === 0 && !csvFile) {
-      showToast("No se encontraron archivos de proyectos o grupos.", "error");
+      if (collectedFolderFiles.length > 0) {
+        const invalidRoots = [
+          ...new Set(
+            collectedFolderFiles.map((f) => f.path.replace(/\\/g, "/").split("/")[0]),
+          ),
+        ];
+        const names = invalidRoots.map((r) => `"${r}"`).join(", ");
+        showToast(
+          `La carpeta ${names} no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
+          "error",
+          { sticky: true },
+        );
+      } else {
+        showToast("Arrastre al menos una carpeta o seleccione un CSV.", "error");
+      }
       return;
     }
 
@@ -981,7 +1025,24 @@
     const csvInput = document.getElementById("csvInput");
     csvInput?.addEventListener("change", () => {
       const sel = document.getElementById("csvSelected");
-      if (sel) sel.textContent = csvInput.files?.[0]?.name ?? "";
+      const name = csvInput.files?.[0]?.name ?? "";
+      if (sel) {
+        if (name) {
+          sel.innerHTML =
+            `<span class="upload-folder-tag">` +
+            `${escapeHtml(name)}` +
+            `<button type="button" class="upload-folder-tag-remove" aria-label="Quitar CSV">✕</button>` +
+            `</span>`;
+          sel
+            .querySelector(".upload-folder-tag-remove")
+            ?.addEventListener("click", () => {
+              csvInput.value = "";
+              sel.innerHTML = "";
+            });
+        } else {
+          sel.innerHTML = "";
+        }
+      }
     });
 
     document.addEventListener("keydown", (event) => {

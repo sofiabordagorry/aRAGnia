@@ -132,7 +132,7 @@ class IngestService:
                         "type": "MissingProyectosCSV",
                         "message": (
                             "No hay CSV de proyectos en el sistema. "
-                            "Subí un CSV con 'proyectos' en el nombre."
+                            "Suba un CSV con 'proyectos' en el nombre."
                         ),
                     }
                 )
@@ -292,7 +292,7 @@ class IngestService:
     def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> None:
         try:
             raw_content = csv_bytes.decode("utf-8")
-            content = self._clean_csic_csv_if_needed(raw_content, csv_filename)
+            content = self._clean_csic_csv_if_needed(raw_content)
 
             reader = csv.DictReader(io.StringIO(content))
             new_rows = list(reader)
@@ -375,7 +375,7 @@ class IngestService:
             return None
         return (year, id_formulario)
 
-    def _clean_csic_csv_if_needed(self, content: str, csv_filename: str) -> str:
+    def _clean_csic_csv_if_needed(self, content: str) -> str:
         """Aplica clean_table si el CSV tiene el formato CSIC (primera columna numérica).
         clean_table une filas partidas por saltos de línea dentro de celdas."""
         lines = content.strip().splitlines()
@@ -590,9 +590,9 @@ class IngestService:
     def _cleanup_processed_file(self, base_name: str) -> None:
         """
         Limpieza robusta: borra todo lo que empiece con base_name en cada carpeta.
-        Así evitás problemas de .pdf.pdf, etc.
+        Así se evitan problemas de .pdf.pdf, etc.
         """
-        dirs = (self.output_dir, self.docling_dir, self.chunks_dir)
+        dirs = (self.docling_dir, self.chunks_dir)
         for d in dirs:
             for p in d.glob(f"{base_name}*"):
                 try:

@@ -820,7 +820,9 @@ body.dark .topbar-toast-close:hover {
 
 .upload-folder-tag {
   display: inline-flex;
-  padding: 3px 10px;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px 3px 10px;
   border-radius: 999px;
   background: rgba(11, 95, 136, 0.1);
   color: #0b5f88;
@@ -831,6 +833,30 @@ body.dark .topbar-toast-close:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.upload-folder-tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.upload-folder-tag-remove:hover {
+  opacity: 1;
+  background: rgba(11, 95, 136, 0.15);
+}
+
 
 .upload-file-label {
   display: inline-flex;
@@ -928,6 +954,7 @@ body.dark .upload-format-csv-table .upload-format-csv-group td {
   background: rgba(255, 255, 255, 0.04) !important;
   color: var(--ink) !important;
 }
+
 
 body.dark .upload-dropzone {
   border-color: rgba(148, 163, 184, 0.3) !important;
