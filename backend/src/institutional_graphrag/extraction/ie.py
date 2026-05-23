@@ -99,7 +99,7 @@ class EntityExtractor:
                 value_filter={"source": "llm"},
             )
             self.load_subset_from_graph_json(entities_json, label="Topico")
-            self.load_subset_from_graph_json(entities_json, label="Dominio")
+            self.load_subset_from_graph_json(entities_json, label="Subcampo")
 
         self._extract_documents()
         self._build_doc_indexes()
@@ -459,8 +459,8 @@ class EntityExtractor:
                 continue
 
             # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
-            # entidades cuyo schema espera un str (Proyecto, Grupo, Topico, Dominio).
-            if label in {"Proyecto", "Grupo", "Topico", "Dominio"} and isinstance(value, dict):
+            # entidades cuyo schema espera un str (Proyecto, Grupo, Topico, Subcampo).
+            if label in {"Proyecto", "Grupo", "Topico", "Subcampo"} and isinstance(value, dict):
                 value = value.get("value", value)
 
             try:

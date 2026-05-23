@@ -15,8 +15,8 @@ from institutional_graphrag.extraction.parse_topics import (
 )
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
-    PERTENECE_A_DOMINIO,
-    Dominio,
+    PERTENECE_A_SUBCAMPO,
+    Subcampo,
     Entity,
     Relationship,
     Topico,
@@ -236,7 +236,7 @@ If no match:
 
 
 def load_all_topics_and_domains() -> tuple[list, list]:
-    """Load all Topico and Dominio entities from OpenAlex topics at startup."""
+    """Load all Subcampo and Topico entities from OpenAlex topics at startup."""
     entities: list = []
     relationships: list = []
 
@@ -247,27 +247,47 @@ def load_all_topics_and_domains() -> tuple[list, list]:
     with open(TOPICS_PATH, encoding="utf-8") as f:
         data = json.load(f)
 
-    for field_name, field_data in data.items():
-        field_normalized = field_name.lower().strip()
-        field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-        domain_value = "".join(
+    def _normalize_id(name: str) -> str:
+        normalized = "".join(
             c
-            for c in unicodedata.normalize("NFD", field_name.lower())
+            for c in unicodedata.normalize("NFD", name.lower())
             if unicodedata.category(c) != "Mn" or c == "̃"
         )
-        domain_value = unicodedata.normalize("NFC", domain_value)
-        entities.append(Dominio(field_id, domain_value))
+        return unicodedata.normalize("NFC", normalized).replace(" ", "_").replace(",", "").replace("/", "_")
 
-        for subfield in field_data.get("subfields", []):
-            subfield_normalized = subfield.lower().strip()
-            subfield_id = subfield_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-            topic_value = "".join(
-                c
-                for c in unicodedata.normalize("NFD", subfield.lower())
-                if unicodedata.category(c) != "Mn" or c == "̃"
+    for _field_name, field_data in data.items():
+        for subfield_entry in field_data.get("subfields", []):
+            if not isinstance(subfield_entry, dict):
+                continue
+            subfield_name = subfield_entry.get("name", "")
+            if not subfield_name:
+                continue
+
+            subcampo_id = _normalize_id(subfield_name)
+            subcampo_value = unicodedata.normalize(
+                "NFC",
+                "".join(
+                    c
+                    for c in unicodedata.normalize("NFD", subfield_name.lower())
+                    if unicodedata.category(c) != "Mn" or c == "̃"
+                ),
             )
-            topic_value = unicodedata.normalize("NFC", topic_value)
-            entities.append(Topico(id=subfield_id, value=topic_value))
-            relationships.append(PERTENECE_A_DOMINIO(subfield_id, field_id))
+            entities.append(Subcampo(id=subcampo_id, value=subcampo_value))
+
+            for topic in subfield_entry.get("topics", []):
+                topic_name = topic.get("display_name", "")
+                if not topic_name:
+                    continue
+                topic_id = _normalize_id(topic_name)
+                topic_value = unicodedata.normalize(
+                    "NFC",
+                    "".join(
+                        c
+                        for c in unicodedata.normalize("NFD", topic_name.lower())
+                        if unicodedata.category(c) != "Mn" or c == "̃"
+                    ),
+                )
+                entities.append(Topico(id=topic_id, value=topic_value))
+                relationships.append(PERTENECE_A_SUBCAMPO(topic_id, subcampo_id))
 
     return entities, relationships

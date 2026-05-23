@@ -744,7 +744,7 @@ class GraphBuilder:
                 props.pop("__created__", None)
                 props.pop("id", None)
 
-                if label in {"Proyecto", "Grupo", "Topico", "Dominio", "Area"}:
+                if label in {"Proyecto", "Grupo", "Topico", "Subcampo", "Area"}:
                     value = props.get("value")
 
                     if isinstance(value, dict) and "value" in value:

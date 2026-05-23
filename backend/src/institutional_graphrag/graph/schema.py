@@ -118,7 +118,7 @@ class Topico(Entity):
 
 
 @dataclass
-class Dominio(Entity):
+class Subcampo(Entity):
     value: str
 
 
@@ -169,18 +169,18 @@ def TIENE_TOPICO(
     )
 
 
-def PERTENECE_A_DOMINIO(
-    topico_id: str, dominio_id: str, properties: Optional[Dict[str, Any]] = None
+def PERTENECE_A_SUBCAMPO(
+    topico_id: str, subcampo_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
-    Crear una relación PERTENECE_A_DOMINIO.
+    Crear una relación PERTENECE_A_SUBCAMPO.
 
-    (Topico)-[PERTENECE_A_DOMINIO]->(Dominio)
+    (Topico)-[PERTENECE_A_SUBCAMPO]->(Subcampo)
     """
     return Relationship(
-        type="PERTENECE_A_DOMINIO",
+        type="PERTENECE_A_SUBCAMPO",
         source_id=topico_id,
-        target_id=dominio_id,
+        target_id=subcampo_id,
         properties=properties or {},
     )
 
@@ -320,7 +320,7 @@ class GraphSchema:
         "Anio": Anio,
         "Investigador": Investigador,
         "Topico": Topico,
-        "Dominio": Dominio,
+        "Subcampo": Subcampo,
         "Area": Area,
         "Documento": Documento,
         "Chunk": Chunk,
@@ -329,7 +329,7 @@ class GraphSchema:
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
         "TIENE_TOPICO": TIENE_TOPICO,
-        "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
+        "PERTENECE_A_SUBCAMPO": PERTENECE_A_SUBCAMPO,
         "PERTENECE_A_AREA": PERTENECE_A_AREA,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
         "INICIO_EN": INICIO_EN,
@@ -380,7 +380,7 @@ def validate_relationship_endpoints(
     valid_combinations: Dict[str, tuple] = {
         "PARTICIPO_EN": ("Investigador", PROJECT_TYPES),
         "TIENE_TOPICO": (PROJECT_TYPES, "Topico"),
-        "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
+        "PERTENECE_A_SUBCAMPO": ("Topico", "Subcampo"),
         "PERTENECE_A_AREA": ("Proyecto", "Area"),
         "ES_DESCRITO_POR": (PROJECT_TYPES, "Documento"),
         "INICIO_EN": (PROJECT_TYPES, "Anio"),

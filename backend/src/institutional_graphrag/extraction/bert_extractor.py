@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_response import LLMExtractionResult, TopicMention
-from institutional_graphrag.graph.schema import EXTRAIDO_DE, PERTENECE_A_DOMINIO, Dominio, Entity, Relationship, Topico
+from institutional_graphrag.graph.schema import EXTRAIDO_DE, PERTENECE_A_SUBCAMPO, Subcampo, Entity, Relationship, Topico
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +201,7 @@ class BertTopicExtractor:
         bert_result: LLMExtractionResult,
         existing_topic_ids: Optional[set] = None,
     ) -> tuple[List[Entity], List[Relationship]]:
-        """Crea entidades Topico y Dominio a partir del resultado BERT."""
+        """Crea entidades Topico y Subcampo a partir del resultado BERT."""
         entities: List[Entity] = []
         relationships: List[Relationship] = []
         existing_ids = existing_topic_ids or set()
@@ -235,18 +235,18 @@ class BertTopicExtractor:
                 )
             )
 
-            # Crear Dominio si el tópico pertenece a un subfield conocido
+            # Crear Subcampo si el tópico pertenece a un subfield conocido
             subfield = self._topic_to_subfield.get(mention.topic)
             if subfield:
-                domain_id = (
+                subcampo_id = (
                     subfield.lower()
                     .replace(" ", "_")
                     .replace(",", "")
                     .replace("/", "_")
                 )
-                if domain_id not in seen_domains and domain_id not in existing_ids:
-                    entities.append(Dominio(id=domain_id, value=subfield.lower()))
-                    seen_domains.add(domain_id)
-                relationships.append(PERTENECE_A_DOMINIO(actual_id, domain_id))
+                if subcampo_id not in seen_domains and subcampo_id not in existing_ids:
+                    entities.append(Subcampo(id=subcampo_id, value=subfield.lower()))
+                    seen_domains.add(subcampo_id)
+                relationships.append(PERTENECE_A_SUBCAMPO(actual_id, subcampo_id))
 
         return entities, relationships

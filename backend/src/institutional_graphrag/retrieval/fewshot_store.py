@@ -34,7 +34,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "cuántos proyectos hay de ciencias naturales?",
-        "MATCH (d:Dominio)\nWHERE d.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(DISTINCT p) AS total",
+        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(DISTINCT p) AS total",
     ),
     (
         "cuántos proyectos hay del área tecnológica?",
@@ -55,7 +55,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "qué proyectos hay de ciencias naturales?",
-        "MATCH (d:Dominio)\nWHERE d.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_DOMINIO]->(d)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, d, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, s, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "busca el proyecto web warehouse de datos abiertos",
