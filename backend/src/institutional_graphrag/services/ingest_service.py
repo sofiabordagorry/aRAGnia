@@ -234,7 +234,6 @@ class IngestService:
             base_name = Path(new_filename).stem
             final_pdf_path = self.output_dir / new_filename
 
-        self.cache_dict[full_cloud_path] = file_size
         tmp_path = save_temp_file(bytes_source, new_filename)
 
         try:
@@ -284,6 +283,7 @@ class IngestService:
                 chunk_file=chunk_json_path,
             )
 
+            self.cache_dict[full_cloud_path] = file_size
             return base_name
 
         finally:
