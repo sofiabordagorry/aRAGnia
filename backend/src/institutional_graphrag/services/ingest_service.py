@@ -322,14 +322,10 @@ class IngestService:
             _GENERATED_COLS = {"row_id", "file_type", "file_id"}
 
             def _row_key(row: Dict[str, Any]) -> frozenset:
-                return frozenset(
-                    (k, v) for k, v in row.items() if k not in _GENERATED_COLS
-                )
+                return frozenset((k, v) for k, v in row.items() if k not in _GENERATED_COLS)
 
             existing_row_set = {_row_key(row) for row in existing_rows}
-            rows_to_add = [
-                row for row in new_rows if _row_key(row) not in existing_row_set
-            ]
+            rows_to_add = [row for row in new_rows if _row_key(row) not in existing_row_set]
 
             if not rows_to_add:
                 return

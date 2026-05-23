@@ -342,7 +342,14 @@
     }
 
     if (skipped.length > 0) {
-      const items = skipped
+      const seen = new Set();
+      const unique = skipped.filter((s) => {
+        const key = `${s.id_formulario}|${s.year}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      const items = unique
         .map((s) => {
           const id = escapeHtml(s.id_formulario);
           const year = escapeHtml(s.year);
