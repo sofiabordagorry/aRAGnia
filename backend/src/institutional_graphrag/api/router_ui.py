@@ -367,7 +367,7 @@ async def upload_files(request: Request):
     form = await request.form(
         max_files=100_000,
         max_fields=100_000,
-        max_part_size=500 * 1024 * 1024,  # 500 MB por archivo
+        max_part_size=500 * 1024 * 1024,
     )
 
     files = form.getlist("files")

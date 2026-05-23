@@ -289,14 +289,6 @@ class IngestService:
             tmp_path.unlink(missing_ok=True)
 
     def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> None:
-        """Merge the uploaded proyectos CSV with the existing one in tables_dir.
-
-        If a CSV with 'proyectos' in the name already exists:
-          - Parse both files
-          - Append rows from the new CSV that are not already present (exact row match)
-          - Write back to the existing file
-        If no such file exists, save the new CSV directly (cleaning if CSIC format).
-        """
         try:
             raw_content = csv_bytes.decode("utf-8")
             content = self._clean_csic_csv_if_needed(raw_content, csv_filename)
