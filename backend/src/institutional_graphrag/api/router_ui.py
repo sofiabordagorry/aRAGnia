@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing_extensions import TypedDict
@@ -405,7 +405,7 @@ async def upload_files(request: Request):
             folder_data.append((filename, data))
 
     csv_data: Optional[tuple] = None
-    if isinstance(csv_file, UploadFile) and csv_file.filename:
+    if csv_file is not None and getattr(csv_file, "filename", None):
         csv_bytes = await csv_file.read()
         if csv_bytes:
             csv_data = (csv_file.filename, csv_bytes)

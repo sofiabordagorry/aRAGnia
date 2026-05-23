@@ -283,10 +283,13 @@
       ? result.skipped.length
       : 0;
 
+    const csvLoaded = result.csv_loaded === true;
     const parts = ["Carga finalizada."];
 
-    if (typeof processedCount === "number") {
+    if (typeof processedCount === "number" && processedCount > 0) {
       parts.push(`Procesados: <strong>${processedCount}</strong>.`);
+    } else if (csvLoaded && processedCount === 0) {
+      parts.push("CSV cargado.");
     }
 
     if (skippedCount > 0) {

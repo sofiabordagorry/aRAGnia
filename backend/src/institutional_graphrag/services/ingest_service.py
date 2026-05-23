@@ -203,6 +203,7 @@ class IngestService:
             "processed": processed,
             "skipped": skipped,
             "errors": self.entity_extractor.res.errors,
+            "csv_loaded": csv_bytes is not None,
         }
 
     async def _process_file(
