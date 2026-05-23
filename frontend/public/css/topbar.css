@@ -334,7 +334,7 @@ body.modal-open .modal {
   position: fixed;
   top: calc(var(--topbar-h) + 14px);
   right: 18px;
-  z-index: 3500;
+  z-index: 5000;
   min-width: 280px;
   max-width: min(420px, calc(100vw - 24px));
   padding: 14px 16px;
