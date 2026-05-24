@@ -799,57 +799,41 @@
     });
   }
 
+  function isValidProjectPath(path) {
+    const parts = path.replace(/\\/g, "/").split("/");
+    const root = parts[0] || "";
+    const isProyecto = /^proyectos[_\s]?\d{4}/i.test(root);
+    const isGrupo = /grupos/i.test(root) || /^gi[_\s]/i.test(root);
+    if (!isProyecto && !isGrupo) return false;
+    return parts.slice(1, -1).some((p) => /^\d+$/.test(p));
+  }
+
+  async function readZipPaths(zipFile) {
+    const buf = await zipFile.arrayBuffer();
+    const zip = await JSZip.loadAsync(buf);
+    return Object.keys(zip.files).filter((p) => !zip.files[p].dir);
+  }
+
   async function submitUpload() {
     const csvInput = document.getElementById("csvInput");
     const csvFile = csvInput?.files?.[0] ?? null;
 
-    if (collectedFolderFiles.length === 0 && !csvFile) {
+    if (
+      collectedFolderFiles.length === 0 &&
+      collectedZipFiles.length === 0 &&
+      !csvFile
+    ) {
       showToast("Arrastre al menos una carpeta o seleccione un CSV.", "error");
       return;
     }
 
-    // Solo enviar archivos cuya carpeta raíz sea proyectos_YYYY o grupos/gi,
-    // y que además tengan una subcarpeta numérica (id_formulario).
-    const projectFiles = collectedFolderFiles.filter(({ path }) => {
-      const parts = path.replace(/\\/g, "/").split("/");
-      const root = parts[0] || "";
-      const isProyecto = /^proyectos[_\s]?\d{4}/i.test(root);
-      const isGrupo = /grupos/i.test(root) || /^gi[_\s]/i.test(root);
-      if (!isProyecto && !isGrupo) return false;
-      return parts.slice(1, -1).some((p) => /^\d+$/.test(p));
-    });
+    const projectFiles = collectedFolderFiles.filter(({ path }) =>
+      isValidProjectPath(path),
+    );
 
     const validationErrors = [];
 
-    if (
-      projectFiles.length === 0 &&
-      collectedZipFiles.length === 0 &&
-      !csvFile
-    ) {
-      if (collectedFolderFiles.length > 0) {
-        const invalidRoots = [
-          ...new Set(
-            collectedFolderFiles.map(
-              (f) => f.path.replace(/\\/g, "/").split("/")[0],
-            ),
-          ),
-        ];
-        const names = invalidRoots.map((r) => `"${r}"`).join(", ");
-        validationErrors.push(
-          `La carpeta ${names} no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
-        );
-      } else {
-        showToast(
-          "Arrastre al menos una carpeta o seleccione un CSV.",
-          "error",
-        );
-        return;
-      }
-    } else if (
-      projectFiles.length === 0 &&
-      collectedZipFiles.length === 0 &&
-      collectedFolderFiles.length > 0
-    ) {
+    if (collectedFolderFiles.length > 0 && projectFiles.length === 0) {
       const invalidRoots = [
         ...new Set(
           collectedFolderFiles.map(
@@ -861,6 +845,21 @@
       validationErrors.push(
         `La carpeta ${names} no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
       );
+    }
+
+    for (const zipFile of collectedZipFiles) {
+      try {
+        const paths = await readZipPaths(zipFile);
+        if (!paths.some((p) => isValidProjectPath(p))) {
+          validationErrors.push(
+            `El ZIP "${escapeHtml(zipFile.name)}" no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
+          );
+        }
+      } catch {
+        validationErrors.push(
+          `No se pudo leer el ZIP "${escapeHtml(zipFile.name)}".`,
+        );
+      }
     }
 
     if (csvFile) {
