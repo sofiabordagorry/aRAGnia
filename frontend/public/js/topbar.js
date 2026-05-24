@@ -588,6 +588,7 @@
   }
 
   let collectedFolderFiles = []; // [{ path: string, file: File }]
+  let collectedZipFiles = []; // [File] — ZIPs que el backend extrae
 
   async function openUploadModal() {
     const modal = document.getElementById("uploadModal");
@@ -625,6 +626,7 @@
     document.body.classList.remove("upload-modal-open");
 
     collectedFolderFiles = [];
+    collectedZipFiles = [];
     const foldersInput = document.getElementById("foldersInput");
     const csvInput = document.getElementById("csvInput");
     const foldersSelected = document.getElementById("foldersSelected");
@@ -639,7 +641,7 @@
     const container = document.getElementById("foldersSelected");
     if (!container) return;
 
-    if (collectedFolderFiles.length === 0) {
+    if (collectedFolderFiles.length === 0 && collectedZipFiles.length === 0) {
       container.innerHTML = "";
       return;
     }
@@ -672,14 +674,29 @@
           `</span>`,
       );
     }
+    for (const zip of collectedZipFiles) {
+      parts.push(
+        `<span class="upload-folder-tag" data-zip="${escapeHtml(zip.name)}">` +
+          `${escapeHtml(zip.name)} (ZIP)` +
+          `<button type="button" class="upload-folder-tag-remove" aria-label="Quitar ${escapeHtml(zip.name)}" data-zip="${escapeHtml(zip.name)}">✕</button>` +
+          `</span>`,
+      );
+    }
+
     container.innerHTML = parts.join("");
 
     container.querySelectorAll(".upload-folder-tag-remove").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const folder = btn.dataset.folder;
-        collectedFolderFiles = collectedFolderFiles.filter(
-          ({ path }) => path.split("/")[0] !== folder,
-        );
+        if (btn.dataset.zip) {
+          collectedZipFiles = collectedZipFiles.filter(
+            (f) => f.name !== btn.dataset.zip,
+          );
+        } else {
+          const folder = btn.dataset.folder;
+          collectedFolderFiles = collectedFolderFiles.filter(
+            ({ path }) => path.split("/")[0] !== folder,
+          );
+        }
         updateFoldersDisplay();
       });
     });
@@ -746,6 +763,42 @@
     return [];
   }
 
+  const CSV_REQUIRED_COLS = [
+    "anio",
+    "id_formulario",
+    "titulo",
+    "documento",
+    "tipo_documento",
+    "pais_documento",
+    "area",
+    "nombres",
+    "apellidos",
+    "sexo",
+    "calidad",
+    "descripcion",
+    "palabras_claves",
+    "palabras_claves2",
+    "palabras_claves3",
+  ];
+
+  function readCsvHeader(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const firstLine = (e.target?.result ?? "").split(/\r?\n/)[0] ?? "";
+        const cols = firstLine.split(",").map((c) =>
+          c
+            .trim()
+            .replace(/^["']|["']$/g, "")
+            .toLowerCase(),
+        );
+        resolve(cols);
+      };
+      reader.onerror = () => resolve([]);
+      reader.readAsText(file.slice(0, 4096));
+    });
+  }
+
   async function submitUpload() {
     const csvInput = document.getElementById("csvInput");
     const csvFile = csvInput?.files?.[0] ?? null;
@@ -766,7 +819,13 @@
       return parts.slice(1, -1).some((p) => /^\d+$/.test(p));
     });
 
-    if (projectFiles.length === 0 && !csvFile) {
+    const validationErrors = [];
+
+    if (
+      projectFiles.length === 0 &&
+      collectedZipFiles.length === 0 &&
+      !csvFile
+    ) {
       if (collectedFolderFiles.length > 0) {
         const invalidRoots = [
           ...new Set(
@@ -776,17 +835,46 @@
           ),
         ];
         const names = invalidRoots.map((r) => `"${r}"`).join(", ");
-        showToast(
+        validationErrors.push(
           `La carpeta ${names} no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
-          "error",
-          { sticky: true },
         );
       } else {
         showToast(
           "Arrastre al menos una carpeta o seleccione un CSV.",
           "error",
         );
+        return;
       }
+    } else if (
+      projectFiles.length === 0 &&
+      collectedZipFiles.length === 0 &&
+      collectedFolderFiles.length > 0
+    ) {
+      const invalidRoots = [
+        ...new Set(
+          collectedFolderFiles.map(
+            (f) => f.path.replace(/\\/g, "/").split("/")[0],
+          ),
+        ),
+      ];
+      const names = invalidRoots.map((r) => `"${r}"`).join(", ");
+      validationErrors.push(
+        `La carpeta ${names} no cumple el formato esperado. Revise la estructura en "Formato esperado".`,
+      );
+    }
+
+    if (csvFile) {
+      const cols = await readCsvHeader(csvFile);
+      const missing = CSV_REQUIRED_COLS.filter((c) => !cols.includes(c));
+      if (missing.length > 0) {
+        validationErrors.push(
+          `Faltan las columnas ${missing.map((c) => `<code>${escapeHtml(c)}</code>`).join(", ")} en el CSV "${escapeHtml(csvFile.name)}".`,
+        );
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      showToast(validationErrors.join("<br>"), "error", { sticky: true });
       return;
     }
 
@@ -796,6 +884,10 @@
     for (const { path, file } of projectFiles) {
       formData.append("files", file);
       formData.append("file_paths", path);
+    }
+    for (const zip of collectedZipFiles) {
+      formData.append("files", zip);
+      formData.append("file_paths", zip.name);
     }
     if (csvFile) {
       formData.append("csv_file", csvFile);
@@ -983,6 +1075,15 @@
           if (item.kind !== "file") continue;
           const entry = item.webkitGetAsEntry?.();
           if (!entry) continue;
+          if (entry.isFile && entry.name.toLowerCase().endsWith(".zip")) {
+            await new Promise((resolve) =>
+              entry.file((f) => {
+                collectedZipFiles.push(f);
+                resolve();
+              }, resolve),
+            );
+            continue;
+          }
           try {
             const files = await collectFilesFromEntry(entry, "");
             newFiles.push(...files);
