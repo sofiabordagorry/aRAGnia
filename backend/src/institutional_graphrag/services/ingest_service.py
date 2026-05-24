@@ -28,7 +28,7 @@ from institutional_graphrag.ingest.file_namer import (
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.table_extractors import clean_table
+from institutional_graphrag.ingest.table_extractors import clean_table, convert_tables_to_chunks
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
 DATA_DIR = Path(__file__).resolve().parents[4] / "data"
@@ -175,6 +175,7 @@ class IngestService:
                     if progress_callback:
                         progress_callback(processed_count, total_files)
 
+        convert_tables_to_chunks()
         self._extract_projects_and_responsibles()
         try:
             import torch
