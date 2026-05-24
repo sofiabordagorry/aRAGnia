@@ -659,14 +659,20 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       if (els.entityResultCount) {
         els.entityResultCount.textContent = `${data.summary?.result_count || 0} resultados`;
       }
-      setEntityStatus("Selecciona una entidad para visualizarla en el grafo.");
+      if (state.entityCatalog.length === 0) {
+        setEntityStatus("El grafo está vacío. Cargue archivos para comenzar.");
+      } else {
+        setEntityStatus(
+          "Seleccione una entidad para visualizarla en el grafo.",
+        );
+      }
       renderEntityList();
     } catch (error) {
       state.entityCatalog = [];
       if (els.entityResultCount)
         els.entityResultCount.textContent = "0 resultados";
       setEntityStatus(
-        `No se pudieron cargar entidades: ${error?.message || error}`,
+        "El grafo está vacío o el servidor no está disponible.",
         true,
       );
       renderEntityList();

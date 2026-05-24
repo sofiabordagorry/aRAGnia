@@ -356,6 +356,8 @@ def clean_table(input_file: str | Path, output_file: str | Path | None, doc_type
     input_file = Path(input_file)
     output_file = Path(output_file)
     output_file = output_file.with_name(f"{output_file.stem}_table{output_file.suffix}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
     with (
         open(input_file, "r", encoding="utf-8", newline="") as infile,
         open(output_file, "w", encoding="utf-8", newline="") as outfile,

@@ -13,6 +13,7 @@ from .router_rag import router as rag_router
 from .router_ui import router as ui_router
 
 CORPUS_PATH = Path(__file__).parents[4] / "data" / "corpus"
+CORPUS_PATH.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager

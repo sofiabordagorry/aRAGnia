@@ -13,9 +13,11 @@ from institutional_graphrag.document_naming import build_project_id
 from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
+    INICIO_EN,
     PARTICIPO_EN,
     PERTENECE_A_AREA,
     TITULO_EXTRAIDO_DE,
+    Anio,
     Area,
     Entity,
     FileValue,
@@ -48,6 +50,7 @@ class TabularExtractor:
         seen_investigators: dict[str, Investigador] = {}
         seen_projects: dict[str, Entity] = {}
         seen_areas: dict[str, Area] = {}
+        seen_anios: dict[str, Anio] = {}
         seen_rel_keys: set[tuple] = set()
 
         if not table_dir.exists():
@@ -65,6 +68,7 @@ class TabularExtractor:
                     seen_investigators,
                     seen_projects,
                     seen_areas,
+                    seen_anios,
                     relationships,
                     seen_rel_keys,
                     id_projects,
@@ -75,6 +79,7 @@ class TabularExtractor:
         entities.extend(seen_investigators.values())
         entities.extend(seen_projects.values())
         entities.extend(seen_areas.values())
+        entities.extend(seen_anios.values())
         return TabularExtractionResult(entities, relationships, errors)
 
     def extract_from_csv(self, csv_path: Path, id_projects: set[str]) -> TabularExtractionResult:
@@ -83,12 +88,14 @@ class TabularExtractor:
         seen_investigators: dict[str, Investigador] = {}
         seen_projects: dict[str, Entity] = {}
         seen_areas: dict[str, Area] = {}
+        seen_anios: dict[str, Anio] = {}
         seen_rel_keys: set[tuple] = set()
         errors = self._process_csv(
             csv_path,
             seen_investigators,
             seen_projects,
             seen_areas,
+            seen_anios,
             relationships,
             seen_rel_keys,
             id_projects,
@@ -97,6 +104,7 @@ class TabularExtractor:
         entities.extend(seen_investigators.values())
         entities.extend(seen_projects.values())
         entities.extend(seen_areas.values())
+        entities.extend(seen_anios.values())
         return TabularExtractionResult(entities, relationships, errors)
 
     def _process_csv(
@@ -105,6 +113,7 @@ class TabularExtractor:
         seen_investigators: dict[str, Investigador],
         seen_projects: dict[str, Entity],
         seen_areas: dict[str, Area],
+        seen_anios: dict[str, Anio],
         relationships: List[Relationship],
         seen_rel_keys: set[tuple],
         id_projects: set[str],
@@ -124,6 +133,7 @@ class TabularExtractor:
                             seen_investigators,
                             seen_projects,
                             seen_areas,
+                            seen_anios,
                             relationships,
                             seen_rel_keys,
                             csv_path.stem,
@@ -140,6 +150,7 @@ class TabularExtractor:
         seen_investigators: dict[str, Investigador],
         seen_projects: dict[str, Entity],
         seen_areas: dict[str, Area],
+        seen_anios: dict[str, Anio],
         relationships: list[Relationship],
         seen_rel_keys: set[tuple],
         filename: str,
@@ -159,6 +170,7 @@ class TabularExtractor:
         )
 
         self._add_project_relationships(row, project_id, relationships, seen_rel_keys, filename)
+
         area_id = self._get_or_create_area(row, row_number, seen_areas, errors)
         if area_id is None:
             return errors
@@ -167,6 +179,15 @@ class TabularExtractor:
             relationships,
             seen_rel_keys,
         )
+
+        anio_id = self._get_or_create_anio(row, seen_anios)
+        if anio_id is not None:
+            self._add_relationship(
+                INICIO_EN(proyecto_id=project_id, anio_id=anio_id),
+                relationships,
+                seen_rel_keys,
+            )
+
         return errors
 
     def _get_or_create_investigador(
@@ -311,6 +332,18 @@ class TabularExtractor:
             area_value = self._normalize_title(area)
             seen_areas[area_id] = Area(id=area_id, value=area_value)
         return area_id
+
+    def _get_or_create_anio(
+        self,
+        row: dict[str, Optional[str]],
+        seen_anios: dict[str, Anio],
+    ) -> Optional[str]:
+        year = self._cell(row.get("anio"))
+        if not year:
+            return None
+        if year not in seen_anios:
+            seen_anios[year] = Anio(id=year, value={"year": year})
+        return year
 
     def _add_participation_relationships(
         self,
