@@ -55,6 +55,41 @@
       }
     },
     {
+      "id": "proy_2016_395",
+      "label": "Proyecto",
+      "value": {
+        "title": "Sistemas Binarios Estocásticos Dinámicos",
+        "keywords": [
+          "Sistema Binario Estocástico",
+          "Confiabilidad",
+          "Complejidad Computacional"
+        ],
+        "description": "Un sistema binario estocástico (SBS por sus siglas en inglés) es un sistema de múltiples componentes, al que se asocia un estado binario: de correcto funcionamiento o falla. Sus componentes fallan u operan, con ciertas probabilidades denominadas “elementales“."
+      }
+    },
+    {
+      "id": "proy_2016_395_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_395_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "subid": "395",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_395_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_395_informe",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "subid": "395",
+        "type": "informe"
+      }
+    },
+    {
       "id": "2016",
       "label": "Anio",
       "value": {
@@ -100,7 +135,7 @@
       "value": {
         "base_name": "proy_2016_729_informe",
         "is_group": "proy",
-        "year_publisher": "2019",
+        "year_publisher": "2016",
         "subid": "729",
         "type": "informe"
       }
@@ -294,6 +329,42 @@
       }
     },
     {
+      "id": "uruguay_cedula_de_identidad_5294489_8",
+      "label": "Investigador",
+      "value": {
+        "name": "gutstavo ricardo guerberoff aguirregomezcorta",
+        "display_name": "Gutstavo Ricardo Guerberoff Aguirregomezcorta",
+        "documento": "2981586-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3645500_3",
+      "label": "Investigador",
+      "value": {
+        "name": "franco rafael robledo amoza",
+        "display_name": "Franco rafael robledo amoza",
+        "documento": "3645500-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3702465_5",
+      "label": "Investigador",
+      "value": {
+        "name": "pablo gabriel romero rodiguez",
+        "display_name": "Pablo Gabriel Romero Rodíguez",
+        "documento": "3702465-5",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
       "id": "area_tecnologica",
       "label": "Area",
       "value": "tecnologica"
@@ -319,6 +390,14 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2012_638",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_395",
       "target_id": "ingenieria_general_topic",
       "properties": {
         "mention_count": 11
@@ -399,6 +478,18 @@
     },
     {
       "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_395",
+      "target_id": "proy_2016_395_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_395",
+      "target_id": "proy_2016_395_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
       "source_id": "proy_2018_260",
       "target_id": "proy_2018_260_propuesta",
       "properties": {}
@@ -434,7 +525,7 @@
       "source_id": "uruguay_cedula_de_identidad_3642724_0",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -442,7 +533,7 @@
       "source_id": "fernando_carpani_fernandez",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -450,7 +541,7 @@
       "source_id": "laura_gonzalez",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -458,7 +549,7 @@
       "source_id": "uruguay_cedula_de_identidad_1676959_1",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -466,7 +557,7 @@
       "source_id": "uruguay_cedula_de_identidad_4168464_1",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -474,7 +565,7 @@
       "source_id": "uruguay_cedula_de_identidad_2915995_1",
       "target_id": "proy_2012_638",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -490,7 +581,7 @@
       "source_id": "uruguay_cedula_de_identidad_1320065_7",
       "target_id": "proy_2016_729",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -498,7 +589,7 @@
       "source_id": "uruguay_cedula_de_identidad_3246827_0",
       "target_id": "proy_2016_729",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -506,7 +597,7 @@
       "source_id": "uruguay_cedula_de_identidad_3988305_5",
       "target_id": "proy_2018_260",
       "properties": {
-        "calidad": "investigador"
+        "calidad": "integrante"
       }
     },
     {
@@ -534,8 +625,38 @@
       }
     },
     {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5294489_8",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3645500_3",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3702465_5",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
       "type": "PERTENECE_A_AREA",
       "source_id": "proy_2018_413",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_395",
       "target_id": "area_tecnologica",
       "properties": {}
     },
