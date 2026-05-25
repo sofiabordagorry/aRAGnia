@@ -28,6 +28,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     Topico: "#c2410c",
     Documento: "#6d28d9",
     Anio: "#334155",
+    Area: "#15803d",
     Entidad: "#0f172a",
   };
 
