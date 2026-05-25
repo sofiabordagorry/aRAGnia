@@ -601,6 +601,9 @@ class EntityExtractor:
                 if doc is None:
                     continue
 
+                if doc.value.get("type") == "tabla":
+                    continue
+
                 topic_cache = self.already_run(doc_id, "Topico")
 
                 base_name = doc.value.get("base_name", "")
