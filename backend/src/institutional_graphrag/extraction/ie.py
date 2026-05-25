@@ -12,9 +12,6 @@ import ijson
 
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.bert_extractor import BertTopicExtractor
-from institutional_graphrag.extraction.llm_extractor import (
-    load_all_topics_and_domains,
-)
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.schema import (
@@ -86,7 +83,7 @@ class EntityExtractor:
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
-        topic_entities, topic_rels = load_all_topics_and_domains()
+        topic_entities, topic_rels = BertTopicExtractor.load_all_topics_and_subcampos()
         self.add_entities(topic_entities)
         self.add_relationship(topic_rels)
 
@@ -456,8 +453,6 @@ class EntityExtractor:
                 )
                 continue
 
-            # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
-            # entidades cuyo schema espera un str (Proyecto, Grupo, Topico, Subcampo).
             if label in {"Proyecto", "Grupo", "Topico", "Subcampo"} and isinstance(value, dict):
                 value = value.get("value", value)
 

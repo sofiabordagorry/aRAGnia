@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import logging
-import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -15,11 +14,8 @@ from institutional_graphrag.extraction.parse_topics import (
 )
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
-    PERTENECE_A_SUBCAMPO,
-    Subcampo,
     Entity,
     Relationship,
-    Topico,
 )
 from institutional_graphrag.llm.llm_provider import get_llm_client
 
@@ -233,67 +229,3 @@ If no match:
             )
 
         return [], relationships
-
-
-def load_all_topics_and_domains() -> tuple[list, list]:
-    """Load all Subcampo and Topico entities from OpenAlex topics at startup."""
-    entities: list = []
-    relationships: list = []
-
-    if not TOPICS_PATH.exists():
-        logger.warning(f"Topics file not found: {TOPICS_PATH}")
-        return entities, relationships
-
-    with open(TOPICS_PATH, encoding="utf-8") as f:
-        data = json.load(f)
-
-    def _normalize_id(name: str) -> str:
-        normalized = "".join(
-            c
-            for c in unicodedata.normalize("NFD", name.lower())
-            if unicodedata.category(c) != "Mn" or c == "̃"
-        )
-        return (
-            unicodedata.normalize("NFC", normalized)
-            .replace(" ", "_")
-            .replace(",", "")
-            .replace("/", "_")
-        )
-
-    for _field_name, field_data in data.items():
-        subfields = field_data.get("subfields", {})
-        if not isinstance(subfields, dict):
-            continue
-        for subfield_name, topic_names in subfields.items():
-            if not subfield_name:
-                continue
-
-            subcampo_id = _normalize_id(subfield_name)
-            subcampo_value = unicodedata.normalize(
-                "NFC",
-                "".join(
-                    c
-                    for c in unicodedata.normalize("NFD", subfield_name.lower())
-                    if unicodedata.category(c) != "Mn" or c == "̃"
-                ),
-            )
-            entities.append(Subcampo(id=subcampo_id, value=subcampo_value))
-
-            if not isinstance(topic_names, list):
-                continue
-            for topic_name in topic_names:
-                if not topic_name:
-                    continue
-                topic_id = _normalize_id(topic_name)
-                topic_value = unicodedata.normalize(
-                    "NFC",
-                    "".join(
-                        c
-                        for c in unicodedata.normalize("NFD", topic_name.lower())
-                        if unicodedata.category(c) != "Mn" or c == "̃"
-                    ),
-                )
-                entities.append(Topico(id=topic_id, value=topic_value))
-                relationships.append(PERTENECE_A_SUBCAMPO(topic_id, subcampo_id))
-
-    return entities, relationships

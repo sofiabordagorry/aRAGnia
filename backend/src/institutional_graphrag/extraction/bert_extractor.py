@@ -73,6 +73,72 @@ class BertTopicExtractor:
                     self._topic_to_subfield[topic_name] = subfield_name
                     self._topic_to_field[topic_name] = field
 
+    @staticmethod
+    def load_all_topics_and_subcampos() -> tuple[list, list]:
+        """Carga todas las entidades Subcampo y Topico desde los tópicos de OpenAlex al inicio."""
+        import json
+
+        entities: list = []
+        relationships: list = []
+
+        if not TOPICS_ES_PATH.exists():
+            logger.warning(f"Topics file not found: {TOPICS_ES_PATH}")
+            return entities, relationships
+
+        with open(TOPICS_ES_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+
+        def _normalize_id(name: str) -> str:
+            normalized = "".join(
+                c
+                for c in unicodedata.normalize("NFD", name.lower())
+                if unicodedata.category(c) != "Mn" or c == "̃"
+            )
+            return (
+                unicodedata.normalize("NFC", normalized)
+                .replace(" ", "_")
+                .replace(",", "")
+                .replace("/", "_")
+            )
+
+        for _, field_data in data.items():
+            subfields = field_data.get("subfields", {})
+            if not isinstance(subfields, dict):
+                continue
+            for subfield_name, topic_names in subfields.items():
+                if not subfield_name:
+                    continue
+
+                subcampo_id = _normalize_id(subfield_name)
+                subcampo_value = unicodedata.normalize(
+                    "NFC",
+                    "".join(
+                        c
+                        for c in unicodedata.normalize("NFD", subfield_name.lower())
+                        if unicodedata.category(c) != "Mn" or c == "̃"
+                    ),
+                )
+                entities.append(Subcampo(id=subcampo_id, value=subcampo_value))
+
+                if not isinstance(topic_names, list):
+                    continue
+                for topic_name in topic_names:
+                    if not topic_name:
+                        continue
+                    topic_id = _normalize_id(topic_name)
+                    topic_value = unicodedata.normalize(
+                        "NFC",
+                        "".join(
+                            c
+                            for c in unicodedata.normalize("NFD", topic_name.lower())
+                            if unicodedata.category(c) != "Mn" or c == "̃"
+                        ),
+                    )
+                    entities.append(Topico(id=topic_id, value=topic_value))
+                    relationships.append(PERTENECE_A_SUBCAMPO(topic_id, subcampo_id))
+
+        return entities, relationships
+
     def _load_model(self) -> None:
         """Carga el modelo BERT y tokenizer (lazy, solo la primera vez que se usa)."""
         if self._model is not None:

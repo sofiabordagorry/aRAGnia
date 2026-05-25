@@ -91,7 +91,6 @@ if __name__ == "__main__":
     else:
         print("[CONFIG] Procesando todos los documentos")
 
-    print("[CONFIG] Tópicos: BERT")
     print(f"[CONFIG] Incluir encabezados: {'ACTIVO' if not args.no_headings else 'DESACTIVADO'}")
 
     raise SystemExit(
