@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -19,8 +20,9 @@ from institutional_graphrag.graph.schema import (
 
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = (
-    "OpenAlex/bert-base-multilingual-cased-finetuned-openalex-topic-classification-title-abstract"
+MODEL_NAME = os.getenv(
+    "BERT_TOPIC_MODEL",
+    "OpenAlex/bert-base-multilingual-cased-finetuned-openalex-topic-classification-title-abstract",
 )
 TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
