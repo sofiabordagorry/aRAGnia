@@ -31,7 +31,6 @@ from institutional_graphrag.ingest.file_namer import (
 from institutional_graphrag.ingest.table_extractors import clean_table, convert_tables_to_chunks
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
-DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 _PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
 
 
@@ -434,26 +433,6 @@ class IngestService:
             for path, size in self.cache_dict.items():
                 print(f"Guardado en CSV: {path} ({size} bytes)")
                 writer.writerow([path, size])
-
-    def _extract_document_only(
-        self,
-        *,
-        file_path: Path,
-        kind: PdfKind,
-        value_builder: Any,
-    ) -> None:
-        pattern = PATTERN_TABLE if kind == PdfKind.TABULAR else PATTERN_DOCUMENT
-        res = self.rule_based_extractor.extract_document(
-            path=file_path,
-            pattern=pattern,
-            value_builder=value_builder,
-            create_year_entity=True,
-        )
-        self.entity_extractor.add_entities(res.entities)
-        self.entity_extractor.add_relationship(res.relationships)
-        self.entity_extractor.res.errors.extend(res.errors)
-        self.entity_extractor._build_doc_indexes()
-        self.processed_files.append(str(file_path))
 
     def _extract_doc_and_chunks(
         self,

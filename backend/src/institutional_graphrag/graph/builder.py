@@ -295,32 +295,6 @@ class GraphBuilder:
             session.run(query)
         print("Grafo borrado completamente.")
 
-    def fetch_investigador_ids(self) -> list[str]:
-        query = "MATCH (i:Investigador) RETURN i.id AS id"
-        with self.driver.session() as session:
-            rows = session.run(query).data()
-        return [row["id"] for row in rows if row.get("id")]
-
-    def fetch_researchers(self) -> list[dict]:
-        query = "MATCH (i:Investigador) RETURN i"
-        with self.driver.session() as session:
-            result = session.run(query)
-
-            entities = []
-            for record in result:
-                node = record["i"]
-                props = dict(node)
-
-                entities.append(
-                    {
-                        "id": props.get("id"),
-                        "label": "Investigador",
-                        "value": {k: v for k, v in props.items() if k not in {"id", "__created__"}},
-                    }
-                )
-
-        return entities
-
     def fetch_entity_by_id(self, entity_id: str) -> list[Entity]:
         query = """
         MATCH (n {id: $id})

@@ -78,18 +78,6 @@ def document_kind_position(value: str) -> int:
     return min(positions) if positions else -1
 
 
-def is_report(value: str) -> bool:
-    return document_kind_from_name(value) == "informe"
-
-
-def is_proposal(value: str) -> bool:
-    return document_kind_from_name(value) == "propuesta"
-
-
-def is_summary(value: str) -> bool:
-    return document_kind_from_name(value) == "resumen"
-
-
 def is_narrative_document(value: str) -> bool:
     return document_kind_from_name(value) is not None
 
