@@ -95,6 +95,15 @@ class BertTopicExtractor:
                         self._en_to_es_topic[en_topic] = es_topic
 
     @staticmethod
+    def _strip_label_prefix(label: str) -> str:
+        """El modelo BERT devuelve labels con prefijo 'NNNN: ' que no está en el JSON."""
+        if ": " in label:
+            prefix, name = label.split(": ", 1)
+            if prefix.isdigit():
+                return name
+        return label
+
+    @staticmethod
     def _normalize_id(name: str) -> str:
         normalized = "".join(
             c
@@ -222,7 +231,7 @@ class BertTopicExtractor:
             probs = torch.sigmoid(outputs.logits)[0].cpu().tolist()
 
         results = [
-            {"topic": self._id2label[i], "score": score}
+            {"topic": self._strip_label_prefix(self._id2label[i]), "score": score}
             for i, score in enumerate(probs)
             if score >= self.threshold
         ]
