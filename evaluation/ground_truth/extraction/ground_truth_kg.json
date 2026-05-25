@@ -49,7 +49,7 @@
       "id": "proy_2016_729",
       "label": "Proyecto",
       "value": {
-        "title": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "title": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
         "keywords": ["Compresión", "Datos de secuenciación", "Nanoporos"],
         "description": "En 2015 se liberó la primera versión comercial de un secuenciador de genomas por nanoporos, una tecnología que se perfila como la próxima generación de instrumentos de secuenciación. Este tipo de secuenciadores generan lecturas de fragmentos de secuencia de AD"
       }
@@ -58,7 +58,7 @@
       "id": "proy_2016_395",
       "label": "Proyecto",
       "value": {
-        "title": "Sistemas Binarios Estocásticos Dinámicos",
+        "title": "sistemas binarios estocasticos dinamicos",
         "keywords": [
           "Sistema Binario Estocástico",
           "Confiabilidad",
@@ -74,7 +74,7 @@
         "base_name": "proy_2016_395_propuesta",
         "is_group": "proy",
         "year_publisher": "2016",
-        "subid": "395",
+        "sub_id": "395",
         "type": "propuesta"
       }
     },
@@ -85,7 +85,7 @@
         "base_name": "proy_2016_395_informe",
         "is_group": "proy",
         "year_publisher": "2016",
-        "subid": "395",
+        "sub_id": "395",
         "type": "informe"
       }
     },
@@ -100,7 +100,7 @@
       "id": "proy_2018_260",
       "label": "Proyecto",
       "value": {
-        "title": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "title": "diseño optimo de redes de ciclovias",
         "keywords": ["ciclovías", "diseño de redes", "optimización"],
         "description": "Se aplican metodologías de diseño de redes al problema del diseño óptimo de redes de ciclovías urbanas. Una red de ciclovías es la conjunción de todas las ciclovías de un área de estudio. Una ciclovía es una especialización del espacio urbano dedicado a la cir"
       }
@@ -109,7 +109,7 @@
       "id": "proy_2018_413",
       "label": "Proyecto",
       "value": {
-        "title": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "title": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante técnicas de aprendizaje profundo",
         "keywords": [
           "índice verde",
           "aprendizaje profundo",
@@ -125,7 +125,7 @@
         "base_name": "proy_2016_729_propuesta",
         "is_group": "proy",
         "year_publisher": "2016",
-        "subid": "729",
+        "sub_id": "729",
         "type": "propuesta"
       }
     },
@@ -136,7 +136,7 @@
         "base_name": "proy_2016_729_informe",
         "is_group": "proy",
         "year_publisher": "2016",
-        "subid": "729",
+        "sub_id": "729",
         "type": "informe"
       }
     },
@@ -185,12 +185,12 @@
       }
     },
     {
-      "id": "uruguay_cedula_de_identidad_3590536_4",
+      "id": "uruguay_cedula_de_identidad_1884198_9",
       "label": "Investigador",
       "value": {
         "name": "alvaro martin menoni",
-        "display_name": "MÁlvaro Martín Menoni",
-        "documento": "3590536-4",
+        "display_name": "Álvaro Martín Menoni",
+        "documento": "1884198-9",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
         "sexo": "Masculino"
@@ -332,9 +332,9 @@
       "id": "uruguay_cedula_de_identidad_5294489_8",
       "label": "Investigador",
       "value": {
-        "name": "gutstavo ricardo guerberoff aguirregomezcorta",
-        "display_name": "Gutstavo Ricardo Guerberoff Aguirregomezcorta",
-        "documento": "2981586-6",
+        "name": "gustavo ricardo guerberoff aguirregomezcorta",
+        "display_name": "Gustavo Ricardo Guerberoff Aguirregomezcorta",
+        "documento": "5294489-8",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
         "sexo": "Masculino"
@@ -345,7 +345,7 @@
       "label": "Investigador",
       "value": {
         "name": "franco rafael robledo amoza",
-        "display_name": "Franco rafael robledo amoza",
+        "display_name": "Franco Rafael Robledo Amoza",
         "documento": "3645500-3",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -356,12 +356,48 @@
       "id": "uruguay_cedula_de_identidad_3702465_5",
       "label": "Investigador",
       "value": {
-        "name": "pablo gabriel romero rodiguez",
-        "display_name": "Pablo Gabriel Romero Rodíguez",
+        "name": "pablo gabriel romero rodriguez",
+        "display_name": "Pablo Gabriel Romero Rodríguez",
         "documento": "3702465-5",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
         "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1539915_9",
+      "label": "Investigador",
+      "value": {
+        "name": "hector cancela bosi",
+        "display_name": "Héctor Cancela Bosi",
+        "documento": "1539915-9",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1908216_2",
+      "label": "Investigador",
+      "value": {
+        "name": "fernando carpani fernandez",
+        "display_name": "Fernando Carpani Fernández",
+        "documento": "1908216-2",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2839112_0",
+      "label": "Investigador",
+      "value": {
+        "name": "laura gonzalez lopez",
+        "display_name": "Laura González López",
+        "documento": "2839112-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
@@ -437,6 +473,12 @@
     {
       "type": "INICIO_EN",
       "source_id": "proy_2016_729",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2016_395",
       "target_id": "2016",
       "properties": {}
     },
@@ -530,7 +572,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "fernando_carpani_fernandez",
+      "source_id": "uruguay_cedula_de_identidad_1908216_2",
       "target_id": "proy_2012_638",
       "properties": {
         "calidad": "integrante"
@@ -538,7 +580,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "laura_gonzalez",
+      "source_id": "uruguay_cedula_de_identidad_2839112_0",
       "target_id": "proy_2012_638",
       "properties": {
         "calidad": "integrante"
@@ -570,7 +612,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_3590536_4",
+      "source_id": "uruguay_cedula_de_identidad_1884198_9",
       "target_id": "proy_2016_729",
       "properties": {
         "calidad": "responsable"
@@ -602,7 +644,7 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "antonio_daniel_mauttone_vidales",
+      "source_id": "uruguay_cedula_de_identidad_2597542_0",
       "target_id": "proy_2018_260",
       "properties": {
         "calidad": "responsable"
@@ -646,6 +688,14 @@
       "target_id": "proy_2016_395",
       "properties": {
         "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1539915_9",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
       }
     },
     {
