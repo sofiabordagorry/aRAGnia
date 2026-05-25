@@ -424,9 +424,7 @@ def test_bert_topics_and_project_aggregation(
 
     monkeypatch.setattr(
         "institutional_graphrag.extraction.ie.BertTopicExtractor.load_all_topics_and_subcampos",
-        staticmethod(
-            lambda: ([Topico(id="machine_learning", value="machine learning")], [])
-        ),
+        staticmethod(lambda: ([Topico(id="machine_learning", value="machine learning")], [])),
     )
 
     def fake_create_topics_from_bert_extraction(self, bert_result):
