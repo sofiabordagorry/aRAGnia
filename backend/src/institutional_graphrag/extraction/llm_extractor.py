@@ -261,10 +261,10 @@ def load_all_topics_and_domains() -> tuple[list, list]:
         )
 
     for _field_name, field_data in data.items():
-        for subfield_entry in field_data.get("subfields", []):
-            if not isinstance(subfield_entry, dict):
-                continue
-            subfield_name = subfield_entry.get("name", "")
+        subfields = field_data.get("subfields", {})
+        if not isinstance(subfields, dict):
+            continue
+        for subfield_name, topic_names in subfields.items():
             if not subfield_name:
                 continue
 
@@ -279,8 +279,9 @@ def load_all_topics_and_domains() -> tuple[list, list]:
             )
             entities.append(Subcampo(id=subcampo_id, value=subcampo_value))
 
-            for topic in subfield_entry.get("topics", []):
-                topic_name = topic.get("display_name", "")
+            if not isinstance(topic_names, list):
+                continue
+            for topic_name in topic_names:
                 if not topic_name:
                     continue
                 topic_id = _normalize_id(topic_name)

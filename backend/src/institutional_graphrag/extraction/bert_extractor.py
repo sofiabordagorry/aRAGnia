@@ -59,13 +59,17 @@ class BertTopicExtractor:
             data = json.load(f)
 
         for field, details in data.items():
-            for subfield_entry in details.get("subfields", []):
-                if isinstance(subfield_entry, dict):
-                    subfield_name = subfield_entry.get("name", "")
-                    for topic in subfield_entry.get("topics", []):
-                        topic_name = topic.get("display_name", "")
-                        self._topic_to_subfield[topic_name] = subfield_name
-                        self._topic_to_field[topic_name] = field
+            subfields = details.get("subfields", {})
+            if not isinstance(subfields, dict):
+                continue
+            for subfield_name, topic_names in subfields.items():
+                if not isinstance(topic_names, list):
+                    continue
+                for topic_name in topic_names:
+                    if not topic_name:
+                        continue
+                    self._topic_to_subfield[topic_name] = subfield_name
+                    self._topic_to_field[topic_name] = field
 
     def _load_model(self) -> None:
         """Carga el modelo BERT y tokenizer (lazy, solo la primera vez que se usa)."""
