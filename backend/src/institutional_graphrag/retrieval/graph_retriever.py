@@ -332,7 +332,7 @@ SCHEMA NOTES:
 - Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
 - Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
 - Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
-- Topico.value, Dominio.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Topico.value, Subcampo.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
@@ -406,7 +406,7 @@ CRITICAL SYNTAX:
             ("Investigador", "PARTICIPO_EN", "Grupo"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
             ("Grupo", "TIENE_TOPICO", "Topico"),
-            ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
+            ("Topico", "PERTENECE_A_SUBCAMPO", "Subcampo"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),
             ("Grupo", "ES_DESCRITO_POR", "Documento"),
             ("Proyecto", "INICIO_EN", "Anio"),

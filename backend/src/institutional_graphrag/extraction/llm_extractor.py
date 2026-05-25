@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import logging
-import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -15,11 +14,8 @@ from institutional_graphrag.extraction.parse_topics import (
 )
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
-    PERTENECE_A_DOMINIO,
-    Dominio,
     Entity,
     Relationship,
-    Topico,
 )
 from institutional_graphrag.llm.llm_provider import get_llm_client
 
@@ -233,41 +229,3 @@ If no match:
             )
 
         return [], relationships
-
-
-def load_all_topics_and_domains() -> tuple[list, list]:
-    """Load all Topico and Dominio entities from OpenAlex topics at startup."""
-    entities: list = []
-    relationships: list = []
-
-    if not TOPICS_PATH.exists():
-        logger.warning(f"Topics file not found: {TOPICS_PATH}")
-        return entities, relationships
-
-    with open(TOPICS_PATH, encoding="utf-8") as f:
-        data = json.load(f)
-
-    for field_name, field_data in data.items():
-        field_normalized = field_name.lower().strip()
-        field_id = field_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-        domain_value = "".join(
-            c
-            for c in unicodedata.normalize("NFD", field_name.lower())
-            if unicodedata.category(c) != "Mn" or c == "̃"
-        )
-        domain_value = unicodedata.normalize("NFC", domain_value)
-        entities.append(Dominio(field_id, domain_value))
-
-        for subfield in field_data.get("subfields", []):
-            subfield_normalized = subfield.lower().strip()
-            subfield_id = subfield_normalized.replace(" ", "_").replace(",", "").replace("/", "_")
-            topic_value = "".join(
-                c
-                for c in unicodedata.normalize("NFD", subfield.lower())
-                if unicodedata.category(c) != "Mn" or c == "̃"
-            )
-            topic_value = unicodedata.normalize("NFC", topic_value)
-            entities.append(Topico(id=subfield_id, value=topic_value))
-            relationships.append(PERTENECE_A_DOMINIO(subfield_id, field_id))
-
-    return entities, relationships

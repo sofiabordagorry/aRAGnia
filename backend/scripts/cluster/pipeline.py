@@ -14,7 +14,6 @@ Opciones:
     --skip-docling          Saltear parseo Docling (si ya está hecho)
     --skip-chunks           Saltear generación de chunks
     --skip-extraction       Saltear extracción de entidades/relaciones
-    --no-llm-topics         Desactivar extracción LLM de tópicos
     --max-docs N            Límite de documentos para extracción (debug)
     --env-file PATH         Archivo .env con variables de entorno (default: .env)
 """
@@ -154,11 +153,10 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
 def step_extraction(
     data_dir: Path,
     max_docs: int | None,
-    llm_topics: bool,
     checkpoint_every: int = 5,
     llm_model: str | None = None,
 ) -> None:
-    """Extrae entidades y relaciones (tabular + LLM tópicos)."""
+    """Extrae entidades y relaciones (tabular + BERT tópicos)."""
     log.info("Etapa 3: Extracción")
 
     from institutional_graphrag.extraction.ie import EntityExtractor
@@ -166,7 +164,6 @@ def step_extraction(
     extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(
         max_docs=max_docs,
-        llm_topics=llm_topics,
         checkpoint_every=checkpoint_every,
     )
 
@@ -220,7 +217,6 @@ def parse_args() -> argparse.Namespace:
     )
 
     # Opciones de extracción
-    parser.add_argument("--no-llm-topics", action="store_true", help="Desactivar LLM para tópicos")
     parser.add_argument(
         "--max-docs", type=int, default=None, help="Límite de documentos (None = todos)"
     )
@@ -260,7 +256,6 @@ def main() -> None:
         step_extraction(
             data_dir=data_dir,
             max_docs=args.max_docs,
-            llm_topics=not args.no_llm_topics,
             checkpoint_every=args.checkpoint_every,
         )
     else:

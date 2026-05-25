@@ -11,10 +11,7 @@ from typing import Any, Dict, List, Optional, cast
 import ijson
 
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
-from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
-    load_all_topics_and_domains,
-)
+from institutional_graphrag.extraction.bert_extractor import BertTopicExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
 from institutional_graphrag.graph.schema import (
@@ -83,14 +80,9 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
-        topic_entities, topic_rels = load_all_topics_and_domains()
-        self.add_entities(topic_entities)
-        self.add_relationship(topic_rels)
-
         entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
             self.load_subset_from_graph_json(
@@ -99,16 +91,15 @@ class EntityExtractor:
                 value_filter={"source": "llm"},
             )
             self.load_subset_from_graph_json(entities_json, label="Topico")
-            self.load_subset_from_graph_json(entities_json, label="Dominio")
+            self.load_subset_from_graph_json(entities_json, label="Subcampo")
 
         self._extract_documents()
         self._build_doc_indexes()
 
         self._extract_chunks()
         self._extract_projects_and_researchers_from_tabular()
-        self._extract_with_llm(
+        self._extract_with_bert(
             max_docs=max_docs,
-            llm_topics=llm_topics,
             include_headings=include_headings,
             checkpoint_every=checkpoint_every,
         )
@@ -458,9 +449,7 @@ class EntityExtractor:
                 )
                 continue
 
-            # Algunos LLMs devuelven {"value": "string"} en vez de "string" para
-            # entidades cuyo schema espera un str (Proyecto, Grupo, Topico, Dominio).
-            if label in {"Proyecto", "Grupo", "Topico", "Dominio"} and isinstance(value, dict):
+            if label in {"Proyecto", "Grupo", "Topico", "Subcampo"} and isinstance(value, dict):
                 value = value.get("value", value)
 
             try:
@@ -568,25 +557,18 @@ class EntityExtractor:
             self._flush_registry(registry_path)
         logger.info("[Checkpoint] Guardado intermedio en %s", filename)
 
-    def _extract_with_llm(
+    def _extract_with_bert(
         self,
         max_docs: int | None = None,
-        llm_topics: bool = True,
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
-        """Extraer tópicos usando LLM.
-        Args:
-            max_docs: Límite opcional de documentos a procesar.
-            checkpoint_every: Guardar a disco cada N documentos procesados.
-        """
-        existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
+        """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
+        topic_entities, topic_rels = BertTopicExtractor.load_all_topics_and_subcampos()
+        self.add_entities(topic_entities)
+        self.add_relationship(topic_rels)
 
-        llm_extractor = LLMEntityExtractor(
-            llm_model=self.llm_model,
-            temperature=0.1,
-            max_tokens=1024,
-        )
+        bert_extractor = BertTopicExtractor()
         registry_path = self.input_dir / "llm_registry.json"
         self.reg = self.load_registry(registry_path)
         self._registry_dirty = False
@@ -601,29 +583,27 @@ class EntityExtractor:
 
         for project in projects:
             project_id = project.id
-
-            # Obtener documentos del proyecto
             project_docs = self.docs_by_project.get(project_id, [])
             if not project_docs:
                 continue
 
-            # Procesar chunks de cada documento del proyecto
             for doc_id in project_docs:
-                # Verificar límite de documentos
                 if max_docs is not None and docs_processed >= max_docs:
-                    logger.info(f"[LLM] Límite de {max_docs} documentos alcanzado")
+                    logger.info(f"[BERT] Límite de {max_docs} documentos alcanzado")
                     return
 
-                # Los documentos de tabla no tienen chunks de texto
                 if doc_id.endswith("_table"):
                     continue
 
                 doc = self.doc_by_id.get(doc_id)
                 if doc is None:
                     continue
+
+                if doc.value.get("type") == "tabla":
+                    continue
+
                 topic_cache = self.already_run(doc_id, "Topico")
 
-                # Cargar chunks del documento
                 base_name = doc.value.get("base_name", "")
                 if not base_name:
                     continue
@@ -633,7 +613,6 @@ class EntityExtractor:
                     continue
 
                 try:
-                    # Cargar chunks del archivo
                     payload = self._read_json(chunks_file)
                     if payload is None:
                         continue
@@ -642,57 +621,44 @@ class EntityExtractor:
                     if not isinstance(chunks, list):
                         continue
 
-                    if topic_cache or not llm_topics:
-                        logger.info(f"[LLM Topics] Archivo en cache: {doc_id}")
+                    if topic_cache:
+                        logger.info(f"[BERT Topics] Cache: {doc_id}")
                     else:
-                        # Extraer tópicos usando LLM de todos los chunks
                         logger.info(
-                            f"[LLM Topics] Procesando {len(chunks)} chunks de {base_name}..."
+                            f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
-                        llm_result_topic = llm_extractor.extract_topics_from_chunks(
+                        bert_result = bert_extractor.extract_topics_from_chunks(
                             chunks, max_chunks=None, include_headings=include_headings
                         )
-                        # Agregar errores
-                        self.res.errors.extend(llm_result_topic.errors)
-                        # Crear entidades y relaciones chunk->topico
-                        new_entities, new_relationships = (
-                            llm_extractor.create_topics_from_llm_extraction(
-                                llm_result_topic, existing_topic_ids
-                            )
+                        self.res.errors.extend(bert_result.errors)
+                        _, new_relationships = bert_extractor.create_topics_from_bert_extraction(
+                            bert_result
                         )
-                        # Agregar al resultado
-                        self.add_entities(new_entities)
                         self.add_relationship(new_relationships)
-
-                        # Actualizar el set de IDs globales
-                        existing_topic_ids.update(e.id for e in new_entities)
                         self.mark_success(doc_id, "Topico")
-
                         logger.info(
-                            f"[LLM Topics] ✓ {base_name}: encontrados {len(llm_result_topic.topics)} tópicos, {len(llm_result_topic.errors)} errores"
+                            f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos"
                         )
 
                     docs_processed += 1
-
-                    # Checkpoint periódico para no perder progreso ante un fallo
                     if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
                         self._save_checkpoint(registry_path=registry_path)
 
                 except Exception as e:
                     self.res.errors.append(
                         {
-                            "type": "LLMExtractionError",
+                            "type": "BertExtractionError",
                             "document": base_name,
-                            "message": f"Error procesando documento con LLM: {str(e)}",
+                            "message": str(e),
                         }
                     )
                     docs_processed += 1
+
             self._aggregate_topics_for_project(project_id)
 
-        # Checkpoint final tras toda la extracción LLM
         if docs_processed > 0:
             self._save_checkpoint(registry_path=registry_path)
-            logger.info("[LLM] Extracción completada — %d documentos procesados", docs_processed)
+            logger.info("[BERT] Extracción completada — %d documentos procesados", docs_processed)
 
     def _aggregate_topics_for_project(self, project_id: str) -> None:
         """Agregar tópicos a nivel de proyecto basándose en los chunks.
@@ -704,24 +670,32 @@ class EntityExtractor:
         project_docs = self.docs_by_project.get(project_id, [])
         topic_entity_ids = {e.id for e in self.res.entities if e.label == "Topico"}
         chunk_by_doc: dict[str, list[str]] = defaultdict(list)
-        topic_by_chunk: dict[str, list[str]] = defaultdict(list)
         for r in self.res.relationships:
             if r.type == "DE_DOCUMENTO":
                 chunk_by_doc[r.target_id].append(r.source_id)
-            elif r.type == "EXTRAIDO_DE":
-                topic_by_chunk[r.source_id].append(r.target_id)
 
         project_chunks = set()
         for doc_id in project_docs:
-            doc_chunks = chunk_by_doc.get(doc_id, [])
-            project_chunks.update(doc_chunks)
+            project_chunks.update(chunk_by_doc.get(doc_id, []))
 
-        # Contar tópicos de los chunks del proyecto
+        # Contar tópicos usando el chunk_count guardado en evidence_text
         topic_counts: Counter[str] = Counter()
-        for chunk_id in project_chunks:
-            chunk_topics = topic_by_chunk.get(chunk_id, [])
-            topic_ids = [tid for tid in chunk_topics if tid in topic_entity_ids]
-            topic_counts.update(topic_ids)
+        for r in self.res.relationships:
+            if r.type != "EXTRAIDO_DE":
+                continue
+            if r.target_id not in topic_entity_ids:
+                continue
+            if r.source_id not in project_chunks:
+                continue
+            ev = r.properties.get("evidence_text", "")
+            if "count=" in ev:
+                try:
+                    count = int(ev.split("count=")[1].split(" ")[0])
+                except (ValueError, IndexError):
+                    count = 1
+            else:
+                count = 1
+            topic_counts[r.target_id] += count
 
         # Top 3 tópicos más mencionados en los chunks del proyecto
         top_topics = topic_counts.most_common(3)

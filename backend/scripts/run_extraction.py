@@ -35,15 +35,12 @@ def normalize_result(res: ExtractionResult) -> dict:
 
 def main(
     max_docs: int | None = None,
-    llm_topics: bool = True,
     include_headings: bool = True,
 ) -> int:
     extractor = EntityExtractor()
 
-    # 1) Ejecutar extracción
-    res = extractor.run(max_docs=max_docs, llm_topics=llm_topics, include_headings=include_headings)
+    res = extractor.run(max_docs=max_docs, include_headings=include_headings)
 
-    # 2) Guardar resultado
     filename = "entity_documents.json"
     extractor.save_in_file(filename)
 
@@ -53,7 +50,6 @@ def main(
         f"[RUN] entidades={len(res.entities)} relaciones={len(res.relationships)} errores={len(res.errors)}"
     )
 
-    # 3) Leer el mismo archivo y reconstruir res
     loaded = extractor.load_from_json(filename)
     if loaded is None:
         print("[ERROR] No se pudo cargar el JSON generado.")
@@ -63,13 +59,10 @@ def main(
         f"[LOAD] entidades={len(loaded.entities)} relaciones={len(loaded.relationships)} errores={len(loaded.errors)}"
     )
 
-    # 4) Mini chequeo de consistencia
     if len(loaded.entities) != len(res.entities) or len(loaded.relationships) != len(
         res.relationships
     ):
-        print(
-            "[WARN] Los conteos RUN vs LOAD no coinciden (revisar serialización/deserialización)."
-        )
+        print("[WARN] Los conteos RUN vs LOAD no coinciden.")
     else:
         print("[OK] RUN y LOAD coinciden en conteos.")
         equal = normalize_result(res) == normalize_result(loaded)
@@ -86,14 +79,9 @@ if __name__ == "__main__":
         "--max-docs", type=int, default=None, help="Límite de documentos a procesar (None = todos)"
     )
     parser.add_argument(
-        "--no-llm-topics",
-        action="store_true",
-        help="Desactiva la búsqueda de tópicos por LLM",
-    )
-    parser.add_argument(
         "--no-headings",
         action="store_true",
-        help="Desactiva la inclusión de encabezados en el texto del LLM",
+        help="Desactiva la inclusión de encabezados en el texto",
     )
 
     args = parser.parse_args()
@@ -103,13 +91,11 @@ if __name__ == "__main__":
     else:
         print("[CONFIG] Procesando todos los documentos")
 
-    print(f"[CONFIG] LLM tópicos: {'ACTIVO' if not args.no_llm_topics else 'DESACTIVADO'}")
     print(f"[CONFIG] Incluir encabezados: {'ACTIVO' if not args.no_headings else 'DESACTIVADO'}")
 
     raise SystemExit(
         main(
             max_docs=args.max_docs,
-            llm_topics=not args.no_llm_topics,
             include_headings=not args.no_headings,
         )
     )

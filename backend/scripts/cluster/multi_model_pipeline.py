@@ -11,7 +11,6 @@ Opciones:
     --data-dir PATH         Directorio raíz de datos (default: ./data)
     --skip-docling          Saltear Docling (si ya está procesado)
     --skip-chunks           Saltear chunking
-    --no-llm-topics         Desactivar extracción LLM de tópicos
     --max-docs N            Límite de documentos por modelo (None = todos)
     --env-file PATH         Archivo .env con variables de entorno
 """
@@ -70,7 +69,6 @@ def run_pipeline_for_model(
     model_name: str,
     skip_docling: bool = False,
     skip_chunks: bool = False,
-    no_llm_topics: bool = False,
     max_docs: int | None = None,
     env_file: Path | None = None,
 ) -> None:
@@ -150,7 +148,6 @@ def run_pipeline_for_model(
     step_extraction(
         data_dir=model_data_dir,
         max_docs=max_docs,
-        llm_topics=not no_llm_topics,
         llm_model=model_name,
     )
 
@@ -205,12 +202,6 @@ def parse_args() -> argparse.Namespace:
         help="Saltear etapa de chunking",
     )
 
-    # Opciones de extracción
-    parser.add_argument(
-        "--no-llm-topics",
-        action="store_true",
-        help="Desactivar LLM para tópicos",
-    )
     parser.add_argument(
         "--max-docs",
         type=int,
@@ -248,7 +239,6 @@ def main() -> None:
                 model_name=model,
                 skip_docling=args.skip_docling,
                 skip_chunks=args.skip_chunks,
-                no_llm_topics=args.no_llm_topics,
                 max_docs=args.max_docs,
                 env_file=args.env_file,
             )

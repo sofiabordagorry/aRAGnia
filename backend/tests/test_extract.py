@@ -300,8 +300,7 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
         ],
     )
 
-    # correr SIN LLM para no depender de ollama en tests
-    res = ex.run(llm_topics=False)
+    res = ex.run()
 
     assert any(e.label == "Documento" for e in res.entities)
     assert any(e.label == "Chunk" for e in res.entities)
@@ -312,7 +311,7 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
 # -------------------------
 
 
-def test_llm_topics_and_project_aggregation(
+def test_bert_topics_and_project_aggregation(
     extractor: EntityExtractor, tmp_path: Path, monkeypatch
 ):
     """
@@ -409,49 +408,44 @@ def test_llm_topics_and_project_aggregation(
     monkeypatch.setattr(extractor, "already_run", lambda *args, **kwargs: False)
     monkeypatch.setattr(extractor, "mark_success", lambda *args, **kwargs: None)
 
-    def mock_extract_topics(chunks_list, max_chunks=None):
+    def mock_extract_topics(chunks_list, max_chunks=None, **kwargs):
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
             topics=[
-                TopicMention(
-                    topic="Machine Learning", evidence="machine learning", chunk_id=chunk_id
-                )
+                TopicMention(topic="Machine Learning", evidence="score=0.9500", chunk_id=chunk_id)
             ],
             errors=[],
         )
 
     monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.LLMEntityExtractor.extract_topics_from_chunks",
+        "institutional_graphrag.extraction.ie.BertTopicExtractor.extract_topics_from_chunks",
         lambda self, chunks, max_chunks=None, **kwargs: mock_extract_topics(chunks, max_chunks),
     )
 
-    def fake_create_topics_from_llm_extraction(self, llm_result, existing_topic_ids):
-        new_entities = []
+    monkeypatch.setattr(
+        "institutional_graphrag.extraction.ie.BertTopicExtractor.load_all_topics_and_subcampos",
+        staticmethod(lambda: ([Topico(id="machine_learning", value="machine learning")], [])),
+    )
+
+    def fake_create_topics_from_bert_extraction(self, bert_result):
         new_relationships = []
-        for m in llm_result.topics:
-            chunk_id = m.chunk_id
-            evidence = m.evidence or ""
-            topic_id = "machine_learning"
-            if topic_id not in existing_topic_ids:
-                new_entities.append(
-                    Topico(id=topic_id, value={"value": "Machine Learning", "source": "llm"})
-                )
+        for m in bert_result.topics:
             new_relationships.append(
                 Relationship(
                     type="EXTRAIDO_DE",
-                    source_id=chunk_id,
-                    target_id=topic_id,
-                    properties={"evidence_text": evidence},
+                    source_id=m.chunk_id,
+                    target_id="machine_learning",
+                    properties={"evidence_text": m.evidence or ""},
                 )
             )
-        return new_entities, new_relationships
+        return [], new_relationships
 
     monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.LLMEntityExtractor.create_topics_from_llm_extraction",
-        fake_create_topics_from_llm_extraction,
+        "institutional_graphrag.extraction.ie.BertTopicExtractor.create_topics_from_bert_extraction",
+        fake_create_topics_from_bert_extraction,
     )
 
-    extractor._extract_with_llm(llm_topics=True)
+    extractor._extract_with_bert()
 
     # ---- asserts tópicos ----
     topicos = [e for e in extractor.res.entities if e.label == "Topico"]

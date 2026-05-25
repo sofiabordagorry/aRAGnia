@@ -26,6 +26,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     Proyecto: "#1d4ed8",
     Grupo: "#1565c0",
     Topico: "#c2410c",
+    Subcampo: "#a16207",
     Documento: "#6d28d9",
     Anio: "#334155",
     Area: "#15803d",
