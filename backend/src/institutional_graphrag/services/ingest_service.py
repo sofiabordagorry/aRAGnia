@@ -179,11 +179,12 @@ class IngestService:
         self._extract_projects_and_responsibles()
         try:
             import torch
+
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
         except Exception:
             pass
-        self.entity_extractor._extract_entities(include_headings=self.include_headings)
+        self.entity_extractor._extract_with_bert(include_headings=self.include_headings)
         entity_dicts, rel_dicts = self._collect_entity_dicts()
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 

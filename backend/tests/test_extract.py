@@ -412,9 +412,7 @@ def test_bert_topics_and_project_aggregation(
         chunk_id = chunks_list[0].get("chunk_id")
         return LLMExtractionResult(
             topics=[
-                TopicMention(
-                    topic="Machine Learning", evidence="score=0.9500", chunk_id=chunk_id
-                )
+                TopicMention(topic="Machine Learning", evidence="score=0.9500", chunk_id=chunk_id)
             ],
             errors=[],
         )

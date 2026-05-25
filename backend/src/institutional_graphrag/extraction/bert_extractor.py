@@ -8,11 +8,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from institutional_graphrag.extraction.parse_topics import LLMExtractionResult, TopicMention
-from institutional_graphrag.graph.schema import EXTRAIDO_DE, PERTENECE_A_SUBCAMPO, Subcampo, Entity, Relationship, Topico
+from institutional_graphrag.graph.schema import (
+    EXTRAIDO_DE,
+    PERTENECE_A_SUBCAMPO,
+    Subcampo,
+    Entity,
+    Relationship,
+    Topico,
+)
 
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = "OpenAlex/bert-base-multilingual-cased-finetuned-openalex-topic-classification-title-abstract"
+MODEL_NAME = (
+    "OpenAlex/bert-base-multilingual-cased-finetuned-openalex-topic-classification-title-abstract"
+)
 TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
@@ -31,8 +40,8 @@ class BertTopicExtractor:
     ):
         self.threshold = threshold
         self.top_k = top_k
-        self._model = None
-        self._tokenizer = None
+        self._model: Optional[Any] = None
+        self._tokenizer: Optional[Any] = None
         self._id2label: Dict[int, str] = {}
         self._device = device
         self._topic_to_subfield: Dict[str, str] = {}
@@ -68,17 +77,19 @@ class BertTopicExtractor:
             from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
             logger.info(f"Cargando modelo BERT: {MODEL_NAME}")
-            self._tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, truncate=True)
-            self._model = AutoModelForSequenceClassification.from_pretrained(
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, truncate=True)
+            model = AutoModelForSequenceClassification.from_pretrained(
                 MODEL_NAME, output_hidden_states=False
             )
-            self._model.eval()
+            model.eval()
 
             if self._device is None:
                 self._device = "cuda" if torch.cuda.is_available() else "cpu"
-            self._model.to(self._device)
+            model.to(self._device)
 
-            self._id2label = self._model.config.id2label
+            self._tokenizer = tokenizer
+            self._model = model
+            self._id2label = model.config.id2label
             logger.info(f"Modelo cargado en {self._device}. Labels: {len(self._id2label)}")
 
         except ImportError as e:
@@ -100,6 +111,7 @@ class BertTopicExtractor:
         import torch
 
         self._load_model()
+        assert self._tokenizer is not None and self._model is not None
 
         input_text = self._format_input(heading, text)
         inputs = self._tokenizer(
@@ -123,7 +135,9 @@ class BertTopicExtractor:
         results.sort(key=lambda x: x["score"], reverse=True)
         return results[: self.top_k]
 
-    def extract_topics_from_chunk(self, chunk_text: str, chunk_id: str, heading: str = "") -> LLMExtractionResult:
+    def extract_topics_from_chunk(
+        self, chunk_text: str, chunk_id: str, heading: str = ""
+    ) -> LLMExtractionResult:
         """Extrae tópicos de un chunk usando BERT."""
         if not chunk_text.strip():
             return LLMExtractionResult(topics=[], errors=[])
@@ -237,12 +251,7 @@ class BertTopicExtractor:
 
             subfield = self._topic_to_subfield.get(mention.topic)
             if subfield:
-                subcampo_id = (
-                    subfield.lower()
-                    .replace(" ", "_")
-                    .replace(",", "")
-                    .replace("/", "_")
-                )
+                subcampo_id = subfield.lower().replace(" ", "_").replace(",", "").replace("/", "_")
                 if subcampo_id not in seen_domains and subcampo_id not in existing_ids:
                     entities.append(Subcampo(id=subcampo_id, value=subfield.lower()))
                     seen_domains.add(subcampo_id)

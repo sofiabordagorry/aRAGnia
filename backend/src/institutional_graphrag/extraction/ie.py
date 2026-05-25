@@ -13,7 +13,6 @@ import ijson
 from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
 from institutional_graphrag.extraction.bert_extractor import BertTopicExtractor
 from institutional_graphrag.extraction.llm_extractor import (
-    LLMEntityExtractor,
     load_all_topics_and_domains,
 )
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
@@ -105,8 +104,7 @@ class EntityExtractor:
         self._build_doc_indexes()
 
         self._extract_chunks()
-        self._extract_projects_and_responsible()
-        self._extract_researchers_from_tabular()
+        self._extract_projects_and_researchers_from_tabular()
         self._extract_with_bert(
             max_docs=max_docs,
             include_headings=include_headings,
@@ -630,19 +628,25 @@ class EntityExtractor:
                     if topic_cache:
                         logger.info(f"[BERT Topics] Cache: {doc_id}")
                     else:
-                        logger.info(f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}...")
+                        logger.info(
+                            f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
+                        )
                         bert_result = bert_extractor.extract_topics_from_chunks(
                             chunks, max_chunks=None, include_headings=include_headings
                         )
                         self.res.errors.extend(bert_result.errors)
-                        new_entities, new_relationships = bert_extractor.create_topics_from_bert_extraction(
-                            bert_result, existing_topic_ids
+                        new_entities, new_relationships = (
+                            bert_extractor.create_topics_from_bert_extraction(
+                                bert_result, existing_topic_ids
+                            )
                         )
                         self.add_entities(new_entities)
                         self.add_relationship(new_relationships)
                         existing_topic_ids.update(e.id for e in new_entities)
                         self.mark_success(doc_id, "Topico")
-                        logger.info(f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos")
+                        logger.info(
+                            f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos"
+                        )
 
                     docs_processed += 1
                     if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:

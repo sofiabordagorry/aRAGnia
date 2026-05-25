@@ -253,7 +253,12 @@ def load_all_topics_and_domains() -> tuple[list, list]:
             for c in unicodedata.normalize("NFD", name.lower())
             if unicodedata.category(c) != "Mn" or c == "̃"
         )
-        return unicodedata.normalize("NFC", normalized).replace(" ", "_").replace(",", "").replace("/", "_")
+        return (
+            unicodedata.normalize("NFC", normalized)
+            .replace(" ", "_")
+            .replace(",", "")
+            .replace("/", "_")
+        )
 
     for _field_name, field_data in data.items():
         for subfield_entry in field_data.get("subfields", []):
