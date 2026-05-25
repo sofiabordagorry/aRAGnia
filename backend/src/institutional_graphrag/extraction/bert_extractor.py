@@ -48,19 +48,21 @@ class BertTopicExtractor:
         self._device = device
         self._topic_to_subfield: Dict[str, str] = {}
         self._topic_to_field: Dict[str, str] = {}
+        self._en_to_es_topic: Dict[str, str] = {}
+        self._en_to_es_subfield: Dict[str, str] = {}
         self._load_topic_hierarchy()
 
     def _load_topic_hierarchy(self) -> None:
-        """Carga la jerarquía tópico → subfield → field desde el JSON."""
+        """Carga la jerarquía tópico → subfield → field y los mapeos EN→ES."""
         import json
 
         if not TOPICS_PATH.exists():
             return
 
         with open(TOPICS_PATH, encoding="utf-8") as f:
-            data = json.load(f)
+            en_data = json.load(f)
 
-        for field, details in data.items():
+        for field, details in en_data.items():
             subfields = details.get("subfields", {})
             if not isinstance(subfields, dict):
                 continue
@@ -72,6 +74,39 @@ class BertTopicExtractor:
                         continue
                     self._topic_to_subfield[topic_name] = subfield_name
                     self._topic_to_field[topic_name] = field
+
+        if not TOPICS_ES_PATH.exists():
+            return
+
+        with open(TOPICS_ES_PATH, encoding="utf-8") as f:
+            es_data = json.load(f)
+
+        for (_, en_details), (_, es_details) in zip(en_data.items(), es_data.items()):
+            en_subfields = en_details.get("subfields", {})
+            es_subfields = es_details.get("subfields", {})
+            for (en_sub, en_topics), (es_sub, es_topics) in zip(
+                en_subfields.items(), es_subfields.items()
+            ):
+                self._en_to_es_subfield[en_sub] = es_sub
+                if not isinstance(en_topics, list) or not isinstance(es_topics, list):
+                    continue
+                for en_topic, es_topic in zip(en_topics, es_topics):
+                    if en_topic and es_topic:
+                        self._en_to_es_topic[en_topic] = es_topic
+
+    @staticmethod
+    def _normalize_id(name: str) -> str:
+        normalized = "".join(
+            c
+            for c in unicodedata.normalize("NFD", name.lower())
+            if unicodedata.category(c) != "Mn" or c == "̃"
+        )
+        return (
+            unicodedata.normalize("NFC", normalized)
+            .replace(" ", "_")
+            .replace(",", "")
+            .replace("/", "_")
+        )
 
     @staticmethod
     def load_all_topics_and_subcampos() -> tuple[list, list]:
@@ -88,19 +123,6 @@ class BertTopicExtractor:
         with open(TOPICS_ES_PATH, encoding="utf-8") as f:
             data = json.load(f)
 
-        def _normalize_id(name: str) -> str:
-            normalized = "".join(
-                c
-                for c in unicodedata.normalize("NFD", name.lower())
-                if unicodedata.category(c) != "Mn" or c == "̃"
-            )
-            return (
-                unicodedata.normalize("NFC", normalized)
-                .replace(" ", "_")
-                .replace(",", "")
-                .replace("/", "_")
-            )
-
         for _, field_data in data.items():
             subfields = field_data.get("subfields", {})
             if not isinstance(subfields, dict):
@@ -109,7 +131,7 @@ class BertTopicExtractor:
                 if not subfield_name:
                     continue
 
-                subcampo_id = _normalize_id(subfield_name)
+                subcampo_id = BertTopicExtractor._normalize_id(subfield_name)
                 subcampo_value = unicodedata.normalize(
                     "NFC",
                     "".join(
@@ -125,7 +147,7 @@ class BertTopicExtractor:
                 for topic_name in topic_names:
                     if not topic_name:
                         continue
-                    topic_id = _normalize_id(topic_name)
+                    topic_id = BertTopicExtractor._normalize_id(topic_name)
                     topic_value = unicodedata.normalize(
                         "NFC",
                         "".join(
@@ -285,48 +307,17 @@ class BertTopicExtractor:
     def create_topics_from_bert_extraction(
         self,
         bert_result: LLMExtractionResult,
-        existing_topic_ids: Optional[set] = None,
     ) -> tuple[List[Entity], List[Relationship]]:
-        """Crea entidades Topico y Subcampo a partir del resultado BERT."""
-        entities: List[Entity] = []
+        """Crea relaciones EXTRAIDO_DE desde chunks hacia tópicos ya cargados en el grafo."""
         relationships: List[Relationship] = []
-        existing_ids = existing_topic_ids or set()
-        seen_topics: Dict[str, str] = {}
-        seen_domains: set = set()
 
         for mention in bert_result.topics:
-            topic_normalized = mention.topic.lower().strip()
-            topic_id = (
-                unicodedata.normalize(
-                    "NFC",
-                    "".join(
-                        c
-                        for c in unicodedata.normalize("NFD", topic_normalized)
-                        if unicodedata.category(c) != "Mn" or c == "̃"
-                    ),
-                )
-                .replace(" ", "_")
-                .replace(",", "")
-                .replace("/", "_")
-            )
-
-            if topic_id not in existing_ids and topic_id not in seen_topics:
-                entities.append(Topico(id=topic_id, value=topic_normalized))
-                seen_topics[topic_normalized] = topic_id
-
-            actual_id = seen_topics.get(topic_normalized, topic_id)
+            es_topic = self._en_to_es_topic.get(mention.topic, mention.topic)
+            topic_id = self._normalize_id(es_topic)
             relationships.append(
                 EXTRAIDO_DE(
-                    mention.chunk_id, actual_id, properties={"evidence_text": mention.evidence}
+                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
                 )
             )
 
-            subfield = self._topic_to_subfield.get(mention.topic)
-            if subfield:
-                subcampo_id = subfield.lower().replace(" ", "_").replace(",", "").replace("/", "_")
-                if subcampo_id not in seen_domains and subcampo_id not in existing_ids:
-                    entities.append(Subcampo(id=subcampo_id, value=subfield.lower()))
-                    seen_domains.add(subcampo_id)
-                relationships.append(PERTENECE_A_SUBCAMPO(actual_id, subcampo_id))
-
-        return entities, relationships
+        return [], relationships

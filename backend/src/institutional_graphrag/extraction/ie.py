@@ -83,10 +83,6 @@ class EntityExtractor:
         include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
-        topic_entities, topic_rels = BertTopicExtractor.load_all_topics_and_subcampos()
-        self.add_entities(topic_entities)
-        self.add_relationship(topic_rels)
-
         entities_json = self.input_dir / "entity_documents.json"
         if entities_json.exists():
             self.load_subset_from_graph_json(
@@ -568,7 +564,9 @@ class EntityExtractor:
         checkpoint_every: int = 5,
     ) -> None:
         """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
-        existing_topic_ids = {e.id for e in self.res.entities if e.label == "Topico"}
+        topic_entities, topic_rels = BertTopicExtractor.load_all_topics_and_subcampos()
+        self.add_entities(topic_entities)
+        self.add_relationship(topic_rels)
 
         bert_extractor = BertTopicExtractor()
         registry_path = self.input_dir / "llm_registry.json"
@@ -633,14 +631,10 @@ class EntityExtractor:
                             chunks, max_chunks=None, include_headings=include_headings
                         )
                         self.res.errors.extend(bert_result.errors)
-                        new_entities, new_relationships = (
-                            bert_extractor.create_topics_from_bert_extraction(
-                                bert_result, existing_topic_ids
-                            )
+                        _, new_relationships = bert_extractor.create_topics_from_bert_extraction(
+                            bert_result
                         )
-                        self.add_entities(new_entities)
                         self.add_relationship(new_relationships)
-                        existing_topic_ids.update(e.id for e in new_entities)
                         self.mark_success(doc_id, "Topico")
                         logger.info(
                             f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos"
