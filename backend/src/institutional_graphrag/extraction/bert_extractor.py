@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 MODEL_NAME = os.getenv(
     "BERT_TOPIC_MODEL",
-    "OpenAlex/bert-base-multilingual-cased-finetuned-openalex-topic-classification-title-abstract",
+    "albertmartinez/openalex-topic-classification-title-abstract",
 )
 TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
@@ -96,10 +96,10 @@ class BertTopicExtractor:
 
     @staticmethod
     def _strip_label_prefix(label: str) -> str:
-        """El modelo BERT devuelve labels con prefijo 'NNNN: ' que no está en el JSON."""
+        """Los modelos BERT devuelven labels con prefijo de topic ID ('T10001: ' o 'NNNN: ') que no está en el JSON."""
         if ": " in label:
             prefix, name = label.split(": ", 1)
-            if prefix.isdigit():
+            if prefix.isdigit() or (prefix.startswith("T") and prefix[1:].isdigit()):
                 return name
         return label
 
