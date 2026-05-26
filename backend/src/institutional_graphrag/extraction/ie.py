@@ -627,8 +627,16 @@ class EntityExtractor:
                         logger.info(
                             f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
+                        if isinstance(project.value, dict):
+                            project_title = project.value.get("title", "") or ""
+                        elif isinstance(project.value, str):
+                            project_title = project.value
+                        else:
+                            project_title = ""
                         bert_result = bert_extractor.extract_topics_from_chunks(
-                            chunks, max_chunks=None, include_headings=include_headings
+                            chunks,
+                            max_chunks=None,
+                            project_title=project_title,
                         )
                         self.res.errors.extend(bert_result.errors)
                         _, new_relationships = bert_extractor.create_topics_from_bert_extraction(

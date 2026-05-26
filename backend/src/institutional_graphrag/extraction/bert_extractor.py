@@ -201,22 +201,22 @@ class BertTopicExtractor:
                 "Instalá con: pip install transformers torch"
             ) from e
 
-    def _format_input(self, heading: str, text: str) -> str:
+    def _format_input(self, title: str, text: str) -> str:
         """Formatea el input al formato esperado por el modelo."""
-        title = heading.strip() if heading else "NONE"
+        safe_title = title.strip() if title else "NONE"
         abstract = text.strip()[:2500] if text else ""
         if abstract:
-            return f"<TITLE> {title}\n<ABSTRACT> {abstract}"
-        return f"<TITLE> {title}"
+            return f"<TITLE> {safe_title}\n<ABSTRACT> {abstract}"
+        return f"<TITLE> {safe_title}"
 
-    def _predict_chunk(self, heading: str, text: str) -> List[Dict[str, Any]]:
+    def _predict_chunk(self, title: str, text: str) -> List[Dict[str, Any]]:
         """Corre el modelo sobre un chunk y retorna lista de {topic, score}."""
         import torch
 
         self._load_model()
         assert self._tokenizer is not None and self._model is not None
 
-        input_text = self._format_input(heading, text)
+        input_text = self._format_input(title, text)
         inputs = self._tokenizer(
             input_text,
             return_tensors="pt",
@@ -239,14 +239,14 @@ class BertTopicExtractor:
         return results[: self.top_k]
 
     def extract_topics_from_chunk(
-        self, chunk_text: str, chunk_id: str, heading: str = ""
+        self, chunk_text: str, chunk_id: str, project_title: str = ""
     ) -> LLMExtractionResult:
         """Extrae tópicos de un chunk usando BERT."""
         if not chunk_text.strip():
             return LLMExtractionResult(topics=[], errors=[])
 
         try:
-            predictions = self._predict_chunk(heading, chunk_text)
+            predictions = self._predict_chunk(project_title, chunk_text)
             topics = [
                 TopicMention(
                     topic=pred["topic"],
@@ -268,7 +268,8 @@ class BertTopicExtractor:
         self,
         chunks: List[Dict[str, Any]],
         max_chunks: Optional[int] = None,
-        include_headings: bool = True,
+        project_title: str = "",
+        **kwargs: Any,
     ) -> LLMExtractionResult:
         """Clasifica tópicos sobre una lista de chunks, agrega por frecuencia entre chunks."""
         topic_chunk_count: Dict[str, int] = {}
@@ -281,14 +282,12 @@ class BertTopicExtractor:
         for i, chunk in enumerate(chunks_to_process, 1):
             chunk_id = chunk.get("chunk_id", f"chunk_{i}")
             raw_text = chunk.get("text", "")
-            headings = chunk.get("metadata", {}).get("headings", [])
-            heading = headings[-1].strip() if headings and include_headings else ""
 
             if not raw_text.strip():
                 continue
 
             logger.debug(f"  BERT chunk {i}/{len(chunks_to_process)}: {chunk_id}")
-            result = self.extract_topics_from_chunk(raw_text, chunk_id, heading)
+            result = self.extract_topics_from_chunk(raw_text, chunk_id, project_title)
             all_errors.extend(result.errors)
 
             for mention in result.topics:
