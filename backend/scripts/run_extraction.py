@@ -35,11 +35,10 @@ def normalize_result(res: ExtractionResult) -> dict:
 
 def main(
     max_docs: int | None = None,
-    include_headings: bool = True,
 ) -> int:
     extractor = EntityExtractor()
 
-    res = extractor.run(max_docs=max_docs, include_headings=include_headings)
+    res = extractor.run(max_docs=max_docs)
 
     filename = "entity_documents.json"
     extractor.save_in_file(filename)
@@ -78,11 +77,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-docs", type=int, default=None, help="Límite de documentos a procesar (None = todos)"
     )
-    parser.add_argument(
-        "--no-headings",
-        action="store_true",
-        help="Desactiva la inclusión de encabezados en el texto",
-    )
 
     args = parser.parse_args()
 
@@ -91,11 +85,8 @@ if __name__ == "__main__":
     else:
         print("[CONFIG] Procesando todos los documentos")
 
-    print(f"[CONFIG] Incluir encabezados: {'ACTIVO' if not args.no_headings else 'DESACTIVADO'}")
-
     raise SystemExit(
         main(
             max_docs=args.max_docs,
-            include_headings=not args.no_headings,
         )
     )

@@ -80,7 +80,6 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
@@ -100,7 +99,6 @@ class EntityExtractor:
         self._extract_projects_and_researchers_from_tabular()
         self._extract_with_bert(
             max_docs=max_docs,
-            include_headings=include_headings,
             checkpoint_every=checkpoint_every,
         )
         return self.res
@@ -560,7 +558,6 @@ class EntityExtractor:
     def _extract_with_bert(
         self,
         max_docs: int | None = None,
-        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
         """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
@@ -627,8 +624,16 @@ class EntityExtractor:
                         logger.info(
                             f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
+                        if isinstance(project.value, dict):
+                            project_title = project.value.get("title", "") or ""
+                        elif isinstance(project.value, str):
+                            project_title = project.value
+                        else:
+                            project_title = ""
                         bert_result = bert_extractor.extract_topics_from_chunks(
-                            chunks, max_chunks=None, include_headings=include_headings
+                            chunks,
+                            max_chunks=None,
+                            project_title=project_title,
                         )
                         self.res.errors.extend(bert_result.errors)
                         _, new_relationships = bert_extractor.create_topics_from_bert_extraction(

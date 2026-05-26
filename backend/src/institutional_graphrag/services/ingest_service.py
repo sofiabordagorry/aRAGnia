@@ -45,10 +45,8 @@ class IngestService:
         data_dir: Path,
         env_path: Optional[Path] = None,
         keep_debug_artifacts: bool,
-        include_headings: bool = True,
     ):
         self.keep_debug_artifacts = keep_debug_artifacts
-        self.include_headings = include_headings
 
         self.data_dir = data_dir
         self.tables_dir = data_dir / "tables"
@@ -184,7 +182,7 @@ class IngestService:
                 torch.cuda.empty_cache()
         except Exception:
             pass
-        self.entity_extractor._extract_with_bert(include_headings=self.include_headings)
+        self.entity_extractor._extract_with_bert()
         entity_dicts, rel_dicts = self._collect_entity_dicts()
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 
