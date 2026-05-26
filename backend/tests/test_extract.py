@@ -11,7 +11,7 @@ import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
-from institutional_graphrag.extraction.llm_extractor import (
+from institutional_graphrag.extraction.parse_topics import (
     LLMExtractionResult,
     TopicMention,
 )

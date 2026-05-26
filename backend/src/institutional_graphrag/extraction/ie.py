@@ -80,7 +80,6 @@ class EntityExtractor:
     def run(
         self,
         max_docs: int | None = None,
-        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
@@ -100,7 +99,6 @@ class EntityExtractor:
         self._extract_projects_and_researchers_from_tabular()
         self._extract_with_bert(
             max_docs=max_docs,
-            include_headings=include_headings,
             checkpoint_every=checkpoint_every,
         )
         return self.res
@@ -560,7 +558,6 @@ class EntityExtractor:
     def _extract_with_bert(
         self,
         max_docs: int | None = None,
-        include_headings: bool = True,
         checkpoint_every: int = 5,
     ) -> None:
         """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""

@@ -269,7 +269,6 @@ class BertTopicExtractor:
         chunks: List[Dict[str, Any]],
         max_chunks: Optional[int] = None,
         project_title: str = "",
-        **kwargs: Any,
     ) -> LLMExtractionResult:
         """Clasifica tópicos sobre una lista de chunks, agrega por frecuencia entre chunks."""
         topic_chunk_count: Dict[str, int] = {}
