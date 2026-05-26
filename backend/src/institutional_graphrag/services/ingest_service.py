@@ -28,10 +28,9 @@ from institutional_graphrag.ingest.file_namer import (
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.table_extractors import clean_table, convert_tables_to_chunks
+from institutional_graphrag.ingest.table_extractors import build_table_chunks, clean_table
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
-DATA_DIR = Path(__file__).resolve().parents[4] / "data"
 _PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
 
 
@@ -117,7 +116,9 @@ class IngestService:
         self.cache_dict = self.load_cache()
 
         if csv_bytes is not None and csv_filename is not None:
-            self._merge_proyectos_csv(csv_bytes, csv_filename)
+            csv_path = self._merge_proyectos_csv(csv_bytes, csv_filename)
+            if csv_path is not None:
+                build_table_chunks(csv_path)
 
         skipped: List[Dict[str, str]] = []
         processed: List[str] = []
@@ -175,7 +176,6 @@ class IngestService:
                     if progress_callback:
                         progress_callback(processed_count, total_files)
 
-        convert_tables_to_chunks()
         self._extract_projects_and_responsibles()
         try:
             import torch
@@ -290,7 +290,7 @@ class IngestService:
         finally:
             tmp_path.unlink(missing_ok=True)
 
-    def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> None:
+    def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> Optional[Path]:
         try:
             raw_content = csv_bytes.decode("utf-8")
             content = self._clean_csic_csv_if_needed(raw_content)
@@ -300,7 +300,7 @@ class IngestService:
             fieldnames = list(reader.fieldnames or [])
 
             if not new_rows:
-                return
+                return None
 
             existing_csv_path: Optional[Path] = None
             for p in self.tables_dir.glob("*.csv"):
@@ -311,7 +311,7 @@ class IngestService:
             if existing_csv_path is None:
                 dest = self.tables_dir / Path(csv_filename).name
                 dest.write_text(content, encoding="utf-8")
-                return
+                return dest
 
             existing_rows: List[Dict[str, Any]] = []
             existing_fieldnames: List[str] = []
@@ -329,7 +329,7 @@ class IngestService:
             rows_to_add = [row for row in new_rows if _row_key(row) not in existing_row_set]
 
             if not rows_to_add:
-                return
+                return None
 
             merged_fieldnames = existing_fieldnames[:]
             for fn in fieldnames:
@@ -342,9 +342,11 @@ class IngestService:
             writer.writerows(existing_rows + rows_to_add)
 
             existing_csv_path.write_text(out.getvalue(), encoding="utf-8")
+            return existing_csv_path
 
         except Exception as e:
             self.entity_extractor.res.errors.append({"type": "CSVMergeError", "message": str(e)})
+            return None
 
     def _load_valid_project_pairs(self) -> Set[Tuple[str, str]]:
         """Return the set of (anio, id_formulario) pairs from all proyectos CSVs."""
@@ -434,26 +436,6 @@ class IngestService:
             for path, size in self.cache_dict.items():
                 print(f"Guardado en CSV: {path} ({size} bytes)")
                 writer.writerow([path, size])
-
-    def _extract_document_only(
-        self,
-        *,
-        file_path: Path,
-        kind: PdfKind,
-        value_builder: Any,
-    ) -> None:
-        pattern = PATTERN_TABLE if kind == PdfKind.TABULAR else PATTERN_DOCUMENT
-        res = self.rule_based_extractor.extract_document(
-            path=file_path,
-            pattern=pattern,
-            value_builder=value_builder,
-            create_year_entity=True,
-        )
-        self.entity_extractor.add_entities(res.entities)
-        self.entity_extractor.add_relationship(res.relationships)
-        self.entity_extractor.res.errors.extend(res.errors)
-        self.entity_extractor._build_doc_indexes()
-        self.processed_files.append(str(file_path))
 
     def _extract_doc_and_chunks(
         self,

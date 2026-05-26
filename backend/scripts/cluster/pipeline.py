@@ -100,7 +100,7 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
     from docling_core.types.doc import DoclingDocument
     from institutional_graphrag.config import EMBED_MODEL_ID
     from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-    from institutional_graphrag.ingest.table_extractors import convert_table_to_chunks
+    from institutional_graphrag.ingest.table_extractors import convert_tables_to_chunks
 
     json_files = sorted(docling_dir.glob("*.json"))
     if not json_files:
@@ -138,7 +138,7 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
             errors += 1
 
     try:
-        convert_table_to_chunks()
+        convert_tables_to_chunks()
     except FileNotFoundError as exc:
         log.warning("No se procesaron tablas: %s", exc)
     log.info(

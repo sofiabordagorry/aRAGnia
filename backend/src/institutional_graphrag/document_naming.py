@@ -34,8 +34,6 @@ PATTERN_DOCUMENT_WITH_OPTIONAL_PDF = re.compile(
 
 PATTERN_TABLE = re.compile(r".+", re.IGNORECASE)
 
-PROJECT_KEY_RE = re.compile(rf"((?:{_GROUP_REGEX})_\d{{4}})_\d+", re.IGNORECASE)
-
 
 def _norm_text(value: str) -> str:
     return value.lower().strip()
@@ -78,18 +76,6 @@ def document_kind_position(value: str) -> int:
     return min(positions) if positions else -1
 
 
-def is_report(value: str) -> bool:
-    return document_kind_from_name(value) == "informe"
-
-
-def is_proposal(value: str) -> bool:
-    return document_kind_from_name(value) == "propuesta"
-
-
-def is_summary(value: str) -> bool:
-    return document_kind_from_name(value) == "resumen"
-
-
 def is_narrative_document(value: str) -> bool:
     return document_kind_from_name(value) is not None
 
@@ -105,26 +91,3 @@ def build_project_key(group: str, year: str) -> str:
 
 def build_project_id(group: str, year: str, sub_id: str) -> str:
     return f"{build_project_key(group, year)}_{sub_id}"
-
-
-def build_table_chunk_id(group: str, year: str, sub_id: str) -> str:
-    return f"{build_project_key(group, year)}_table_{sub_id}"
-
-
-def extract_project_key(value: str) -> Optional[str]:
-    match = PROJECT_KEY_RE.search(value)
-    if match:
-        return match.group(1)
-    return None
-
-
-def parent_doc_from_stem(stem: str) -> str:
-    project_key = extract_project_key(stem)
-    if project_key:
-        return project_key
-
-    # Fallback para stems no estándar: "gi_124_texto" -> "gi_124"
-    parts = stem.split("_")
-    if len(parts) >= 2:
-        return f"{parts[0]}_{parts[1]}"
-    return stem

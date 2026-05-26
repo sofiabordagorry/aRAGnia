@@ -594,16 +594,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         logger.info(f"Query ejecutada, {len(records)} registros obtenidos")
         return records
 
-    def _is_aggregation_query(self, cypher_query: str) -> bool:
-        """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.) o devuelve valores simples."""
-        query_upper = cypher_query.upper()
-        aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN("]
-        # También considerar queries que devuelven propiedades simples sin COLLECT
-        has_aggregation = any(func in query_upper for func in aggregation_functions)
-        # Si no tiene COLLECT ni chunks explícitos, probablemente es una query simple
-        has_collect = "COLLECT(" in query_upper
-        return has_aggregation or not has_collect
-
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
         if not records:

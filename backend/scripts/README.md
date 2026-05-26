@@ -17,13 +17,30 @@ cd backend
 
 ## Lista de scripts
 
-- `download_corpus.py`
-  - Descarga PDFs/tablas usando la lista de `data/downloads_list.txt`.
-  - Requiere `FING_TOKEN` en `.env`.
+- `table_validator.py`
+  - Valida y limpia la estructura de una tabla CSV y detecta filas con cantidad incorrecta de columnas.
+  - Entrada:
+    - CSV de entrada por par�metro posicional obligatorio `csv_path`.
   - Salida:
-    - PDFs en `data/corpus/`
-    - Tablas extraídas en `data/tables/` (parquet)
-  - Uso: `python scripts/download_corpus.py`
+    - Reporte en consola con filas inv�lidas (si existen).
+    - CSV limpio en `data/tables/` con el mismo nombre del archivo de entrada.
+  - Uso: `python scripts/table_validator.py <ruta/al/archivo.csv>`
+
+- `prepare_corpus.py`
+  - Valida la estructura de carpetas de proyectos, renombra archivos y los guarda en `data/corpus/`.
+  - Entrada:
+    - Carpeta raíz.
+    - Formato esperado (proyectos):
+    - `proyectos_2018/`
+    - `  informes_propuestas_XXX/`
+    - `    63/` (id_formulario)
+    - `      informe_XXX/`
+    - `        archivo.pdf` o `archivo.odt`
+    - `      propuesta_XXX/`
+    - `        archivo.pdf` o `archivo.odt`
+  - Salida:
+    - Archivos renombrados en `data/corpus/`.
+  - Uso: `python scripts/prepare_corpus.py <ruta/a/carpeta>`
 
 - `docling_manual.py`
   - Convierte un archivo o una carpeta a JSON estructurado con Docling.
@@ -102,8 +119,9 @@ cd backend
 
 ## Orden recomendado del pipeline para probar GraphRAG
 
-1. `python scripts/download_corpus.py`
-2. `python scripts/docling_manual.py corpus`
-3. `python scripts/chunk_corpus.py`
-4. `python scripts/run_extraction.py`
-5. `python scripts/load_graph.py`
+1. `python scripts/table_validator.py <ruta/al/archivo.csv>`
+2. `python scripts/prepare_corpus.py <ruta/a/carpeta>`
+3. `python scripts/docling_manual.py corpus`
+4. `python scripts/chunk_corpus.py`
+5. `python scripts/run_extraction.py`
+6. `python scripts/load_graph.py`

@@ -73,7 +73,6 @@ cd ..
   - `NEO4J_PASSWORD`
   - `POSTGRES_USER`
   - `POSTGRES_PASSWORD`
-  - `FING_TOKEN` (si se va a descargar corpus)
 
 ## Levantar el proyecto (modo recomendado)
 
@@ -122,16 +121,6 @@ docker compose exec ollama ollama list
 ## Pipeline de datos (scripts)
 
 Todos estos comandos se ejecutan desde `backend/` con el entorno virtual activo.
-
-1. Descargar corpus (requiere `FING_TOKEN` en `.env`):
-
-- La lista de URLs está en `data/downloads_list.txt`.
-- Si quieren cambiar qué PDFs se descargan, editen ese archivo (agregar/quitar URLs).
-- Los archivos descargados se guardan en `data/corpus/`.
-
-```bash
-python .\scripts\download_corpus.py
-```
 
 2. Convertir PDFs con Docling:
 

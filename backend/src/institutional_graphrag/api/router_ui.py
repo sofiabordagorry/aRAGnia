@@ -14,8 +14,8 @@ from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
-from starlette.datastructures import UploadFile as StarletteUploadFile
 from pydantic import BaseModel
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from typing_extensions import TypedDict
 
 from institutional_graphrag.graph.builder import GraphBuilder

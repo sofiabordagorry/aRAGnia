@@ -103,10 +103,6 @@ class ValidationReport:
             "stats": self.stats,
         }
 
-def ensure_list(x: Any) -> List[Any]:
-    return x if isinstance(x, list) else []
-
-
 def is_non_empty_str(x: Any) -> bool:
     return isinstance(x, str) and bool(x.strip())
 
