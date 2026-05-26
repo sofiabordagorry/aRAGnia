@@ -2,13 +2,12 @@ import pandas as pd
 from pathlib import Path
 from institutional_graphrag.ingest.table_extractors import clean_table
 import csv
+import argparse
+import shutil
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-
 tables_dir = BASE_DIR / "data" / "tables"
-input_csv = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
-clean_csv_path = tables_dir / "equipos_i+d_2012_2018_pinco.csv"
 
 
 def validate_csv(csv_path: str | Path) -> bool:
@@ -97,19 +96,30 @@ def validate_csv(csv_path: str | Path) -> bool:
     return invalid_rows == 0
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Valida y limpia tablas CSV."
+    )
+    parser.add_argument(
+        "csv_path",
+        help="Ruta al archivo CSV de entrada para validar y limpiar.",
+    )
+
+    args = parser.parse_args()
+    selected_csv = Path(args.csv_path)
+    selected_output = tables_dir / selected_csv.name
 
     # Validate original CSV
-    original_ok = validate_csv(input_csv)
+    original_ok = validate_csv(selected_csv)
 
     # Clean CSV
     print("\n" + "=" * 60)
-    print("Cleaning CSV...")
+    print("Limpiando CSV...")
     print("=" * 60)
 
-    clean_csv_path = clean_table(input_csv, clean_csv_path, "Proyecto")
+    selected_output = clean_table(selected_csv, selected_output, "Proyecto")
 
     # Validate cleaned CSV
-    cleaned_ok = validate_csv(clean_csv_path)
+    cleaned_ok = validate_csv(selected_output)
 
     print("\n" + "=" * 60)
     print("SUMMARY")

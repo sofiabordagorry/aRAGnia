@@ -28,7 +28,7 @@ from institutional_graphrag.ingest.file_namer import (
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.table_extractors import clean_table, convert_tables_to_chunks
+from institutional_graphrag.ingest.table_extractors import build_table_chunks, clean_table
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
 _PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
@@ -117,6 +117,7 @@ class IngestService:
 
         if csv_bytes is not None and csv_filename is not None:
             self._merge_proyectos_csv(csv_bytes, csv_filename)
+            build_table_chunks(csv_filename)
 
         skipped: List[Dict[str, str]] = []
         processed: List[str] = []
@@ -174,7 +175,6 @@ class IngestService:
                     if progress_callback:
                         progress_callback(processed_count, total_files)
 
-        convert_tables_to_chunks()
         self._extract_projects_and_responsibles()
         try:
             import torch

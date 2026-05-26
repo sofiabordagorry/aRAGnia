@@ -91,43 +91,49 @@ def convert_tables_to_chunks() -> None:
 
     csv_files = sorted(table_dir.rglob("*.csv"))
 
+    for csv_path in csv_files:
+        csv_path = Path(csv_path)
+        build_table_chunks(csv_path)
+
+
+def build_table_chunks(csv_path: Path) -> list[dict[str, Any]]:
+    source = csv_path.stem
+    chunks: list[dict[str, Any]] = []
     out_dir = Path(CHUNK_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    for csv_path in csv_files:
-        csv_path = Path(csv_path)
-        source = csv_path.stem
-        chunks: list[dict[str, Any]] = []
+    with open(csv_path, "r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
 
-        with open(csv_path, "r", encoding="utf-8", newline="") as f:
-            reader = csv.DictReader(f)
+        for _, row in enumerate(reader):
+            text = " | ".join(f"{key}: {value}" for key, value in row.items() if value)
 
-            for _, row in enumerate(reader):
-                text = " | ".join(f"{key}: {value}" for key, value in row.items() if value)
-                metadata = {
-                    **row,
-                    "element_type": "table_row",
-                    "parent_doc": source,
-                    "token_count": len(text.split()),
+            metadata = {
+                **row,
+                "element_type": "table_row",
+                "parent_doc": source,
+                "token_count": len(text.split()),
+            }
+
+            column_id = row.get("row_id")
+
+            chunks.append(
+                {
+                    "chunk_id": f"{source}#Chunk{column_id}",
+                    "text": text,
+                    "metadata": metadata,
                 }
-                column_id = row.get("row_id")
-                chunks.append(
-                    {
-                        "chunk_id": f"{source}#Chunk{column_id}",
-                        "text": text,
-                        "metadata": metadata,
-                    }
-                )
+            )
 
-        payload: dict[str, Any] = {
-            "source": source,
-            "total_chunks": len(chunks),
-            "chunks": chunks,
-        }
+    payload: dict[str, Any] = {
+        "source": source,
+        "total_chunks": len(chunks),
+        "chunks": chunks,
+    }
 
-        out_path = out_dir / f"{source}_chunks.json"
+    out_path = out_dir / f"{source}_chunks.json"
 
-        out_path.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+    out_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
