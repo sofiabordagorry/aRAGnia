@@ -39,8 +39,6 @@ def process_projects(input_dir: Path, output_dir: Path) -> tuple[int, int]:
     invalid_roots: set[str] = set()
 
     for file_path in all_files:
-        # Si el input es directamente "proyectos_2014", el frontend valida
-        # paths comenzando por esa raíz. Por eso la reincorporamos acá.
         rel_inside = file_path.relative_to(input_dir).as_posix()
         rel_path = f"{input_dir.name}/{rel_inside}"
 
@@ -112,16 +110,11 @@ def main() -> None:
             "con estructura de carga del frontend."
         ),
     )
-    parser.add_argument(
-        "-o",
-        "--output",
-        default=str(DEFAULT_CORPUS_DIR),
-        help="Ruta de salida para guardar archivos renombrados (por defecto: data/corpus).",
-    )
+
     args = parser.parse_args()
 
     input_dir = Path(args.input_path)
-    output_dir = Path(args.output)
+    output_dir = Path(DEFAULT_CORPUS_DIR)
 
     processed, skipped = process_projects(input_dir, output_dir)
     print("=" * 60)

@@ -3,7 +3,6 @@ from pathlib import Path
 from institutional_graphrag.ingest.table_extractors import clean_table
 import csv
 import argparse
-import shutil
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -17,9 +16,6 @@ def validate_csv(csv_path: str | Path) -> bool:
     print(f"Validating CSV: {csv_path.name}")
     print("=" * 60)
 
-    # --------------------------------------------------
-    # 1. Try loading with pandas
-    # --------------------------------------------------
 
     try:
         df = pd.read_csv(csv_path, dtype=str)
@@ -53,9 +49,6 @@ def validate_csv(csv_path: str | Path) -> bool:
 
         return False
 
-    # --------------------------------------------------
-    # 2. Validate row structure manually
-    # --------------------------------------------------
 
     invalid_rows = 0
 
@@ -82,9 +75,6 @@ def validate_csv(csv_path: str | Path) -> bool:
                     print(f"Expected: {expected_columns}")
         if invalid_rows > max_errors_to_show:
             print(f"\n... and {invalid_rows - max_errors_to_show} more invalid rows")
-    # --------------------------------------------------
-    # 3. Final result
-    # --------------------------------------------------
 
     print("\n" + "=" * 60)
 
@@ -108,17 +98,14 @@ if __name__ == "__main__":
     selected_csv = Path(args.csv_path)
     selected_output = tables_dir / selected_csv.name
 
-    # Validate original CSV
     original_ok = validate_csv(selected_csv)
 
-    # Clean CSV
     print("\n" + "=" * 60)
     print("Limpiando CSV...")
     print("=" * 60)
 
     selected_output = clean_table(selected_csv, selected_output, "Proyecto")
 
-    # Validate cleaned CSV
     cleaned_ok = validate_csv(selected_output)
 
     print("\n" + "=" * 60)

@@ -116,8 +116,9 @@ class IngestService:
         self.cache_dict = self.load_cache()
 
         if csv_bytes is not None and csv_filename is not None:
-            self._merge_proyectos_csv(csv_bytes, csv_filename)
-            build_table_chunks(csv_filename)
+            csv_path = self._merge_proyectos_csv(csv_bytes, csv_filename)
+            if csv_path is not None:
+                build_table_chunks(csv_path)
 
         skipped: List[Dict[str, str]] = []
         processed: List[str] = []
@@ -289,7 +290,7 @@ class IngestService:
         finally:
             tmp_path.unlink(missing_ok=True)
 
-    def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> None:
+    def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> Optional[Path]:
         try:
             raw_content = csv_bytes.decode("utf-8")
             content = self._clean_csic_csv_if_needed(raw_content)
@@ -299,7 +300,7 @@ class IngestService:
             fieldnames = list(reader.fieldnames or [])
 
             if not new_rows:
-                return
+                return None
 
             existing_csv_path: Optional[Path] = None
             for p in self.tables_dir.glob("*.csv"):
@@ -310,7 +311,7 @@ class IngestService:
             if existing_csv_path is None:
                 dest = self.tables_dir / Path(csv_filename).name
                 dest.write_text(content, encoding="utf-8")
-                return
+                return dest
 
             existing_rows: List[Dict[str, Any]] = []
             existing_fieldnames: List[str] = []
@@ -328,7 +329,7 @@ class IngestService:
             rows_to_add = [row for row in new_rows if _row_key(row) not in existing_row_set]
 
             if not rows_to_add:
-                return
+                return None
 
             merged_fieldnames = existing_fieldnames[:]
             for fn in fieldnames:
@@ -341,9 +342,11 @@ class IngestService:
             writer.writerows(existing_rows + rows_to_add)
 
             existing_csv_path.write_text(out.getvalue(), encoding="utf-8")
+            return existing_csv_path
 
         except Exception as e:
             self.entity_extractor.res.errors.append({"type": "CSVMergeError", "message": str(e)})
+            return None
 
     def _load_valid_project_pairs(self) -> Set[Tuple[str, str]]:
         """Return the set of (anio, id_formulario) pairs from all proyectos CSVs."""
