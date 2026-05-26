@@ -96,7 +96,7 @@ def convert_tables_to_chunks() -> None:
         build_table_chunks(csv_path)
 
 
-def build_table_chunks(csv_path: Path) -> list[dict[str, Any]]:
+def build_table_chunks(csv_path: Path) -> None:
     source = csv_path.stem
     chunks: list[dict[str, Any]] = []
     out_dir = Path(CHUNK_DIR)
