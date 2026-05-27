@@ -39,8 +39,6 @@ class VectorStore:
         host = os.getenv("HOST", "localhost")
         port = int(os.getenv("QDRANT_PORT", "6333"))
         self.client = QdrantClient(host=host, port=port)
-
-        # Crear colección si no existe
         self._ensure_collection_exists()
 
     def _ensure_collection_exists(self) -> None:
@@ -66,34 +64,28 @@ class VectorStore:
         """
         Agrega embeddings al vector store.
         """
-        # Validar dimensiones de embeddings
         if any(len(e) != self.embedding_dim for e in embeddings):
             raise ValueError(
                 f"Todos los embeddings deben tener dimensión {self.embedding_dim}. "
                 f"Se encontraron embeddings con dimensiones: {set(len(e) for e in embeddings)}"
             )
 
-        # Validar longitud de metadata si se provee
         if metadata is not None and len(metadata) != len(embeddings):
             raise ValueError(
                 f"La longitud de metadata ({len(metadata)}) debe coincidir con la longitud de embeddings ({len(embeddings)})"
             )
 
-        # Validar longitud de ids si se provee
         if ids is not None and len(ids) != len(embeddings):
             raise ValueError(
                 f"La longitud de ids ({len(ids)}) debe coincidir con la longitud de embeddings ({len(embeddings)})"
             )
 
-        # Generar IDs si no se proveen
         if ids is None:
             ids = [str(uuid4()) for _ in range(len(embeddings))]
 
-        # Preparar metadata
         if metadata is None:
             metadata = [{} for _ in range(len(embeddings))]
 
-        # Crear points para Qdrant
         points = []
         for embedding, meta, doc_id in zip(embeddings, metadata, ids):
             point = PointStruct(
@@ -103,7 +95,6 @@ class VectorStore:
             )
             points.append(point)
 
-        # Subir points a Qdrant
         self.client.upsert(
             collection_name=self.collection_name,
             points=points,
@@ -121,14 +112,12 @@ class VectorStore:
         """
         Busca documentos similares en el vector store.
         """
-        # Validar dimensión del embedding de consulta
         if len(query_embedding) != self.embedding_dim:
             raise ValueError(
                 f"La dimensión del embedding de consulta ({len(query_embedding)}) debe coincidir con "
                 f"la dimensión del vector store ({self.embedding_dim})"
             )
 
-        # Construir filtro si se provee
         qfilter: Filter | None = None
         if filter_dict:
             must: list[Condition] = []
@@ -139,7 +128,6 @@ class VectorStore:
                     must.append(FieldCondition(key=k, match=MatchValue(value=v)))
             qfilter = Filter(must=must)
 
-        # Ejecutar búsqueda
         search_result = self.client.query_points(
             collection_name=self.collection_name,
             query=query_embedding,
@@ -148,7 +136,6 @@ class VectorStore:
             query_filter=qfilter,
         ).points
 
-        # Formatear resultados
         results = []
         for scored_point in search_result:
             doc_id = str(scored_point.id)
@@ -182,7 +169,6 @@ class VectorStore:
 
             qfilter = Filter(must=[FieldCondition(key=key, match=MatchAny(any=chunk))])
 
-            # scroll devuelve puntos que matchean el filtro
             points, _next = self.client.scroll(
                 collection_name=self.collection_name,
                 scroll_filter=qfilter,

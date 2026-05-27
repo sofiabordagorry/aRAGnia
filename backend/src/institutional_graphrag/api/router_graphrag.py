@@ -2,7 +2,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
@@ -30,7 +30,7 @@ class QueryResponse(BaseModel):
 
 
 @router.post("/query", response_model=QueryResponse)
-def graphrag_query(payload: QueryRequest):
+def graphrag_query(payload: QueryRequest, request: Request):
     """Endpoint GraphRAG que usa solo grafo (sin embeddings)."""
     logger.info(f"[GraphRAG] Request recibido: '{payload.query}'")
     try:
@@ -44,18 +44,15 @@ def graphrag_query(payload: QueryRequest):
             neo4j_password=os.getenv("NEO4J_PASSWORD", "password"),
             temperature=0.3,
             max_tokens=1024,
+            fewshot_store=request.app.state.fewshot_store,
         )
 
         result = retriever.query(payload.query)
 
         retriever.close()
         logger.info("Conexión a Neo4j cerrada")
-
         chunks = [
-            {
-                "id": chunk.chunk_id,
-                "text": chunk.text,
-            }
+            {"id": chunk.chunk_id, "text": chunk.text, "page": chunk.page}
             for chunk in result.chunks
         ]
 

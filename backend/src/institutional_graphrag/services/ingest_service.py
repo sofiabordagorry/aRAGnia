@@ -1,17 +1,13 @@
-# institutional_graphrag/services/ingest_service.py
 from __future__ import annotations
 
 import csv
 import io
 import json
 import os
-import zipfile
+import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import unquote
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-import numpy as np
-import requests
 from docling_core.types.doc import DoclingDocument
 from dotenv import load_dotenv
 
@@ -19,24 +15,23 @@ from institutional_graphrag.config import EMBED_MODEL_ID
 from institutional_graphrag.document_naming import (
     PATTERN_DOCUMENT_WITH_OPTIONAL_PDF as PATTERN_DOCUMENT,
 )
-from institutional_graphrag.document_naming import (
-    PATTERN_TABLE,
-)
+from institutional_graphrag.document_naming import PATTERN_TABLE
 from institutional_graphrag.extraction.ie import EntityExtractor
 from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
 from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
 from institutional_graphrag.ingest.docling_parser import parse_single_document
-from institutional_graphrag.ingest.embedder import E5Embedder
 from institutional_graphrag.ingest.file_namer import (
     PdfKind,
     classify_pdf,
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.postprocess_entities import Postprocessor
-from institutional_graphrag.ingest.table_extractors import extract_table
+from institutional_graphrag.ingest.table_extractors import build_table_chunks, clean_table
+from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
+
+_PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
 
 
 class MissingNeo4jCredentialsError(Exception):
@@ -49,18 +44,13 @@ class IngestService:
         *,
         data_dir: Path,
         env_path: Optional[Path] = None,
-        enable_researcher_consolidation: bool,
         keep_debug_artifacts: bool,
-        include_headings: bool = True,
     ):
-        self.enable_researcher_consolidation = enable_researcher_consolidation
         self.keep_debug_artifacts = keep_debug_artifacts
-        self.include_headings = include_headings
 
         self.data_dir = data_dir
         self.tables_dir = data_dir / "tables"
         self.output_dir = data_dir / "corpus"
-        self.embedding_dir = data_dir / "embeddings"
         self.docling_dir = data_dir / "docling"
         self.chunks_dir = data_dir / "chunks"
         self.entities_dir = data_dir / "entities_relations"
@@ -68,7 +58,6 @@ class IngestService:
         for d in (
             self.tables_dir,
             self.output_dir,
-            self.embedding_dir,
             self.docling_dir,
             self.chunks_dir,
             self.entities_dir,
@@ -78,13 +67,10 @@ class IngestService:
         if env_path is not None:
             load_dotenv(env_path)
 
-        self.corpus_token = os.getenv("FING_TOKEN")
         self.cache_file = data_dir / "cache_paths.csv"
         self.cache_file.touch(exist_ok=True)
         self.tokenizer = EMBED_MODEL_ID
         self.chunker = get_native_chunker(tokenizer=self.tokenizer)
-        self.embedder = E5Embedder()
-
         self.rule_based_extractor = RuleBasedExtractor()
         self.entity_extractor = EntityExtractor()
         self.processed_files: List[str] = []
@@ -113,91 +99,118 @@ class IngestService:
         self.processed_files = []
         self.cache_dict = {}
 
-    async def ingest_items(self, path: str) -> Dict[str, Any]:
+    async def ingest_from_uploads(
+        self,
+        folder_files: List[Tuple[str, bytes]],
+        csv_bytes: Optional[bytes] = None,
+        csv_filename: Optional[str] = None,
+        progress_callback=None,
+    ) -> Dict[str, Any]:
         """
-        Descarga una carpeta/archivo desde la nube (zip o archivo individual),
-        procesa cada PDF y al final ingesta al grafo y hace cleanup.
+        Procesa archivos individuales subidos desde el frontend.
+        folder_files: lista de (relative_path, bytes) donde el path preserva la
+        estructura de carpetas completa (ej: '1_GRUPOS I+D.../2010_.../152/...').
         """
         self.cache_dict = self.load_cache()
 
-        zf = self.download_path(path)
-        if zf is None:
-            return {"processed": [], "errors": ["No se pudo descargar el contenido."]}
+        if csv_bytes is not None and csv_filename is not None:
+            csv_path = self._merge_proyectos_csv(csv_bytes, csv_filename)
+            if csv_path is not None:
+                build_table_chunks(csv_path)
 
-        print(f"Procesando carpeta/archivo {path} ...")
-
+        skipped: List[Dict[str, str]] = []
         processed: List[str] = []
-        try:
-            for zi in zf.infolist():
-                try:
-                    base_name = await self._process_one(zi, zf, path)
-                    if base_name:
-                        processed.append(base_name)
-                except Exception as e:
-                    # mantener formato consistente (strings)
-                    self.entity_extractor.res.errors.append(
-                        {
-                            "type": "ProcessOneError",
-                            "file": zi.filename,
-                            "message": str(e),
-                        }
+
+        if folder_files:
+            has_proyectos_csv = any(
+                "proyectos" in p.name.lower() for p in self.tables_dir.glob("*.csv")
+            )
+            if not has_proyectos_csv:
+                self.entity_extractor.res.errors.append(
+                    {
+                        "type": "MissingProyectosCSV",
+                        "message": (
+                            "No hay CSV de proyectos en el sistema. "
+                            "Suba un CSV con 'proyectos' en el nombre."
+                        ),
+                    }
+                )
+            else:
+                valid_pairs = self._load_valid_project_pairs()
+                total_files = sum(
+                    1
+                    for rel_path, _ in folder_files
+                    if (
+                        self._extract_project_key_from_path(rel_path) is None
+                        or self._extract_project_key_from_path(rel_path) in valid_pairs
                     )
-        finally:
-            try:
-                zf.close()
-            except Exception:
-                pass
+                )
+                processed_count = 0
+                for rel_path, content in folder_files:
+                    project_key = self._extract_project_key_from_path(rel_path)
+                    if project_key is not None and project_key not in valid_pairs:
+                        skipped.append(
+                            {
+                                "path": rel_path,
+                                "year": project_key[0],
+                                "id_formulario": project_key[1],
+                            }
+                        )
+                        continue
+                    processed_count += 1
+                    try:
+                        full_cloud_path = "\\" + rel_path.replace("/", "\\")
+                        base_name = await self._process_file(full_cloud_path, content, len(content))
+                        if base_name:
+                            processed.append(base_name)
+                    except Exception as e:
+                        self.entity_extractor.res.errors.append(
+                            {
+                                "type": "ProcessFileError",
+                                "file": rel_path,
+                                "message": str(e),
+                            }
+                        )
+                    if progress_callback:
+                        progress_callback(processed_count, total_files)
 
-        # Post-loop: proyectos + responsables
         self._extract_projects_and_responsibles()
+        try:
+            import torch
 
-        # Extracción con LLM (si tu EntityExtractor lo soporta)
-        self.entity_extractor._extract_with_llm(include_headings=self.include_headings)
-
-        # Normalización
-        entity_dicts, rel_dicts = self._postprocess_entities()
-
-        # Guardar JSON normalizado
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception:
+            pass
+        self.entity_extractor._extract_with_bert()
+        entity_dicts, rel_dicts = self._collect_entity_dicts()
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 
-        # Persistir a Neo4j
         if entity_json_path is not None:
             self._ingest_neo4j(entity_json_path)
 
-        # Guardar en cache los documentos extraidos
         self.save_cache()
 
-        # Cleanup al final
         if not self.keep_debug_artifacts:
             for base in processed:
                 self._cleanup_processed_file(base)
-
             if entity_json_path is not None:
                 entity_json_path.unlink(missing_ok=True)
 
         self.builder.close()
-        return {"processed": processed, "errors": self.entity_extractor.res.errors}
+        return {
+            "processed": processed,
+            "skipped": skipped,
+            "errors": self.entity_extractor.res.errors,
+            "csv_loaded": csv_bytes is not None,
+        }
 
-    async def _process_one(
+    async def _process_file(
         self,
-        zi: zipfile.ZipInfo,
-        zf: zipfile.ZipFile,
-        path_encoded: str,
+        full_cloud_path: str,
+        content: bytes,
+        file_size: int,
     ) -> Optional[str]:
-        if zi.is_dir():
-            return None
-
-        # bytes reales del archivo dentro del zip
-        content = zf.read(zi)
-
-        relative_path = Path(zi.filename)
-        if relative_path.parts and relative_path.parts[0] == "CSIC VALIDACION INFORMES":
-            relative_path = Path(*relative_path.parts[1:])
-        full_cloud_path = "\\" + str(
-            Path(unquote(path_encoded).strip("/")) / relative_path
-        ).replace("/", "\\")
-        file_size = zi.file_size
-
         prev_size = self.cache_dict.get(full_cloud_path)
         if prev_size is not None and prev_size == file_size:
             print(f"Sin cambios (mismo tamaño): {full_cloud_path}")
@@ -205,53 +218,26 @@ class IngestService:
         if prev_size is not None and prev_size != file_size:
             print(f"Actualizado (cambió tamaño): {full_cloud_path}")
 
-        self.cache_dict[full_cloud_path] = file_size
-
-        # nombre nuevo (idealmente incluye .pdf)
         new_filename = generate_new_filename(full_cloud_path)
-        print("NOMBRE", new_filename)
-        base_name = Path(new_filename).stem  # clave: TODO se guarda con base_name
+        base_name = Path(new_filename).stem
 
-        # paths de salida
         final_pdf_path = self.output_dir / new_filename
         docling_json_path = self.docling_dir / f"{base_name}.json"
         chunk_json_path = self.chunks_dir / f"{base_name}_chunks.json"
-        emb_npy_path = self.embedding_dir / f"{base_name}.npy"
-        emb_meta_path = self.embedding_dir / f"{base_name}_metadata.json"
 
-        # tmp siempre con bytes
-        tmp_path = save_temp_file(content, new_filename)
+        bytes_source = content
+        if Path(new_filename).suffix.lower() == ".odt":
+            print(f"Convirtiendo archivo odt a pdf: {new_filename}")
+            bytes_source = odt_bytes_to_pdf(bytes_source)
+            new_filename = str(Path(new_filename).with_suffix(".pdf"))
+            base_name = Path(new_filename).stem
+            final_pdf_path = self.output_dir / new_filename
+
+        tmp_path = save_temp_file(bytes_source, new_filename)
+
         try:
             kind = classify_pdf(new_filename)
 
-            # ---------------------------
-            # TABLAS
-            # ---------------------------
-            if kind == PdfKind.TABULAR:
-                # Extraer tablas desde el PDF temporal
-                extract_table(tmp_path, self.tables_dir)
-
-                # Crear entidad Documento(tabla) (sin chunks)
-                def value_builder(base, m):
-                    return {
-                        "base_name": base,
-                        "is_group": m.group("group"),
-                        "year_publisher": m.group("year"),
-                        "type": "tabla",
-                    }
-
-                # Para el extractor por reglas, pasamos un path "representativo".
-                # Si tu extractor matchea por nombre, esto funciona.
-                self._extract_document_only(
-                    file_path=Path(new_filename),
-                    kind=kind,
-                    value_builder=value_builder,
-                )
-                return base_name
-
-            # ---------------------------
-            # NARRATIVE
-            # ---------------------------
             def value_builder(base, m):
                 return {
                     "base_name": base,
@@ -261,18 +247,18 @@ class IngestService:
                     "type": m.group("kind"),
                 }
 
-            # Guardar PDF definitivo
-            with open(final_pdf_path, "wb") as out:
-                out.write(content)
+            doc_dict = parse_single_document(tmp_path)
+            if doc_dict is None:
+                raise ValueError(f"No se pudo extraer texto del documento: {new_filename}")
 
-            # Docling
-            doc_dict = parse_single_document(final_pdf_path)
+            with open(final_pdf_path, "wb") as out:
+                out.write(bytes_source)
+
             docling_json_path.write_text(
                 json.dumps(doc_dict, indent=2, ensure_ascii=False),
                 encoding="utf-8",
             )
 
-            # Chunking
             doc = DoclingDocument.model_validate(doc_dict)
             chunks = chunk_document(doc=doc, chunker=self.chunker)
             chunk_json_path.write_text(
@@ -289,50 +275,148 @@ class IngestService:
                 encoding="utf-8",
             )
 
-            # Embeddings
-            embeddings = self.embedder.embed_passages([c["text"] for c in chunks])
-            np.save(emb_npy_path, embeddings)
-            emb_meta_path.write_text(
-                json.dumps(chunks, ensure_ascii=False, indent=2),
-                encoding="utf-8",
-            )
-
-            # Extracción estática: Documento + Año + Chunk + relaciones
             self._extract_doc_and_chunks(
-                file_path=final_pdf_path,  # path real
+                file_path=final_pdf_path,
                 kind=kind,
                 value_builder=value_builder,
                 chunk_file=chunk_json_path,
             )
 
+            self.cache_dict[full_cloud_path] = file_size
             return base_name
 
         finally:
             tmp_path.unlink(missing_ok=True)
 
-    def download_path(self, path_encoded: str) -> Optional[zipfile.ZipFile]:
-        """
-        Descarga carpeta (zip) o archivo individual y devuelve un ZipFile.
-        Si es archivo individual, crea un zip en memoria con ese archivo.
-        """
-        base_url = f"https://nube.fing.edu.uy/index.php/s/{self.corpus_token}/download"
-        url = f"{base_url}?path={path_encoded}&files="
-        original_folder_path = unquote(path_encoded).strip("/")
+    def _merge_proyectos_csv(self, csv_bytes: bytes, csv_filename: str) -> Optional[Path]:
+        try:
+            raw_content = csv_bytes.decode("utf-8")
+            content = self._clean_csic_csv_if_needed(raw_content)
 
-        response = requests.get(url, verify=False, timeout=120)
-        if response.status_code != 200:
-            print(f"Error al descargar: {unquote(path_encoded)} (status={response.status_code})")
+            reader = csv.DictReader(io.StringIO(content))
+            new_rows = list(reader)
+            fieldnames = list(reader.fieldnames or [])
+
+            if not new_rows:
+                return None
+
+            existing_csv_path: Optional[Path] = None
+            for p in self.tables_dir.glob("*.csv"):
+                if "proyectos" in p.name.lower():
+                    existing_csv_path = p
+                    break
+
+            if existing_csv_path is None:
+                dest = self.tables_dir / Path(csv_filename).name
+                dest.write_text(content, encoding="utf-8")
+                return dest
+
+            existing_rows: List[Dict[str, Any]] = []
+            existing_fieldnames: List[str] = []
+            with open(existing_csv_path, encoding="utf-8", newline="") as f:
+                reader2 = csv.DictReader(f)
+                existing_rows = list(reader2)
+                existing_fieldnames = list(reader2.fieldnames or [])
+
+            _GENERATED_COLS = {"row_id", "file_type", "file_id"}
+
+            def _row_key(row: Dict[str, Any]) -> frozenset:
+                return frozenset((k, v) for k, v in row.items() if k not in _GENERATED_COLS)
+
+            existing_row_set = {_row_key(row) for row in existing_rows}
+            rows_to_add = [row for row in new_rows if _row_key(row) not in existing_row_set]
+
+            if not rows_to_add:
+                return None
+
+            merged_fieldnames = existing_fieldnames[:]
+            for fn in fieldnames:
+                if fn not in merged_fieldnames:
+                    merged_fieldnames.append(fn)
+
+            out = io.StringIO()
+            writer = csv.DictWriter(out, fieldnames=merged_fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(existing_rows + rows_to_add)
+
+            existing_csv_path.write_text(out.getvalue(), encoding="utf-8")
+            return existing_csv_path
+
+        except Exception as e:
+            self.entity_extractor.res.errors.append({"type": "CSVMergeError", "message": str(e)})
             return None
 
+    def _load_valid_project_pairs(self) -> Set[Tuple[str, str]]:
+        """Return the set of (anio, id_formulario) pairs from all proyectos CSVs."""
+        pairs: Set[Tuple[str, str]] = set()
+        for csv_path in self.tables_dir.glob("*.csv"):
+            if "proyectos" not in csv_path.name.lower():
+                continue
+            try:
+                with open(csv_path, encoding="utf-8", newline="") as f:
+                    for row in csv.DictReader(f):
+                        year = (row.get("anio") or "").strip()
+                        id_form = (row.get("id_formulario") or "").strip()
+                        if year and id_form:
+                            pairs.add((year, id_form))
+            except Exception:
+                pass
+        return pairs
+
+    def _extract_project_key_from_path(self, rel_path: str) -> Optional[Tuple[str, str]]:
+        """Extract (year, id_formulario) from a path like 'proyectos_2018/.../63/...'."""
+        parts = rel_path.replace("\\", "/").split("/")
+        year_match = _PROYECTOS_YEAR_RE.match(parts[0])
+        if not year_match:
+            return None
+        year = year_match.group(1)
+        id_formulario: Optional[str] = None
+        for part in parts[1:]:
+            if part.isdigit():
+                id_formulario = part
+                break
+        if id_formulario is None:
+            return None
+        return (year, id_formulario)
+
+    def _clean_csic_csv_if_needed(self, content: str) -> str:
+        """Aplica clean_table si el CSV tiene el formato CSIC (primera columna numérica).
+        clean_table une filas partidas por saltos de línea dentro de celdas."""
+        lines = content.strip().splitlines()
+        is_csic_format = False
+        for line in lines[1:]:
+            stripped = line.strip()
+            if stripped:
+                first_col = stripped.split(",", 1)[0].strip().strip('"').strip("'")
+                is_csic_format = first_col.isdigit()
+                break
+
+        if not is_csic_format:
+            return content
+
+        import tempfile
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".csv", encoding="utf-8", delete=False
+        ) as tmp_in:
+            tmp_in.write(content)
+            tmp_in_path = Path(tmp_in.name)
+
+        tmp_out_path = tmp_in_path.with_suffix(".out.csv")
+        cleaned_path = tmp_out_path.with_name(f"{tmp_out_path.stem}_table{tmp_out_path.suffix}")
         try:
-            return zipfile.ZipFile(io.BytesIO(response.content))
-        except zipfile.BadZipFile:
-            mem_zip = io.BytesIO()
-            with zipfile.ZipFile(mem_zip, mode="w") as z:
-                filename = Path(original_folder_path).name
-                z.writestr(filename, response.content)
-            mem_zip.seek(0)
-            return zipfile.ZipFile(mem_zip)
+            actual_out = clean_table(tmp_in_path, tmp_out_path, "Proyecto")
+            cleaned = actual_out.read_text(encoding="utf-8")
+            cleaned_lines = [line for line in cleaned.splitlines() if line.strip()]
+            if len(cleaned_lines) > 1:
+                return cleaned
+            return content
+        except Exception:
+            return content
+        finally:
+            tmp_in_path.unlink(missing_ok=True)
+            tmp_out_path.unlink(missing_ok=True)
+            cleaned_path.unlink(missing_ok=True)
 
     def load_cache(self) -> Dict[str, int]:
         paths: Dict[str, int] = {}
@@ -350,26 +434,6 @@ class IngestService:
             for path, size in self.cache_dict.items():
                 print(f"Guardado en CSV: {path} ({size} bytes)")
                 writer.writerow([path, size])
-
-    def _extract_document_only(
-        self,
-        *,
-        file_path: Path,
-        kind: PdfKind,
-        value_builder: Any,
-    ) -> None:
-        pattern = PATTERN_TABLE if kind == PdfKind.TABULAR else PATTERN_DOCUMENT
-        res = self.rule_based_extractor.extract_document(
-            path=file_path,
-            pattern=pattern,
-            value_builder=value_builder,
-            create_year_entity=True,
-        )
-        self.entity_extractor.add_entities(res.entities)
-        self.entity_extractor.add_relationship(res.relationships)
-        self.entity_extractor.res.errors.extend(res.errors)
-        self.entity_extractor._build_doc_indexes()
-        self.processed_files.append(str(file_path))
 
     def _extract_doc_and_chunks(
         self,
@@ -405,15 +469,8 @@ class IngestService:
 
     def _extract_projects_and_responsibles(self) -> None:
         try:
-            res = self.rule_based_extractor.associate_tables_with_documents(
-                self.entity_extractor.docs_by_group_year,
-                self.tables_dir,
-            )
-            self.entity_extractor.res.errors.extend(res.errors)
-
-            res = self.rule_based_extractor.extract_projects_and_responsible_from_tables(
-                self.entity_extractor.doc_by_id,
-                self.entity_extractor.chunks_dir,
+            res = self.entity_extractor.tabular.extract_from_directory(
+                self.entity_extractor.table_dir, self.entity_extractor.id_projects
             )
             self.entity_extractor.add_entities(res.entities)
             self.entity_extractor.add_relationship(res.relationships)
@@ -427,21 +484,9 @@ class IngestService:
                 }
             )
 
-    def _postprocess_entities(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    def _collect_entity_dicts(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         entity_dicts = [e.to_dict() for e in self.entity_extractor.res.entities]
         rel_dicts = [r.to_dict() for r in self.entity_extractor.res.relationships]
-        post_processor = Postprocessor(
-            enable_researcher_consolidation=self.enable_researcher_consolidation,
-            similarity_threshold=0.85,
-        )
-
-        entity_dicts, rel_dicts, _ = post_processor.consolidate_researchers(entity_dicts, rel_dicts)
-        entities_db = self.builder.fetch_researchers()
-        rel_dicts.extend(
-            post_processor.build_possible_alias_relationships(entities_db, entity_dicts)
-        )
-
-        rel_dicts, _ = post_processor.add_missing_evidence_text(rel_dicts)
         return entity_dicts, rel_dicts
 
     def _save_entities_json(
@@ -450,13 +495,13 @@ class IngestService:
         rels: List[Dict[str, Any]],
     ) -> Optional[Path]:
         if not self.entity_extractor.doc_by_id:
-            print(
-                "No hay documentos indexados (doc_by_id vacío). No se guarda entity_extraction_web."
-            )
-            return None
-
-        first_key = next(iter(self.entity_extractor.doc_by_id.keys()))
-        filename = f"entity_extraction_web_{first_key}.json"
+            if not entities:
+                print("No hay entidades para guardar.")
+                return None
+            filename = "entity_extraction_web_tabular.json"
+        else:
+            first_key = next(iter(self.entity_extractor.doc_by_id.keys()))
+            filename = f"entity_extraction_web_{first_key}.json"
         path = self.entities_dir / filename
 
         new_data = {
@@ -529,9 +574,9 @@ class IngestService:
     def _cleanup_processed_file(self, base_name: str) -> None:
         """
         Limpieza robusta: borra todo lo que empiece con base_name en cada carpeta.
-        Así evitás problemas de .pdf.pdf, etc.
+        Así se evitan problemas de .pdf.pdf, etc.
         """
-        dirs = (self.output_dir, self.embedding_dir, self.docling_dir, self.chunks_dir)
+        dirs = (self.docling_dir, self.chunks_dir)
         for d in dirs:
             for p in d.glob(f"{base_name}*"):
                 try:

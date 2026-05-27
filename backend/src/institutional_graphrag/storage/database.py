@@ -3,7 +3,6 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 
-# Load environment variables from .env
 load_dotenv()
 
 DB_CONFIG = {
@@ -16,7 +15,6 @@ DB_CONFIG = {
 
 
 def get_connection():
-    """Return a new database connection"""
     return psycopg2.connect(**DB_CONFIG)
 
 
@@ -24,7 +22,6 @@ def create_tables():
     conn = get_connection()
     cur = conn.cursor()
 
-    # Table for queries and responses
     cur.execute("""
         CREATE TABLE IF NOT EXISTS queries (
             id SERIAL PRIMARY KEY,
@@ -41,7 +38,6 @@ def create_tables():
         ADD COLUMN IF NOT EXISTS cypher_query TEXT;
     """)
 
-    # Table for RAG chunks
     cur.execute("""
         CREATE TABLE IF NOT EXISTS chunks (
             id SERIAL PRIMARY KEY,
@@ -52,17 +48,16 @@ def create_tables():
         );
     """)
 
-    # Table for GraphRAG chunks
     cur.execute("""
         CREATE TABLE IF NOT EXISTS graphrag_chunks (
             id SERIAL PRIMARY KEY,
             query_id INTEGER NOT NULL REFERENCES queries(id) ON DELETE CASCADE,
             chunk_id TEXT NOT NULL,
-            chunk_text TEXT NOT NULL
+            chunk_text TEXT NOT NULL,
+            chunk_page INTEGER
         );
     """)
 
-    # Table for entities associated to GraphRAG chunks
     cur.execute("""
         CREATE TABLE IF NOT EXISTS graphrag_chunk_entities (
             id SERIAL PRIMARY KEY,

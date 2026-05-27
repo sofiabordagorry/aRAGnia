@@ -13,20 +13,22 @@ from .schema import (
     Anio,
     Chunk,
     Documento,
+    Grupo,
     Investigador,
     Proyecto,
     Topico,
 )
 
 __all__ = [
-    # Entities
+    # Entidades
     "Anio",
     "Chunk",
     "Documento",
+    "Grupo",
     "Investigador",
     "Proyecto",
     "Topico",
-    # Relationships
+    # Relaciones
     "PARTICIPO_EN",
     "TIENE_TOPICO",
     "ES_DESCRITO_POR",

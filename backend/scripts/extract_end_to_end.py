@@ -9,24 +9,23 @@ from institutional_graphrag.services.ingest_service import IngestService
 # ==============================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
-ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env") 
+ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
-INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"  
+INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"
 
 
 # ==============================
 # MAIN ASYNC
 # ==============================
 
-async def main(keep_debug_artifacts: bool, enable_researcher_consolidation: bool, include_headings: bool,):
+
+async def main(keep_debug_artifacts: bool):
     print("Inicializando IngestService...")
     try:
         service = IngestService(
             data_dir=DATA_DIR,
             env_path=ENV_PATH,
-            enable_researcher_consolidation=enable_researcher_consolidation,
             keep_debug_artifacts=keep_debug_artifacts,
-            include_headings=include_headings,
         )
 
         print("Ejecutando ingest...")
@@ -36,7 +35,6 @@ async def main(keep_debug_artifacts: bool, enable_researcher_consolidation: bool
         print(result)
     except Exception as e:
         print(f"Error durante el ingest: {e}")
-    
 
 
 # ==============================
@@ -55,26 +53,10 @@ if __name__ == "__main__":
         help="Mantiene archivos intermedios para debugging (no limpia)",
     )
 
-    parser.add_argument(
-        "--enable_researcher_consolidation",
-        action="store_true",
-        help="Activa la unificacion de Investigadores",
-    )
-    
-    parser.add_argument(
-        "--no-headings",
-        action="store_true",
-        help="Desactiva la inclusión de encabezados en el LLM",
-    )
-
     args = parser.parse_args()
 
     keep_debug_artifacts = args.debug
-    enable_researcher_consolidation = args.enable_researcher_consolidation
-    include_headings = not args.no_headings
 
     print(f"[CONFIG] MODO DEBUG: {'ACTIVO' if keep_debug_artifacts else 'DESACTIVADO'}")
-    print(f"[CONFIG] Unificacion de Investigadores: {'ACTIVO' if enable_researcher_consolidation else 'DESACTIVADO'}")
-    print(f"[CONFIG] Incluir encabezados: {'ACTIVO' if include_headings else 'DESACTIVADO'}")
 
-    asyncio.run(main(keep_debug_artifacts, enable_researcher_consolidation, include_headings))
+    asyncio.run(main(keep_debug_artifacts))

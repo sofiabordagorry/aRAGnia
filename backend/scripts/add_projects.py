@@ -5,13 +5,12 @@ import urllib.parse
 
 from institutional_graphrag.services.ingest_service import IngestService
 
-
 # ==============================
 # CONFIGURACIÓN
 # ==============================
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
-ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env") 
+ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
 # Lista de paths originales
 paths = [
@@ -25,6 +24,7 @@ paths = [
 # ==============================
 # MAIN ASYNC
 # ==============================
+
 
 async def main():
     print("Inicializando IngestService...")
@@ -40,7 +40,6 @@ async def main():
     service = IngestService(
         data_dir=DATA_DIR,
         env_path=ENV_PATH,
-        enable_researcher_consolidation=False,
         keep_debug_artifacts=True,
     )
     for encoded_path in url_encoded_paths:
@@ -48,8 +47,9 @@ async def main():
         result = await service.ingest_items(encoded_path)
         print("Resultados del path ", encoded_path, ":")
         print(result)
-    
-    
+
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

@@ -17,6 +17,7 @@ dependencies = [
     "langchain-core>=1.2.5",
     "langchain-text-splitters>=0.2.0",
     "fastapi>=0.110.0",
+    "python-multipart>=0.0.9",
     "uvicorn>=0.27.0",
     "sentence-transformers>=3.0.0",
     "numpy>=1.24.0",
@@ -28,13 +29,12 @@ dependencies = [
     "transformers",
     "huggingface_hub>=0.34,<1.0",
     "pandas>=2.0",
-    "odfpy>=1.4",
     "openpyxl>=3.1",
     "pyarrow>=14.0",
-    "tabula-py>=2.9",
     "neo4j>=5.0",
     "psycopg2-binary>=2.9.6",
-    "docker>=6.1"
+    "docker>=6.1",
+    "ijson>=3.2.0",
 ]
 
 [project.optional-dependencies]

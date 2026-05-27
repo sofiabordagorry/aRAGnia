@@ -8,24 +8,15 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     refreshBtn: document.getElementById("refreshGraphBtn"),
     nodeCount: document.getElementById("graphNodeCount"),
     edgeCount: document.getElementById("graphEdgeCount"),
-    aliasCount: document.getElementById("graphAliasCount"),
     legend: document.getElementById("graphLegend"),
     relationFilters: document.getElementById("graphRelationFilters"),
     selection: document.getElementById("graphSelection"),
-    aliasStatus: document.getElementById("aliasStatus"),
-    aliasEntityCount: document.getElementById("aliasEntityCount"),
-    aliasList: document.getElementById("aliasList"),
-    aliasSearchInput: document.getElementById("aliasSearchInput"),
-    aliasSortSelect: document.getElementById("aliasSortSelect"),
-    aliasSection: document.getElementById("aliasSection"),
     entityStatus: document.getElementById("entityStatus"),
     entityResultCount: document.getElementById("entityResultCount"),
     entitySearchInput: document.getElementById("entitySearchInput"),
     entityTypeSelect: document.getElementById("entityTypeSelect"),
     entityList: document.getElementById("entityList"),
     entityPanel: document.getElementById("entityPanel"),
-    tabEntitiesBtn: document.getElementById("tabEntitiesBtn"),
-    tabAliasesBtn: document.getElementById("tabAliasesBtn"),
   };
 
   if (!els.svg) return;
@@ -33,9 +24,12 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   const LABEL_COLORS = {
     Investigador: "#0f766e",
     Proyecto: "#1d4ed8",
+    Grupo: "#1565c0",
     Topico: "#c2410c",
+    Subcampo: "#a16207",
     Documento: "#6d28d9",
     Anio: "#334155",
+    Area: "#15803d",
     Entidad: "#0f172a",
   };
 
@@ -43,26 +37,16 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     snapshot: {
       nodes: [],
       edges: [],
-      summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
-    },
-    aliasData: {
-      pairs: [],
-      entities: [],
-      summary: { pair_count: 0, entity_count: 0 },
+      summary: { node_count: 0, edge_count: 0 },
     },
     entityCatalog: [],
-    aliasOnly: false,
     selectedNodeId: null,
     selectedEntityId: null,
     loadingGraph: false,
-    loadingAliases: false,
     loadingEntities: false,
-    aliasLoadedOnce: false,
     activeSidePanel: "entities",
     entitySearch: "",
     entityType: "Investigador",
-    aliasSearch: "",
-    aliasSortMode: "stable",
     edgeTypeVisibility: {},
     zoomScale: 1,
     panX: 0,
@@ -108,66 +92,20 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     els.entityStatus.classList.toggle("error", isError);
   }
 
-  function setAliasStatus(message, isError = false) {
-    if (!els.aliasStatus) return;
-    els.aliasStatus.textContent = message;
-    els.aliasStatus.classList.toggle("error", isError);
-  }
-
   function updateMetrics(summary) {
-    const safeSummary = summary || {
-      node_count: 0,
-      edge_count: 0,
-      alias_edge_count: 0,
-    };
+    const safeSummary = summary || { node_count: 0, edge_count: 0 };
     if (els.nodeCount)
       els.nodeCount.textContent = `${safeSummary.node_count} nodos`;
     if (els.edgeCount)
       els.edgeCount.textContent = `${safeSummary.edge_count} relaciones`;
-    if (els.aliasCount)
-      els.aliasCount.textContent = `${safeSummary.alias_edge_count} aliases`;
   }
 
-  function setActiveSidePanel(panelName) {
-    state.activeSidePanel = panelName === "aliases" ? "aliases" : "entities";
-    const entityActive = state.activeSidePanel === "entities";
-    const nextAliasOnly = !entityActive;
-    const changedAliasMode = state.aliasOnly !== nextAliasOnly;
-
-    state.aliasOnly = nextAliasOnly;
-
-    els.entityPanel?.classList.toggle("active", entityActive);
-    els.aliasSection?.classList.toggle("active", !entityActive);
-
-    els.tabEntitiesBtn?.classList.toggle("active", entityActive);
-    els.tabAliasesBtn?.classList.toggle("active", !entityActive);
-
-    if (els.tabEntitiesBtn) {
-      els.tabEntitiesBtn.setAttribute(
-        "aria-selected",
-        entityActive ? "true" : "false",
-      );
-    }
-    if (els.tabAliasesBtn) {
-      els.tabAliasesBtn.setAttribute(
-        "aria-selected",
-        !entityActive ? "true" : "false",
-      );
-    }
-
-    if (!entityActive && !state.aliasLoadedOnce) {
-      loadAliases();
-    }
-
-    if (changedAliasMode && state.selectedEntityId) {
-      loadNeighborhood(state.selectedEntityId);
-    }
-
+  function setActiveSidePanel(_panelName) {
+    state.activeSidePanel = "entities";
+    els.entityPanel?.classList.add("active");
     if (!state.selectedEntityId) {
       setGraphStatus(
-        state.aliasOnly
-          ? "Vista de alias activa. Selecciona una entidad para ver solo relaciones POSIBLE_ALIAS."
-          : "Vista de entidades activa. Selecciona una entidad para ver su vecindad completa.",
+        "Vista de entidades activa. Selecciona una entidad para ver su vecindad completa.",
       );
       renderGraph();
     }
@@ -279,7 +217,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     );
   }
 
-  // alias kept for callers that used the old name
   const applyZoom = applyTransform;
 
   function resetTransform() {
@@ -397,9 +334,8 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   function renderSelection(snapshot) {
     if (!els.selection) return;
     if (!state.selectedNodeId) {
-      els.selection.textContent = state.aliasOnly
-        ? "Filtro POSIBLE_ALIAS activo. Selecciona una entidad para cargar solo sus relaciones de alias."
-        : "Selecciona una entidad desde la card de exploración para visualizar su vecindad.";
+      els.selection.textContent =
+        "Selecciona una entidad desde la card de exploración para visualizar su vecindad.";
       return;
     }
 
@@ -612,7 +548,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
             edge.target === state.selectedNodeId);
         if (state.selectedNodeId && !highlighted) return "";
         const edgeClasses = ["graph-edge"];
-        if (edge.is_alias) edgeClasses.push("alias");
         if (highlighted) edgeClasses.push("highlighted");
         return `
           <line class="${edgeClasses.join(" ")}" x1="${source.x.toFixed(2)}" y1="${source.y.toFixed(2)}" x2="${target.x.toFixed(2)}" y2="${target.y.toFixed(2)}">
@@ -632,7 +567,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
           Math.min(18, 8 + Math.round(node.degree / 2)),
         );
         const nodeClasses = ["graph-node"];
-        if (node.is_alias_candidate) nodeClasses.push("alias-candidate");
         if (state.selectedNodeId === node.id) nodeClasses.push("selected");
         return `
           <g class="${nodeClasses.join(" ")}" data-node-id="${escapeHtml(node.id)}" transform="translate(${position.x.toFixed(2)} ${position.y.toFixed(2)})">
@@ -727,193 +661,25 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       if (els.entityResultCount) {
         els.entityResultCount.textContent = `${data.summary?.result_count || 0} resultados`;
       }
-      setEntityStatus("Selecciona una entidad para visualizarla en el grafo.");
+      if (state.entityCatalog.length === 0) {
+        setEntityStatus("El grafo está vacío. Cargue archivos para comenzar.");
+      } else {
+        setEntityStatus(
+          "Seleccione una entidad para visualizarla en el grafo.",
+        );
+      }
       renderEntityList();
     } catch (error) {
       state.entityCatalog = [];
       if (els.entityResultCount)
         els.entityResultCount.textContent = "0 resultados";
       setEntityStatus(
-        `No se pudieron cargar entidades: ${error?.message || error}`,
+        "El grafo está vacío o el servidor no está disponible.",
         true,
       );
       renderEntityList();
     } finally {
       state.loadingEntities = false;
-    }
-  }
-
-  function groupAliasPairs(aliasData) {
-    const sortKey = (text) =>
-      String(text || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase();
-
-    const groups = new Map();
-    const ensureGroup = (id, name) => {
-      if (!groups.has(id)) {
-        groups.set(id, {
-          id,
-          name,
-          pairs: [],
-          _seenTargets: new Set(),
-        });
-      }
-      return groups.get(id);
-    };
-
-    const addDirectionalPair = (sourceId, sourceName, targetId, targetName) => {
-      if (!sourceId || !targetId || sourceId === targetId) return;
-      const group = ensureGroup(sourceId, sourceName || sourceId);
-      const dedupeKey = `${targetId}`;
-      if (group._seenTargets.has(dedupeKey)) return;
-      group._seenTargets.add(dedupeKey);
-      group.pairs.push({
-        source_id: sourceId,
-        source_name: sourceName || sourceId,
-        target_id: targetId,
-        target_name: targetName || targetId,
-      });
-    };
-
-    (aliasData?.pairs || []).forEach((pair) => {
-      const sourceId = pair?.source_id || "";
-      const sourceName = pair?.source_name || sourceId;
-      const targetId = pair?.target_id || "";
-      const targetName = pair?.target_name || targetId;
-
-      addDirectionalPair(sourceId, sourceName, targetId, targetName);
-      addDirectionalPair(targetId, targetName, sourceId, sourceName);
-    });
-
-    const grouped = Array.from(groups.values()).map((group) => ({
-      id: group.id,
-      name: group.name,
-      pairs: group.pairs,
-    }));
-    grouped.forEach((group) => {
-      group.pairs.sort((a, b) => {
-        const byId = sortKey(a.target_id).localeCompare(sortKey(b.target_id));
-        if (byId !== 0) return byId;
-        return sortKey(a.target_name).localeCompare(sortKey(b.target_name));
-      });
-    });
-
-    if (state.aliasSortMode === "connections") {
-      return grouped.sort((a, b) => {
-        const byConnections = b.pairs.length - a.pairs.length;
-        if (byConnections !== 0) return byConnections;
-        const byName = sortKey(a.name).localeCompare(sortKey(b.name));
-        if (byName !== 0) return byName;
-        return sortKey(a.id).localeCompare(sortKey(b.id));
-      });
-    }
-
-    return grouped.sort((a, b) => {
-      const byId = sortKey(a.id).localeCompare(sortKey(b.id));
-      if (byId !== 0) return byId;
-      return sortKey(a.name).localeCompare(sortKey(b.name));
-    });
-  }
-
-  function renderAliasList() {
-    if (!els.aliasList) return;
-    const aliasData = state.aliasData;
-    if (
-      !aliasData ||
-      !Array.isArray(aliasData.pairs) ||
-      aliasData.pairs.length === 0
-    ) {
-      els.aliasList.innerHTML =
-        '<div class="alias-placeholder">No hay posibles alias para ese filtro.</div>';
-      if (els.aliasEntityCount)
-        els.aliasEntityCount.textContent = "0 entidades";
-      return;
-    }
-
-    const groups = groupAliasPairs(aliasData);
-    if (els.aliasEntityCount) {
-      els.aliasEntityCount.textContent = `${aliasData.summary?.entity_count || 0} entidades`;
-    }
-
-    els.aliasList.innerHTML = groups
-      .map(
-        (group) => `
-          <article class="alias-item">
-            <div class="alias-item-head">
-              <div>
-                <div class="alias-item-title">${escapeHtml(group.name)}</div>
-                <div class="alias-item-subtitle">${escapeHtml(group.id)} · ${group.pairs.length} conexiones posibles</div>
-              </div>
-              <span class="metric-pill">${group.pairs.length}</span>
-            </div>
-            <div class="alias-pair-list">
-              ${group.pairs
-                .map(
-                  (pair) => `
-                    <span class="alias-pair-item">
-                      <button class="alias-pair-pill" type="button" data-node-id="${escapeHtml(pair.target_id)}">${escapeHtml(pair.target_name)}</button>
-                      <button class="alias-merge-btn" type="button"
-                        data-source-id="${escapeHtml(pair.target_id)}"
-                        data-source-name="${escapeHtml(pair.target_name)}"
-                        data-target-id="${escapeHtml(pair.source_id)}"
-                        data-target-name="${escapeHtml(pair.source_name)}">Unificar</button>
-                    </span>`,
-                )
-                .join("")}
-            </div>
-          </article>
-        `,
-      )
-      .join("");
-
-    els.aliasList.querySelectorAll("[data-node-id]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const entityId = button.getAttribute("data-node-id") || "";
-        selectEntity(entityId);
-      });
-    });
-
-    els.aliasList.querySelectorAll(".alias-merge-btn").forEach((button) => {
-      button.addEventListener("click", () => {
-        showMergeConfirm({
-          sourceId: button.getAttribute("data-source-id") || "",
-          sourceName: button.getAttribute("data-source-name") || "",
-          targetId: button.getAttribute("data-target-id") || "",
-          targetName: button.getAttribute("data-target-name") || "",
-        });
-      });
-    });
-  }
-
-  async function loadAliases() {
-    if (state.loadingAliases) return;
-    state.loadingAliases = true;
-    setAliasStatus("Buscando posibles alias...");
-
-    try {
-      state.aliasData = await fetchJson(
-        apiUrl("/ui/graph/aliases", { search: state.aliasSearch }),
-      );
-      state.aliasLoadedOnce = true;
-      setAliasStatus(
-        `${state.aliasData.summary?.pair_count || 0} relaciones POSIBLE_ALIAS encontradas.`,
-      );
-      renderAliasList();
-    } catch (error) {
-      state.aliasData = {
-        pairs: [],
-        entities: [],
-        summary: { pair_count: 0, entity_count: 0 },
-      };
-      setAliasStatus(
-        `No se pudieron cargar los posibles alias: ${error?.message || error}`,
-        true,
-      );
-      renderAliasList();
-    } finally {
-      state.loadingAliases = false;
     }
   }
 
@@ -927,7 +693,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       const data = await fetchJson(
         apiUrl("/ui/graph/neighborhood", {
           entity_id: entityId,
-          alias_only: state.aliasOnly,
           relationship_limit: 420,
         }),
       );
@@ -938,18 +703,14 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       state.panX = 0;
       state.panY = 0;
       updateMetrics(data.summary);
-      setGraphStatus(
-        state.aliasOnly
-          ? "Filtro activo: solo se muestran relaciones POSIBLE_ALIAS de la entidad seleccionada."
-          : "Vecindad de entidad cargada correctamente.",
-      );
+      setGraphStatus("Vecindad de entidad cargada correctamente.");
       renderEntityList();
       renderGraph();
     } catch (error) {
       state.snapshot = {
         nodes: [],
         edges: [],
-        summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+        summary: { node_count: 0, edge_count: 0 },
       };
       updateMetrics(state.snapshot.summary);
       setGraphStatus(
@@ -967,72 +728,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
     state.selectedEntityId = entityId;
     await loadNeighborhood(entityId);
   }
-
-  const mergeModal = {
-    overlay: document.getElementById("mergeModal"),
-    text: document.getElementById("mergeModalText"),
-    confirmBtn: document.getElementById("mergeModalConfirm"),
-    cancelBtn: document.getElementById("mergeModalCancel"),
-    pending: null,
-  };
-
-  function showMergeConfirm({ sourceId, sourceName, targetId, targetName }) {
-    if (!mergeModal.overlay) return;
-    mergeModal.pending = { sourceId, targetId };
-    if (mergeModal.text) {
-      mergeModal.text.innerHTML = `¿Querés unificar <strong>${escapeHtml(sourceName)}</strong> dentro de <strong>${escapeHtml(targetName)}</strong>?<br><span class="merge-modal-warning">Se conservará <strong>${escapeHtml(targetName)}</strong>, se transferirán todas las relaciones del investigador origen al destino y esta acción no se puede deshacer.</span>`;
-    }
-    mergeModal.overlay.classList.remove("hidden");
-  }
-
-  function hideMergeConfirm() {
-    if (!mergeModal.overlay) return;
-    mergeModal.overlay.classList.add("hidden");
-    mergeModal.pending = null;
-  }
-
-  async function executeMerge() {
-    if (!mergeModal.pending) return;
-    const { sourceId, targetId } = mergeModal.pending;
-    hideMergeConfirm();
-
-    setAliasStatus("Unificando entidades...");
-    try {
-      const response = await fetch(apiUrl("/ui/graph/merge"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source_id: sourceId, target_id: targetId }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.detail || `HTTP ${response.status}`);
-      }
-      setAliasStatus("Unificación exitosa. Recargando alias...");
-      state.aliasLoadedOnce = false;
-      await loadAliases();
-      if (state.selectedEntityId) {
-        await loadNeighborhood(state.selectedEntityId);
-      }
-    } catch (error) {
-      setAliasStatus(`Error al unificar: ${error?.message || error}`, true);
-    }
-  }
-
-  function bindMergeModal() {
-    mergeModal.cancelBtn?.addEventListener("click", hideMergeConfirm);
-    mergeModal.confirmBtn?.addEventListener("click", executeMerge);
-    mergeModal.overlay?.addEventListener("click", (e) => {
-      if (e.target === mergeModal.overlay) hideMergeConfirm();
-    });
-  }
-
-  const deleteModal = {
-    overlay: document.getElementById("deleteModal"),
-    text: document.getElementById("deleteModalText"),
-    confirmBtn: document.getElementById("deleteModalConfirm"),
-    cancelBtn: document.getElementById("deleteModalCancel"),
-    pending: null,
-  };
 
   function showDeleteConfirm({ entityId, entityName }) {
     if (!deleteModal.overlay) return;
@@ -1084,7 +779,7 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
         state.snapshot = {
           nodes: [],
           edges: [],
-          summary: { node_count: 0, edge_count: 0, alias_edge_count: 0 },
+          summary: { node_count: 0, edge_count: 0 },
         };
 
         updateMetrics(state.snapshot.summary);
@@ -1092,10 +787,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
 
       await loadEntityCatalog();
       setEntityStatus("Entidad eliminada correctamente.");
-
-      if (state.aliasLoadedOnce) {
-        await loadAliases();
-      }
 
       renderGraph();
     } catch (error) {
@@ -1121,44 +812,14 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
       loadEntityCatalog();
     }, 280);
 
-    const debouncedAliasSearch = debounce(() => {
-      state.aliasSearch = (els.aliasSearchInput?.value || "").trim();
-      if (state.activeSidePanel !== "aliases") {
-        setActiveSidePanel("aliases");
-      }
-      loadAliases();
-    }, 280);
-
     els.entitySearchInput?.addEventListener("input", debouncedEntitySearch);
     els.entityTypeSelect?.addEventListener("change", () => {
       state.entityType = els.entityTypeSelect?.value || "";
       loadEntityCatalog();
     });
 
-    els.aliasSearchInput?.addEventListener("input", debouncedAliasSearch);
-    if (els.aliasSortSelect) {
-      els.aliasSortSelect.value = state.aliasSortMode;
-      els.aliasSortSelect.addEventListener("change", () => {
-        const nextMode =
-          els.aliasSortSelect?.value === "connections"
-            ? "connections"
-            : "stable";
-        state.aliasSortMode = nextMode;
-        renderAliasList();
-      });
-    }
-    els.tabEntitiesBtn?.addEventListener("click", () =>
-      setActiveSidePanel("entities"),
-    );
-    els.tabAliasesBtn?.addEventListener("click", () =>
-      setActiveSidePanel("aliases"),
-    );
-
     els.refreshBtn?.addEventListener("click", async () => {
       const refreshTasks = [loadEntityCatalog()];
-      if (state.aliasLoadedOnce || state.activeSidePanel === "aliases") {
-        refreshTasks.push(loadAliases());
-      }
       await Promise.all(refreshTasks);
       if (state.selectedEntityId) {
         await loadNeighborhood(state.selectedEntityId);
@@ -1173,7 +834,6 @@ const GRAPH_API_BASE = window.APP_CONFIG?.API_BASE || "http://localhost:8000";
   }
 
   bindEvents();
-  bindMergeModal();
   bindDeleteModal();
   setActiveSidePanel("entities");
   renderGraph();

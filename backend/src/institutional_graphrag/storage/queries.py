@@ -4,15 +4,6 @@ from .database import get_connection
 
 
 def insert_query(type, query_text, response, cypher_query=None):
-    """
-    Insert a query into the queries table and return its ID.
-
-    Args:
-        type: 'rag' or 'graph_rag'
-        query_text: user query text
-        response: generated response
-        cypher_query: cypher query executed in Neo4j (optional)
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
@@ -63,19 +54,21 @@ def insert_graphrag_chunks(query_id, chunks):
         if isinstance(chunk, dict):
             chunk_id = chunk.get("chunk_id") or chunk.get("id")
             chunk_text = chunk.get("chunk_text") or chunk.get("text")
+            chunk_page = chunk.get("chunk_page") or chunk.get("page")
         else:
-            if len(chunk) < 2:
+            if len(chunk) < 3:
                 raise ValueError(f"Chunk inválido: {chunk}")
             chunk_id = chunk[0]
             chunk_text = chunk[1]
+            chunk_page = chunk[2]
 
         cur.execute(
             """
-            INSERT INTO graphrag_chunks (query_id, chunk_id, chunk_text)
-            VALUES (%s, %s, %s)
+            INSERT INTO graphrag_chunks (query_id, chunk_id, chunk_text, chunk_page)
+            VALUES (%s, %s, %s, %s)
             RETURNING id;
             """,
-            (query_id, chunk_id, chunk_text),
+            (query_id, chunk_id, chunk_text, chunk_page),
         )
         graphrag_chunk_row_id = cur.fetchone()[0]
         inserted_chunk_ids[chunk_id] = graphrag_chunk_row_id
@@ -88,10 +81,6 @@ def insert_graphrag_chunks(query_id, chunks):
 
 
 def insert_graphrag_chunk_entities(query_id, chunk_to_entities):
-    """
-    chunk_to_entities:
-        Dict[str, List[tuple[str, str]]]
-    """
     conn = get_connection()
     cur = conn.cursor()
 
@@ -116,12 +105,6 @@ def insert_graphrag_chunk_entities(query_id, chunk_to_entities):
 
 
 def get_queries_with_chunks():
-    """
-    Return all queries with their associated chunks.
-    Supports both:
-    - RAG -> chunks
-    - GraphRAG -> graphrag_chunks + graphrag_chunk_entities
-    """
     conn = get_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -183,7 +166,8 @@ def get_queries_with_chunks():
             id,
             query_id,
             chunk_id,
-            chunk_text
+            chunk_text,
+            chunk_page
         FROM graphrag_chunks
         ORDER BY query_id, id;
     """)
@@ -200,6 +184,7 @@ def get_queries_with_chunks():
             "id": row["id"],
             "chunk_id": row["chunk_id"],
             "chunk_text": row["chunk_text"],
+            "chunk_page": row["chunk_page"],
             "score": None,
             "entities": [],
         }
@@ -240,12 +225,7 @@ def get_queries_with_chunks():
 
 
 def delete_query_by_id(query_id: int) -> bool:
-    """
-    Delete a query by id.
-    If foreign keys use ON DELETE CASCADE, associated chunks/entities
-    are deleted automatically.
-    Returns True if the query existed.
-    """
+    # El ON DELETE CASCADE en las tablas hijas elimina chunks y entidades automáticamente.
     conn = get_connection()
     cur = conn.cursor()
 
@@ -260,12 +240,6 @@ def delete_query_by_id(query_id: int) -> bool:
 
 
 def delete_all_queries() -> int:
-    """
-    Delete all queries.
-    If foreign keys use ON DELETE CASCADE, associated chunks/entities
-    are deleted automatically.
-    Returns the number of deleted queries.
-    """
     conn = get_connection()
     cur = conn.cursor()
 

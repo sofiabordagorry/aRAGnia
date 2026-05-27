@@ -27,6 +27,7 @@ class GraphRAGChunk:
 
     chunk_id: str
     text: str
+    page: int
 
 
 @dataclass
@@ -36,9 +37,7 @@ class GraphRAGResult:
     answer: str
     chunks: List[GraphRAGChunk]
     cypher_query: str
-    chunk_to_entities: Dict[
-        str, List[tuple[str, str]]
-    ]  # Mapeo chunk_id -> [(entity_id, entity_label)] - TRAZABILIDAD COMPLETA
+    chunk_to_entities: Dict[str, List[tuple[str, str]]]  # chunk_id -> [(entity_id, entity_label)]
 
 
 class CypherQueryValidator:
@@ -63,12 +62,10 @@ class CypherQueryValidator:
 
         query_upper = query.upper()
 
-        # Verificar palabras clave prohibidas
         for pattern in cls.FORBIDDEN_KEYWORDS:
             if re.search(pattern, query_upper):
                 return False, f"Query contiene operación prohibida: {pattern}"
 
-        # Debe contener MATCH o RETURN
         if "MATCH" not in query_upper and "RETURN" not in query_upper:
             return False, "Query debe contener MATCH o RETURN"
 
@@ -85,20 +82,21 @@ class GraphRAGRetriever:
         neo4j_password: str,
         temperature: float = 0.3,
         max_tokens: int = 1024,
+        fewshot_store: Optional[Any] = None,
     ):
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
         answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
-        # LLM para Cypher
         self.cypher_llm_client = get_llm_client(model=cypher_model)
-        # LLM para clasificación y respuestas finales
         self.answer_llm_client = get_llm_client(model=answer_model)
         self.temperature = temperature
         self.max_tokens = max_tokens
         self._schema_cache: Optional[str] = None
-        self._fewshot: Optional[Any] = self._init_fewshot()
+        self._fewshot: Optional[Any] = (
+            fewshot_store if fewshot_store is not None else self._init_fewshot()
+        )
 
     def _init_fewshot(self) -> Optional[Any]:
         try:
@@ -116,8 +114,6 @@ class GraphRAGRetriever:
     def close(self):
         """Cerrar conexión a Neo4j."""
         self.driver.close()
-        if self._fewshot:
-            self._fewshot.close()
 
     def _classify_query_intent(self, user_query: str) -> str:
         """
@@ -153,7 +149,6 @@ Classification (answer only SEARCH or CHAT):"""
             .upper()
         )
 
-        # Parse response - debe ser SEARCH o CHAT
         if "SEARCH" in response:
             return "SEARCH"
         elif "CHAT" in response:
@@ -216,7 +211,6 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 max_tokens=self.max_tokens,
             )
 
-            # Extraer query entre tags <QUERY>
             query_match = re.search(r"<QUERY>(.*?)</QUERY>", response, re.DOTALL | re.IGNORECASE)
 
             if query_match:
@@ -246,22 +240,20 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 "LLM no devolvió query entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
 
-        # Corregir dirección incorrecta de PARTICIPO_EN si el LLM la invirtió
         cypher_query = self._fix_relationship_directions(cypher_query)
 
-        # Detectar caso NOT_IN_SCHEMA
+        cypher_query = self._use_display_name_for_researchers(cypher_query)
+
         if cypher_query.upper() == "NOT_IN_SCHEMA":
             raise ValueError(
                 "NOT_IN_SCHEMA: La información solicitada no existe en el esquema del grafo."
             )
-        # Detectar caso UNSUPPORTED (pregunta fuera del alcance de una sola query)
         if cypher_query.upper() == "UNSUPPORTED":
             raise ValueError(
                 "UNSUPPORTED: La pregunta requiere múltiples consultas y está fuera del "
                 "alcance de esta solución. Por favor, reformule su pregunta de forma más específica."
             )
 
-        # Validar query
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
             raise ValueError(f"Query generada no es segura: {error}")
@@ -270,12 +262,12 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
         return cypher_query
 
     def _fetch_schema(self) -> str:
-        """Fetches node labels/properties and relationships from Neo4j. Cached after first call."""
+        """Obtiene labels/propiedades de nodos y relaciones de Neo4j. Se cachea tras la primera llamada."""
         if self._schema_cache is not None:
             return self._schema_cache
 
         node_props: Dict[str, List[str]] = {}
-        rels: List[tuple[str, str, str]] = []
+        rels_props: Dict[tuple[str, str, str], set[str]] = {}
 
         with self.driver.session() as session:
             records = list(session.run("""
@@ -291,27 +283,28 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
             records = list(session.run("""
                     MATCH (a)-[r]->(b)
-                    RETURN DISTINCT labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target
-                    ORDER BY rel
+                    RETURN labels(a)[0] AS source, type(r) AS rel, labels(b)[0] AS target, keys(r) AS props
                     """))
             for r in records:
                 if r["source"] and r["rel"] and r["target"]:
-                    rels.append((r["source"], r["rel"], r["target"]))
+                    key = (r["source"], r["rel"], r["target"])
+                    rels_props.setdefault(key, set()).update(r["props"] or [])
 
         lines = ["Nodes and their key properties:"]
         for label, props in sorted(node_props.items()):
             lines.append(f"- {label:<15} → {', '.join(props)}")
 
         lines.append("\nRelationships:")
-        for source, rel, target in rels:
-            lines.append(f"- ({source})-[:{rel}]->({target})")
+        for (source, rel, target), rel_props in sorted(rels_props.items()):
+            props_str = " {" + ", ".join(sorted(rel_props)) + "}" if rel_props else ""
+            lines.append(f"- ({source})-[:{rel}{props_str}]->({target})")
 
         self._schema_cache = "\n".join(lines)
         logger.info("Schema cargado desde Neo4j y cacheado")
         return self._schema_cache
 
     def _fetch_fewshot_examples(self, user_query: str) -> str:
-        """Returns a formatted block of similar (question, cypher) examples."""
+        """Retorna un bloque formateado de ejemplos similares (pregunta, cypher)."""
         if self._fewshot:
             try:
                 examples = self._fewshot.search(user_query, top_k=3)
@@ -335,9 +328,12 @@ SCHEMA:
 
 SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
-- Investigador.id follows 'lastname_firstname'; use Investigador.name for display
-- Proyecto.value contains the project title; Proyecto.id follows 'gi_2014_133'
-- Topico.value and Dominio.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
+- PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
+- Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
+- Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
+- Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
+- Topico.value, Subcampo.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
@@ -397,31 +393,36 @@ CRITICAL SYNTAX:
         """
         Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
         Schema correcto:
-        - (Investigador)-[:PARTICIPO_EN]->(Proyecto)
-        - (Investigador)-[:RESPONSABLE_DE]->(Proyecto)
-        - (Proyecto)-[:TIENE_TOPICO]->(Topico)
-        - (Proyecto)-[:ES_DESCRITO_POR]->(Documento)
-        - (Proyecto)-[:INICIO_EN]->(Anio)
+        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto|Grupo)
+        - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
+        - (Proyecto|Grupo)-[:ES_DESCRITO_POR]->(Documento)
+        - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
+        - (Proyecto)-[:PERTENECE_A_AREA]->(Area)
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
         - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
-        - (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+        - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
         correct_directions = [
             ("Investigador", "PARTICIPO_EN", "Proyecto"),
-            ("Investigador", "RESPONSABLE_DE", "Proyecto"),
+            ("Investigador", "PARTICIPO_EN", "Grupo"),
             ("Proyecto", "TIENE_TOPICO", "Topico"),
-            ("Topico", "PERTENECE_A_DOMINIO", "Dominio"),
+            ("Grupo", "TIENE_TOPICO", "Topico"),
+            ("Topico", "PERTENECE_A_SUBCAMPO", "Subcampo"),
             ("Proyecto", "ES_DESCRITO_POR", "Documento"),
+            ("Grupo", "ES_DESCRITO_POR", "Documento"),
             ("Proyecto", "INICIO_EN", "Anio"),
+            ("Grupo", "INICIO_EN", "Anio"),
+            ("Proyecto", "PERTENECE_A_AREA", "Area"),
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
             ("Chunk", "EXTRAIDO_DE", "Investigador"),
             ("Chunk", "EXTRAIDO_DE", "Topico"),
             ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
+            ("Grupo", "TITULO_EXTRAIDO_DE", "Chunk"),
         ]
         fixed = query
         corrections_made = []
@@ -431,9 +432,11 @@ CRITICAL SYNTAX:
             # Patrón para detectar la dirección invertida
             pattern = re.compile(
                 rf"""
-                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s*
+                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
                 \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
-                \s*-\s*\[:{rel_type}\]\s*->\s*
+                \s*-\s*
+                \[(?:(?P<rel_var>\w+)?:){re.escape(rel_type)}\]
+                \s*->\s*
                 \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
                 """,
                 re.IGNORECASE | re.VERBOSE,
@@ -464,6 +467,37 @@ CRITICAL SYNTAX:
             logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
 
         return fixed
+
+    @staticmethod
+    def _use_display_name_for_researchers(cypher_query: str) -> str:
+        """
+        Reemplaza las referencias a '.name' por '.display_name' en la cláusula RETURN
+        para todas las variables que representan a un Investigador.
+        """
+
+        # Buscar dónde empieza el RETURN
+        parts = re.split(r"\b(RETURN)\b", cypher_query, maxsplit=1, flags=re.IGNORECASE)
+
+        if len(parts) == 3:
+            before_return = parts[0]
+            return_keyword = parts[1]
+            after_return = parts[2]
+
+            # Extraer todas las variables asignadas a Investigador (ej: x en (x:Investigador))
+            investigador_vars = set(
+                re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
+            )
+
+            if not investigador_vars:
+                return cypher_query
+
+            for var in investigador_vars:
+                pattern = rf"\b{var}\.name\b"
+                after_return = re.sub(pattern, f"{var}.display_name", after_return)
+
+            return before_return + return_keyword + after_return
+
+        return cypher_query
 
     def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
         """
@@ -538,6 +572,10 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
 
+        fixed_query = self._use_display_name_for_researchers(fixed_query)
+
+        fixed_query = self._fix_relationship_directions(fixed_query)
+
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)
         if not is_safe:
             raise ValueError(f"Query corregida no es segura: {error}")
@@ -549,7 +587,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         """
         Ejecuta una query Cypher y retorna resultados (como neo4j Record objects).
         """
-        # Validar nuevamente antes de ejecutar
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
             raise ValueError(f"Query no pasó validación de seguridad: {error}")
@@ -560,17 +597,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         logger.info(f"Query ejecutada, {len(records)} registros obtenidos")
         return records
-
-    def _is_aggregation_query(self, cypher_query: str) -> bool:
-        """Detecta si una query es de agregación (usa COUNT, SUM, AVG, etc.) o devuelve valores simples."""
-        query_upper = cypher_query.upper()
-        # Agregaciones numéricas
-        aggregation_functions = ["COUNT(", "SUM(", "AVG(", "MAX(", "MIN("]
-        # También considerar queries que devuelven propiedades simples sin COLLECT
-        has_aggregation = any(func in query_upper for func in aggregation_functions)
-        # Si no tiene COLLECT ni chunks explícitos, probablemente es una query simple
-        has_collect = "COLLECT(" in query_upper
-        return has_aggregation or not has_collect
 
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
@@ -609,25 +635,30 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         chunk_to_entities: Dict[str, List[tuple[str, str]]] = {}  # chunk_id -> [(entity_id, label)]
 
         for record in records:
-            # Recopilar chunks y entidades de este record
             chunks_in_record = []
             # direct = vienen de MATCH directo (implica relación EXTRAIDO_DE/TITULO_EXTRAIDO_DE)
             entities_direct = []
             # collected = vienen de COLLECT() — son del proyecto/consulta, no del chunk
             entities_collected = []
 
-            # Iterar sobre los valores del record
             for key in record.keys():
                 value = record[key]
 
-                # Verificar si es un nodo de Neo4j (directo, no en lista)
                 if isinstance(value, Node):
                     labels = list(value.labels)
                     if "Chunk" in labels:
                         chunks_in_record.append(value)
                     elif any(
                         label in labels
-                        for label in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                        for label in [
+                            "Investigador",
+                            "Topico",
+                            "Proyecto",
+                            "Grupo",
+                            "Documento",
+                            "Anio",
+                            "Area",
+                        ]
                     ):
                         entities_direct.append(value)
 
@@ -644,8 +675,10 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                                     "Investigador",
                                     "Topico",
                                     "Proyecto",
+                                    "Grupo",
                                     "Documento",
                                     "Anio",
+                                    "Area",
                                 ]
                             ):
                                 entities_collected.append(item)
@@ -657,20 +690,29 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     (
                         lbl
                         for lbl in entity_labels
-                        if lbl in ["Investigador", "Topico", "Proyecto", "Documento", "Anio"]
+                        if lbl
+                        in [
+                            "Investigador",
+                            "Topico",
+                            "Proyecto",
+                            "Grupo",
+                            "Documento",
+                            "Anio",
+                            "Area",
+                        ]
                     ),
                     "",
                 )
                 entity_id = props.get("id", "")
                 if entity_label == "Investigador":
                     entity_id = props.get("name", entity_id) or entity_id
-                elif entity_label == "Proyecto":
+                elif entity_label in ("Proyecto", "Grupo"):
                     raw_id = props.get("id", "")
                     title = props.get("value", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
                     entity_id = props.get("id", entity_id) or entity_id
-                elif entity_label == "Topico":
+                elif entity_label in ("Topico", "Area"):
                     entity_id = props.get("value", entity_id) or entity_id
                 elif entity_label == "Anio":
                     entity_id = props.get("year", entity_id) or entity_id
@@ -683,19 +725,20 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 if entity_id and entity_label:
                     evidence_entities[(entity_id, entity_label)] = props
 
-            # Procesar chunks encontrados
             for chunk_node in chunks_in_record:
                 chunk_id = chunk_node.get("id", "")
                 if not chunk_id:
                     continue
 
-                # Agregar chunk si no existe
                 if chunk_id not in chunks_dict:
                     text = chunk_node.get("text", "")
+                    page_numbers = chunk_node.get("page_numbers")
+                    page = int(page_numbers[0]) if page_numbers else 1
                     if text:
                         chunks_dict[chunk_id] = GraphRAGChunk(
                             chunk_id=chunk_id,
                             text=text,
+                            page=page,
                         )
 
                 # Solo asociar entidades DIRECTAS al chunk (implican EXTRAIDO_DE/TITULO_EXTRAIDO_DE)
@@ -721,15 +764,17 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         label_display = {
             "Proyecto": "Proyectos",
+            "Grupo": "Grupos",
             "Investigador": "Investigadores",
             "Topico": "Tópicos",
             "Documento": "Documentos",
             "Anio": "Año",
+            "Area": "Áreas",
         }
 
         lines = ["=== ENTIDADES ENCONTRADAS EN EL GRAFO ==="]
 
-        for label in ["Proyecto", "Investigador", "Topico", "Documento", "Anio"]:
+        for label in ["Proyecto", "Grupo", "Investigador", "Topico", "Documento", "Anio", "Area"]:
             entries = [
                 ((eid, lbl), props)
                 for (eid, lbl), props in evidence_entities.items()
@@ -739,7 +784,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 continue
             lines.append(f"\n{label_display[label]}:")
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
-                if label == "Proyecto":
+                if label in ("Proyecto", "Grupo"):
                     pid = props.get("id", "")
                     title = props.get("value", "") or props.get("name", "")
                     if title and pid:
@@ -813,7 +858,6 @@ Tu respuesta (frase introductoria + lista completa):"""
         intent = self._classify_query_intent(user_query)
         logger.info(f"Intención clasificada: {intent}")
 
-        # Si es conversacional, generar respuesta directa sin búsqueda en grafo
         if intent == "CHAT":
             logger.info("Modo conversacional activado (usando llama)")
             conversational_answer = self._generate_conversational_response(user_query)
@@ -861,7 +905,6 @@ Tu respuesta (frase introductoria + lista completa):"""
                 )
             raise
 
-        # Ejecutar query con reintentos en caso de error de sintaxis
         MAX_SYNTAX_RETRIES = 3
         _too_complex_result = GraphRAGResult(
             answer=(
@@ -961,7 +1004,10 @@ Tu respuesta (frase introductoria + lista completa):"""
                 chunk_to_entities={},
             )
 
-        entity_context = self.build_entity_context(evidence_entities, chunk_to_entities)
+        if evidence_entities:
+            entity_context = self.build_entity_context(evidence_entities, chunk_to_entities)
+        else:
+            entity_context = self._build_aggregation_context(records)
 
         messages = self.build_messages_for_answer(user_query, entity_context)
         answer = self.answer_llm_client.generate(

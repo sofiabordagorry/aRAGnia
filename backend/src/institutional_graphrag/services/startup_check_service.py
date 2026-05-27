@@ -43,7 +43,6 @@ def wait_for_postgres(max_retries: int = 15, delay: int = 2) -> None:
             conn.close()
             return
         except psycopg2.OperationalError as e:
-            # Add this print statement to see the REAL error
             print(f"Intento de conexión fallido. Razón: {e}")
             time.sleep(delay)
 

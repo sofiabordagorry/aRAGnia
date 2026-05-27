@@ -3,145 +3,11 @@
     {
       "id": "proy_2012_638",
       "label": "Proyecto",
-      "value": "web warehouse de datos abiertos de gobierno con gestion de calidad"
-    },
-    {
-      "id": "2012",
-      "label": "Anio",
       "value": {
-        "year": "2012"
+        "title": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "keywords": ["Web Warehouse", "Datos Abiertos", "Calidad"],
+        "description": "El presente proyecto busca estudiar y resolver los problemas que se presentan para desarrollar un Web Warehouse (en adelante, WW) de datos abiertos de gobierno electrónico, donde se conozca, valide y gestione la calidad de los datos. El encare del proyecto es "
       }
-    },
-    {
-      "id": "proy_2016_729",
-      "label": "Proyecto",
-      "value": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos"
-    },
-    {
-      "id": "2016",
-      "label": "Anio",
-      "value": {
-        "year": "2016"
-      }
-    },
-    {
-      "id": "proy_2018_260",
-      "label": "Proyecto",
-      "value": "diseño optimo de redes de ciclovias"
-    },
-    {
-      "id": "2018",
-      "label": "Anio",
-      "value": {
-        "year": "2018"
-      }
-    },
-    {
-      "id": "proy_2020_513",
-      "label": "Proyecto",
-      "value": "co-simulacion en sistemas ciber fisicos"
-    },
-    {
-      "id": "2020",
-      "label": "Anio",
-      "value": {
-        "year": "2020"
-      }
-    },
-    {
-      "id": "proy_2018_413",
-      "label": "Proyecto",
-      "value": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo"
-    },
-    {
-      "id": "ciencias_agricolas_y_biologicas",
-      "label": "Dominio",
-      "value": "ciencias agricolas y biologicas"
-    },
-    {
-      "id": "inteligencia_artificial",
-      "label": "Topico",
-      "value": "inteligencia artificial"
-    },
-    {
-      "id": "agronomia_y_ciencias_de_cultivos",
-      "label": "Topico",
-      "value": "agronomia y ciencias de cultivos"
-    },
-    {
-      "id": "ciencias_de_la_computacion",
-      "label": "Dominio",
-      "value": "ciencias de la computacion"
-    },
-    {
-      "id": "ciencias_de_la_decision",
-      "label": "Dominio",
-      "value": "ciencias de la decision"
-    },
-    {
-      "id": "ingenieria",
-      "label": "Dominio",
-      "value": "ingenieria"
-    },
-    {
-      "id": "software",
-      "label": "Topico",
-      "value": "software"
-    },
-    {
-      "id": "ingenieria_de_control_y_sistemas",
-      "label": "Topico",
-      "value": "ingenieria de control y sistemas"
-    },
-    {
-      "id": "matematicas",
-      "label": "Dominio",
-      "value": "matematicas"
-    },
-    {
-      "id": "modelado_y_simulacion",
-      "label": "Topico",
-      "value": "modelado y simulacion"
-    },
-    {
-      "id": "teoria_computacional_y_matematicas",
-      "label": "Topico",
-      "value": "teoria computacional y matematicas"
-    },
-    {
-      "id": "aplicaciones_de_ciencias_de_la_computacion",
-      "label": "Topico",
-      "value": "aplicaciones de ciencias de la computacion"
-    },
-    {
-      "id": "redes_de_computadoras_y_comunicaciones",
-      "label": "Topico",
-      "value": "redes de computadoras y comunicaciones"
-    },
-    {
-      "id": "procesamiento_de_senales",
-      "label": "Topico",
-      "value": "procesamiento de senales"
-    },
-    {
-      "id": "sistemas_de_informacion",
-      "label": "Topico",
-      "value": "sistemas de informacion"
-    },
-    {
-      "id": "seguridad_riesgo_confiabilidad_y_calidad",
-      "label": "Topico",
-      "value": "seguridad, riesgo, confiabilidad y calidad"
-    },
-    {
-      "id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "label": "Topico",
-      "value": "ciencias de la gestion e investigacion operativa"
-    },
-    {
-      "id": "ciencias_de_la_decision_generales",
-      "label": "Topico",
-      "value": "ciencias de la decision generales"
     },
     {
       "id": "proy_2012_638_propuesta",
@@ -166,13 +32,100 @@
       }
     },
     {
+      "id": "2018",
+      "label": "Anio",
+      "value": {
+        "year": "2018"
+      }
+    },
+    {
+      "id": "2012",
+      "label": "Anio",
+      "value": {
+        "year": "2012"
+      }
+    },
+    {
+      "id": "proy_2016_729",
+      "label": "Proyecto",
+      "value": {
+        "title": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
+        "keywords": ["Compresión", "Datos de secuenciación", "Nanoporos"],
+        "description": "En 2015 se liberó la primera versión comercial de un secuenciador de genomas por nanoporos, una tecnología que se perfila como la próxima generación de instrumentos de secuenciación. Este tipo de secuenciadores generan lecturas de fragmentos de secuencia de AD"
+      }
+    },
+    {
+      "id": "proy_2016_395",
+      "label": "Proyecto",
+      "value": {
+        "title": "sistemas binarios estocasticos dinamicos",
+        "keywords": [
+          "Sistema Binario Estocástico",
+          "Confiabilidad",
+          "Complejidad Computacional"
+        ],
+        "description": "Un sistema binario estocástico (SBS por sus siglas en inglés) es un sistema de múltiples componentes, al que se asocia un estado binario: de correcto funcionamiento o falla. Sus componentes fallan u operan, con ciertas probabilidades denominadas “elementales“."
+      }
+    },
+    {
+      "id": "proy_2016_395_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_395_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "sub_id": "395",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_395_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_395_informe",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "sub_id": "395",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "2016",
+      "label": "Anio",
+      "value": {
+        "year": "2016"
+      }
+    },
+    {
+      "id": "proy_2018_260",
+      "label": "Proyecto",
+      "value": {
+        "title": "diseño optimo de redes de ciclovias",
+        "keywords": ["ciclovías", "diseño de redes", "optimización"],
+        "description": "Se aplican metodologías de diseño de redes al problema del diseño óptimo de redes de ciclovías urbanas. Una red de ciclovías es la conjunción de todas las ciclovías de un área de estudio. Una ciclovía es una especialización del espacio urbano dedicado a la cir"
+      }
+    },
+    {
+      "id": "proy_2018_413",
+      "label": "Proyecto",
+      "value": {
+        "title": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
+        "keywords": [
+          "índice verde",
+          "aprendizaje profundo",
+          "análisis de redes"
+        ],
+        "description": "Existen varios satélites que proveen, en forma gratuita y periódica, imágenes de la superficie agrícola del país. Esta información es utilizada por científicos de todo el mundo, pero es poco utilizada por los sectores productivos a escala de parcela (o inferio"
+      }
+    },
+    {
       "id": "proy_2016_729_propuesta",
       "label": "Documento",
       "value": {
         "base_name": "proy_2016_729_propuesta",
         "is_group": "proy",
         "year_publisher": "2016",
-        "subid": "729",
+        "sub_id": "729",
         "type": "propuesta"
       }
     },
@@ -182,8 +135,8 @@
       "value": {
         "base_name": "proy_2016_729_informe",
         "is_group": "proy",
-        "year_publisher": "2019",
-        "subid": "729",
+        "year_publisher": "2016",
+        "sub_id": "729",
         "type": "informe"
       }
     },
@@ -232,293 +185,285 @@
       }
     },
     {
-      "id": "proy_2020_513_propuesta",
-      "label": "Documento",
-      "value": {
-        "base_name": "proy_2020_513_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2020",
-        "subid": "513",
-        "type": "propuesta"
-      }
-    },
-    {
-      "id": "proy_2020_513_informe",
-      "label": "Documento",
-      "value": {
-        "base_name": "proy_2020_513_informe",
-        "is_group": "proy",
-        "year_publisher": "2023",
-        "subid": "513",
-        "type": "informe"
-      }
-    },
-    {
-      "id": "alvaro_martin",
+      "id": "uruguay_cedula_de_identidad_1884198_9",
       "label": "Investigador",
       "value": {
-        "name": "alvaro martin",
-        "source": "human_annotation"
+        "name": "alvaro martin menoni",
+        "display_name": "Álvaro Martín Menoni",
+        "documento": "1884198-9",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "flavia_serra",
+      "id": "uruguay_cedula_de_identidad_2915995_1",
       "label": "Investigador",
       "value": {
-        "name": "flavia serra",
-        "source": "human_annotation"
+        "name": "flavia serra sosa",
+        "display_name": "Flavia Serra Sosa",
+        "documento": "2915995-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
-      "id": "lorena_etcheverry",
+      "id": "uruguay_cedula_de_identidad_4168464_1",
       "label": "Investigador",
       "value": {
-        "name": "lorena etcheverry",
-        "source": "human_annotation"
+        "name": "lorena etcheverry venturini",
+        "display_name": "Lorena Etcheverry Venturini",
+        "documento": "4168464-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
-      "id": "raul_ruggia",
+      "id": "uruguay_cedula_de_identidad_1676959_1",
       "label": "Investigador",
       "value": {
-        "name": "raul ruggia",
-        "source": "human_annotation"
+        "name": "raul ruggia frick",
+        "display_name": "Raúl Ruggia Frick",
+        "documento": "1676959-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "adriana_marotta",
+      "id": "uruguay_cedula_de_identidad_2760527_1",
       "label": "Investigador",
       "value": {
-        "name": "adriana marotta",
-        "source": "human_annotation"
+        "name": "adriana alejandra marotta llambi",
+        "display_name": "Adriana Alejandra Marotta Llambí",
+        "documento": "2760527-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
-      "id": "laura_gonzalez",
+      "id": "uruguay_cedula_de_identidad_3642724_0",
       "label": "Investigador",
       "value": {
-        "name": "laura gonzalez",
-        "source": "human_annotation"
+        "name": "daniel callejas canepa",
+        "display_name": "Daniel Callejas Cánepa",
+        "documento": "3642724-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "fernando_carpani",
+      "id": "uruguay_cedula_de_identidad_1320065_7",
       "label": "Investigador",
       "value": {
-        "name": "fernando carpani",
-        "source": "human_annotation"
+        "name": "gadiel seroussi blusztein",
+        "display_name": "Gadiel Seroussi Blusztein",
+        "documento": "1320065-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "daniel_callejas",
+      "id": "uruguay_cedula_de_identidad_3246827_0",
       "label": "Investigador",
       "value": {
-        "name": "daniel callejas",
-        "source": "human_annotation"
+        "name": "jose roberto sotelo silveira",
+        "display_name": "Jose Roberto Sotelo Silveira",
+        "documento": "3246827-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "gadiel_seroussi",
+      "id": "uruguay_cedula_de_identidad_2597542_0",
       "label": "Investigador",
       "value": {
-        "name": "gadiel seroussi",
-        "source": "human_annotation"
+        "name": "antonio daniel mauttone vidales",
+        "display_name": "Antonio Daniel Mauttone Vidales",
+        "documento": "2597542-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "jose_sotelo_silveira",
+      "id": "uruguay_cedula_de_identidad_3988305_5",
       "label": "Investigador",
       "value": {
-        "name": "jose sotelo silveira",
-        "source": "human_annotation"
+        "name": "maria elizabeth urquhart perez",
+        "display_name": "María Elizabeth Urquhart Pérez",
+        "documento": "3988305-5",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
-      "id": "guillermo_dufort",
+      "id": "uruguay_cedula_de_identidad_3348401_1",
       "label": "Investigador",
       "value": {
-        "name": "guillermo dufort",
-        "source": "human_annotation"
+        "name": "pablo alejandro rodriguez bocca",
+        "display_name": "Pablo Alejandro Rodríguez Bocca",
+        "documento": "3348401-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "antonio_mauttone",
+      "id": "uruguay_cedula_de_identidad_2981586_6",
       "label": "Investigador",
       "value": {
-        "name": "antonio mauttone",
-        "source": "human_annotation"
+        "name": "andres berger ricca",
+        "display_name": "Andrés Berger Ricca",
+        "documento": "2981586-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "maría_e_urquhart",
+      "id": "uruguay_cedula_de_identidad_5294489_8",
       "label": "Investigador",
       "value": {
-        "name": "maria e. urquhart",
-        "source": "human_annotation"
+        "name": "gustavo ricardo guerberoff aguirregomezcorta",
+        "display_name": "Gustavo Ricardo Guerberoff Aguirregomezcorta",
+        "documento": "5294489-8",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "guillermo_ettlin",
+      "id": "uruguay_cedula_de_identidad_3645500_3",
       "label": "Investigador",
       "value": {
-        "name": "guillermo ettlin",
-        "source": "human_annotation"
+        "name": "franco rafael robledo amoza",
+        "display_name": "Franco Rafael Robledo Amoza",
+        "documento": "3645500-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "pablo_rodríguez_bocca",
+      "id": "uruguay_cedula_de_identidad_3702465_5",
       "label": "Investigador",
       "value": {
-        "name": "pablo rodriguez bocca",
-        "source": "human_annotation"
+        "name": "pablo gabriel romero rodriguez",
+        "display_name": "Pablo Gabriel Romero Rodríguez",
+        "documento": "3702465-5",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "andrés_berger",
+      "id": "uruguay_cedula_de_identidad_1539915_9",
       "label": "Investigador",
       "value": {
-        "name": "andres berger",
-        "source": "human_annotation"
+        "name": "hector cancela bosi",
+        "display_name": "Héctor Cancela Bosi",
+        "documento": "1539915-9",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "gerardo_rubino",
+      "id": "uruguay_cedula_de_identidad_1908216_2",
       "label": "Investigador",
       "value": {
-        "name": "gerardo rubino",
-        "source": "human_annotation"
+        "name": "fernando carpani fernandez",
+        "display_name": "Fernando Carpani Fernández",
+        "documento": "1908216-2",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
       }
     },
     {
-      "id": "martín_beyer",
+      "id": "uruguay_cedula_de_identidad_2839112_0",
       "label": "Investigador",
       "value": {
-        "name": "martin beyer",
-        "source": "human_annotation"
+        "name": "laura gonzalez lopez",
+        "display_name": "Laura González López",
+        "documento": "2839112-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
       }
     },
     {
-      "id": "brian_yang",
-      "label": "Investigador",
-      "value": {
-        "name": "brian yang",
-        "source": "human_annotation"
-      }
+      "id": "area_tecnologica",
+      "label": "Area",
+      "value": "tecnologica"
     },
     {
-      "id": "rehaan_ahmad",
-      "label": "Investigador",
-      "value": {
-        "name": "rehaan ahmad",
-        "source": "human_annotation"
-      }
+      "id": "ingenieria_general_topic",
+      "label": "Topico",
+      "value": "ingenieria general"
     },
     {
-      "id": "javier_baliosian",
-      "label": "Investigador",
-      "value": {
-        "name": "javier baliosian",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "matias_richart",
-      "label": "Investigador",
-      "value": {
-        "name": "matias richart",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "gonzalo_tejera",
-      "label": "Investigador",
-      "value": {
-        "name": "gonzalo tejera",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "facundo_benavides",
-      "label": "Investigador",
-      "value": {
-        "name": "facundo benavides",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "guillermo_amorin",
-      "label": "Investigador",
-      "value": {
-        "name": "guillermo amorin",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "federico_andrade",
-      "label": "Investigador",
-      "value": {
-        "name": "federico andrade",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "eduardo_grampin",
-      "label": "Investigador",
-      "value": {
-        "name": "eduardo grampin",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "jorge_visca",
-      "label": "Investigador",
-      "value": {
-        "name": "jorge visca",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "mercedes_marzoa",
-      "label": "Investigador",
-      "value": {
-        "name": "mercedes marzoa",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "ewelina_bakala",
-      "label": "Investigador",
-      "value": {
-        "name": "ewelina bakala",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "martin_llofriu",
-      "label": "Investigador",
-      "value": {
-        "name": "martin llofriu",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "guillermo_trinidad",
-      "label": "Investigador",
-      "value": {
-        "name": "guillermo trinidad",
-        "source": "human_annotation"
-      }
-    },
-    {
-      "id": "alberto_castro",
-      "label": "Investigador",
-      "value": {
-        "name": "alberto castro",
-        "source": "human_annotation"
-      }
+      "id": "ingenieria_general_subfield",
+      "label": "SubCampo",
+      "value": "ingenieria general"
     }
   ],
   "relationships": [
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "ingenieria_general_topic",
+      "target_id": "ingenieria_general_subfield",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_638",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_395",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_729",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_260",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_413",
+      "target_id": "ingenieria_general_topic",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+
     {
       "type": "INICIO_EN",
       "source_id": "proy_2012_638",
@@ -533,6 +478,12 @@
     },
     {
       "type": "INICIO_EN",
+      "source_id": "proy_2016_395",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
       "source_id": "proy_2018_260",
       "target_id": "2018",
       "properties": {}
@@ -541,180 +492,6 @@
       "type": "INICIO_EN",
       "source_id": "proy_2018_413",
       "target_id": "2018",
-      "properties": {}
-    },
-    {
-      "type": "INICIO_EN",
-      "source_id": "proy_2020_513",
-      "target_id": "2020",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2012_638",
-      "target_id": "sistemas_de_informacion",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2012_638",
-      "target_id": "software",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2020_513",
-      "target_id": "redes_de_computadoras_y_comunicaciones",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2020_513",
-      "target_id": "software",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2020_513",
-      "target_id": "ingenieria_de_control_y_sistemas",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2012_638",
-      "target_id": "seguridad_riesgo_confiabilidad_y_calidad",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2016_729",
-      "target_id": "procesamiento_de_senales",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2016_729",
-      "target_id": "teoria_computacional_y_matematicas",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2016_729",
-      "target_id": "aplicaciones_de_ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "teoria_computacional_y_matematicas",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "aplicaciones_de_ciencias_de_la_computacion",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "ingenieria_de_control_y_sistemas",
-      "target_id": "ingenieria",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_260",
-      "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_260",
-      "target_id": "ciencias_de_la_decision_generales",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_260",
-      "target_id": "modelado_y_simulacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "modelado_y_simulacion",
-      "target_id": "matematicas",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_413",
-      "target_id": "inteligencia_artificial",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_413",
-      "target_id": "agronomia_y_ciencias_de_cultivos",
-      "properties": {}
-    },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_413",
-      "target_id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "ciencias_de_la_gestion_e_investigacion_operativa",
-      "target_id": "ciencias_de_la_decision",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "inteligencia_artificial",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "redes_de_computadoras_y_comunicaciones",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "ciencias_de_la_decision_generales",
-      "target_id": "ciencias_de_la_decision",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "agronomia_y_ciencias_de_cultivos",
-      "target_id": "ciencias_agricolas_y_biologicas",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "seguridad_riesgo_confiabilidad_y_calidad",
-      "target_id": "ingenieria",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "software",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "procesamiento_de_senales",
-      "target_id": "ciencias_de_la_computacion",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_DOMINIO",
-      "source_id": "sistemas_de_informacion",
-      "target_id": "ciencias_de_la_computacion",
       "properties": {}
     },
     {
@@ -743,6 +520,18 @@
     },
     {
       "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_395",
+      "target_id": "proy_2016_395_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_395",
+      "target_id": "proy_2016_395_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
       "source_id": "proy_2018_260",
       "target_id": "proy_2018_260_propuesta",
       "properties": {}
@@ -766,251 +555,177 @@
       "properties": {}
     },
     {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2020_513",
-      "target_id": "proy_2020_513_propuesta",
-      "properties": {}
-    },
-    {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2020_513",
-      "target_id": "proy_2020_513_informe",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "adriana_marotta",
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2760527_1",
       "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "daniel_callejas",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "fernando_carpani",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "laura_gonzalez",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "adriana_marotta",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "raul_ruggia",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "lorena_etcheverry",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "flavia_serra",
-      "target_id": "proy_2012_638",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "alvaro_martin",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "alvaro_martin",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "gadiel_seroussi",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "jose_sotelo_silveira",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "guillermo_dufort",
-      "target_id": "proy_2016_729",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "antonio_mauttone",
-      "target_id": "proy_2018_260",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "maría_e_urquhart",
-      "target_id": "proy_2018_260",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "antonio_mauttone",
-      "target_id": "proy_2018_260",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "pablo_rodríguez_bocca",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "andrés_berger",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "guillermo_ettlin",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "pablo_rodríguez_bocca",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "andrés_berger",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "gerardo_rubino",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "martín_beyer",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "brian_yang",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "rehaan_ahmad",
-      "target_id": "proy_2018_413",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "javier_baliosian",
-      "target_id": "proy_2020_513",
-      "properties": {}
-    },
-    {
-      "type": "RESPONSABLE_DE",
-      "source_id": "matias_richart",
-      "target_id": "proy_2020_513",
       "properties": {
-        "rol": "co_direccion"
+        "calidad": "responsable"
       }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "gonzalo_tejera",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_3642724_0",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "facundo_benavides",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_1908216_2",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "antonio_mauttone",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_2839112_0",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "guillermo_amorin",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_1676959_1",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "federico_andrade",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_4168464_1",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "eduardo_grampin",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_2915995_1",
+      "target_id": "proy_2012_638",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "jorge_visca",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_1884198_9",
+      "target_id": "proy_2016_729",
+      "properties": {
+        "calidad": "responsable"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "mercedes_marzoa",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_1320065_7",
+      "target_id": "proy_2016_729",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "ewelina_bakala",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_3246827_0",
+      "target_id": "proy_2016_729",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "martin_llofriu",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_3988305_5",
+      "target_id": "proy_2018_260",
+      "properties": {
+        "calidad": "integrante"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "guillermo_trinidad",
-      "target_id": "proy_2020_513",
-      "properties": {}
+      "source_id": "uruguay_cedula_de_identidad_2597542_0",
+      "target_id": "proy_2018_260",
+      "properties": {
+        "calidad": "responsable"
+      }
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "alberto_castro",
-      "target_id": "proy_2020_513",
+      "source_id": "uruguay_cedula_de_identidad_3348401_1",
+      "target_id": "proy_2018_413",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2981586_6",
+      "target_id": "proy_2018_413",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5294489_8",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3645500_3",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3702465_5",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1539915_9",
+      "target_id": "proy_2016_395",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_413",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_395",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_260",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_729",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2012_638",
+      "target_id": "area_tecnologica",
       "properties": {}
     }
   ]

@@ -55,8 +55,9 @@ function normalizeEntity(raw) {
 function normalizeChunk(raw) {
   return {
     id: raw?.id ?? "",
-    chunk_id: raw?.chunk_id ?? raw?.chunkId ?? "",
+    chunk_id: raw?.chunk_id ?? raw?.chunkId ?? raw?.id ?? "",
     chunk_text: raw?.chunk_text ?? raw?.chunk ?? raw?.text ?? "",
+    page: raw?.chunk_page ?? 1,
     score: raw?.score ?? null,
     entities: Array.isArray(raw?.entities)
       ? raw.entities.map(normalizeEntity)
@@ -127,6 +128,7 @@ function drawerOpen() {
 
 function drawerClose() {
   if (!els.drawerRoot) return;
+  document.activeElement?.blur();
   els.drawerRoot.classList.remove("open");
   els.drawerRoot.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -174,11 +176,35 @@ function renderChunks(chunks) {
         <div class="chunk-top-left">
           ${scoreHtml}
         </div>
+       <div class="chunk-actions">
         <span class="chunk-id">${escapeHtml(chunk.chunk_id || chunk.id || "")}</span>
+        <button class="open-pdf-btn" type="button">Abrir PDF</button>
+        <span class="pdf-inline-error" aria-live="polite"></span>
+      </div>
       </div>
       <div class="chunk-text">${escapeHtml(chunk.chunk_text ?? "")}</div>
       ${entitiesHtml}
     `;
+
+    card.querySelector(".open-pdf-btn")?.addEventListener("click", () => {
+      const errorEl = card.querySelector(".pdf-inline-error");
+
+      if (errorEl) {
+        errorEl.textContent = "";
+      }
+
+      PDFModal.open({
+        pdfUrl: getPdfUrlFromChunkId(chunk.chunk_id || chunk.id),
+        title: chunk.chunk_id || chunk.id,
+        text: chunk.chunk_text,
+        page: chunk.page,
+        onError: (message) => {
+          if (errorEl) {
+            errorEl.textContent = message;
+          }
+        },
+      });
+    });
 
     els.drawerChunks.appendChild(card);
   });

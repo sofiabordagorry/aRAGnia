@@ -1,4 +1,4 @@
-name: PR Version 2 Label
+name: PR Version 3 Label
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
-  add-version-2-label:
+  add-version-3-label:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -14,12 +14,12 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Add "versión 2" label to PR
+      - name: Add "versión 3" label to PR
         uses: actions/github-script@v7
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
-            const labelName = "versión 2";
+            const labelName = "versión 3";
 
             try {
               await github.rest.issues.getLabel({
@@ -37,7 +37,7 @@ jobs:
                 repo: context.repo.repo,
                 name: labelName,
                 color: "0E8A16",
-                description: "Pull request para versión 2",
+                description: "Pull request para versión 3",
               });
             }
 

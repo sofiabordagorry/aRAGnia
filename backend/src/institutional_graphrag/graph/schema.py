@@ -5,11 +5,9 @@ Esquema de Grafo para Institutional GraphRAG.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional
 
 from typing_extensions import NotRequired, TypedDict
-
-# Definiciones del campo Value
 
 
 class AnioValue(TypedDict):
@@ -26,10 +24,17 @@ class DocumentoValue(TypedDict):
 
 class InvestigadorValue(TypedDict):
     name: str
-    source: Union[Literal["rule_based", "llm"], List[Literal["rule_based", "llm"]]]
-    cedula: NotRequired[str]
-    mail: NotRequired[str]
-    afiliacion: NotRequired[str]
+    display_name: str
+    documento: str
+    tipo_documento: str
+    pais_documento: str
+    sexo: str
+
+
+class FileValue(TypedDict):
+    title: str
+    keywords: List[str]
+    description: str
 
 
 @dataclass
@@ -89,7 +94,12 @@ class Relationship:
 
 @dataclass
 class Proyecto(Entity):
-    value: str
+    value: FileValue
+
+
+@dataclass
+class Grupo(Entity):
+    value: FileValue
 
 
 @dataclass
@@ -108,7 +118,12 @@ class Topico(Entity):
 
 
 @dataclass
-class Dominio(Entity):
+class Subcampo(Entity):
+    value: str
+
+
+@dataclass
+class Area(Entity):
     value: str
 
 
@@ -138,22 +153,6 @@ def PARTICIPO_EN(
     )
 
 
-def RESPONSABLE_DE(
-    investigador_id: str, proyecto_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación RESPONSABLE_DE.
-
-    (Investigador)-RESPONSABLE_DE->(Proyecto)
-    """
-    return Relationship(
-        type="RESPONSABLE_DE",
-        source_id=investigador_id,
-        target_id=proyecto_id,
-        properties=properties or {},
-    )
-
-
 def TIENE_TOPICO(
     proyecto_id: str, topico_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -170,18 +169,34 @@ def TIENE_TOPICO(
     )
 
 
-def PERTENECE_A_DOMINIO(
-    topico_id: str, dominio_id: str, properties: Optional[Dict[str, Any]] = None
+def PERTENECE_A_SUBCAMPO(
+    topico_id: str, subcampo_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
     """
-    Crear una relación PERTENECE_A_DOMINIO.
+    Crear una relación PERTENECE_A_SUBCAMPO.
 
-    (Topico)-[PERTENECE_A_DOMINIO]->(Dominio)
+    (Topico)-[PERTENECE_A_SUBCAMPO]->(Subcampo)
     """
     return Relationship(
-        type="PERTENECE_A_DOMINIO",
+        type="PERTENECE_A_SUBCAMPO",
         source_id=topico_id,
-        target_id=dominio_id,
+        target_id=subcampo_id,
+        properties=properties or {},
+    )
+
+
+def PERTENECE_A_AREA(
+    proyecto_id: str, area_id: str, properties: Optional[Dict[str, Any]] = None
+) -> Relationship:
+    """
+    Crear una relación PERTENECE_A_AREA.
+
+    (Proyecto)-[PERTENECE_A_AREA]->(Area)
+    """
+    return Relationship(
+        type="PERTENECE_A_AREA",
+        source_id=proyecto_id,
+        target_id=area_id,
         properties=properties or {},
     )
 
@@ -282,22 +297,6 @@ def EXTRAIDO_DE(
     )
 
 
-def POSIBLE_ALIAS(
-    investigador_id: str, investigador2_id: str, properties: Optional[Dict[str, Any]] = None
-) -> Relationship:
-    """
-    Crear una relación POSIBLE_ALIAS.
-
-    (Investigador)-[POSIBLE_ALIAS]->(Investigador)
-    """
-    return Relationship(
-        type="POSIBLE_ALIAS",
-        source_id=investigador_id,
-        target_id=investigador2_id,
-        properties=properties or {},
-    )
-
-
 def TITULO_EXTRAIDO_DE(
     proyect_id: str, chunk_id: str, properties: Optional[Dict[str, Any]] = None
 ) -> Relationship:
@@ -315,23 +314,23 @@ def TITULO_EXTRAIDO_DE(
 
 
 class GraphSchema:
-    # Tipos de entidades
     ENTITIES = {
         "Proyecto": Proyecto,
+        "Grupo": Grupo,
         "Anio": Anio,
         "Investigador": Investigador,
         "Topico": Topico,
-        "Dominio": Dominio,
+        "Subcampo": Subcampo,
+        "Area": Area,
         "Documento": Documento,
         "Chunk": Chunk,
     }
 
-    # Tipos de relaciones
     RELATIONSHIPS = {
         "PARTICIPO_EN": PARTICIPO_EN,
-        "RESPONSABLE_DE": RESPONSABLE_DE,
         "TIENE_TOPICO": TIENE_TOPICO,
-        "PERTENECE_A_DOMINIO": PERTENECE_A_DOMINIO,
+        "PERTENECE_A_SUBCAMPO": PERTENECE_A_SUBCAMPO,
+        "PERTENECE_A_AREA": PERTENECE_A_AREA,
         "ES_DESCRITO_POR": ES_DESCRITO_POR,
         "INICIO_EN": INICIO_EN,
         "PRIMER_CHUNK": PRIMER_CHUNK,
@@ -339,7 +338,6 @@ class GraphSchema:
         "DE_DOCUMENTO": DE_DOCUMENTO,
         "EXTRAIDO_DE": EXTRAIDO_DE,
         "TITULO_EXTRAIDO_DE": TITULO_EXTRAIDO_DE,
-        "POSIBLE_ALIAS": POSIBLE_ALIAS,
     }
 
     @classmethod
@@ -377,20 +375,20 @@ def validate_relationship_endpoints(
     """
     Validar que una relación tiene los tipos de entidad origen y destino correctos.
     """
-    # Definir combinaciones válidas
-    valid_combinations = {
-        "PARTICIPO_EN": ("Investigador", "Proyecto"),
-        "RESPONSABLE_DE": ("Investigador", "Proyecto"),
-        "TIENE_TOPICO": ("Proyecto", "Topico"),
-        "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
-        "ES_DESCRITO_POR": ("Proyecto", "Documento"),
-        "INICIO_EN": ("Proyecto", "Anio"),
+    PROJECT_TYPES = ("Proyecto", "Grupo")
+
+    valid_combinations: Dict[str, tuple] = {
+        "PARTICIPO_EN": ("Investigador", PROJECT_TYPES),
+        "TIENE_TOPICO": (PROJECT_TYPES, "Topico"),
+        "PERTENECE_A_SUBCAMPO": ("Topico", "Subcampo"),
+        "PERTENECE_A_AREA": ("Proyecto", "Area"),
+        "ES_DESCRITO_POR": (PROJECT_TYPES, "Documento"),
+        "INICIO_EN": (PROJECT_TYPES, "Anio"),
         "PRIMER_CHUNK": ("Documento", "Chunk"),
         "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
         "DE_DOCUMENTO": ("Chunk", "Documento"),
-        "EXTRAIDO_DE": ("Chunk", ["Topico", "Investigador"]),
-        "POSIBLE_ALIAS": ("Investigador", "Investigador"),
-        "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
+        "EXTRAIDO_DE": ("Chunk", ("Topico", "Investigador")),
+        "TITULO_EXTRAIDO_DE": (PROJECT_TYPES, "Chunk"),
     }
 
     expected = valid_combinations.get(relationship.type)
@@ -400,7 +398,17 @@ def validate_relationship_endpoints(
     source_label = source_entity.label
     target_label = target_entity.label
 
-    if relationship.type == "EXTRAIDO_DE":
-        return source_label == expected[0] and target_label in expected[1]
+    expected_source, expected_target = expected
 
-    return source_label == expected[0] and target_label == expected[1]
+    source_ok = (
+        source_label in expected_source
+        if isinstance(expected_source, tuple)
+        else source_label == expected_source
+    )
+    target_ok = (
+        target_label in expected_target
+        if isinstance(expected_target, tuple)
+        else target_label == expected_target
+    )
+
+    return source_ok and target_ok

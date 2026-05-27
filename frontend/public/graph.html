@@ -13,26 +13,20 @@
     <main class="app">
       <section class="graph-page">
         <header class="graph-top">
-          <div>
-            <span class="graph-kicker">Exploración visual</span>
-            <h1 class="graph-title">Grafo de entidades</h1>
-            <p class="graph-substatus">
-              El grafo inicia vacío. Busca y selecciona una entidad para cargar
-              su vecindad.
-            </p>
-          </div>
-
-          <div class="graph-actions">
-            <button id="refreshGraphBtn" class="secondary-btn" type="button">
-              Actualizar grafo
-            </button>
-          </div>
+          <span class="graph-kicker">Exploración visual</span>
+          <h1 class="graph-title">Grafo de entidades</h1>
+          <p class="graph-substatus">
+            El grafo inicia vacío. Busca y selecciona una entidad para cargar su
+            vecindad.
+          </p>
         </header>
 
         <div class="graph-metrics">
           <span id="graphNodeCount" class="metric-pill">0 nodos</span>
           <span id="graphEdgeCount" class="metric-pill">0 relaciones</span>
-          <span id="graphAliasCount" class="metric-pill">0 aliases</span>
+          <button id="refreshGraphBtn" class="secondary-btn" type="button">
+            Actualizar grafo
+          </button>
         </div>
 
         <section class="graph-shell">
@@ -58,32 +52,7 @@
             </div>
           </div>
 
-          <aside id="aliasPanel" class="alias-panel">
-            <div
-              class="side-tabs"
-              role="tablist"
-              aria-label="Panel lateral del grafo"
-            >
-              <button
-                id="tabEntitiesBtn"
-                class="side-tab active"
-                type="button"
-                role="tab"
-                aria-selected="true"
-              >
-                Entidades
-              </button>
-              <button
-                id="tabAliasesBtn"
-                class="side-tab"
-                type="button"
-                role="tab"
-                aria-selected="false"
-              >
-                Posibles alias
-              </button>
-            </div>
-
+          <aside class="alias-panel">
             <section
               id="entityPanel"
               class="entity-panel side-section active"
@@ -93,7 +62,7 @@
                 <div>
                   <h2>Explorar entidades</h2>
                   <p id="entityStatus" class="alias-status">
-                    Escribe para buscar y haz click en una entidad para
+                    Escriba para buscar y haga clic en una entidad para
                     mostrarla en el grafo.
                   </p>
                 </div>
@@ -112,9 +81,12 @@
                 <select id="entityTypeSelect" class="entity-select">
                   <option value="Investigador" selected>Investigador</option>
                   <option value="Proyecto">Proyecto</option>
+                  <option value="Grupo">Grupo</option>
                   <option value="Topico">Tópico</option>
+                  <option value="Subcampo">Subcampo</option>
                   <option value="Documento">Documento</option>
                   <option value="Anio">Año</option>
+                  <option value="Area">Área</option>
                 </select>
               </div>
 
@@ -122,77 +94,10 @@
                 <div class="alias-placeholder">Cargando entidades...</div>
               </div>
             </section>
-
-            <section
-              id="aliasSection"
-              class="side-section"
-              data-panel="aliases"
-            >
-              <div class="alias-panel-head">
-                <div>
-                  <h2>Posibles alias</h2>
-                  <p id="aliasStatus" class="alias-status">
-                    Activa el filtro para centrar el grafo en relaciones
-                    POSIBLE_ALIAS.
-                  </p>
-                </div>
-                <span id="aliasEntityCount" class="metric-pill"
-                  >0 entidades</span
-                >
-              </div>
-
-              <div class="entity-tools alias-tools">
-                <input
-                  id="aliasSearchInput"
-                  class="entity-input"
-                  type="search"
-                  placeholder="Buscar posibles alias..."
-                />
-                <select
-                  id="aliasSortSelect"
-                  class="entity-select"
-                  aria-label="Ordenar posibles alias"
-                >
-                  <option value="stable" selected>Orden por id</option>
-                  <option value="connections">Orden por conexiones</option>
-                </select>
-              </div>
-
-              <div id="aliasList" class="alias-list">
-                <div class="alias-placeholder">
-                  Todavia no se solicitaron posibles alias.
-                </div>
-              </div>
-            </section>
           </aside>
         </section>
       </section>
     </main>
-
-    <div
-      id="mergeModal"
-      class="modal-overlay hidden"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="mergeModalTitle"
-    >
-      <div class="modal-box">
-        <h3 id="mergeModalTitle" class="modal-title">Confirmar unificación</h3>
-        <p id="mergeModalText" class="modal-text"></p>
-        <div class="modal-actions">
-          <button id="mergeModalCancel" class="secondary-btn" type="button">
-            Cancelar
-          </button>
-          <button
-            id="mergeModalConfirm"
-            class="primary-btn danger-btn"
-            type="button"
-          >
-            Confirmar unificación
-          </button>
-        </div>
-      </div>
-    </div>
 
     <div
       id="deleteModal"
@@ -219,6 +124,7 @@
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="/js/settings.js"></script>
     <script src="/js/topbar.js"></script>
     <script src="/js/graph-panel.js"></script>

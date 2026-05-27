@@ -1,19 +1,21 @@
-# router_ui.py
 from __future__ import annotations
 
 import asyncio
+import io
 import logging
 import os
 import threading
 import traceback
 import uuid
+import zipfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from typing_extensions import TypedDict
 
 from institutional_graphrag.graph.builder import GraphBuilder
@@ -41,6 +43,7 @@ class ChunkItem(TypedDict, total=False):
     id: int | str
     chunk_id: str
     chunk_text: str
+    chunk_page: int
     score: Optional[float]
     entities: List[ChunkEntityItem]
 
@@ -60,21 +63,18 @@ class GraphNodeResponse(BaseModel):
     label: str
     display: str
     degree: int
-    is_alias_candidate: bool
 
 
 class GraphEdgeResponse(BaseModel):
     source: str
     target: str
     type: str
-    is_alias: bool
     properties: dict[str, Any] = {}
 
 
 class GraphSummaryResponse(BaseModel):
     node_count: int
     edge_count: int
-    alias_edge_count: int
 
 
 class GraphSnapshotResponse(BaseModel):
@@ -98,38 +98,9 @@ class GraphEntityCatalogResponse(BaseModel):
     summary: GraphEntityCatalogSummaryResponse
 
 
-class AliasEntityResponse(BaseModel):
-    id: str
-    name: str
-    label: str
-
-
-class AliasPairResponse(BaseModel):
-    source_id: str
-    source_name: str
-    target_id: str
-    target_name: str
-    relationship_properties: dict[str, Any] = {}
-
-
-class AliasSummaryResponse(BaseModel):
-    pair_count: int
-    entity_count: int
-
-
 class DeleteEntityRequest(BaseModel):
     entity_id: str
 
-
-class AliasCandidatesResponse(BaseModel):
-    pairs: list[AliasPairResponse]
-    entities: list[AliasEntityResponse]
-    summary: AliasSummaryResponse
-
-
-# =========================================================
-# Estado en memoria de jobs de upload
-# =========================================================
 
 UPLOAD_JOBS: Dict[str, dict] = {}
 UPLOAD_JOBS_LOCK = threading.Lock()
@@ -173,29 +144,45 @@ def _get_graph_reader() -> GraphBuilder:
     )
 
 
-def _run_ingest_job(job_id: str) -> None:
+def _run_ingest_job_from_uploads(
+    job_id: str,
+    folder_data: List[tuple],
+    csv_data: Optional[tuple],
+) -> None:
     try:
+        total_files = len(folder_data)
         _set_job(
             job_id,
             status="running",
             started_at=datetime.utcnow().isoformat(),
-            message="Recarga de archivos en curso...",
+            message="Carga de archivos en curso...",
             finished=False,
+            progress={"current": 0, "total": total_files},
         )
+
+        def _on_progress(current: int, total: int) -> None:
+            _set_job(job_id, progress={"current": current, "total": total})
 
         service = IngestService(
             data_dir=DATA_DIR,
             env_path=ENV_PATH,
-            enable_researcher_consolidation=False,
             keep_debug_artifacts=False,
         )
 
-        result = asyncio.run(service.ingest_items("/"))
+        csv_bytes = csv_data[1] if csv_data else None
+        csv_filename = csv_data[0] if csv_data else None
+
+        result = asyncio.run(
+            service.ingest_from_uploads(
+                folder_files=folder_data,
+                csv_bytes=csv_bytes,
+                csv_filename=csv_filename,
+                progress_callback=_on_progress,
+            )
+        )
 
         errors = result.get("errors", []) if isinstance(result, dict) else []
-        message = (
-            "Recarga finalizada con errores." if errors else "Recarga completada correctamente."
-        )
+        message = "Carga finalizada con errores." if errors else "Carga completada correctamente."
 
         _set_job(
             job_id,
@@ -212,7 +199,7 @@ def _run_ingest_job(job_id: str) -> None:
             status="error",
             finished=True,
             finished_at=datetime.utcnow().isoformat(),
-            message=f"Error durante la recarga: {e}",
+            message=f"Error durante la carga: {e}",
             error=str(e),
             traceback=traceback.format_exc(),
         )
@@ -239,6 +226,7 @@ def get_history():
                 "chunk_text": (
                     chunk.get("chunk_text") or chunk.get("chunk") or chunk.get("text") or ""
                 ),
+                "chunk_page": (chunk.get("chunk_page") or 0),
                 "score": chunk.get("score"),
             }
 
@@ -280,7 +268,6 @@ def get_history():
 def get_graph_snapshot(
     node_limit: int = Query(default=160, ge=1, le=500),
     relationship_limit: int = Query(default=320, ge=1, le=1200),
-    alias_only: bool = Query(default=False),
 ):
     reader: Optional[GraphBuilder] = None
     try:
@@ -288,7 +275,6 @@ def get_graph_snapshot(
         return reader.fetch_graph_snapshot(
             node_limit=node_limit,
             relationship_limit=relationship_limit,
-            alias_only=alias_only,
         )
     except Exception as e:
         logger.error("No se pudo obtener el snapshot del grafo", exc_info=True)
@@ -326,7 +312,6 @@ def get_graph_entities(
 def get_graph_neighborhood(
     entity_id: str = Query(..., min_length=1),
     relationship_limit: int = Query(default=320, ge=1, le=1200),
-    alias_only: bool = Query(default=False),
 ):
     reader: Optional[GraphBuilder] = None
     try:
@@ -334,49 +319,10 @@ def get_graph_neighborhood(
         return reader.fetch_graph_neighborhood(
             entity_id=entity_id,
             relationship_limit=relationship_limit,
-            alias_only=alias_only,
         )
     except Exception as e:
         logger.error("No se pudo obtener la vecindad de la entidad", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error leyendo vecindad: {e}")
-    finally:
-        if reader is not None:
-            reader.close()
-
-
-class MergeResearchersRequest(BaseModel):
-    source_id: str
-    target_id: str
-
-
-@router.post("/graph/merge")
-def merge_researchers(body: MergeResearchersRequest):
-    if not body.source_id or not body.target_id:
-        raise HTTPException(status_code=400, detail="source_id y target_id son requeridos")
-    reader: Optional[GraphBuilder] = None
-    try:
-        reader = _get_graph_reader()
-        reader.merge_researchers(source_id=body.source_id, target_id=body.target_id)
-        return {"ok": True, "message": "Entidades unificadas correctamente."}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        logger.error("No se pudo unificar entidades", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Error unificando entidades: {e}")
-    finally:
-        if reader is not None:
-            reader.close()
-
-
-@router.get("/graph/aliases", response_model=AliasCandidatesResponse)
-def get_alias_candidates(search: str = Query(default="")):
-    reader: Optional[GraphBuilder] = None
-    try:
-        reader = _get_graph_reader()
-        return reader.fetch_alias_candidates(search=search)
-    except Exception as e:
-        logger.error("No se pudieron obtener los posibles alias", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Error leyendo alias: {e}")
     finally:
         if reader is not None:
             reader.close()
@@ -397,10 +343,14 @@ def delete_history_item(id: int = Query(...)):
 
 
 @router.post("/upload")
-def upload_files():
+async def upload_files(request: Request):
     """
-    Lanza la ingesta en segundo plano y devuelve rápido.
-    El frontend puede seguir usando chat mientras tanto.
+    Recibe los archivos de las carpetas arrastradas desde el frontend.
+    Los paths relativos completos vienen en file_paths (campo Form paralelo a files).
+
+    Se parsea el form manualmente para poder subir los límites por defecto de
+    starlette (1 MB por parte, 1000 archivos, 1000 campos), que son muy bajos
+    para cargas de proyectos con cientos de PDFs.
     """
     latest = _get_latest_job()
     if latest and latest.get("status") == "running":
@@ -408,11 +358,63 @@ def upload_files():
             status_code=409,
             content={
                 "ok": False,
-                "detail": "Ya hay una recarga en ejecución.",
+                "detail": "Ya hay una carga en ejecución.",
                 "job_id": latest.get("job_id"),
                 "status": latest.get("status"),
                 "message": latest.get("message"),
             },
+        )
+
+    form = await request.form(
+        max_files=100_000,
+        max_fields=100_000,
+        max_part_size=500 * 1024 * 1024,
+    )
+
+    files = form.getlist("files")
+    file_paths = form.getlist("file_paths")
+    csv_file = form.get("csv_file")
+
+    folder_data: List[tuple] = []
+    for i, f in enumerate(files):
+        if not hasattr(f, "read"):
+            continue
+        data = await f.read()
+        filename = str(file_paths[i]) if i < len(file_paths) else (getattr(f, "filename", "") or "")
+        if not data or not filename:
+            continue
+
+        if filename.lower().endswith(".zip"):
+            try:
+                with zipfile.ZipFile(io.BytesIO(data)) as zf:
+                    for zip_info in zf.infolist():
+                        if zip_info.is_dir():
+                            continue
+                        inner_path = zip_info.filename
+                        # Ignorar archivos de metadata de macOS y archivos ocultos
+                        if inner_path.startswith("__MACOSX/"):
+                            continue
+                        if any(part.startswith(".") for part in inner_path.split("/")):
+                            continue
+                        with zf.open(zip_info) as fp:
+                            inner_data = fp.read()
+                        if inner_data:
+                            folder_data.append((inner_path, inner_data))
+            except zipfile.BadZipFile:
+                logger.error("ZIP inválido: %r", filename)
+        else:
+            folder_data.append((filename, data))
+
+    csv_data: Optional[tuple] = None
+    if isinstance(csv_file, StarletteUploadFile) and csv_file.filename:
+        csv_bytes = await csv_file.read()
+        if csv_bytes:
+            csv_data = (csv_file.filename, csv_bytes)
+
+    if not folder_data and csv_data is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Se requiere al menos una carpeta o un CSV.",
         )
 
     job_id = str(uuid.uuid4())
@@ -425,13 +427,13 @@ def upload_files():
         started_at=None,
         finished_at=None,
         finished=False,
-        message="Recarga en cola...",
+        message="Carga en cola...",
         result=None,
     )
 
     thread = threading.Thread(
-        target=_run_ingest_job,
-        args=(job_id,),
+        target=_run_ingest_job_from_uploads,
+        args=(job_id, folder_data, csv_data),
         daemon=True,
     )
     thread.start()
@@ -440,24 +442,28 @@ def upload_files():
         "ok": True,
         "job_id": job_id,
         "status": "queued",
-        "message": "Recarga iniciada en segundo plano.",
+        "message": "Carga iniciada en segundo plano.",
     }
+
+
+@router.get("/csv/status")
+def get_csv_status():
+    """Indica si ya existe un CSV de proyectos en el sistema."""
+    has_csv = any("proyectos" in p.name.lower() for p in (DATA_DIR / "tables").glob("*.csv"))
+    return {"has_proyectos_csv": has_csv}
 
 
 @router.get("/upload/status")
 def get_upload_status(job_id: Optional[str] = Query(default=None)):
     """
-    Devuelve el estado de una recarga:
+    Devuelve el estado de una carga:
     - si se pasa job_id, devuelve ese
     - si no, devuelve el último job
     """
     job = _get_job(job_id) if job_id else _get_latest_job()
 
     if job is None:
-        return JSONResponse(
-            status_code=404,
-            content={"ok": False, "detail": "No hay recargas registradas."},
-        )
+        return {"ok": False, "status": "none"}
 
     return {"ok": True, **job}
 

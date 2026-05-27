@@ -40,7 +40,6 @@ ALLOWED_ENTITY_LABELS = {
 
 ALLOWED_REL_TYPES = {
     "PARTICIPO_EN",
-    "RESPONSABLE_DE",
     "TIENE_TOPICO",
     "PERTENECE_A_DOMINIO",
     "ES_DESCRITO_POR",
@@ -50,12 +49,10 @@ ALLOWED_REL_TYPES = {
     "DE_DOCUMENTO",
     "EXTRAIDO_DE",
     "TITULO_EXTRAIDO_DE",
-    "POSIBLE_ALIAS",
 }
 
 VALID_REL_ENDPOINTS = {
     "PARTICIPO_EN": ("Investigador", "Proyecto"),
-    "RESPONSABLE_DE": ("Investigador", "Proyecto"),
     "TIENE_TOPICO": ("Proyecto", "Topico"),
     "PERTENECE_A_DOMINIO": ("Topico", "Dominio"),
     "ES_DESCRITO_POR": ("Proyecto", "Documento"),
@@ -64,12 +61,11 @@ VALID_REL_ENDPOINTS = {
     "SIGUIENTE_CHUNK": ("Chunk", "Chunk"),
     "DE_DOCUMENTO": ("Chunk", "Documento"),
     "EXTRAIDO_DE": ("Chunk", {"Topico", "Investigador"}),
-    "POSIBLE_ALIAS": ("Investigador", "Investigador"),
     "TITULO_EXTRAIDO_DE": ("Proyecto", "Chunk"),
 }
 
 ALLOWED_DOCUMENT_TYPES = {"informe", "propuesta", "resumen", "tabla"}
-ALLOWED_INVESTIGADOR_SOURCES = {"rule_based", "llm","human_annotation"}
+ALLOWED_INVESTIGADOR_SOURCES = {"tabular", "human_annotation"}
 
 
 # =========================================================
@@ -106,10 +102,6 @@ class ValidationReport:
             ],
             "stats": self.stats,
         }
-
-def ensure_list(x: Any) -> List[Any]:
-    return x if isinstance(x, list) else []
-
 
 def is_non_empty_str(x: Any) -> bool:
     return isinstance(x, str) and bool(x.strip())
@@ -242,6 +234,15 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
                 add_issue(
                     issues, "error", "value", "Investigador.value.name",
                     "Investigador.value.name debe ser string no vacío.",
+                    entity_id=eid,
+                    label=label,
+                    value=value,
+                )
+
+            if "display_name" in value and not is_non_empty_str(value.get("display_name")):
+                add_issue(
+                    issues, "error", "value", "Investigador.value.display_name",
+                    "Investigador.value.display_name debe ser string no vacío si está presente.",
                     entity_id=eid,
                     label=label,
                     value=value,

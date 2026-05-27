@@ -6,7 +6,6 @@ class E5Embedder:
     """Realiza embeddings usando el sentence transformer E5 Large v2."""
 
     def __init__(self, model_name: str = "intfloat/e5-large-v2"):
-        # Usar el mejor hardware posible
         if torch.cuda.is_available():
             self.device = "cuda"
         elif torch.backends.mps.is_available():
