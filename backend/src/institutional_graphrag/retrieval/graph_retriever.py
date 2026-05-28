@@ -353,7 +353,7 @@ RULES:
 13. ALWAYS filter values using WHERE.
 14. ALWAYS normalize text values: lowercase, no accents, never translate.
 15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
-16. Domains are stored in Spanish, lowercase and without accents.
+16. Subfields are stored in Spanish, lowercase and without accents.
 17 Search project titles/names with toLower(p.title) CONTAINS.
 18. Convert Anio.year with toInteger() for numeric comparisons.
 
@@ -597,9 +597,15 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         logger.info(f"Query ejecutada, {len(records)} registros obtenidos")
         return records
-
+        
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
+        def _format_node(node: Node) -> str:
+            labels = list(node.labels)
+            label = labels[0] if labels else "Node"
+            props = dict(node)
+            display = props.get("value") or props.get("name") or props.get("title") or props.get("id", "")
+            return f"{display} ({label})"
         if not records:
             return "No aggregation results found."
 
@@ -610,14 +616,12 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             for key in record.keys():
                 value = record[key]
                 if isinstance(value, Node):
-                    labels = list(value.labels)
-                    label = labels[0] if labels else "Node"
-                    props = dict(value)
-                    display = props.get("value") or props.get("name") or props.get("id", str(props))
-                    values.append(f"{key} ({label}): {display}")
+                    values.append(f"{key}: {_format_node(value)}")
+                elif isinstance(value, list):
+                    items = [_format_node(v) if isinstance(v, Node) else str(v) for v in value]
+                    values.append(f"{key}: [{', '.join(items)}]")
                 else:
                     values.append(f"{key}: {value}")
-
             context_parts.append(f"{idx}. {', '.join(values)}")
 
             if idx >= 50:
