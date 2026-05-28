@@ -920,7 +920,9 @@ Tu respuesta (frase introductoria + lista completa):"""
             try:
                 records = self.execute_cypher_query(cypher_query)
                 if not records:
-                    _too_complex_result.answer = ("La consulta no puede responderse con la información del grafo.")
+                    _too_complex_result.answer = (
+                        "La consulta no puede responderse con la información del grafo."
+                    )
                 break
             except CypherSyntaxError as exc:
                 logger.warning(
