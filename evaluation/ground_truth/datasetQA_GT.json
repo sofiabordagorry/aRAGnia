@@ -139,8 +139,8 @@
     "id": 18,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto sistemas binarios estocasticos dinamicos?",
-    "cypher_query": "MATCH (p0:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p0.title) CONTAINS toLower('sistemas binarios estocasticos dinamicos') WITH DISTINCT a MATCH (p:Proyecto)-[:INICIO_EN]->(a), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE NOT toLower(p.title) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad') RETURN t AS topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico (Topico): tecnicas avanzadas de biosensores y bioanalisis\n2. topico (Topico): expresion genetica y clasificacion del cancer\n3. topico (Topico): genetica, bioinformatica e investigacion biomedica\n4. topico (Topico): redes de petri en el modelado de sistemas\n5. topico (Topico): algoritmos de programacion y optimizacion\n6. topico (Topico): metodos formales de verificacion",
+    "cypher_query": "MATCH (p0:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p0.title) CONTAINS toLower('sistemas binarios estocasticos dinamicos') WITH DISTINCT a, p0 MATCH (p:Proyecto)-[:INICIO_EN]->(a), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE p <> p0 RETURN DISTINCT t.value AS topico ORDER BY topico",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: expresion genetica y clasificacion del cancer\n2. topico: genetica, bioinformatica e investigacion biomedica\n3. topico: tecnicas avanzadas de biosensores y bioanalisis",
     "answer": ""
   },
   {
@@ -186,7 +186,7 @@
   {
     "id": 24,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Cuál es el año que presenta la mayor diversidad de tópicos investigados simultáneamente?",
+    "pregunta": "¿Cuál es el año o años que presentan la mayor diversidad de tópicos investigados simultáneamente?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH toInteger(a.year) AS anio, count(DISTINCT t) AS diversidad_topicos, collect(DISTINCT t) AS topicos WITH diversidad_topicos, collect({anio: anio, topicos: topicos}) AS resultados ORDER BY diversidad_topicos DESC LIMIT 1 UNWIND resultados AS r RETURN r.anio AS anio, diversidad_topicos, r.topicos AS topicos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, diversidad_topicos: 6, topicos: [<Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5299' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'redes_de_petri_en_el_modelado_de_sistemas', 'value': 'redes de petri en el modelado de sistemas'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:3188' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'algoritmos_de_programacion_y_optimizacion', 'value': 'algoritmos de programacion y optimizacion'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5287' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'metodos_formales_de_verificacion', 'value': 'metodos formales de verificacion'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5862' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'tecnicas_avanzadas_de_biosensores_y_bioanalisis', 'value': 'tecnicas avanzadas de biosensores y bioanalisis'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5846' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'expresion_genetica_y_clasificacion_del_cancer', 'value': 'expresion genetica y clasificacion del cancer'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5847' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'genetica_bioinformatica_e_investigacion_biomedica', 'value': 'genetica, bioinformatica e investigacion biomedica'}>]\n2. anio: 2018, diversidad_topicos: 6, topicos: [<Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:7228' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'estudios_ambientales_y_ecologicos', 'value': 'estudios ambientales y ecologicos'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:3872' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'planificacion_y_optimizacion_del_transporte', 'value': 'planificacion y optimizacion del transporte'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:6459' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'sistemas_de_logistica_y_transporte', 'value': 'sistemas de logistica y transporte'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:6002' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'teledeteccion_en_la_agricultura', 'value': 'teledeteccion en la agricultura'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5509' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'ciencias_de_las_plantas_y_del_suelo', 'value': 'ciencias de las plantas y del suelo'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:5654' labels=frozenset({'Topico'}) properties={'__created__': True, 'id': 'agricultura_inteligente_e_ia', 'value': 'agricultura inteligente e ia'}>]",
     "answer": ""
@@ -259,8 +259,8 @@
     "id": 33,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué áreas o tópicos investigan en conjunto Álvaro Martín Menoni y Jose Roberto Sotelo Silveira?",
-    "cypher_query": "MATCH (i1:Investigador) WHERE toLower(i1.name) CONTAINS 'alvaro' MATCH (i1)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a1:Area) WITH collect(DISTINCT a1.value) AS areas1 MATCH (i2:Investigador) WHERE toLower(i2.name) CONTAINS 'jose' MATCH (i2)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a2:Area) WITH areas1, collect(DISTINCT a2.value) AS areas2 MATCH (j1:Investigador) WHERE toLower(j1.name) CONTAINS 'pablo' MATCH (j1)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WITH areas1, areas2, collect(DISTINCT t1.value) AS topicos1 MATCH (j2:Investigador) WHERE toLower(j2.name) CONTAINS 'andres' MATCH (j2)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t2:Topico) WITH areas1, areas2, topicos1, collect(DISTINCT t2.value) AS topicos2 RETURN [x IN areas1 WHERE x IS NOT NULL AND x IN areas2] AS areas_en_comun, [x IN topicos1 WHERE x IS NOT NULL AND x IN topicos2] AS topicos_en_comun",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. areas_en_comun: ['tecnologica'], topicos_en_comun: ['teledeteccion en la agricultura', 'ciencias de las plantas y del suelo', 'agricultura inteligente e ia']",
+    "cypher_query": "MATCH (i1:Investigador) WHERE toLower(i1.name) CONTAINS toLower('Alvaro Martin Menoni') MATCH (i2:Investigador) WHERE toLower(i2.name) CONTAINS toLower('Jose Roberto Sotelo Silveira') CALL (i1, i2) { MATCH (i1)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) MATCH (i2)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a) RETURN collect(DISTINCT a.value) AS areas_en_comun } CALL (i1, i2) { MATCH (i1)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t:Topico) MATCH (i2)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t) RETURN collect(DISTINCT t.value) AS topicos_en_comun } RETURN areas_en_comun, topicos_en_comun",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. areas_en_comun: ['tecnologica'], topicos_en_comun: ['tecnicas avanzadas de biosensores y bioanalisis', 'expresion genetica y clasificacion del cancer', 'genetica, bioinformatica e investigacion biomedica']",
     "answer": ""
   },
   {
@@ -368,14 +368,6 @@
     "answer": ""
   },
   {
-    "id": 47,
-    "categoria": "Fuera de Alcance",
-    "pregunta": "?A qu? ?rea pertenece el proyecto Co-simulaci?n en Sistemas Ciber F?sicos?",
-    "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
-    "answer": ""
-  },
-  {
     "id": 48,
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué institución internacional financió la compra de los secuenciadores MinION mencionados en el proyecto de genética?",
@@ -442,9 +434,9 @@
   {
     "id": 56,
     "categoria": "Lenguaje Natural Informal",
-    "pregunta": "subcampos de investigacion 2018 vs 2020",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) IN [2018, 2020] RETURN toInteger(a.year) AS anio, collect(DISTINCT s) AS subcampos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, subcampos: [<Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2805' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'energia_renovable_sostenibilidad_y_medio_ambiente', 'value': 'energia renovable, sostenibilidad y medio ambiente'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2609' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'transporte', 'value': 'transporte'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2737' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'sistemas_de_informacion_de_gestion', 'value': 'sistemas de informacion de gestion'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2715' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ecologia', 'value': 'ecologia'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2692' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas_generales', 'value': 'ciencias agricolas y biologicas generales'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2701' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ciencias_de_las_plantas', 'value': 'ciencias de las plantas'}>]",
+    "pregunta": "subcampos de investigacion 2016 vs 2018",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) IN [2016, 2018] RETURN toInteger(a.year) AS anio, collect(DISTINCT s) AS subcampos ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, subcampos: [<Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2682' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'teoria_computacional_y_matematicas', 'value': 'teoria computacional y matematicas'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2589' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ingenieria_industrial_y_de_manufactura', 'value': 'ingenieria industrial y de manufactura'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2711' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'biologia_molecular', 'value': 'biologia molecular'}>]\n2. anio: 2018, subcampos: [<Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2805' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'energia_renovable_sostenibilidad_y_medio_ambiente', 'value': 'energia renovable, sostenibilidad y medio ambiente'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2609' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'transporte', 'value': 'transporte'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2737' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'sistemas_de_informacion_de_gestion', 'value': 'sistemas de informacion de gestion'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2715' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ecologia', 'value': 'ecologia'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2692' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ciencias_agricolas_y_biologicas_generales', 'value': 'ciencias agricolas y biologicas generales'}>, <Node element_id='4:6f44732d-8768-4d71-a8bd-4734c367877a:2701' labels=frozenset({'Subcampo'}) properties={'__created__': True, 'id': 'ciencias_de_las_plantas', 'value': 'ciencias de las plantas'}>]",
     "answer": ""
   },
   {
@@ -483,8 +475,8 @@
     "id": 61,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "que investigadores de uruguay trabajaron en el topico  de redes de petri en el modelado de sistemas?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.pais_documento) CONTAINS toLower('uruguay') AND (toLower(t.value) CONTAINS toLower('redes de petri en el modelado de sistemas') OR toLower(t.value) CONTAINS toLower('desarrollo, etica y sociedad')) RETURN DISTINCT  i.name AS nombre,  i.sexo AS sexo,  i.pais_documento AS pais ORDER BY nombre",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. nombre: franco rafael robledo amoza, sexo: Masculino, pais: Uruguay\n2. nombre: gustavo ricardo guerberoff aguirregomezcorta, sexo: Masculino, pais: Uruguay\n3. nombre: hector cancela bosi, sexo: Masculino, pais: Uruguay\n4. nombre: pablo gabriel romero rodriguez, sexo: Masculino, pais: Uruguay",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.pais_documento) CONTAINS toLower('uruguay') AND (toLower(t.value) CONTAINS toLower('redes de petri en el modelado de sistemas')) RETURN DISTINCT i",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. i (Investigador): franco rafael robledo amoza\n2. i (Investigador): gustavo ricardo guerberoff aguirregomezcorta\n3. i (Investigador): hector cancela bosi\n4. i (Investigador): pablo gabriel romero rodriguez",
     "answer": ""
   }
 ]

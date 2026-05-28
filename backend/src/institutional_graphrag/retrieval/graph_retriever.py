@@ -330,8 +330,8 @@ SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
 - Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
 - PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
-- Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
-- Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
+- Proyecto.title contains the project title; Proyecto.id follows 'proy_2020_513'
+- Grupo.title contains the group title; Grupo.id follows 'gi_2014_133'
 - Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
 - Topico.value, Subcampo.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
@@ -354,7 +354,7 @@ RULES:
 14. ALWAYS normalize text values: lowercase, no accents, never translate.
 15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
 16. Domains are stored in Spanish, lowercase and without accents.
-17 Search project titles/names with toLower(p.value) CONTAINS.
+17 Search project titles/names with toLower(p.title) CONTAINS.
 18. Convert Anio.year with toInteger() for numeric comparisons.
 
 {fewshot_block}
@@ -382,7 +382,7 @@ CRITICAL SYNTAX:
 - NEVER use a variable as both a relationship and a node
 - NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
 - ALWAYS use WHERE for filtering
-- ALWAYS use toLower(p.value) CONTAINS 'normalized project text' for project titles/names
+- ALWAYS use toLower(p.title) CONTAINS 'normalized project text' for project titles/names
 - If the user asks for information not represented in the schema
   (for example salaries, emails if not stored, countries, universities, budgets, etc.),
   respond with <QUERY>NOT_IN_SCHEMA</QUERY>
@@ -708,7 +708,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     entity_id = props.get("name", entity_id) or entity_id
                 elif entity_label in ("Proyecto", "Grupo"):
                     raw_id = props.get("id", "")
-                    title = props.get("value", "")
+                    title = props.get("title", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
                     entity_id = props.get("id", entity_id) or entity_id
@@ -786,7 +786,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
                 if label in ("Proyecto", "Grupo"):
                     pid = props.get("id", "")
-                    title = props.get("value", "") or props.get("name", "")
+                    title = props.get("title", "") or props.get("name", "")
                     if title and pid:
                         lines.append(f"  - {title} ({pid})")
                     else:
