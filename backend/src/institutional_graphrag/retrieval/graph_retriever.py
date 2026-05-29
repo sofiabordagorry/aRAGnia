@@ -597,15 +597,19 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         logger.info(f"Query ejecutada, {len(records)} registros obtenidos")
         return records
-        
+
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
+
         def _format_node(node: Node) -> str:
             labels = list(node.labels)
             label = labels[0] if labels else "Node"
             props = dict(node)
-            display = props.get("value") or props.get("name") or props.get("title") or props.get("id", "")
+            display = (
+                props.get("value") or props.get("name") or props.get("title") or props.get("id", "")
+            )
             return f"{display} ({label})"
+
         if not records:
             return "No aggregation results found."
 
