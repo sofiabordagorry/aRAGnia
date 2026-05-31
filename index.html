@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador OpenAlex</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="./merged_topics.js"></script>
+</head>
+<body style="background-color: #fcfcfc; margin: 0;">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        function TaxonomyExplorer() {
+            const data = typeof mergedData !== 'undefined' ? mergedData : [];
+            const [searchTerm, setSearchTerm] = useState("");
+            const [expandedFields, setExpandedFields] = useState({});
+            const [expandedSubfields, setExpandedSubfields] = useState({});
+
+            const toggleField = (id) => setExpandedFields(prev => ({ ...prev, [id]: !prev[id] }));
+            const toggleSubfield = (id) => setExpandedSubfields(prev => ({ ...prev, [id]: !prev[id] }));
+
+            const filteredData = useMemo(() => {
+                if (!searchTerm) return data;
+                const lowerSearch = searchTerm.toLowerCase();
+
+                return data.map(field => {
+                    const matchField = field.nameEs.toLowerCase().includes(lowerSearch) || field.nameEn.toLowerCase().includes(lowerSearch);
+                    
+                    const filteredSubfields = field.subfields.map(subfield => {
+                        const matchSubfield = subfield.nameEs.toLowerCase().includes(lowerSearch) || subfield.nameEn.toLowerCase().includes(lowerSearch);
+                        
+                        const filteredTopics = subfield.topics.filter(topic => 
+                            topic.es.toLowerCase().includes(lowerSearch) || topic.en.toLowerCase().includes(lowerSearch)
+                        );
+
+                        if (matchField || matchSubfield || filteredTopics.length > 0) {
+                            return { ...subfield, topics: filteredTopics.length > 0 ? filteredTopics : subfield.topics };
+                        }
+                        return null;
+                    }).filter(Boolean);
+
+                    if (matchField || filteredSubfields.length > 0) {
+                        return { ...field, subfields: filteredSubfields };
+                    }
+                    return null;
+                }).filter(Boolean);
+            }, [data, searchTerm]);
+
+            const styles = {
+                container: { fontFamily: 'system-ui, sans-serif', maxWidth: '900px', margin: '40px auto', padding: '30px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' },
+                searchInput: { boxSizing: 'border-box', width: '100%', padding: '14px', fontSize: '16px', marginBottom: '24px', borderRadius: '8px', border: '1px solid #ccc', outline: 'none' },
+                itemRow: { padding: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', userSelect: 'none' },
+                icon: { marginRight: '12px', fontSize: '10px', color: '#888', width: '15px' },
+                esText: { fontWeight: '600', color: '#222', marginRight: '8px' },
+                enText: { color: '#777', fontSize: '0.9em' },
+                fieldCont: { border: '1px solid #eee', borderRadius: '8px', marginBottom: '12px', backgroundColor: '#fafafa' },
+                subfieldCont: { borderTop: '1px solid #eee', paddingLeft: '24px', borderLeft: '3px solid #e2e8f0', backgroundColor: '#fff' },
+                topicCont: { marginLeft: '40px', padding: '10px 10px 10px 0', borderBottom: '1px solid #f0f0f0' },
+                topicBullet: { display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#cbd5e1', marginRight: '10px', verticalAlign: 'middle' }
+            };
+
+            if (data.length === 0) return <div style={{textAlign: 'center', marginTop: '50px'}}>Error: No se pudo cargar merged_topics.js</div>;
+
+            return (
+                <div style={styles.container}>
+                    <h2 style={{marginTop: 0, color: '#333'}}>OpenAlex Taxonomy Explorer</h2>
+                    
+                    <input
+                        type="text"
+                        placeholder="Buscar tópico / Search topic..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={styles.searchInput}
+                    />
+
+                    <div>
+                        {filteredData.map((field) => {
+                            const isFieldExpanded = searchTerm ? true : expandedFields[field.id];
+
+                            return (
+                                <div key={field.id} style={styles.fieldCont}>
+                                    <div style={styles.itemRow} onClick={() => toggleField(field.id)}>
+                                        <span style={styles.icon}>{isFieldExpanded ? '▼' : '▶'}</span>
+                                        <span style={styles.esText}>{field.nameEs}</span>
+                                        <span style={styles.enText}>({field.nameEn})</span>
+                                    </div>
+
+                                    {isFieldExpanded && (
+                                        <div style={styles.subfieldCont}>
+                                            {field.subfields.map((subfield, sIndex) => {
+                                                const subId = `${field.id}-${sIndex}`;
+                                                const isSubExpanded = searchTerm ? true : expandedSubfields[subId];
+
+                                                return (
+                                                    <div key={subId}>
+                                                        <div style={{...styles.itemRow, borderBottom: isSubExpanded ? '1px solid #eee' : 'none'}} onClick={() => toggleSubfield(subId)}>
+                                                            <span style={styles.icon}>{isSubExpanded ? '▼' : '▶'}</span>
+                                                            <span style={styles.esText}>{subfield.nameEs}</span>
+                                                            <span style={styles.enText}>({subfield.nameEn})</span>
+                                                        </div>
+
+                                                        {isSubExpanded && (
+                                                            <div>
+                                                                {subfield.topics.map((topic, tIndex) => (
+                                                                    <div key={tIndex} style={styles.topicCont}>
+                                                                        <div style={styles.topicBullet}></div>
+                                                                        <span style={styles.esText}>{topic.es}</span>
+                                                                        <span style={styles.enText}>({topic.en})</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        {filteredData.length === 0 && <p style={{textAlign: 'center', color: '#666'}}>No se encontraron resultados.</p>}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TaxonomyExplorer />);
+    </script>
+</body>
+</html>
