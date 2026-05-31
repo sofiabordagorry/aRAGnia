@@ -451,7 +451,7 @@
     "id": 58,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "mostrame nombre, sexo y pais de los investigadores que participaron en proyectos de redes de petri en el modelado de sistemas",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('redes de petri en el modelado de sistemas') RETURN DISTINCT i.name AS nombre, i.sexo AS sexo, i.pais_documento AS pais ORDER BY nombre",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('redes de petri en el modelado de sistemas') RETURN DISTINCT i.display_name AS nombre, i.sexo AS sexo, i.pais_documento AS pais ORDER BY nombre",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. nombre: franco rafael robledo amoza, sexo: Masculino, pais: Uruguay\n2. nombre: gustavo ricardo guerberoff aguirregomezcorta, sexo: Masculino, pais: Uruguay\n3. nombre: hector cancela bosi, sexo: Masculino, pais: Uruguay\n4. nombre: pablo gabriel romero rodriguez, sexo: Masculino, pais: Uruguay",
     "answer": ""
   },
