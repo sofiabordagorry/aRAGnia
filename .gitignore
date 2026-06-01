@@ -14,8 +14,9 @@ data/embeddings/
 data/tables/
 data/entities_relations
 data/cache_paths.csv
-evaluation/question_to_answer/
-evaluation/results_knowledge_graph/
+evaluation/ground_truth/question_to_answer/
+evaluation/ground_truth/results_knowledge_graph/
+evaluation/ground_truth/question_to_cypher/
 # Virtual environments
 venv/
 .venv/

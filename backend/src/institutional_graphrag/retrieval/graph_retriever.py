@@ -8,7 +8,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
@@ -240,13 +240,14 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 "LLM no devolvió query entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
 
-        # Corregir dirección incorrecta de PARTICIPO_EN si el LLM la invirtió
         cypher_query = self._fix_relationship_directions(cypher_query)
 
-        # Mostrar display_name si hay investigadores cuyo nombre retornar
         cypher_query = self._use_display_name_for_researchers(cypher_query)
 
-        # Detectar caso UNSUPPORTED (pregunta fuera del alcance de una sola query)
+        if cypher_query.upper() == "NOT_IN_SCHEMA":
+            raise ValueError(
+                "NOT_IN_SCHEMA: La información solicitada no existe en el esquema del grafo."
+            )
         if cypher_query.upper() == "UNSUPPORTED":
             raise ValueError(
                 "UNSUPPORTED: La pregunta requiere múltiples consultas y está fuera del "
@@ -329,8 +330,8 @@ SCHEMA NOTES:
 - Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
 - Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
 - PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
-- Proyecto.value contains the project title; Proyecto.id follows 'proy_2020_513'
-- Grupo.value contains the group title; Grupo.id follows 'gi_2014_133'
+- Proyecto.title contains the project title; Proyecto.id follows 'proy_2020_513'
+- Grupo.title contains the group title; Grupo.id follows 'gi_2014_133'
 - Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
 - Topico.value, Subcampo.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
 - Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
@@ -346,13 +347,14 @@ RULES:
 8. Node variables must be unique and never reused for a different type
 9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
 10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
-11. If the question genuinely CANNOT be answered with a single query, respond with <QUERY>UNSUPPORTED</QUERY>
+11. If the information requested does NOT exist in the schema, respond with: <QUERY>NOT_IN_SCHEMA</QUERY>
+12. If the question cannot be answered with a single query but IS related to the schema, respond with: <QUERY>UNSUPPORTED</QUERY>
 12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
 13. ALWAYS filter values using WHERE.
 14. ALWAYS normalize text values: lowercase, no accents, never translate.
 15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
-16. Domains are stored in Spanish, lowercase and without accents.
-17 Search project titles/names with toLower(p.value) CONTAINS.
+16. Subfields are stored in Spanish, lowercase and without accents.
+17 Search project titles/names with toLower(p.title) CONTAINS.
 18. Convert Anio.year with toInteger() for numeric comparisons.
 
 {fewshot_block}
@@ -380,8 +382,10 @@ CRITICAL SYNTAX:
 - NEVER use a variable as both a relationship and a node
 - NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
 - ALWAYS use WHERE for filtering
-- ALWAYS use toLower(p.value) CONTAINS 'normalized project text' for project titles/names
-
+- ALWAYS use toLower(p.title) CONTAINS 'normalized project text' for project titles/names
+- If the user asks for information not represented in the schema
+  (for example salaries, emails if not stored, countries, universities, budgets, etc.),
+  respond with <QUERY>NOT_IN_SCHEMA</QUERY>
 <QUERY>
 """
 
@@ -596,6 +600,16 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
     def _build_aggregation_context(self, records: List[Any]) -> str:
         """Construye contexto a partir de resultados de agregación o nodos sin chunks."""
+
+        def _format_node(node: Node) -> str:
+            labels = list(node.labels)
+            label = labels[0] if labels else "Node"
+            props = dict(node)
+            display = (
+                props.get("value") or props.get("name") or props.get("title") or props.get("id", "")
+            )
+            return f"{display} ({label})"
+
         if not records:
             return "No aggregation results found."
 
@@ -606,14 +620,12 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             for key in record.keys():
                 value = record[key]
                 if isinstance(value, Node):
-                    labels = list(value.labels)
-                    label = labels[0] if labels else "Node"
-                    props = dict(value)
-                    display = props.get("value") or props.get("name") or props.get("id", str(props))
-                    values.append(f"{key} ({label}): {display}")
+                    values.append(f"{key}: {_format_node(value)}")
+                elif isinstance(value, list):
+                    items = [_format_node(v) if isinstance(v, Node) else str(v) for v in value]
+                    values.append(f"{key}: [{', '.join(items)}]")
                 else:
                     values.append(f"{key}: {value}")
-
             context_parts.append(f"{idx}. {', '.join(values)}")
 
             if idx >= 50:
@@ -622,7 +634,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         return "\n".join(context_parts)
 
-    def _extract_chunks_and_entities_from_results(
+    def extract_chunks_and_entities_from_results(
         self, records: List[Any]
     ) -> tuple[List[GraphRAGChunk], Dict[tuple[str, str], dict], Dict[str, List[tuple[str, str]]]]:
         """Extrae chunks y evidencia de entidades desde los resultados de Cypher."""
@@ -704,7 +716,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     entity_id = props.get("name", entity_id) or entity_id
                 elif entity_label in ("Proyecto", "Grupo"):
                     raw_id = props.get("id", "")
-                    title = props.get("value", "")
+                    title = props.get("title", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
                     entity_id = props.get("id", entity_id) or entity_id
@@ -782,7 +794,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
                 if label in ("Proyecto", "Grupo"):
                     pid = props.get("id", "")
-                    title = props.get("value", "") or props.get("name", "")
+                    title = props.get("title", "") or props.get("name", "")
                     if title and pid:
                         lines.append(f"  - {title} ({pid})")
                     else:
@@ -836,7 +848,19 @@ Tu respuesta (frase introductoria + lista completa):"""
         """
         if not user_query or not user_query.strip():
             raise ValueError("Query vacía")
+        cypher_query: str = ""
+        records: List[Any] = []
+        invalidResult, records, cypher_query = self.generate_cypher_query_result(
+            user_query=user_query
+        )
 
+        if not records:
+            return invalidResult
+        return self.generate_result(
+            records=records, user_query=user_query, cypher_query=cypher_query
+        )
+
+    def generate_cypher_query_result(self, user_query) -> Tuple[GraphRAGResult, List[Any], str]:
         logger.info(f"Query recibida: '{user_query}'")
 
         intent = self._classify_query_intent(user_query)
@@ -845,26 +869,47 @@ Tu respuesta (frase introductoria + lista completa):"""
         if intent == "CHAT":
             logger.info("Modo conversacional activado (usando llama)")
             conversational_answer = self._generate_conversational_response(user_query)
-            return GraphRAGResult(
-                answer=conversational_answer,
-                chunks=[],
-                cypher_query="",
-                chunk_to_entities={},
+            return (
+                GraphRAGResult(
+                    answer=conversational_answer,
+                    chunks=[],
+                    cypher_query="",
+                    chunk_to_entities={},
+                ),
+                [],
+                "",
             )
 
         try:
             cypher_query = self.generate_cypher_query(user_query)
         except ValueError as e:
-            if str(e).startswith("UNSUPPORTED"):
-                return GraphRAGResult(
-                    answer=(
-                        "Esta pregunta requiere múltiples consultas para responderse y está "
-                        "fuera del alcance de esta solución. Por favor, intente dividirla en "
-                        "preguntas más específicas."
+            if str(e).startswith("NOT_IN_SCHEMA"):
+                return (
+                    GraphRAGResult(
+                        answer=(
+                            "La consulta solicitada está fuera del alcance del esquema actual del grafo."
+                        ),
+                        chunks=[],
+                        cypher_query="",
+                        chunk_to_entities={},
                     ),
-                    chunks=[],
-                    cypher_query="",
-                    chunk_to_entities={},
+                    [],
+                    "",
+                )
+            if str(e).startswith("UNSUPPORTED"):
+                return (
+                    GraphRAGResult(
+                        answer=(
+                            "Esta pregunta requiere múltiples consultas para responderse y está "
+                            "fuera del alcance de esta solución. Por favor, intente dividirla en "
+                            "preguntas más específicas."
+                        ),
+                        chunks=[],
+                        cypher_query="",
+                        chunk_to_entities={},
+                    ),
+                    [],
+                    "",
                 )
             raise
 
@@ -882,6 +927,10 @@ Tu respuesta (frase introductoria + lista completa):"""
         for attempt in range(MAX_SYNTAX_RETRIES):
             try:
                 records = self.execute_cypher_query(cypher_query)
+                if not records:
+                    _too_complex_result.answer = (
+                        "La consulta no puede responderse con la información del grafo."
+                    )
                 break
             except CypherSyntaxError as exc:
                 logger.warning(
@@ -889,15 +938,18 @@ Tu respuesta (frase introductoria + lista completa):"""
                 )
                 if attempt == MAX_SYNTAX_RETRIES - 1:
                     logger.error("Se agotaron los reintentos de corrección de sintaxis")
-                    return _too_complex_result
+                    return _too_complex_result, [], ""
                 try:
                     cypher_query = self._fix_cypher_query(cypher_query, str(exc))
                 except ValueError as fix_err:
                     logger.error(f"No se pudo corregir la query: {fix_err}")
-                    return _too_complex_result
+                    return _too_complex_result, [], ""
+        return _too_complex_result, records, cypher_query
 
+    def generate_result(self, records, user_query, cypher_query) -> GraphRAGResult:
+        # Extraer chunks y evidencia
         chunks, evidence_entities, chunk_to_entities = (
-            self._extract_chunks_and_entities_from_results(records)
+            self.extract_chunks_and_entities_from_results(records)
         )
         logger.info(f"Extraídos {len(chunks)} chunks con {len(evidence_entities)} entidades")
         if not chunks:

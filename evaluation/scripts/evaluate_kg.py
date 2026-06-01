@@ -17,8 +17,8 @@ GT_PATH = (
     / "ground_truth_kg.json"
 )
 RESULTS_PATH = (
-    Path(__file__).parents[2]
-    / "evaluation"
+    Path(__file__).parents[1]
+    / "ground_truth"
     / "results_knowledge_graph"
 )
 

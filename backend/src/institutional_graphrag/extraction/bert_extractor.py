@@ -12,9 +12,9 @@ from institutional_graphrag.extraction.parse_topics import LLMExtractionResult, 
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PERTENECE_A_SUBCAMPO,
-    Subcampo,
     Entity,
     Relationship,
+    Subcampo,
     Topico,
 )
 
