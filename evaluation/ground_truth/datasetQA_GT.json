@@ -467,7 +467,7 @@
     "id": 60,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "que mujeres trabajan en el area tecnologica?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(a.value) CONTAINS toLower('tecnologica') AND toLower(i.sexo) CONTAINS toLower('f') RETURN DISTINCT i.name AS nombre, i.sexo AS sexo, i.pais_documento AS pais ORDER BY nombre",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(a.value) CONTAINS toLower('tecnologica') AND toLower(i.sexo) CONTAINS toLower('f') RETURN DISTINCT i.display_name AS nombre",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. nombre: adriana alejandra marotta llambi, sexo: Femenino, pais: Uruguay\n2. nombre: flavia serra sosa, sexo: Femenino, pais: Uruguay\n3. nombre: laura gonzalez lopez, sexo: Femenino, pais: Uruguay\n4. nombre: lorena etcheverry venturini, sexo: Femenino, pais: Uruguay\n5. nombre: maria elizabeth urquhart perez, sexo: Femenino, pais: Uruguay",
     "answer": ""
   },
