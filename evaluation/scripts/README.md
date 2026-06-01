@@ -53,21 +53,21 @@ Guía rápida de los scripts en esta carpeta.
     - `python evaluation/scripts/evaluate_cypher.py evaluation/ground_truth/datasetQA_GT.json`
 
 - `generate_gt_answers.py`
-  - Genera las respuestas en lenguaje natural del ground truth de QA.
-  - Toma, para cada pregunta, la `pregunta` en lenguaje natural y el `retrieved_subgraph` (subgrafo recuperado del grafo) y genera el campo `answer`.
+  - Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
+  - Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para cada uno, genera/completa el campo `answer`.
   - Reutiliza la misma lógica de generación de respuestas del pipeline GraphRAG (`answer_llm_client`), sin necesidad de conectarse a Neo4j.
   - Los mensajes centinela (`fuera de alcance`, `no se encontró información`) se resuelven directamente, sin invocar al LLM.
 
   - Entrada:
-    - `evaluation/ground_truth/datasetQA_GT.json` (con `retrieved_subgraph` ya poblado por `result_cypher_GT.py`).
+    - Un archivo JSON (lista de objetos, o un objeto con la clave `questions`) donde cada item tenga al menos `pregunta` y `retrieved_subgraph` (por ejemplo, la salida de `result_cypher_GT.py`).
 
   - Salida:
-    - Actualiza el mismo archivo completando el campo `answer`. Este archivo único sirve como **GT QA** (`pregunta` + `answer`) y como **GT CypherQA** (`pregunta` + `cypher_query` + `retrieved_subgraph` + `answer`).
+    - Escribe en `<nombre_entrada>_answers.json` (no modifica el archivo de entrada), agregando/completando el campo `answer` en cada item.
     - Por defecto solo completa las respuestas vacías; usar `--overwrite` para regenerarlas todas.
 
   - Uso:
-    - `python evaluation/scripts/generate_gt_answers.py`
-    - `python evaluation/scripts/generate_gt_answers.py --overwrite`
+    - `python evaluation/scripts/generate_gt_answers.py preguntas.json`
+    - `python evaluation/scripts/generate_gt_answers.py preguntas.json --overwrite`
 
 - `result_cypher_GT.py`
   - Ejecuta queries Cypher almacenadas en un archivo JSON.

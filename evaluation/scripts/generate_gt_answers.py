@@ -1,37 +1,33 @@
-"""Genera respuestas en lenguaje natural para el ground truth de QA.
+"""Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
 
-Toma cada pregunta en lenguaje natural y el subgrafo recuperado del grafo
-(`retrieved_subgraph`) y genera una respuesta en lenguaje natural, reutilizando
-la misma lógica de generación de respuestas del pipeline de GraphRAG
+Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en
+lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para
+cada uno, genera el campo `answer` en lenguaje natural.
+
+Reutiliza la misma lógica de generación de respuestas del pipeline de GraphRAG
 (`answer_llm_client`), SIN necesidad de conectarse a Neo4j.
 
 Entrada:
-    - evaluation/ground_truth/datasetQA_GT.json
-      (campos: id, categoria, pregunta, cypher_query, retrieved_subgraph, answer)
+    - Un archivo JSON donde cada item tenga al menos: pregunta, retrieved_subgraph.
 
 Salida:
-    - Actualiza el mismo archivo completando el campo `answer`.
-      Este archivo sirve como GT QA (pregunta + answer) y como GT CypherQA
-      (pregunta + cypher_query + retrieved_subgraph + answer).
+    - Agrega/completa el campo `answer` en cada item.
+    - Escribe en <nombre_entrada>_answers.json (no modifica el archivo de entrada).
 
 Uso:
-    python evaluation/scripts/generate_gt_answers.py
-    python evaluation/scripts/generate_gt_answers.py --overwrite
-    python evaluation/scripts/generate_gt_answers.py --questions-file otro.json
+    python evaluation/scripts/generate_gt_answers.py preguntas.json
+    python evaluation/scripts/generate_gt_answers.py preguntas.json --overwrite
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from institutional_graphrag.llm.llm_provider import get_llm_client
-
-import os
-
-GT_PATH = Path(__file__).parents[1] / "ground_truth" / "datasetQA_GT.json"
 
 OUT_OF_SCOPE = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
 NO_INFO = "No se encontró información relevante en el grafo para responder esta pregunta."
@@ -44,9 +40,7 @@ def _is_count_context(subgrafo: str) -> bool:
 
 def build_messages(pregunta: str, subgrafo: str) -> list[dict[str, str]]:
     """Construye los mensajes para el LLM a partir de la pregunta y el subgrafo.
-
-    Replica los prompts usados en `GraphRAGRetriever.generate_result` para que las
-    respuestas del ground truth sean consistentes con las del sistema en producción.
+    Replica los prompts usados en `GraphRAGRetriever.generate_result`.
     """
     if _is_count_context(subgrafo):
         system = (
@@ -93,18 +87,34 @@ def generate_answer(client: Any, pregunta: str, subgrafo: str) -> str:
     return answer.strip()
 
 
+def load_items(path: Path) -> list[dict[str, Any]]:
+    """Carga la lista de items desde una lista JSON o un objeto con 'questions'."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+
+    if isinstance(payload, dict):
+        items = payload.get("questions", [])
+    elif isinstance(payload, list):
+        items = payload
+    else:
+        raise ValueError("JSON inválido: se esperaba una lista o un objeto con 'questions'.")
+
+    if not isinstance(items, list):
+        raise ValueError("JSON inválido: 'questions' debe ser una lista.")
+
+    return items
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Genera respuestas en lenguaje natural para el ground truth de QA a "
-            "partir de la pregunta y el subgrafo recuperado."
+            "Genera respuestas en lenguaje natural a partir de la pregunta y el "
+            "subgrafo recuperado, completando el campo 'answer' de cada item."
         )
     )
     parser.add_argument(
-        "--questions-file",
+        "questions_file",
         type=Path,
-        default=GT_PATH,
-        help=f"Ruta al archivo JSON del ground truth (default: {GT_PATH}).",
+        help="Ruta al archivo JSON con items que tengan 'pregunta' y 'retrieved_subgraph'.",
     )
     parser.add_argument(
         "--overwrite",
@@ -116,20 +126,19 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    path: Path = args.questions_file
+    in_path: Path = args.questions_file
+    out_path: Path = in_path.with_name(f"{in_path.stem}_answers{in_path.suffix}")
 
-    if not path.exists():
-        raise FileNotFoundError(f"No existe el archivo: {path}")
+    if not in_path.exists():
+        raise FileNotFoundError(f"No existe el archivo: {in_path}")
 
-    data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, list):
-        raise ValueError("El JSON debe ser una lista de preguntas.")
+    items = load_items(in_path)
 
     client = get_llm_client(model=os.getenv("OLLAMA_MODEL_ANSWER"))
 
     generated = 0
     skipped = 0
-    for item in data:
+    for item in items:
         if not isinstance(item, dict):
             continue
 
@@ -141,18 +150,19 @@ def main() -> None:
             skipped += 1
             continue
 
-        qid = item.get("id")
+        qid = item.get("id", "?")
         print(f"Generando respuesta para pregunta {qid}...", flush=True)
         item["answer"] = generate_answer(client, pregunta, item.get("retrieved_subgraph", ""))
         generated += 1
 
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(
+        json.dumps(items, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
     print(f"Respuestas generadas: {generated} | Omitidas (ya existían): {skipped}")
-    print(f"Archivo actualizado: {path}")
+    print(f"Archivo escrito: {out_path}")
 
 
 if __name__ == "__main__":
