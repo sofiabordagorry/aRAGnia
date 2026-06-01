@@ -55,7 +55,7 @@ Guía rápida de los scripts en esta carpeta.
 - `generate_gt_answers.py`
   - Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
   - Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para cada uno, genera/completa el campo `answer`.
-  - Reutiliza la misma lógica de generación de respuestas del pipeline GraphRAG (`answer_llm_client`), sin necesidad de conectarse a Neo4j.
+  - Reutiliza la misma lógica de generación de respuestas del pipeline GraphRAG (`answer_llm_client`), sin necesidad de conectarse a Neo4j. Funciona con Ollama o HuggingFace según la variable de entorno `LLM_BACKEND`.
   - Los mensajes centinela (`fuera de alcance`, `no se encontró información`) se resuelven directamente, sin invocar al LLM.
 
   - Entrada:

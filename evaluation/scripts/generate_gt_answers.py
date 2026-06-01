@@ -5,7 +5,8 @@ lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para
 cada uno, genera el campo `answer` en lenguaje natural.
 
 Reutiliza la misma lógica de generación de respuestas del pipeline de GraphRAG
-(`answer_llm_client`), SIN necesidad de conectarse a Neo4j.
+(`answer_llm_client`), SIN necesidad de conectarse a Neo4j. El backend se elige
+con la variable de entorno LLM_BACKEND (ollama | huggingface).
 
 Entrada:
     - Un archivo JSON donde cada item tenga al menos: pregunta, retrieved_subgraph.
@@ -73,6 +74,14 @@ def build_messages(pregunta: str, subgrafo: str) -> list[dict[str, str]]:
     ]
 
 
+def _resolve_answer_model() -> str | None:
+    """Modelo de respuestas según el backend (LLM_BACKEND=ollama|huggingface)."""
+    backend = os.getenv("LLM_BACKEND", "ollama").lower()
+    if backend == "huggingface":
+        return os.getenv("HF_MODEL")
+    return os.getenv("OLLAMA_MODEL_ANSWER")
+
+
 def generate_answer(client: Any, pregunta: str, subgrafo: str) -> str:
     """Genera la respuesta en lenguaje natural para una pregunta."""
     subgrafo = (subgrafo or "").strip()
@@ -134,7 +143,7 @@ def main() -> None:
 
     items = load_items(in_path)
 
-    client = get_llm_client(model=os.getenv("OLLAMA_MODEL_ANSWER"))
+    client = get_llm_client(model=_resolve_answer_model())
 
     generated = 0
     skipped = 0
