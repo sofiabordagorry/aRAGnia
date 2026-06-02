@@ -228,7 +228,9 @@ class BertTopicExtractor:
 
         with torch.no_grad():
             outputs = self._model(**inputs)
-            probs = torch.sigmoid(outputs.logits)[0].cpu().tolist()
+            # El modelo es single_label_classification: softmax da una probabilidad
+            # calibrada (suma 1 entre los topics) y hace interpretable el threshold.
+            probs = torch.softmax(outputs.logits, dim=-1)[0].cpu().tolist()
 
         results = [
             {"topic": self._strip_label_prefix(self._id2label[i]), "score": score}
