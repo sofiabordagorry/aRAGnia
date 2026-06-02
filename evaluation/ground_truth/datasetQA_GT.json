@@ -107,8 +107,8 @@
     "id": 14,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2018?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.id) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.id) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [estudios_ambientales_y_ecologicos, planificacion_y_optimizacion_del_transporte, sistemas_de_logistica_y_transporte, teledeteccion_en_la_agricultura, ciencias_de_las_plantas_y_del_suelo, agricultura_inteligente_e_ia]",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.value) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.value) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [estudios ambientales y ecologicos, planificacion y optimizacion del transporte, sistemas de logistica y transporte, teledeteccion en la agricultura, ciencias de las plantas y del suelo, agricultura inteligente e ia]",
     "answer": "Los tópicos que surgieron por primera vez en proyectos iniciados a partir de 2018 son: estudios ambientales y ecológicos; planificación y optimización del transporte; sistemas de logística y transporte; teledetección en la agricultura; ciencias de las plantas y del suelo; y agricultura inteligente e IA."
   },
   {
@@ -133,7 +133,7 @@
     "pregunta": "¿Se observa un cambio en los subcampos de investigación si se comparan los proyectos iniciados antes de 2016 con los de 2018?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) < 2016 WITH collect(DISTINCT s.value) AS subcampos_antes_2016 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) = 2018 WITH subcampos_antes_2016, collect(DISTINCT s.value) AS subcampos_2018 RETURN subcampos_antes_2016, subcampos_2018, [x IN subcampos_antes_2016 WHERE NOT x IN subcampos_2018] AS solo_antes_2016, [x IN subcampos_2018 WHERE NOT x IN subcampos_antes_2016] AS nuevos_en_2018, [x IN subcampos_antes_2016 WHERE x IN subcampos_2018] AS compartidos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. subcampos_antes_2016: [ciencias de la gestion e investigacion operativa, sistemas de informacion, educacion], subcampos_2018: [energia renovable, sostenibilidad y medio ambiente, transporte, sistemas de informacion de gestion, ecologia, ciencias agricolas y biologicas generales, ciencias de las plantas], solo_antes_2016: [ciencias de la gestion e investigacion operativa, sistemas de informacion, educacion], nuevos_en_2018: [energia renovable, sostenibilidad y medio ambiente, transporte, sistemas de informacion de gestion, ecologia, ciencias agricolas y biologicas generales, ciencias de las plantas], compartidos: []",
-    "answer": "Sí, se observa un cambio total entre ambos periodos: no hay subcampos compartidos. Los proyectos iniciados antes de 2016 se concentraban en ciencias de la gestión e investigación operativa, sistemas de información y educación. En 2018, en cambio, aparecen subcampos completamente nuevos: energía renovable, sostenibilidad y medio ambiente; transporte; sistemas de información de gestión; ecología; ciencias agrícolas y biológicas generales; y ciencias de las plantas."
+    "answer": "Sí, se observa un cambio total entre ambos periodos: no hay subcampos compartidos. Los proyectos iniciados antes de 2016 se concentraban en ciencias de la gestión e investigación operativa; sistemas de información; y educación. En 2018, en cambio, aparecen subcampos completamente nuevos: energía renovable, sostenibilidad y medio ambiente; transporte; sistemas de información de gestión; ecología; ciencias agrícolas y biológicas generales; y ciencias de las plantas."
   },
   {
     "id": 18,
@@ -149,7 +149,7 @@
     "pregunta": "¿Cuántos proyectos sobre algoritmos de programacion y optimizacion se iniciaron cada año según los datos disponibles?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('algoritmos de programacion y optimizacion') RETURN toInteger(a.year) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, cantidad_proyectos: 1",
-    "answer": "Según los datos disponibles, en el año 2016 se inició un (1) proyecto sobre algoritmos de programación y optimización. No se registran proyectos de este tipo en otros años."
+    "answer": "Según los datos disponibles, en el año 2016 se inició un (1) proyecto sobre algoritmos de programación y optimización. No se registran proyectos de este tópico en otros años."
   },
   {
     "id": 20,
