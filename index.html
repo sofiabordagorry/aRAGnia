@@ -63,8 +63,11 @@
                 enText: { color: '#777', fontSize: '0.9em' },
                 fieldCont: { border: '1px solid #eee', borderRadius: '8px', marginBottom: '12px', backgroundColor: '#fafafa' },
                 subfieldCont: { borderTop: '1px solid #eee', paddingLeft: '24px', borderLeft: '3px solid #e2e8f0', backgroundColor: '#fff' },
-                topicCont: { marginLeft: '40px', padding: '10px 10px 10px 0', borderBottom: '1px solid #f0f0f0' },
-                topicBullet: { display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#cbd5e1', marginRight: '10px', verticalAlign: 'middle' }
+                topicCont: { marginLeft: '40px', padding: '10px 10px 10px 0', borderBottom: '1px solid #f0f0f0', display: 'flex', alignItems: 'center' },
+                chip: { display: 'inline-block', fontSize: '10px', fontWeight: '700', letterSpacing: '0.5px', padding: '2px 8px', borderRadius: '10px', marginRight: '10px', textTransform: 'uppercase', flexShrink: 0 },
+                fieldChip: { backgroundColor: '#eef2f7', color: '#5b7290' },
+                subfieldChip: { backgroundColor: '#f1eef7', color: '#7a6f95' },
+                topicChip: { backgroundColor: '#eef4ef', color: '#5e7d6a' }
             };
 
             if (data.length === 0) return <div style={{textAlign: 'center', marginTop: '50px'}}>Error: No se pudo cargar merged_topics.js</div>;
@@ -89,7 +92,8 @@
                                 <div key={field.id} style={styles.fieldCont}>
                                     <div style={styles.itemRow} onClick={() => toggleField(field.id)}>
                                         <span style={styles.icon}>{isFieldExpanded ? '▼' : '▶'}</span>
-                                        <span style={styles.esText}>{field.nameEs}</span>
+                                        <span style={{...styles.chip, ...styles.fieldChip}}>Field</span>
+                                        <span style={{...styles.esText, fontSize: '1.1em'}}>{field.nameEs}</span>
                                         <span style={styles.enText}>({field.nameEn})</span>
                                     </div>
 
@@ -103,6 +107,7 @@
                                                     <div key={subId}>
                                                         <div style={{...styles.itemRow, borderBottom: isSubExpanded ? '1px solid #eee' : 'none'}} onClick={() => toggleSubfield(subId)}>
                                                             <span style={styles.icon}>{isSubExpanded ? '▼' : '▶'}</span>
+                                                            <span style={{...styles.chip, ...styles.subfieldChip}}>Subfield</span>
                                                             <span style={styles.esText}>{subfield.nameEs}</span>
                                                             <span style={styles.enText}>({subfield.nameEn})</span>
                                                         </div>
@@ -111,8 +116,8 @@
                                                             <div>
                                                                 {subfield.topics.map((topic, tIndex) => (
                                                                     <div key={tIndex} style={styles.topicCont}>
-                                                                        <div style={styles.topicBullet}></div>
-                                                                        <span style={styles.esText}>{topic.es}</span>
+                                                                        <span style={{...styles.chip, ...styles.topicChip}}>Topic</span>
+                                                                        <span style={{...styles.esText, fontSize: '0.95em'}}>{topic.es}</span>
                                                                         <span style={styles.enText}>({topic.en})</span>
                                                                     </div>
                                                                 ))}
