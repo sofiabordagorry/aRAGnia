@@ -445,6 +445,17 @@ CRITICAL SYNTAX:
                 """,
                 re.IGNORECASE | re.VERBOSE,
             )
+            pattern_left_arrow = re.compile(
+                rf"""
+                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
+                \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
+                \s*<-\s*
+                \[(?:(?P<rel_var>\w+)?:)?{re.escape(rel_type)}\]
+                \s*-\s*
+                \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
+                """,
+                re.IGNORECASE | re.VERBOSE,
+            )
 
             def repl(m: re.Match[str]) -> str:
                 left = m.group("left")
@@ -461,8 +472,30 @@ CRITICAL SYNTAX:
 
                 return str(m.group(0))
 
+            def repl_left_arrow(m: re.Match[str]) -> str:
+                left = m.group("left")
+                right = m.group("right")
+
+                left_type = m.group("left_label") or var_types.get(left)
+                right_type = m.group("right_label") or var_types.get(right)
+
+                # Esto representa: right -[:REL]-> left
+                # Si right es target y left es source, está invertida
+                if left_type == source_type and right_type == target_type:
+                    return (
+                        f"{m.group('match_type')} "
+                        f"({left}:{source_type})-[:{rel_type}]->({right}:{target_type})"
+                    )
+
+                return str(m.group(0))
+
             new_fixed = pattern.sub(repl, fixed)
 
+            if new_fixed != fixed:
+                corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
+                fixed = new_fixed
+
+            new_fixed = pattern_left_arrow.sub(repl_left_arrow, fixed)
             if new_fixed != fixed:
                 corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
                 fixed = new_fixed
@@ -643,6 +676,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
     def extract_chunks_and_entities_from_results(
         self, records: List[Any]
     ) -> tuple[List[GraphRAGChunk], Dict[tuple[str, str], dict], Dict[str, List[tuple[str, str]]]]:
+        print("RECORD", records)
+
         """Extrae chunks y evidencia de entidades desde los resultados de Cypher."""
         chunks_dict: Dict[str, GraphRAGChunk] = {}  # chunk_id -> GraphRAGChunk
         evidence_entities: Dict[tuple[str, str], dict] = {}  # (entity_id, label) -> props

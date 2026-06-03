@@ -295,6 +295,13 @@ class TabularExtractor:
         seen_rel_keys: set[tuple],
         filename: str,
     ):
+        exists = any(
+            rel.type == "TITULO_EXTRAIDO_DE" and rel.source_id == project_id
+            for rel in relationships
+        )
+        if exists:
+            return
+
         column_id = self._cell(row.get("row_id"))
         table_chunk_id = f"{filename}#Chunk{column_id}"
         title = self._cell(row.get("titulo"))
