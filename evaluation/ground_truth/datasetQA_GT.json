@@ -443,7 +443,7 @@
     "id": 57,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de web warehouse de datos abiertos ",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(:Subcampo) WHERE toLower(p.display_title) CONTAINS toLower('web warehouse de datos abiertos ') RETURN p.display_title AS proyecto, collect(DISTINCT t) AS topicos",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(:Subcampo) WHERE toLower(p.title) CONTAINS toLower('web warehouse de datos abiertos ') RETURN p.display_title AS proyecto, collect(DISTINCT t) AS topicos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de Calidad, topicos: [calidad y gestion de datos (Topico), arquitectura de la informacion y usabilidad (Topico), tecnologia en educacion y salud (Topico)]",
     "answer": ""
   },
