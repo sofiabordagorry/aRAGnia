@@ -242,7 +242,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
         cypher_query = self._fix_relationship_directions(cypher_query)
 
-        cypher_query = self._use_display_name_for_researchers(cypher_query)
+        cypher_query = self._use_display_fields_for_return(cypher_query)
 
         if cypher_query.upper() == "NOT_IN_SCHEMA":
             raise ValueError(
@@ -372,6 +372,10 @@ RETURN RULES:
 - "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
 - "¿Cuántos proyectos?" → RETURN count(p) AS total
 - "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
+- For Proyecto entities ALWAYS return p.title
+- NEVER return p.id unless the user explicitly asks for the project identifier
+- When listing projects, use:
+  RETURN p.title, COLLECT(DISTINCT c) AS chunks
 
 CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
@@ -469,35 +473,37 @@ CRITICAL SYNTAX:
         return fixed
 
     @staticmethod
-    def _use_display_name_for_researchers(cypher_query: str) -> str:
+    def _use_display_fields_for_return(cypher_query: str) -> str:
         """
-        Reemplaza las referencias a '.name' por '.display_name' en la cláusula RETURN
-        para todas las variables que representan a un Investigador.
+        Reemplaza en la cláusula RETURN los campos normalizados por campos de visualización:
+        - Investigador.name -> Investigador.display_name
+        - Proyecto.title -> Proyecto.display_title
         """
 
-        # Buscar dónde empieza el RETURN
         parts = re.split(r"\b(RETURN)\b", cypher_query, maxsplit=1, flags=re.IGNORECASE)
 
-        if len(parts) == 3:
-            before_return = parts[0]
-            return_keyword = parts[1]
-            after_return = parts[2]
+        if len(parts) != 3:
+            return cypher_query
 
-            # Extraer todas las variables asignadas a Investigador (ej: x en (x:Investigador))
-            investigador_vars = set(
-                re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
-            )
+        before_return = parts[0]
+        return_keyword = parts[1]
+        after_return = parts[2]
 
-            if not investigador_vars:
-                return cypher_query
+        investigador_vars = set(
+            re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
+        )
 
-            for var in investigador_vars:
-                pattern = rf"\b{var}\.name\b"
-                after_return = re.sub(pattern, f"{var}.display_name", after_return)
+        proyecto_vars = set(
+            re.findall(r"\(\s*(\w+)\s*:\s*Proyecto\b", before_return, re.IGNORECASE)
+        )
 
-            return before_return + return_keyword + after_return
+        for var in investigador_vars:
+            after_return = re.sub(rf"\b{var}\.name\b", f"{var}.display_name", after_return)
 
-        return cypher_query
+        for var in proyecto_vars:
+            after_return = re.sub(rf"\b{var}\.title\b", f"{var}.display_title", after_return)
+
+        return before_return + return_keyword + after_return
 
     def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
         """
@@ -572,7 +578,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
 
-        fixed_query = self._use_display_name_for_researchers(fixed_query)
+        fixed_query = self._use_display_fields_for_return(fixed_query)
 
         fixed_query = self._fix_relationship_directions(fixed_query)
 

@@ -273,11 +273,13 @@ class TabularExtractor:
             return None
         project_id = self._make_project_id(document_type, anio, id_formulario)
         if project_id not in seen_projects:
+            display_title = title
             project_title = self._normalize_title(title)
             value = cast(
                 FileValue,
                 {
                     "title": project_title,
+                    "display_title": display_title,
                     "keywords": keywords,
                     "description": description,
                 },

@@ -43,7 +43,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     # LIST queries
     (
         "qué proyectos hay de biotecnología?",
-        "MATCH (t:Topico)\nWHERE t.value = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
+        "MATCH (t:Topico)\nWHERE t.value = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p.title, COLLECT(c) AS chunks",
     ),
     (
         "quiénes participaron en el proyecto proy_2020_513?",
@@ -55,35 +55,35 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "qué proyectos hay de ciencias naturales?",
-        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, s, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p.title, s, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "busca el proyecto web warehouse de datos abiertos",
-        "MATCH (p:Proyecto)\nWHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (p:Proyecto)\nWHERE toLower(p.title) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p.title, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos tiene el investigador con apellido perez?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
+        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p.title, i, COLLECT(c) AS chunks",
     ),
     (
         "de qué proyectos fue responsable perez?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
+        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p.title, i, COLLECT(c) AS chunks",
     ),
     (
         "qué documentos tiene el proyecto proy_2020_513?",
-        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nMATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)\nMATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)\nRETURN d, p, COLLECT(c) AS chunks",
+        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nMATCH (p)-[:ES_DESCRITO_POR]->(d:Documento)\nMATCH (c:Chunk)-[:DE_DOCUMENTO]->(d)\nRETURN d, p.title, COLLECT(c) AS chunks",
     ),
     (
         "describí el proyecto proy_2020_513",
-        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nOPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)\nOPTIONAL MATCH (maininv:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p)\nOPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN p, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1",
+        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nOPTIONAL MATCH (p)-[:TIENE_TOPICO]->(t:Topico)\nOPTIONAL MATCH (maininv:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p)\nOPTIONAL MATCH (inv:Investigador)-[:PARTICIPO_EN]->(p)\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN p.title, COLLECT(DISTINCT c) AS chunks, COLLECT(DISTINCT t) AS topics, COLLECT(DISTINCT inv) AS investigators, COLLECT(DISTINCT maininv) AS researchers_in_charge, a LIMIT 1",
     ),
     (
         "qué proyectos iniciaron en 2018?",
-        "MATCH (a:Anio {year: '2018'})\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
+        "MATCH (a:Anio {year: '2018'})\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p.title, COLLECT(c) AS chunks",
     ),
     (
         "qué proyectos hay en el área básica?",
-        "MATCH (a:Area)\nWHERE a.value = 'basica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN DISTINCT p, a",
+        "MATCH (a:Area)\nWHERE a.value = 'basica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN DISTINCT p.title, a",
     ),
     # AGGREGATION
     (

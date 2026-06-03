@@ -35,11 +35,11 @@ load_dotenv(env_path)
         ),
     ],
 )
-def test_use_display_name_for_researchers(test_name, original_query, expected_final_query):
+def test_use_display_fields_for_return(test_name, original_query, expected_final_query):
     """Test that the regex correctly replaces .name with .display_name only after RETURN."""
 
     # Llamamos al método
-    processed = GraphRAGRetriever._use_display_name_for_researchers(original_query)
+    processed = GraphRAGRetriever._use_display_fields_for_return(original_query)
 
     # Comparamos el string final completo
     assert (

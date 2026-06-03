@@ -327,15 +327,13 @@ class GraphBuilder:
     @staticmethod
     def _display_value(label: str, props: dict[str, Any]) -> str:
         if label == "Investigador":
-            return str(
-                props.get("display_name") or props.get("name") or props.get("id") or "Investigador"
-            )
+            return str(props.get("display_name") or props.get("name") or props.get("id") or label)
         if label in ("Proyecto", "Grupo"):
-            return str(props.get("value") or props.get("id") or label)
+            return str(props.get("display_title") or props.get("title") or props.get("id") or label)
         if label == "Topico":
-            return str(props.get("value") or props.get("id") or "Topico")
+            return str(props.get("value") or props.get("id") or label)
         if label == "Anio":
-            return str(props.get("year") or props.get("id") or "Anio")
+            return str(props.get("year") or props.get("id") or label)
         return str(props.get("id") or props.get("value") or label)
 
     @staticmethod

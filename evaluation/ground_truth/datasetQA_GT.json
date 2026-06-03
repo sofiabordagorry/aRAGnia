@@ -11,7 +11,7 @@
     "id": 2,
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿En qué proyecto participó fernando carpani?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('fernando carpani') RETURN DISTINCT p AS proyecto",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('fernando carpani') RETURN DISTINCT p.display_title AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)",
     "answer": ""
   },
@@ -51,7 +51,7 @@
     "id": 7,
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "Nombra todos los proyectos que están asociados de alguna manera al subcampo transporte.",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.value) CONTAINS toLower('transporte') RETURN DISTINCT p AS proyecto",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.value) CONTAINS toLower('transporte') RETURN DISTINCT p.display_title AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: diseño optimo de redes de ciclovias (Proyecto)",
     "answer": ""
   },
@@ -59,7 +59,7 @@
     "id": 8,
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "Lista todos los proyectos en los que figura la participación de Hector Cancela Bosi.",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('hector cancela bosi') RETURN DISTINCT p AS proyecto",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS toLower('hector cancela bosi') RETURN DISTINCT p.display_title AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: sistemas binarios estocasticos dinamicos (Proyecto)",
     "answer": ""
   },
@@ -123,7 +123,7 @@
     "id": 16,
     "categoria": "Análisis Temporal",
     "pregunta": "¿En qué años específicos comenzaron a desarrollarse proyectos relacionados con algoritmos de programacion y optimizacion?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('algoritmos de programacion y optimizacion') RETURN DISTINCT toInteger(a.year) AS anio, collect(DISTINCT p) AS proyectos ORDER BY anio",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('algoritmos de programacion y optimizacion') RETURN DISTINCT toInteger(a.year) AS anio, collect(DISTINCT p.display_title) AS proyectos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, proyectos: [sistemas binarios estocasticos dinamicos (Proyecto)]",
     "answer": ""
   },
@@ -155,7 +155,7 @@
     "id": 20,
     "categoria": "Análisis Temporal",
     "pregunta": "Muestra la progresión cronológica de los proyectos en los que ha participado Antonio Daniel Mauttone.",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(i.name) CONTAINS toLower('Antonio Daniel Mauttone') RETURN toInteger(a.year) AS anio, collect(DISTINCT p) AS proyectos ORDER BY anio",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(i.name) CONTAINS toLower('Antonio Daniel Mauttone') RETURN toInteger(a.year) AS anio, collect(DISTINCT p.display_title) AS proyectos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, proyectos: [diseño optimo de redes de ciclovias (Proyecto)]",
     "answer": ""
   },
@@ -179,7 +179,7 @@
     "id": 23,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué investigadores comenzaron proyectos nuevos dentro del subcampo biologia molecular durante el año 2016?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) = 2016 AND toLower(s.value) CONTAINS toLower('biologia molecular') RETURN DISTINCT i AS investigador, p AS proyecto ORDER BY toString(p.id)",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.year) = 2016 AND toLower(s.value) CONTAINS toLower('biologia molecular') RETURN DISTINCT i AS investigador, p.display_title AS proyecto ORDER BY p.display_title",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: jose roberto sotelo silveira (Investigador), proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)\n2. investigador: alvaro martin menoni (Investigador), proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)\n3. investigador: gadiel seroussi blusztein (Investigador), proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)",
     "answer": ""
   },
@@ -219,7 +219,7 @@
     "id": 28,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el subcampo Ciencias Agricolas y Biologicas Generales?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.value) CONTAINS toLower('Ciencias Agricolas y Biologicas Generales') RETURN DISTINCT i AS investigador, collect(DISTINCT p) AS proyectos",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.value) CONTAINS toLower('Ciencias Agricolas y Biologicas Generales') RETURN DISTINCT i AS investigador, collect(DISTINCT p.display_title) AS proyectos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: andres berger ricca (Investigador), proyectos: [prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto)]\n2. investigador: pablo alejandro rodriguez bocca (Investigador), proyectos: [prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto)]",
     "answer": ""
   },
@@ -227,7 +227,7 @@
     "id": 29,
     "categoria": "Consultas Complejas",
     "pregunta": "Lista únicamente a los responsables de proyectos que abarquen el tópico tecnicas avanzadas de biosensores y bioanalisis.",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('tecnicas avanzadas de biosensores y bioanalisis') RETURN DISTINCT i AS responsable, collect(DISTINCT p) AS proyectos",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('tecnicas avanzadas de biosensores y bioanalisis') RETURN DISTINCT i AS responsable, collect(DISTINCT p.display_title) AS proyectos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. responsable: alvaro martin menoni (Investigador), proyectos: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)]",
     "answer": ""
   },
@@ -235,7 +235,7 @@
     "id": 30,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Existen investigadores que participen en proyectos de subcampos completamente distintos entre sí? ¿Quiénes son?",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH i, collect(DISTINCT s) AS subcampos, collect(DISTINCT p) AS proyectos WHERE size(subcampos) > 1 RETURN i AS investigador, subcampos, proyectos ORDER BY size(subcampos) DESC",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH i, collect(DISTINCT s) AS subcampos, collect(DISTINCT p.title) AS proyectos WHERE size(subcampos) > 1 RETURN i AS investigador, subcampos, proyectos ORDER BY size(subcampos) DESC",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: maria elizabeth urquhart perez (Investigador), subcampos: [energia renovable, sostenibilidad y medio ambiente (Subcampo), transporte (Subcampo), sistemas de informacion de gestion (Subcampo)], proyectos: [diseño optimo de redes de ciclovias (Proyecto)]\n2. investigador: antonio daniel mauttone vidales (Investigador), subcampos: [energia renovable, sostenibilidad y medio ambiente (Subcampo), transporte (Subcampo), sistemas de informacion de gestion (Subcampo)], proyectos: [diseño optimo de redes de ciclovias (Proyecto)]\n3. investigador: andres berger ricca (Investigador), subcampos: [ecologia (Subcampo), ciencias agricolas y biologicas generales (Subcampo), ciencias de las plantas (Subcampo)], proyectos: [prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto)]\n4. investigador: pablo alejandro rodriguez bocca (Investigador), subcampos: [ecologia (Subcampo), ciencias agricolas y biologicas generales (Subcampo), ciencias de las plantas (Subcampo)], proyectos: [prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto)]\n5. investigador: lorena etcheverry venturini (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n6. investigador: flavia serra sosa (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n7. investigador: raul ruggia frick (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n8. investigador: fernando carpani fernandez (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n9. investigador: daniel callejas canepa (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n10. investigador: adriana alejandra marotta llambi (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n11. investigador: laura gonzalez lopez (Investigador), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], proyectos: [web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)]\n12. investigador: franco rafael robledo amoza (Investigador), subcampos: [teoria computacional y matematicas (Subcampo), ingenieria industrial y de manufactura (Subcampo)], proyectos: [sistemas binarios estocasticos dinamicos (Proyecto)]\n13. investigador: gustavo ricardo guerberoff aguirregomezcorta (Investigador), subcampos: [teoria computacional y matematicas (Subcampo), ingenieria industrial y de manufactura (Subcampo)], proyectos: [sistemas binarios estocasticos dinamicos (Proyecto)]\n14. investigador: hector cancela bosi (Investigador), subcampos: [teoria computacional y matematicas (Subcampo), ingenieria industrial y de manufactura (Subcampo)], proyectos: [sistemas binarios estocasticos dinamicos (Proyecto)]\n15. investigador: pablo gabriel romero rodriguez (Investigador), subcampos: [teoria computacional y matematicas (Subcampo), ingenieria industrial y de manufactura (Subcampo)], proyectos: [sistemas binarios estocasticos dinamicos (Proyecto)]",
     "answer": ""
   },
@@ -243,7 +243,7 @@
     "id": 31,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de tecnicas avanzadas de biosensores y bioanalisis, y genetica, bioinformatica e investigacion biomedica?",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t1.value) CONTAINS toLower('tecnicas avanzadas de biosensores y bioanalisis') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t2.value) CONTAINS toLower('genetica, bioinformatica e investigacion biomedica') RETURN DISTINCT p",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t1.value) CONTAINS toLower('tecnicas avanzadas de biosensores y bioanalisis') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t2.value) CONTAINS toLower('genetica, bioinformatica e investigacion biomedica') RETURN DISTINCT p.display_title",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. p: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)",
     "answer": ""
   },
@@ -251,7 +251,7 @@
     "id": 32,
     "categoria": "Consultas Complejas",
     "pregunta": "Identifica a todos los investigadores asociados directa o indirectamente al tópico genetica, bioinformatica e investigacion biomedica.",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('genetica, bioinformatica e investigacion biomedica') RETURN DISTINCT i AS investigador, collect(DISTINCT p) AS proyectos",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.value) CONTAINS toLower('genetica, bioinformatica e investigacion biomedica') RETURN DISTINCT i AS investigador, collect(DISTINCT p.display_title) AS proyectos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: jose roberto sotelo silveira (Investigador), proyectos: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)]\n2. investigador: alvaro martin menoni (Investigador), proyectos: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)]\n3. investigador: gadiel seroussi blusztein (Investigador), proyectos: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)]",
     "answer": ""
   },
@@ -267,7 +267,7 @@
     "id": 34,
     "categoria": "Consultas Complejas",
     "pregunta": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos subcampos diferentes a la vez?",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH p, collect(DISTINCT s) AS subcampos WHERE size(subcampos) > 2 RETURN p AS proyecto, subcampos, size(subcampos) AS cantidad_subcampos ORDER BY cantidad_subcampos DESC",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH p, collect(DISTINCT s) AS subcampos WHERE size(subcampos) > 2 RETURN p.display_title AS proyecto, subcampos, size(subcampos) AS cantidad_subcampos ORDER BY cantidad_subcampos DESC",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: diseño optimo de redes de ciclovias (Proyecto), subcampos: [energia renovable, sostenibilidad y medio ambiente (Subcampo), transporte (Subcampo), sistemas de informacion de gestion (Subcampo)], cantidad_subcampos: 3\n2. proyecto: prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto), subcampos: [ecologia (Subcampo), ciencias agricolas y biologicas generales (Subcampo), ciencias de las plantas (Subcampo)], cantidad_subcampos: 3\n3. proyecto: web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto), subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), sistemas de informacion (Subcampo), educacion (Subcampo)], cantidad_subcampos: 3",
     "answer": ""
   },
@@ -283,7 +283,7 @@
     "id": 36,
     "categoria": "Consultas Complejas",
     "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos.",
-    "cypher_query": "MATCH (p0:Proyecto)<-[:PARTICIPO_EN]-(i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p0.title) CONTAINS toLower('Aplicaciones de la Teoria de la Informacion al procesamiento de datos de secuenciacion de genomas por nanoporos') AND p <> p0 RETURN DISTINCT p AS proyecto_relacionado, collect(DISTINCT i) AS investigadores_en_comun",
+    "cypher_query": "MATCH (p0:Proyecto)<-[:PARTICIPO_EN]-(i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p0.title) CONTAINS toLower('Aplicaciones de la Teoria de la Informacion al procesamiento de datos de secuenciacion de genomas por nanoporos') AND p <> p0 RETURN DISTINCT p.display_title AS proyecto_relacionado, collect(DISTINCT i) AS investigadores_en_comun",
     "retrieved_subgraph": "No se encontró información relevante en el grafo para responder esta pregunta.",
     "answer": ""
   },
@@ -387,7 +387,7 @@
     "id": 50,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos año 2018",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toInteger(a.year) = 2018 RETURN DISTINCT p AS proyecto",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toInteger(a.year) = 2018 RETURN DISTINCT p.display_title AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: diseño optimo de redes de ciclovias (Proyecto)\n2. proyecto: prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo (Proyecto)",
     "answer": ""
   },
@@ -395,7 +395,7 @@
     "id": 51,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "gadiel seroussi temas",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('gadiel seroussi') RETURN p AS proyecto, t AS topico",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('gadiel seroussi') RETURN p.display_title AS proyecto, t AS topico",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: tecnicas avanzadas de biosensores y bioanalisis (Topico)\n2. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: expresion genetica y clasificacion del cancer (Topico)\n3. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: genetica, bioinformatica e investigacion biomedica (Topico)",
     "answer": ""
   },
@@ -411,7 +411,7 @@
     "id": 53,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos tecnologia en educacion y salud y calidad y gestion de datos",
-    "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.value) CONTAINS toLower('calidad y gestion de datos') AND toLower(t1.value) CONTAINS toLower('tecnologia en educacion y salud') RETURN DISTINCT p AS proyecto",
+    "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.value) CONTAINS toLower('calidad y gestion de datos') AND toLower(t1.value) CONTAINS toLower('tecnologia en educacion y salud') RETURN DISTINCT p.display_title AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto)",
     "answer": ""
   },
@@ -419,7 +419,7 @@
     "id": 54,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "quien investiga el proyecto de ciclovias",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.title) CONTAINS toLower('ciclovias') RETURN DISTINCT i AS investigador, p AS proyecto ORDER BY p.title",
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.title) CONTAINS toLower('ciclovias') RETURN DISTINCT i AS investigador, p.display_title AS proyecto ORDER BY p.display_title",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: maria elizabeth urquhart perez (Investigador), proyecto: diseño optimo de redes de ciclovias (Proyecto)\n2. investigador: antonio daniel mauttone vidales (Investigador), proyecto: diseño optimo de redes de ciclovias (Proyecto)",
     "answer": ""
   },
@@ -427,7 +427,7 @@
     "id": 55,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos compartidos alvaro martin y gadiel seroussi",
-    "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE toLower(i1.name) CONTAINS toLower('alvaro Martin') AND toLower(i2.name) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT p AS proyecto_compartido",
+    "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE toLower(i1.name) CONTAINS toLower('alvaro Martin') AND toLower(i2.name) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT p.display_title AS proyecto_compartido",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto_compartido: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto)",
     "answer": ""
   },
@@ -443,7 +443,7 @@
     "id": 57,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de web warehouse de datos abiertos ",
-    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(:Subcampo) WHERE toLower(p.title) CONTAINS toLower('web warehouse de datos abiertos ') RETURN p AS proyecto, collect(DISTINCT t) AS topicos",
+    "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(:Subcampo) WHERE toLower(p.display_title) CONTAINS toLower('web warehouse de datos abiertos ') RETURN p.display_title AS proyecto, collect(DISTINCT t) AS topicos",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: web warehouse de datos abiertos de gobierno con gestion de calidad (Proyecto), topicos: [calidad y gestion de datos (Topico), arquitectura de la informacion y usabilidad (Topico), tecnologia en educacion y salud (Topico)]",
     "answer": ""
   },
@@ -459,7 +459,7 @@
     "id": 59,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "cual es la cedula de los investigadores que comparten al menos un proyecto en comun?",
-    "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE i1.id < i2.id RETURN DISTINCT i1.name AS investigador_1, i1.documento AS cedula_1, i2.name AS investigador_2, i2.documento AS cedula_2, collect(DISTINCT p.title) AS proyectos_en_comun ORDER BY size(proyectos_en_comun) DESC, investigador_1, investigador_2",
+    "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE i1.id < i2.id RETURN DISTINCT i1.name AS investigador_1, i1.documento AS cedula_1, i2.name AS investigador_2, i2.documento AS cedula_2, collect(DISTINCT p.display_title) AS proyectos_en_comun ORDER BY size(proyectos_en_comun) DESC, investigador_1, investigador_2",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n2. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n3. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n4. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n5. investigador_1: alvaro martin menoni, cedula_1: 1884198-9, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos]\n6. investigador_1: andres berger ricca, cedula_1: 2981586-6, investigador_2: pablo alejandro rodriguez bocca, cedula_2: 3348401-1, proyectos_en_comun: [prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo]\n7. investigador_1: antonio daniel mauttone vidales, cedula_1: 2597542-0, investigador_2: maria elizabeth urquhart perez, cedula_2: 3988305-5, proyectos_en_comun: [diseño optimo de redes de ciclovias]\n8. investigador_1: daniel callejas canepa, cedula_1: 3642724-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n9. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n10. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n11. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n12. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n13. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n14. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n15. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n16. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n17. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n18. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: alvaro martin menoni, cedula_2: 1884198-9, proyectos_en_comun: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos]\n19. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos]\n20. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: franco rafael robledo amoza, cedula_2: 3645500-3, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n21. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n22. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n23. investigador_1: laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n24. investigador_1: laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n25. investigador_1: laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n26. investigador_1: pablo gabriel romero rodriguez, cedula_1: 3702465-5, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [sistemas binarios estocasticos dinamicos]\n27. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n28. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n29. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: fernando carpani fernandez, cedula_2: 1908216-2, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n30. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n31. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]\n32. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [web warehouse de datos abiertos de gobierno con gestion de calidad]",
     "answer": ""
   },
