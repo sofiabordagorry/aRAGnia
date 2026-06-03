@@ -395,9 +395,9 @@
     "id": 51,
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "gadiel seroussi temas",
-    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('gadiel seroussi') RETURN p AS proyecto, t AS topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: tecnicas avanzadas de biosensores y bioanalisis (Topico)\n2. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: expresion genetica y clasificacion del cancer (Topico)\n3. proyecto: aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos (Proyecto), topico: genetica, bioinformatica e investigacion biomedica (Topico)",
-    "answer": "Gadiel Seroussi trabaja en el proyecto 'Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos', que abarca los tópicos: técnicas avanzadas de biosensores y bioanálisis; expresión genética y clasificación del cáncer; y genética, bioinformática e investigación biomédica."
+    "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.name) CONTAINS toLower('gadiel seroussi') RETURN DISTINCT t AS topico",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: tecnicas avanzadas de biosensores y bioanalisis (Topico)\n2. topico: expresion genetica y clasificacion del cancer (Topico)\n3. topico: genetica, bioinformatica e investigacion biomedica (Topico)",
+    "answer": "Los temas de investigación de Gadiel Seroussi son: técnicas avanzadas de biosensores y bioanálisis; expresión genética y clasificación del cáncer; y genética, bioinformática e investigación biomédica."
   },
   {
     "id": 52,
