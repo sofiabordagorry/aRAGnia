@@ -372,10 +372,8 @@ RETURN RULES:
 - "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
 - "¿Cuántos proyectos?" → RETURN count(p) AS total
 - "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
-- For Proyecto entities ALWAYS return p.title
 - NEVER return p.id unless the user explicitly asks for the project identifier
-- When listing projects, use:
-  RETURN p.title, COLLECT(DISTINCT c) AS chunks
+
 
 CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
