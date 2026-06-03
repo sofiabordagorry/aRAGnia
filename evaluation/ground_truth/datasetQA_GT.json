@@ -107,8 +107,8 @@
     "id": 14,
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2018?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.id) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.id) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [sistemas_de_logistica_y_transporte, estudios_ambientales_y_ecologicos, planificacion_y_optimizacion_del_transporte, teledeteccion_en_la_agricultura, agricultura_inteligente_e_ia, ciencias_de_las_plantas_y_del_suelo]",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) >= 2018 WITH collect(DISTINCT t.value) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.year) < 2018 WITH t1, collect(DISTINCT t.value) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [sistemas de logistica y transporte, estudios ambientales y ecologicos, planificacion y optimizacion del transporte, teledeteccion en la agricultura, agricultura inteligente e ia, ciencias de las plantas y del suelo]",
     "answer": ""
   },
   {
