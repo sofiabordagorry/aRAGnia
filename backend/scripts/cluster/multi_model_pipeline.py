@@ -11,7 +11,7 @@ Opciones:
     --data-dir PATH         Directorio raíz de datos (default: ./data)
     --skip-docling          Saltear Docling (si ya está procesado)
     --skip-chunks           Saltear chunking
-    --max-docs N            Límite de documentos por modelo (None = todos)
+    --max-project N         Límite de proyectos por modelo (None = todos)
     --env-file PATH         Archivo .env con variables de entorno
 """
 
@@ -68,7 +68,7 @@ def run_pipeline_for_model(
     model_name: str,
     skip_docling: bool = False,
     skip_chunks: bool = False,
-    max_docs: int | None = None,
+    max_project: int | None = None,
     env_file: Path | None = None,
 ) -> None:
     """Ejecuta el pipeline completo para un modelo LLM específico."""
@@ -146,7 +146,7 @@ def run_pipeline_for_model(
     # Extracción con el modelo específico
     step_extraction(
         data_dir=model_data_dir,
-        max_docs=max_docs,
+        max_project=max_project,
         llm_model=model_name,
     )
 
@@ -202,10 +202,10 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--max-docs",
+        "--max-project",
         type=int,
         default=None,
-        help="Límite de documentos (None = todos)",
+        help="Límite de proyectos (None = todos)",
     )
 
     return parser.parse_args()
@@ -238,7 +238,7 @@ def main() -> None:
                 model_name=model,
                 skip_docling=args.skip_docling,
                 skip_chunks=args.skip_chunks,
-                max_docs=args.max_docs,
+                max_project=args.max_project,
                 env_file=args.env_file,
             )
         except Exception as e:

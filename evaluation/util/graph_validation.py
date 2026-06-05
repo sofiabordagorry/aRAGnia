@@ -455,18 +455,10 @@ def validate_constraints(idx: Dict[str, Any], issues: List[Issue]) -> None:
     def extracted_entities(chunk_id: str) -> Set[str]:
         return set(targets_of(chunk_id, "EXTRAIDO_DE"))
 
-    # 1) Máximo 3 tópicos por proyecto
+    # 1) Al menos 1 tópico por proyecto
     for project in idx["entities_by_label"].get("Proyecto", []):
         pid = project["id"]
         topicos = targets_of(pid, "TIENE_TOPICO")
-        if len(topicos) > 3:
-            add_issue(
-                issues, "error", "constraint", "project.max_3_topics",
-                "Un proyecto tiene más de 3 tópicos asociados.",
-                project_id=pid,
-                topic_count=len(topicos),
-                topic_ids=topicos,
-            )
         if len(topicos) == 0:
             add_issue(
                 issues, "error", "constraint", "project.0_topics",

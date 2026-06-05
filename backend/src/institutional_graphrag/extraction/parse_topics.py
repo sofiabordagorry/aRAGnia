@@ -12,6 +12,7 @@ class TopicMention:
 
     topic: str
     evidence: str
+    logit: float
     chunk_id: str
 
 
