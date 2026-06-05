@@ -33,6 +33,7 @@ class InvestigadorValue(TypedDict):
 
 class FileValue(TypedDict):
     title: str
+    display_title: str
     keywords: List[str]
     description: str
 

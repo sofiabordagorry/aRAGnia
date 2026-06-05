@@ -242,7 +242,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
         cypher_query = self._fix_relationship_directions(cypher_query)
 
-        cypher_query = self._use_display_name_for_researchers(cypher_query)
+        cypher_query = self._use_display_fields_for_return(cypher_query)
 
         if cypher_query.upper() == "NOT_IN_SCHEMA":
             raise ValueError(
@@ -372,6 +372,8 @@ RETURN RULES:
 - "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
 - "¿Cuántos proyectos?" → RETURN count(p) AS total
 - "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
+- NEVER return p.id unless the user explicitly asks for the project identifier
+
 
 CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
@@ -441,6 +443,17 @@ CRITICAL SYNTAX:
                 """,
                 re.IGNORECASE | re.VERBOSE,
             )
+            pattern_left_arrow = re.compile(
+                rf"""
+                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
+                \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
+                \s*<-\s*
+                \[(?:(?P<rel_var>\w+)?:)?{re.escape(rel_type)}\]
+                \s*-\s*
+                \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
+                """,
+                re.IGNORECASE | re.VERBOSE,
+            )
 
             def repl(m: re.Match[str]) -> str:
                 left = m.group("left")
@@ -457,8 +470,30 @@ CRITICAL SYNTAX:
 
                 return str(m.group(0))
 
+            def repl_left_arrow(m: re.Match[str]) -> str:
+                left = m.group("left")
+                right = m.group("right")
+
+                left_type = m.group("left_label") or var_types.get(left)
+                right_type = m.group("right_label") or var_types.get(right)
+
+                # Esto representa: right -[:REL]-> left
+                # Si right es target y left es source, está invertida
+                if left_type == source_type and right_type == target_type:
+                    return (
+                        f"{m.group('match_type')} "
+                        f"({left}:{source_type})-[:{rel_type}]->({right}:{target_type})"
+                    )
+
+                return str(m.group(0))
+
             new_fixed = pattern.sub(repl, fixed)
 
+            if new_fixed != fixed:
+                corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
+                fixed = new_fixed
+
+            new_fixed = pattern_left_arrow.sub(repl_left_arrow, fixed)
             if new_fixed != fixed:
                 corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
                 fixed = new_fixed
@@ -469,35 +504,37 @@ CRITICAL SYNTAX:
         return fixed
 
     @staticmethod
-    def _use_display_name_for_researchers(cypher_query: str) -> str:
+    def _use_display_fields_for_return(cypher_query: str) -> str:
         """
-        Reemplaza las referencias a '.name' por '.display_name' en la cláusula RETURN
-        para todas las variables que representan a un Investigador.
+        Reemplaza en la cláusula RETURN los campos normalizados por campos de visualización:
+        - Investigador.name -> Investigador.display_name
+        - Proyecto.title -> Proyecto.display_title
         """
 
-        # Buscar dónde empieza el RETURN
         parts = re.split(r"\b(RETURN)\b", cypher_query, maxsplit=1, flags=re.IGNORECASE)
 
-        if len(parts) == 3:
-            before_return = parts[0]
-            return_keyword = parts[1]
-            after_return = parts[2]
+        if len(parts) != 3:
+            return cypher_query
 
-            # Extraer todas las variables asignadas a Investigador (ej: x en (x:Investigador))
-            investigador_vars = set(
-                re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
-            )
+        before_return = parts[0]
+        return_keyword = parts[1]
+        after_return = parts[2]
 
-            if not investigador_vars:
-                return cypher_query
+        investigador_vars = set(
+            re.findall(r"\(\s*(\w+)\s*:\s*Investigador\b", before_return, re.IGNORECASE)
+        )
 
-            for var in investigador_vars:
-                pattern = rf"\b{var}\.name\b"
-                after_return = re.sub(pattern, f"{var}.display_name", after_return)
+        proyecto_vars = set(
+            re.findall(r"\(\s*(\w+)\s*:\s*Proyecto\b", before_return, re.IGNORECASE)
+        )
 
-            return before_return + return_keyword + after_return
+        for var in investigador_vars:
+            after_return = re.sub(rf"\b{var}\.name\b", f"{var}.display_name", after_return)
 
-        return cypher_query
+        for var in proyecto_vars:
+            after_return = re.sub(rf"\b{var}\.title\b", f"{var}.display_title", after_return)
+
+        return before_return + return_keyword + after_return
 
     def _fix_cypher_query(self, broken_query: str, syntax_error: str) -> str:
         """
@@ -572,7 +609,7 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 "LLM no devolvió query corregida entre tags <QUERY>...</QUERY> después de múltiples intentos"
             )
 
-        fixed_query = self._use_display_name_for_researchers(fixed_query)
+        fixed_query = self._use_display_fields_for_return(fixed_query)
 
         fixed_query = self._fix_relationship_directions(fixed_query)
 
@@ -637,6 +674,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
     def extract_chunks_and_entities_from_results(
         self, records: List[Any]
     ) -> tuple[List[GraphRAGChunk], Dict[tuple[str, str], dict], Dict[str, List[tuple[str, str]]]]:
+        print("RECORD", records)
+
         """Extrae chunks y evidencia de entidades desde los resultados de Cypher."""
         chunks_dict: Dict[str, GraphRAGChunk] = {}  # chunk_id -> GraphRAGChunk
         evidence_entities: Dict[tuple[str, str], dict] = {}  # (entity_id, label) -> props

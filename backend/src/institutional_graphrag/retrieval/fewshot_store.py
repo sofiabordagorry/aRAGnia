@@ -46,12 +46,12 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
         "MATCH (t:Topico)\nWHERE t.value = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
     ),
     (
-        "quiénes participaron en el proyecto proy_2020_513?",
-        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWHERE p.id = 'proy_2020_513'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
+        "quiénes participaron en el proyecto Co-simulacion en Sistemas Ciber Fisicos?",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWHERE p.title = 'Co-simulacion en Sistemas Ciber Fisicos'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
     ),
     (
-        "quién fue el responsable del proyecto proy_2020_513?",
-        "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nWHERE p.id = 'proy_2020_513'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
+        "quién fue el responsable del proyecto Co-simulacion en Sistemas Ciber Fisicos?",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nWHERE p.title CONTAINS 'Co-simulacion en Sistemas Ciber Fisicos' \nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos hay de ciencias naturales?",
@@ -59,7 +59,7 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "busca el proyecto web warehouse de datos abiertos",
-        "MATCH (p:Proyecto)\nWHERE toLower(p.value) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (p:Proyecto)\nWHERE toLower(p.title) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos tiene el investigador con apellido perez?",
