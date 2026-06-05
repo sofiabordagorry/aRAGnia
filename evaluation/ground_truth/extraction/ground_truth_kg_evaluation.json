@@ -1,0 +1,1218 @@
+{
+  "entities": [
+    {
+      "id": "proy_2018_17",
+      "label": "Proyecto",
+      "value": {
+        "title": "turismo en uruguay: de la agenda politica a la implementacion (1990-2015)",
+        "keywords": ["turismo", "política", "Uruguay"],
+        "description": "Este  proyecto intentará abordar la evolución del turismo en Uruguay en el período 1990 -2015, el cual abarca cinco mandatos de gobierno que tiene ideologías distintas y que representan posiciones bien diferentes a partir de la asunción al poder de un partido"
+      }
+    },
+    {
+      "id": "proy_2018_20",
+      "label": "Proyecto",
+      "value": {
+        "title": "el empresariado uruguayo en el proceso de construccion de una cultura del trabajo para el desarrollo",
+        "keywords": ["Empresarios", "Cultura del Trabajo", "Trabajo"],
+        "description": "En esta investigación nos proponemos contribuir a la comprensión sociológica del proceso de implementación de la Directriz Estratégica del MTSS (2015-2020) como escenario donde se apela al diálogo social para la instalación de la noción “cultura del trabajo pa"
+      }
+    },
+    {
+      "id": "proy_2018_52",
+      "label": "Proyecto",
+      "value": {
+        "title": "procesos de trabajo y desigualdades de genero en dos cadenas de valor agroindustriales: citrus y lecheria",
+        "keywords": ["Género", "Procesos de Trabajo", "Cadenas Globales de Valor"],
+        "description": "En Latinoamérica el crecimiento de los complejos agroindustriales de exportación ha ido de la mano de cambios en la organización del trabajo, en las formas de contratación del personal y del género del mismo. Uruguay no está ajeno a estas tendencias y se obser"
+      }
+    },
+    {
+      "id": "proy_2018_92",
+      "label": "Proyecto",
+      "value": {
+        "title": "hacia una nueva relacion agua-ciudad: propuestas integrales en cursos de agua en el uruguay",
+        "keywords": ["ordenamiento territorial", "aguas urbanas", "ecosistemas urbanos"],
+        "description": "El desarrollo histórico de las ciudades ha implicado la pérdida de la naturalidad y calidad de los cursos de agua urbanos con el consiguiente deterioro de las condiciones de vida de la población. Los paradigmas hegemónicos que han comandado la construcción del"
+      }
+    },
+    {
+      "id": "proy_2018_206",
+      "label": "Proyecto",
+      "value": {
+        "title": "dalavuelta/mina - desarrollo de exoesqueleto de miembros inferiores orientado a rehabilitacion",
+        "keywords": ["Exoesqueleto", "Rehabilitación", "Ingeniería"],
+        "description": "El proyecto busca aportar a la rehabilitación neurológica de personas a partir del diseño y prototipado de un exoesqueleto activo de miembros inferiores. La ejecución es realizada por un grupo interdisciplinario que involucra ingeniería mecánica, en computació"
+      }
+    },
+    {
+      "id": "proy_2018_261",
+      "label": "Proyecto",
+      "value": {
+        "title": "llegaron al liceo y ahora que: las competencias en informacion en estudiantes de primer ano de secundaria",
+        "keywords": ["Alfabetización en Información", "Competencias en Información", "Enseñanza Secundaria"],
+        "description": "Los mecanismos a través de los cuales el estudiante se aproxima a la información y el uso que hace de ella en función del nivel educativo por el que transita se consideran determinantes a la hora de alcanzar los niveles de aprendizaje esperados. Vivimos en la "
+      }
+    },
+    {
+      "id": "proy_2018_309",
+      "label": "Proyecto",
+      "value": {
+        "title": "juego, genero y formacion docente: una propuesta de investigacion hacia la formacion docente universitaria en la ciudad de Rivera",
+        "keywords": ["género", "formación docente", "juego"],
+        "description": "Teniendo en cuenta la tensión, la naturalización y la invisibilización de los temas de equidad de género y diversidad sexual en el ámbito de la educación formal, en la presente propuesta analizamos cómo, a partir de la curricularización de dichas temáticas en "
+      }
+    },
+    {
+      "id": "proy_2018_425",
+      "label": "Proyecto",
+      "value": {
+        "title": "genero y negociacion colectiva",
+        "keywords": ["Negociación colectiva", "Género", "Brechas salariales"],
+        "description": "El rol de las regulaciones estatales sobre salarios mínimos, contratos, subsidios y poder de los sindicatos se ha considerado clave para mejorar las condiciones desiguales de inserción laboral y retribución que afectan a hombres y mujeres. La propuesta de inve"
+      }
+    },
+    {
+      "id": "proy_2016_728",
+      "label": "Proyecto",
+      "value": {
+        "title": "los efectos en el mediano plazo de las politicas de proximidad sobre el bienestar de los jovenes uruguayos",
+        "keywords": ["Evaluación de política", "Movilidad", "Bienestar"],
+        "description": "En Uruguay los jóvenes enfrentan un conjunto de problemáticas vinculadas a su trayectoria laboral y educativa, tales como la informalidad y el abandono del sistema educativo, que son persistentes en el tiempo a pesar de que en las últimas décadas varios progra"
+      }
+    },
+    {
+      "id": "2018",
+      "label": "Anio",
+      "value": {
+        "year": "2018"
+      }
+    },
+    {
+      "id": "2016",
+      "label": "Anio",
+      "value": {
+        "year": "2016"
+      }
+    },
+    {
+      "id": "proy_2018_17_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_17_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "17",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_17_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_17_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "17",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_20_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_20_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "20",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_20_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_20_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "20",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_52_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_52_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "52",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_52_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_52_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "52",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_92_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_92_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "92",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_92_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_92_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "92",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_206_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_206_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "206",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_206_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_206_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "206",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_261_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_261_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "261",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_261_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_261_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "261",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_309_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_309_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "309",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_309_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_309_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "309",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2018_425_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_425_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "425",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_425_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2018_425_informe",
+        "is_group": "proy",
+        "year_publisher": "2018",
+        "sub_id": "425",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "proy_2016_728_propuesta",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_728_propuesta",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "sub_id": "728",
+        "type": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_728_informe",
+      "label": "Documento",
+      "value": {
+        "base_name": "proy_2016_728_informe",
+        "is_group": "proy",
+        "year_publisher": "2016",
+        "sub_id": "728",
+        "type": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3292018_5",
+      "label": "Investigador",
+      "value": { "name": "elvira demasi", "display_name": "Elvira Demasi", "documento": "3292018-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3090106_2",
+      "label": "Investigador",
+      "value": { "name": "claudio quintana", "display_name": "Claudio Quintana", "documento": "3090106-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1414762_8",
+      "label": "Investigador",
+      "value": { "name": "rossana campodonico", "display_name": "Rossana Campodónico", "documento": "1414762-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_5487749_1",
+      "label": "Investigador",
+      "value": { "name": "gabriela angelo", "display_name": "Gabriela Angelo", "documento": "5487749-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4778922_9",
+      "label": "Investigador",
+      "value": { "name": "leonel rivero", "display_name": "Leonel Rivero", "documento": "4778922-9", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_929302_4",
+      "label": "Investigador",
+      "value": { "name": "marcos supervielle", "display_name": "Marcos Supervielle", "documento": "929302-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3649199_6",
+      "label": "Investigador",
+      "value": { "name": "ma julia acosta", "display_name": "Ma Julia Acosta", "documento": "3649199-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1989962_0",
+      "label": "Investigador",
+      "value": { "name": "mariela quinones", "display_name": "Mariela Quiñones", "documento": "1989962-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3434763_4",
+      "label": "Investigador",
+      "value": { "name": "alicia migliaro gonzalez", "display_name": "Alicia Migliaro González", "documento": "3434763-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3666165_6",
+      "label": "Investigador",
+      "value": { "name": "joaquin cardeillac", "display_name": "Joaquín Cardeillac", "documento": "3666165-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_6226267_4",
+      "label": "Investigador",
+      "value": { "name": "julieta krapovickas", "display_name": "Julieta Krapovickas", "documento": "6226267-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3461462_3",
+      "label": "Investigador",
+      "value": { "name": "matias carambula", "display_name": "Matías Carámbula", "documento": "3461462-3", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2918555_6",
+      "label": "Investigador",
+      "value": { "name": "sylvia lorena rodriguez lezica", "display_name": "Sylvia Lorena Rodríguez Lezica", "documento": "2918555-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2962863_5",
+      "label": "Investigador",
+      "value": { "name": "elena alvareda", "display_name": "Elena Alvareda", "documento": "2962863-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1234567_0",
+      "label": "Investigador",
+      "value": { "name": "adriana piperno", "display_name": "Adriana Piperno", "documento": "1234567-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_5890481_4",
+      "label": "Investigador",
+      "value": { "name": "christine marie lucas", "display_name": "Christine Marie Lucas", "documento": "5890481-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3068259_7",
+      "label": "Investigador",
+      "value": { "name": "nicolas rezzano", "display_name": "Nicolas Rezzano", "documento": "3068259-7", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3857561_1",
+      "label": "Investigador",
+      "value": { "name": "franco teixeira de mello", "display_name": "Franco Teixeira de Mello", "documento": "3857561-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1296230_5",
+      "label": "Investigador",
+      "value": { "name": "norma piazza", "display_name": "Norma Piazza", "documento": "1296230-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4244248_8",
+      "label": "Investigador",
+      "value": { "name": "gonzalo sapriza azuri", "display_name": "Gonzalo Sapriza Azuri", "documento": "4244248-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3652945_0",
+      "label": "Investigador",
+      "value": { "name": "martin sorondo", "display_name": "Martin Sorondo", "documento": "3652945-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4364744_9",
+      "label": "Investigador",
+      "value": { "name": "maria victoria de alava", "display_name": "María Victoria de Alava", "documento": "4364744-9", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3627547_5",
+      "label": "Investigador",
+      "value": { "name": "rogelio texeira orihuela", "display_name": "Rogelio Texeira Orihuela", "documento": "3627547-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3956487_5",
+      "label": "Investigador",
+      "value": { "name": "christian chreties", "display_name": "Christian Chreties", "documento": "3956487-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4746231_0",
+      "label": "Investigador",
+      "value": { "name": "lucia belen urtado morales", "display_name": "Lucia Belen Urtado Morales", "documento": "4746231-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4939791_1",
+      "label": "Investigador",
+      "value": { "name": "matias santa cruz torres", "display_name": "Matías Santa Cruz Torres", "documento": "4939791-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3107559_5",
+      "label": "Investigador",
+      "value": { "name": "lucia fernandez gabard", "display_name": "Lucía Fernández Gabard", "documento": "3107559-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4384657_4",
+      "label": "Investigador",
+      "value": { "name": "jimena alvarez", "display_name": "Jimena Álvarez", "documento": "4384657-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4600722_2",
+      "label": "Investigador",
+      "value": { "name": "paola russo ganon", "display_name": "Paola Ruso Ganon", "documento": "4600722-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1726050_2",
+      "label": "Investigador",
+      "value": { "name": "pablo sierra", "display_name": "Pablo Sierra", "documento": "1726050-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4639064_7",
+      "label": "Investigador",
+      "value": { "name": "christian andres diaz cuadro", "display_name": "Christian Andrés Diaz Cuadro", "documento": "4639064-7", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4857070_0",
+      "label": "Investigador",
+      "value": { "name": "matias gonzalo iglesias rodriguez", "display_name": "Matías Gonzalo Iglesias Rodríguez", "documento": "4857070-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4213750_8",
+      "label": "Investigador",
+      "value": { "name": "nicolas capricho marocci", "display_name": "Nicolás Capricho Marocci", "documento": "4213750-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4118977_6",
+      "label": "Investigador",
+      "value": { "name": "rodrigo yarzabal rodriguez", "display_name": "Rodrigo Yarzabal Rodríguez", "documento": "4118977-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3692230_3",
+      "label": "Investigador",
+      "value": { "name": "victoria ivonne enssle molini", "display_name": "Victoria Ivonne Enssle Molini", "documento": "3692230-3", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3751424_8",
+      "label": "Investigador",
+      "value": { "name": "gonzalo daniel tejera lopez", "display_name": "Gonzalo Daniel Tejera López", "documento": "3751424-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_5427160_5",
+      "label": "Investigador",
+      "value": { "name": "camila barreiro", "display_name": "Camila Barreiro", "documento": "5427160-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3342277_0",
+      "label": "Investigador",
+      "value": { "name": "martin sebastian hernandez gatto", "display_name": "Martín Sebastián Hernández Gatto", "documento": "3342277-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4789451_9",
+      "label": "Investigador",
+      "value": { "name": "javier caverzaghi micol", "display_name": "Javier Caverzaghi Micol", "documento": "4789451-9", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1374349_1",
+      "label": "Investigador",
+      "value": { "name": "maria gladys ceretta soria", "display_name": "María Gladys Ceretta Soria", "documento": "1374349-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2607621_7",
+      "label": "Investigador",
+      "value": { "name": "alicia diaz costoff", "display_name": "Alicia Díaz Costoff", "documento": "2607621-7", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4668484_0",
+      "label": "Investigador",
+      "value": { "name": "ignacio saraiva cruz", "display_name": "Ignacio Saraiva Cruz", "documento": "4668484-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1873023_1",
+      "label": "Investigador",
+      "value": { "name": "jose fager perez", "display_name": "José Fager Pérez", "documento": "1873023-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4787376_3",
+      "label": "Investigador",
+      "value": { "name": "lucia alonso", "display_name": "Lucía Alonso", "documento": "4787376-3", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4134922_3",
+      "label": "Investigador",
+      "value": { "name": "magela cabrera castiglioni", "display_name": "Magela Cabrera Castiglioni", "documento": "4134922-3", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4781995_7",
+      "label": "Investigador",
+      "value": { "name": "gaston beguerie", "display_name": "Gastón Begueríe", "documento": "4781995-7", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2634747_8",
+      "label": "Investigador",
+      "value": { "name": "yanet fuster caubet", "display_name": "Yanet Fuster Caubet", "documento": "2634747-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1112576_2",
+      "label": "Investigador",
+      "value": { "name": "alvaro gascue quinones", "display_name": "Álvaro Gascue Quiñones", "documento": "1112576-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1953224_2",
+      "label": "Investigador",
+      "value": { "name": "javier canzani cuello", "display_name": "Javier Canzani Cuello", "documento": "1953224-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "argentina_otro_26433822",
+      "label": "Investigador",
+      "value": { "name": "ileana wenetz", "display_name": "Ileana Wenetz", "documento": "26433822", "tipo_documento": "Otro", "pais_documento": "Argentina", "sexo": "Femenino" }
+    },
+    {
+      "id": "brasil_cedula_de_identidad_1062286784",
+      "label": "Investigador",
+      "value": { "name": "viviane teixeira silveira", "display_name": "Viviane Teixeira Silveira", "documento": "1062286784", "tipo_documento": "Cédula de Identidad", "pais_documento": "Brasil", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1728855_0",
+      "label": "Investigador",
+      "value": { "name": "mario javier pineiro luque", "display_name": "Mario Javier Piñeiro Luque", "documento": "1728855-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_6078437_5",
+      "label": "Investigador",
+      "value": { "name": "jesica natalia rodriguez ponisio", "display_name": "Jesica Natalia Rodríguez Ponisio", "documento": "6078437-5", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_6180932_4",
+      "label": "Investigador",
+      "value": { "name": "luciano jahnecka", "display_name": "Luciano Jahnecka", "documento": "6180932-4", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2838362_0",
+      "label": "Investigador",
+      "value": { "name": "paola azar dufrechou", "display_name": "Paola Azar Dufrechou", "documento": "2838362-0", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1176956_8",
+      "label": "Investigador",
+      "value": { "name": "maria camou solino", "display_name": "María Camou Soliño", "documento": "1176956-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3676873_1",
+      "label": "Investigador",
+      "value": { "name": "soledad salvador alonso", "display_name": "Soledad Salvador Alonso", "documento": "3676873-1", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3438723_8",
+      "label": "Investigador",
+      "value": { "name": "silvana maubrigades buzzalino", "display_name": "Silvana Maubrigades Buzzalino", "documento": "3438723-8", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3302058_6",
+      "label": "Investigador",
+      "value": { "name": "rodrigo ceni gonzalez", "display_name": "Rodrigo Ceni González", "documento": "3302058-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2814205_6",
+      "label": "Investigador",
+      "value": { "name": "martin leites lamela", "display_name": "Martin Leites Lamela", "documento": "2814205-6", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4024374_3",
+      "label": "Investigador",
+      "value": { "name": "gonzalo rafael salas beretche", "display_name": "Gonzalo Rafael Salas Beretche", "documento": "4024374-3", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Masculino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3862015_7",
+      "label": "Investigador",
+      "value": { "name": "maria ivone perazzo bonacci", "display_name": "Maria Ivone Perazzo Bonacci", "documento": "3862015-7", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4053359_2",
+      "label": "Investigador",
+      "value": { "name": "paula ximena carrasco fernandez", "display_name": "Paula Ximena Carrasco Fernández", "documento": "4053359-2", "tipo_documento": "Cédula de Identidad", "pais_documento": "Uruguay", "sexo": "Femenino" }
+    },
+    {
+      "id": "area_social_y_artistica",
+      "label": "Area",
+      "value": "social y artistica"
+    },
+    {
+      "id": "area_tecnologica",
+      "label": "Area",
+      "value": "tecnologica"
+    }
+  ],
+  "relationships": [
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_17",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_20",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_52",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_92",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_206",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_261",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_309",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_425",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2016_728",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_17",
+      "target_id": "proy_2018_17_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_17",
+      "target_id": "proy_2018_17_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_20",
+      "target_id": "proy_2018_20_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_20",
+      "target_id": "proy_2018_20_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_52",
+      "target_id": "proy_2018_52_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_52",
+      "target_id": "proy_2018_52_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_92",
+      "target_id": "proy_2018_92_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_92",
+      "target_id": "proy_2018_92_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_206",
+      "target_id": "proy_2018_206_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_206",
+      "target_id": "proy_2018_206_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_261",
+      "target_id": "proy_2018_261_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_261",
+      "target_id": "proy_2018_261_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_309",
+      "target_id": "proy_2018_309_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_309",
+      "target_id": "proy_2018_309_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_425",
+      "target_id": "proy_2018_425_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_425",
+      "target_id": "proy_2018_425_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_728",
+      "target_id": "proy_2016_728_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_728",
+      "target_id": "proy_2016_728_informe",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3292018_5",
+      "target_id": "proy_2018_17",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3090106_2",
+      "target_id": "proy_2018_17",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1414762_8",
+      "target_id": "proy_2018_17",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5487749_1",
+      "target_id": "proy_2018_17",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4778922_9",
+      "target_id": "proy_2018_20",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_929302_4",
+      "target_id": "proy_2018_20",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3649199_6",
+      "target_id": "proy_2018_20",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1989962_0",
+      "target_id": "proy_2018_20",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3434763_4",
+      "target_id": "proy_2018_52",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3666165_6",
+      "target_id": "proy_2018_52",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_6226267_4",
+      "target_id": "proy_2018_52",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3461462_3",
+      "target_id": "proy_2018_52",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2918555_6",
+      "target_id": "proy_2018_52",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2962863_5",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1234567_0",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5890481_4",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3068259_7",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3857561_1",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1296230_5",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4244248_8",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3652945_0",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4364744_9",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3627547_5",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3956487_5",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4746231_0",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4939791_1",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3107559_5",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4384657_4",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4600722_2",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1726050_2",
+      "target_id": "proy_2018_92",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4639064_7",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4857070_0",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4213750_8",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4118977_6",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3692230_3",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3751424_8",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5427160_5",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3342277_0",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4789451_9",
+      "target_id": "proy_2018_206",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1374349_1",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2607621_7",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4668484_0",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1873023_1",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4787376_3",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4134922_3",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4781995_7",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2634747_8",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1112576_2",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1953224_2",
+      "target_id": "proy_2018_261",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "argentina_otro_26433822",
+      "target_id": "proy_2018_309",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "brasil_cedula_de_identidad_1062286784",
+      "target_id": "proy_2018_309",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1728855_0",
+      "target_id": "proy_2018_309",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_6078437_5",
+      "target_id": "proy_2018_309",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_6180932_4",
+      "target_id": "proy_2018_309",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2838362_0",
+      "target_id": "proy_2018_425",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1176956_8",
+      "target_id": "proy_2018_425",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3676873_1",
+      "target_id": "proy_2018_425",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3438723_8",
+      "target_id": "proy_2018_425",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3302058_6",
+      "target_id": "proy_2016_728",
+      "properties": { "calidad": "responsable" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2814205_6",
+      "target_id": "proy_2016_728",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4024374_3",
+      "target_id": "proy_2016_728",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3862015_7",
+      "target_id": "proy_2016_728",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4053359_2",
+      "target_id": "proy_2016_728",
+      "properties": { "calidad": "integrante" }
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_17",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_20",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_52",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_92",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_206",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_261",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_309",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_425",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_728",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    }
+  ]
+}
