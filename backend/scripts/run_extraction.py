@@ -34,11 +34,11 @@ def normalize_result(res: ExtractionResult) -> dict:
 
 
 def main(
-    max_docs: int | None = None,
+    max_project: int | None = None,
 ) -> int:
     extractor = EntityExtractor()
 
-    res = extractor.run(max_docs=max_docs)
+    res = extractor.run(max_project=max_project)
 
     filename = "entity_documents.json"
     extractor.save_in_file(filename)
@@ -75,18 +75,18 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Ejecutar extracción de entidades y relaciones")
     parser.add_argument(
-        "--max-docs", type=int, default=None, help="Límite de documentos a procesar (None = todos)"
+        "--max-project", type=int, default=None, help="Límite de proyectos a procesar (None = todos)"
     )
 
     args = parser.parse_args()
 
-    if args.max_docs is not None:
-        print(f"[CONFIG] Límite de documentos: {args.max_docs}")
+    if args.max_project is not None:
+        print(f"[CONFIG] Límite de proyectos: {args.max_project}")
     else:
-        print("[CONFIG] Procesando todos los documentos")
+        print("[CONFIG] Procesando todos los proyectos")
 
     raise SystemExit(
         main(
-            max_docs=args.max_docs,
+            max_project=args.max_project,
         )
     )

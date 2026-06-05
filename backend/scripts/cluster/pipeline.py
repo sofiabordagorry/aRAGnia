@@ -14,8 +14,9 @@ Opciones:
     --skip-docling          Saltear parseo Docling (si ya está hecho)
     --skip-chunks           Saltear generación de chunks
     --skip-extraction       Saltear extracción de entidades/relaciones
-    --max-docs N            Límite de documentos para extracción (debug)
+    --max-proyect N         Límite de proyectos para extracción (debug)
     --env-file PATH         Archivo .env con variables de entorno (default: .env)
+    --checkpoint-every      Guardar checkpoint cada N proyectos en extracción LLM (default: 5)
 """
 
 from __future__ import annotations
@@ -152,7 +153,7 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
 
 def step_extraction(
     data_dir: Path,
-    max_docs: int | None,
+    max_project: int | None,
     checkpoint_every: int = 5,
     llm_model: str | None = None,
 ) -> None:
@@ -163,7 +164,7 @@ def step_extraction(
 
     extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(
-        max_docs=max_docs,
+        max_project=max_project,
         checkpoint_every=checkpoint_every,
     )
 
@@ -218,13 +219,13 @@ def parse_args() -> argparse.Namespace:
 
     # Opciones de extracción
     parser.add_argument(
-        "--max-docs", type=int, default=None, help="Límite de documentos (None = todos)"
+        "--max-project", type=int, default=None, help="Límite de proyectos (None = todos)"
     )
     parser.add_argument(
         "--checkpoint-every",
         type=int,
         default=5,
-        help="Guardar checkpoint cada N documentos en extracción LLM (default: 5)",
+        help="Guardar checkpoint cada N proyectos en extracción LLM (default: 5)",
     )
 
     return parser.parse_args()
@@ -255,7 +256,7 @@ def main() -> None:
     if not args.skip_extraction:
         step_extraction(
             data_dir=data_dir,
-            max_docs=args.max_docs,
+            max_project=args.max_project,
             checkpoint_every=args.checkpoint_every,
         )
     else:
