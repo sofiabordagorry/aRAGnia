@@ -52,6 +52,23 @@ Guía rápida de los scripts en esta carpeta.
   - Uso:
     - `python evaluation/scripts/evaluate_cypher.py evaluation/ground_truth/datasetQA_GT.json`
 
+- `generate_gt_answers.py`
+  - Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
+  - Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para cada uno, genera/completa el campo `answer`.
+  - Reutiliza la misma lógica de generación de respuestas del pipeline GraphRAG (`answer_llm_client`), sin necesidad de conectarse a Neo4j. Funciona con Ollama o HuggingFace según la variable de entorno `LLM_BACKEND`.
+  - Los mensajes centinela (`fuera de alcance`, `no se encontró información`) se resuelven directamente, sin invocar al LLM.
+
+  - Entrada:
+    - Un archivo JSON (lista de objetos, o un objeto con la clave `questions`) donde cada item tenga al menos `pregunta` y `retrieved_subgraph` (por ejemplo, la salida de `result_cypher_GT.py`).
+
+  - Salida:
+    - Escribe en `<nombre_entrada>_answers.json` (no modifica el archivo de entrada), agregando/completando el campo `answer` en cada item.
+    - Por defecto solo completa las respuestas vacías; usar `--overwrite` para regenerarlas todas.
+
+  - Uso:
+    - `python evaluation/scripts/generate_gt_answers.py preguntas.json`
+    - `python evaluation/scripts/generate_gt_answers.py preguntas.json --overwrite`
+
 - `result_cypher_GT.py`
   - Ejecuta queries Cypher almacenadas en un archivo JSON.
   - Recupera el subgrafo asociado a cada consulta y lo guarda en el mismo JSON.
