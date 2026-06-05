@@ -31,7 +31,7 @@ from typing import Any
 from institutional_graphrag.llm.llm_provider import get_llm_client
 
 OUT_OF_SCOPE = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
-NO_INFO = "No se encontró información relevante en el grafo para responder esta pregunta."
+NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 
 
 def _is_count_context(subgrafo: str) -> bool:

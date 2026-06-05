@@ -1008,7 +1008,7 @@ Tu respuesta (frase introductoria + lista completa):"""
 
             # Caso 2: Sin resultados en absoluto
             return GraphRAGResult(
-                answer="No se encontró información relevante en el grafo para responder esta pregunta.",
+                answer="No se encontró ningún elemento que cumpla con los criterios de la consulta.",
                 chunks=[],
                 cypher_query=cypher_query,
                 chunk_to_entities={},
