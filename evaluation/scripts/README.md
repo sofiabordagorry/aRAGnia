@@ -69,6 +69,25 @@ Guía rápida de los scripts en esta carpeta.
     - `python evaluation/scripts/generate_gt_answers.py preguntas.json`
     - `python evaluation/scripts/generate_gt_answers.py preguntas.json --overwrite`
 
+- `evaluate_generation.py`
+  - Evalúa la **generación** de respuestas en lenguaje natural sobre el GT de validación (`datasetQA_GT.json`): responde qué combinación de LLM y prompt genera mejores respuestas y mide los tiempos de espera.
+  - Para cada combinación de modelo × variante de prompt:
+    - Genera la respuesta desde `pregunta` + `retrieved_subgraph`, midiendo la latencia de cada generación.
+    - Juzga la respuesta contra el `answer` de referencia con LLM-as-a-judge vía API de Anthropic (correctitud factual, completitud, fidelidad; escala 1-5 normalizada a 0-1).
+    - Los items centinela (fuera de alcance / sin info) se evalúan de forma determinística (exact-match), sin invocar al juez.
+  - Configuración: editar las constantes `MODELS` (lista de `{display, backend, model}`) y `PROMPT_VARIANTS` en el script, o pasar `--models-file`.
+  - Requiere `ANTHROPIC_API_KEY` (en el entorno o en `backend/.env`) salvo que se use `--no-judge`. Requiere `matplotlib`.
+  - Salida:
+    - Resumen agregado en `evaluation/results/generation/generation_comparison_summary.json`
+    - Detalle por pregunta en `evaluation/results/generation/generation_details.json`
+    - Gráficas PNG en `evaluation/results/generation/images/`
+    - Reporte HTML en `evaluation/results/generation/generation_report.html`
+  - Uso:
+    - `python evaluation/scripts/evaluate_generation.py`
+    - `python evaluation/scripts/evaluate_generation.py --max-questions 3` (smoke test)
+    - `python evaluation/scripts/evaluate_generation.py --no-judge` (solo genera y mide latencias)
+    - `python evaluation/scripts/evaluate_generation.py --judge-model claude-opus-4-8`
+
 - `result_cypher_GT.py`
   - Ejecuta queries Cypher almacenadas en un archivo JSON.
   - Recupera el subgrafo asociado a cada consulta y lo guarda en el mismo JSON.
