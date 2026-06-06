@@ -268,7 +268,6 @@ class BertTopicExtractor:
             if score >= self.threshold
         ]
         results.sort(key=lambda x: x["score"], reverse=True)
-        print("resultados:", results)
         return results
 
     def extract_topics_from_chunk(
