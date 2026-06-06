@@ -42,7 +42,8 @@ class EntityExtractor:
         llm_model: Optional[str] = None,
         data_dir: Path | None = None,
         bert_threshold: float | None = None,
-        logit_threshold: float | None = None,
+        confidence_logit_threshold: float | None = None,
+        coverage_logit_threshold: float | None = None,
     ):
         base = data_dir if data_dir is not None else DATA_DIR
         self.data_dir = base
@@ -53,7 +54,9 @@ class EntityExtractor:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
         self.tabular = TabularExtractor()
-        self.bert_extractor = BertTopicExtractor(bert_threshold, logit_threshold)
+        self.bert_extractor = BertTopicExtractor(
+            bert_threshold, confidence_logit_threshold, coverage_logit_threshold
+        )
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}

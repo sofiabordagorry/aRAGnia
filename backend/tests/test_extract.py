@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
-from institutional_graphrag.extraction.bert_extractor import BertExtractionResult, TopicMention
+from institutional_graphrag.extraction.bert_extractor import TopicMention
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.graph.schema import (
     Anio,
@@ -19,7 +19,6 @@ from institutional_graphrag.graph.schema import (
     Investigador,
     Proyecto,
     Relationship,
-    Topico,
 )
 
 # -------------------------
@@ -311,7 +310,8 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
 def test_bert_topics_and_project_aggregation():
     bert_extractor = ie_mod.BertTopicExtractor(
         threshold=0.5,
-        logit_threshold=0.5,
+        confidence_logit_threshold=0.5,
+        coverage_logit_threshold=0.5,
     )
     bert_extractor._en_to_es_topic = {"Machine Learning": "machine learning"}
 
@@ -347,13 +347,16 @@ def test_bert_topics_and_project_aggregation():
     assert rel.target_id == "machine_learning"
     assert rel.properties["mention_count"] == 2
     assert rel.properties["coverage_logit"] == 0.75
+    assert rel.properties["confidence_logit"] == 0.75
     assert isinstance(rel.properties["coverage_logit"], float)
+    assert isinstance(rel.properties["confidence_logit"], float)
 
 
 def test_aggregate_topics_for_project_below_threshold_returns_no_relationships():
     bert_extractor = ie_mod.BertTopicExtractor(
         threshold=0.5,
-        logit_threshold=0.5,
+        confidence_logit_threshold=0.5,
+        coverage_logit_threshold=0.5,
     )
     bert_extractor._en_to_es_topic = {"Machine Learning": "machine learning"}
 

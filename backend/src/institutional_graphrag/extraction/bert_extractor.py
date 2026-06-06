@@ -29,7 +29,8 @@ TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 DEFAULT_THRESHOLD = 0.04
-DEFAULT_LOGIT_THRESHOLD = 8
+DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 8
+DEFAULT_COVERAGE_LOGIT_THRESHOLD = 5
 
 
 @dataclass
@@ -56,12 +57,20 @@ class BertTopicExtractor:
     def __init__(
         self,
         threshold: float | None,
-        logit_threshold: float | None,
+        confidence_logit_threshold: float | None,
+        coverage_logit_threshold: float | None,
         device: Optional[str] = None,
     ):
         self.threshold = threshold if threshold is not None else DEFAULT_THRESHOLD
-        self.logit_threshold = (
-            logit_threshold if logit_threshold is not None else DEFAULT_LOGIT_THRESHOLD
+        self.confidence_logit_threshold = (
+            confidence_logit_threshold
+            if confidence_logit_threshold is not None
+            else DEFAULT_CONFIDENCE_LOGIT_THRESHOLD
+        )
+        self.coverage_logit_threshold = (
+            coverage_logit_threshold
+            if coverage_logit_threshold is not None
+            else DEFAULT_COVERAGE_LOGIT_THRESHOLD
         )
         self._model: Optional[Any] = None
         self._tokenizer: Optional[Any] = None
@@ -371,7 +380,11 @@ class BertTopicExtractor:
             topic_chunks_info[mention.topic].append((mention.chunk_id, mention.evidence))
 
         for topic_en, total_logit in topic_logit_sum.items():
-            if (total_logit / total_chunks) >= self.logit_threshold:
+            mention_count = int(topic_count_sum[topic_en])
+            if (
+                (total_logit / total_chunks) >= self.coverage_logit_threshold
+                and total_logit / mention_count >= self.confidence_logit_threshold
+            ):
                 es_topic = self._en_to_es_topic.get(topic_en, topic_en)
                 topic_id = self._normalize_id(es_topic)
                 relationships.append(
@@ -380,6 +393,7 @@ class BertTopicExtractor:
                         topic_id,
                         properties={
                             "coverage_logit": float(total_logit / total_chunks),
+                            "confidence_logit": float(total_logit / mention_count),
                             "mention_count": int(topic_count_sum[topic_en]),
                         },
                     )
