@@ -346,7 +346,7 @@ def test_bert_topics_and_project_aggregation():
     assert rel.source_id == "proy_2014_148"
     assert rel.target_id == "machine_learning"
     assert rel.properties["mention_count"] == 2
-    assert rel.properties["coverage_logit"] == 0.75
+    assert rel.properties["coverage_logit"] == 1.0
     assert rel.properties["confidence_logit"] == 0.75
     assert isinstance(rel.properties["coverage_logit"], float)
     assert isinstance(rel.properties["confidence_logit"], float)

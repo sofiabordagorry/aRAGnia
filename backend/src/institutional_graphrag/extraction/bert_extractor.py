@@ -30,7 +30,7 @@ TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 DEFAULT_THRESHOLD = 0.04
 DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 8
-DEFAULT_COVERAGE_LOGIT_THRESHOLD = 5
+DEFAULT_COVERAGE_LOGIT_THRESHOLD = 0.5
 
 
 @dataclass
@@ -382,8 +382,8 @@ class BertTopicExtractor:
         for topic_en, total_logit in topic_logit_sum.items():
             mention_count = int(topic_count_sum[topic_en])
             if (
-                (total_logit / total_chunks) >= self.coverage_logit_threshold
-                and total_logit / mention_count >= self.confidence_logit_threshold
+                (mention_count / total_chunks) >= self.coverage_logit_threshold
+                and total_logit / total_chunks >= self.confidence_logit_threshold
             ):
                 es_topic = self._en_to_es_topic.get(topic_en, topic_en)
                 topic_id = self._normalize_id(es_topic)
@@ -392,8 +392,8 @@ class BertTopicExtractor:
                         project_id,
                         topic_id,
                         properties={
-                            "coverage_logit": float(total_logit / total_chunks),
-                            "confidence_logit": float(total_logit / mention_count),
+                            "coverage_logit": float(mention_count / total_chunks),
+                            "confidence_logit": float(total_logit / total_chunks),
                             "mention_count": int(topic_count_sum[topic_en]),
                         },
                     )
