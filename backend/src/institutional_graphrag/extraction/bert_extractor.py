@@ -383,7 +383,7 @@ class BertTopicExtractor:
             mention_count = int(topic_count_sum[topic_en])
             if (
                 (mention_count / total_chunks) >= self.coverage_logit_threshold
-                and total_logit / total_chunks >= self.confidence_logit_threshold
+                and total_logit / mention_count >= self.confidence_logit_threshold
             ):
                 es_topic = self._en_to_es_topic.get(topic_en, topic_en)
                 topic_id = self._normalize_id(es_topic)
@@ -392,7 +392,7 @@ class BertTopicExtractor:
                         project_id,
                         topic_id,
                         properties={
-                            "coverage_logit": float(mention_count / total_chunks),
+                            "coverage_logit": float(mention_count / mention_count),
                             "confidence_logit": float(total_logit / total_chunks),
                             "mention_count": int(topic_count_sum[topic_en]),
                         },
