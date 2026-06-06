@@ -14,7 +14,6 @@ from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PERTENECE_A_SUBCAMPO,
     TIENE_TOPICO,
-    Entity,
     Relationship,
     Subcampo,
     Topico,
