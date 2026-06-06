@@ -153,7 +153,7 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
 
 def step_extraction(
     data_dir: Path,
-    max_project: int | None,
+    max_projects: int | None,
     checkpoint_every: int = 5,
     llm_model: str | None = None,
 ) -> None:
@@ -164,7 +164,7 @@ def step_extraction(
 
     extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(
-        max_project=max_project,
+        max_projects=max_projects,
         checkpoint_every=checkpoint_every,
     )
 
@@ -219,7 +219,7 @@ def parse_args() -> argparse.Namespace:
 
     # Opciones de extracción
     parser.add_argument(
-        "--max-project", type=int, default=None, help="Límite de proyectos (None = todos)"
+        "--max-projects", type=int, default=None, help="Límite de proyectos (None = todos)"
     )
     parser.add_argument(
         "--checkpoint-every",
@@ -256,7 +256,7 @@ def main() -> None:
     if not args.skip_extraction:
         step_extraction(
             data_dir=data_dir,
-            max_project=args.max_project,
+            max_projects=args.max_projects,
             checkpoint_every=args.checkpoint_every,
         )
     else:

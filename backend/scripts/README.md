@@ -65,7 +65,7 @@ cd backend
   - Salida: `data/entities_relations/entity_documents.json` (y luego se postprocesa sobre ese archivo).
   - Uso básico: `python scripts/run_extraction.py`
   - Opcion útil:
-    - `--max-project N`
+    - `--max-projects N`
 
 - `extract_end_to_end.py`
   - Corre un flujo de ingest end-to-end para un input configurado dentro del script.

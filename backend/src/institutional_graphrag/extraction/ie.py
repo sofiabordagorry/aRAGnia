@@ -7,6 +7,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
+from decimal import Decimal
 
 import ijson
 
@@ -82,7 +83,7 @@ class EntityExtractor:
 
     def run(
         self,
-        max_project: int | None = None,
+        max_projects: int | None = None,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
@@ -101,7 +102,7 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_researchers_from_tabular()
         self._extract_with_bert(
-            max_project=max_project,
+            max_projects=max_projects,
             checkpoint_every=checkpoint_every,
         )
         return self.res
@@ -560,7 +561,7 @@ class EntityExtractor:
 
     def _extract_with_bert(
         self,
-        max_project: int | None = None,
+        max_projects: int | None = None,
         checkpoint_every: int = 5,
     ) -> None:
         """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
@@ -583,14 +584,15 @@ class EntityExtractor:
         for project in projects:
             project_bert_results: list = []
             project_docs_success: list = []
+            total_chunks = 0
             project_id = project.id
             project_docs = self.docs_by_project.get(project_id, [])
             if not project_docs:
                 continue
 
-            if max_project is not None and projects_processed >= max_project:
-                logger.info(f"[BERT] Límite de {max_project} proyectos alcanzado")
-                return
+            if max_projects is not None and projects_processed >= max_projects:
+                logger.info(f"[BERT] Límite de {max_projects} proyectos alcanzado")
+                break
             for doc_id in project_docs:
 
                 if doc_id.endswith("_table"):
@@ -641,6 +643,7 @@ class EntityExtractor:
                         )
                         self.res.errors.extend(bert_result.errors)
                         project_bert_results.extend(bert_result.topics)
+                        total_chunks += len(chunks)
                         project_docs_success.append(doc_id)
  
                 except Exception as e:
@@ -651,7 +654,7 @@ class EntityExtractor:
                             "message": str(e),
                         }
                     )
-            new_relationships = self.bert_extractor.aggregate_topics_for_project(project_id, project_bert_results)
+            new_relationships = self.bert_extractor.aggregate_topics_for_project(project_id, project_bert_results, total_chunks)
             self.add_relationship(new_relationships)
             
             for doc_id in project_docs_success:

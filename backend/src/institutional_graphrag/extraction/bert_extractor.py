@@ -230,12 +230,12 @@ class BertTopicExtractor:
         self._load_model()
         assert self._tokenizer is not None and self._model is not None
         input_text = self._format_input(title, text)
-        ##########################################
+
         tokens = self._tokenizer(input_text, truncation=False)
         n_tokens = len(tokens["input_ids"])
         if n_tokens > 512:
             logger.warning(f"Chunk excede 512 tokens ({n_tokens}), se truncará")
-        ##############   
+
         inputs = self._tokenizer(
             input_text,
             return_tensors="pt",
@@ -244,7 +244,6 @@ class BertTopicExtractor:
             padding=True,
         )
         inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
         with torch.no_grad():
             outputs = self._model(**inputs)
             logits = outputs.logits[0].cpu().tolist()
@@ -258,6 +257,7 @@ class BertTopicExtractor:
             if score >= self.threshold
         ]
         results.sort(key=lambda x: x["score"], reverse=True)
+        print("resultados:", results)
         return results
 
     def extract_topics_from_chunk(
@@ -342,6 +342,7 @@ class BertTopicExtractor:
         self,
         project_id: str,
         project_bert_results: list,
+        total_chunks: int,
     ) -> List[Relationship]:
         """Suma logits por tópico a nivel proyecto y crea TIENE_TOPICO solo si supera el threshold."""
         relationships: List[Relationship] = []
@@ -349,7 +350,7 @@ class BertTopicExtractor:
             return relationships
 
         topic_logit_sum: Dict[str, float] = defaultdict(float)
-        topic_count_sum: Dict[str, float] = defaultdict(float)
+        topic_count_sum: Dict[str, int] = defaultdict(int)
         topic_chunks_info: Dict[str, List[tuple[str, str]]] = defaultdict(list)
         for mention in project_bert_results:
             topic_logit_sum[mention.topic] += mention.logit
@@ -357,14 +358,13 @@ class BertTopicExtractor:
             topic_count_sum[mention.topic] += count
             topic_chunks_info[mention.topic].append((mention.chunk_id, mention.evidence))
 
-        relationships_to_add = []
         for topic_en, total_logit in topic_logit_sum.items():
-            if total_logit >= self.logit_threshold:
+            if (total_logit/total_chunks) >= self.logit_threshold:
                 es_topic = self._en_to_es_topic.get(topic_en, topic_en)
                 topic_id = self._normalize_id(es_topic)
                 relationships.append(
                     TIENE_TOPICO(
-                        project_id, topic_id, properties={"total_logit": total_logit, "mention_count":topic_count_sum[topic_en]},
+                        project_id, topic_id, properties={"coverage_logit": float(total_logit/total_chunks), "mention_count":int(topic_count_sum[topic_en])},
                     )
                 )
                 for chunk_id, evidence in topic_chunks_info[topic_en]:
