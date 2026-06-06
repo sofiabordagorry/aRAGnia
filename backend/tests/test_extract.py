@@ -11,10 +11,8 @@ import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
 from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
-from institutional_graphrag.extraction.parse_topics import (
-    LLMExtractionResult,
-    TopicMention,
-)
+from institutional_graphrag.extraction.bert_extractor import BertExtractionResult, TopicMention
+
 from institutional_graphrag.graph.schema import (
     Anio,
     Chunk,
@@ -410,7 +408,7 @@ def test_bert_topics_and_project_aggregation(
 
     def mock_extract_topics(chunks_list, max_chunks=None, **kwargs):
         chunk_id = chunks_list[0].get("chunk_id")
-        return LLMExtractionResult(
+        return BertExtractionResult(
             topics=[
                 TopicMention(topic="Machine Learning", evidence="score=0.9500", chunk_id=chunk_id)
             ],

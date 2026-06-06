@@ -43,7 +43,7 @@ class TopicMention:
 
 
 @dataclass
-class ExtractionResult:
+class BertExtractionResult:
     """Resultado de extracción LLM."""
 
     topics: List[TopicMention]
@@ -272,10 +272,10 @@ class BertTopicExtractor:
 
     def extract_topics_from_chunk(
         self, chunk_text: str, chunk_id: str, project_title: str = ""
-    ) -> ExtractionResult:
+    ) -> BertExtractionResult:
         """Extrae tópicos de un chunk usando BERT."""
         if not chunk_text.strip():
-            return ExtractionResult(topics=[], errors=[])
+            return BertExtractionResult(topics=[], errors=[])
 
         try:
             predictions = self._predict_chunk(project_title, chunk_text)
@@ -288,11 +288,11 @@ class BertTopicExtractor:
                 )
                 for pred in predictions
             ]
-            return ExtractionResult(topics=topics, errors=[])
+            return BertExtractionResult(topics=topics, errors=[])
 
         except Exception as e:
             logger.error(f"Error BERT en chunk {chunk_id}: {e}")
-            return ExtractionResult(
+            return BertExtractionResult(
                 topics=[],
                 errors=[{"type": "BertExtractionError", "chunk_id": chunk_id, "message": str(e)}],
             )
@@ -302,7 +302,7 @@ class BertTopicExtractor:
         chunks: List[Dict[str, Any]],
         max_chunks: Optional[int] = None,
         project_title: str = "",
-    ) -> ExtractionResult:
+    ) -> BertExtractionResult:
         """Clasifica tópicos sobre una lista de chunks, agrega por frecuencia entre chunks."""
         topic_chunk_count: Dict[str, int] = {}
         topic_first_chunk: Dict[str, str] = {}
@@ -348,7 +348,7 @@ class BertTopicExtractor:
             )
         ]
 
-        return ExtractionResult(topics=final_topics, errors=all_errors)
+        return BertExtractionResult(topics=final_topics, errors=all_errors)
 
     def aggregate_topics_for_project(
         self,
