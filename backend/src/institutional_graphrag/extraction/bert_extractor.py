@@ -1,18 +1,19 @@
 """Extracción de tópicos OpenAlex usando el modelo BERT fine-tuneado."""
+
 from __future__ import annotations
-from dataclasses import dataclass
 
 import logging
 import os
 import unicodedata
+from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from collections import defaultdict
 
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
-    TIENE_TOPICO,
     PERTENECE_A_SUBCAMPO,
+    TIENE_TOPICO,
     Entity,
     Relationship,
     Subcampo,
@@ -29,14 +30,18 @@ TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 DEFAULT_THRESHOLD = 0.04
-DEFAULT_LOGIT_THRESHOLD = 5.0
+DEFAULT_LOGIT_THRESHOLD = 8
+
+
 @dataclass
 class TopicMention:
     """Mención de tópico en un chunk."""
+
     topic: str
     evidence: str
     logit: float
     chunk_id: str
+
 
 @dataclass
 class ExtractionResult:
@@ -44,6 +49,7 @@ class ExtractionResult:
 
     topics: List[TopicMention]
     errors: List[Dict[str, Any]]
+
 
 class BertTopicExtractor:
     """Clasifica tópicos OpenAlex usando BERT. Reemplaza al LLM para extracción de tópicos."""
@@ -55,7 +61,9 @@ class BertTopicExtractor:
         device: Optional[str] = None,
     ):
         self.threshold = threshold if threshold is not None else DEFAULT_THRESHOLD
-        self.logit_threshold = logit_threshold if logit_threshold is not None else DEFAULT_LOGIT_THRESHOLD
+        self.logit_threshold = (
+            logit_threshold if logit_threshold is not None else DEFAULT_LOGIT_THRESHOLD
+        )
         self._model: Optional[Any] = None
         self._tokenizer: Optional[Any] = None
         self._id2label: Dict[int, str] = {}
@@ -252,7 +260,11 @@ class BertTopicExtractor:
             probs = torch.softmax(outputs.logits, dim=-1)[0].cpu().tolist()
 
         results = [
-            {"topic": self._strip_label_prefix(self._id2label[i]), "score": score, "logit": logits[i]}
+            {
+                "topic": self._strip_label_prefix(self._id2label[i]),
+                "score": score,
+                "logit": logits[i],
+            }
             for i, score in enumerate(probs)
             if score >= self.threshold
         ]
@@ -317,7 +329,9 @@ class BertTopicExtractor:
             for mention in result.topics:
                 score = float(mention.evidence.replace("score=", ""))
                 topic_chunk_count[mention.topic] = topic_chunk_count.get(mention.topic, 0) + 1
-                topic_sum_logit[mention.topic] = topic_sum_logit.get(mention.topic, 0.0) + mention.logit
+                topic_sum_logit[mention.topic] = (
+                    topic_sum_logit.get(mention.topic, 0.0) + mention.logit
+                )
                 if mention.topic not in topic_first_chunk:
                     topic_first_chunk[mention.topic] = chunk_id
                 if score > topic_max_score.get(mention.topic, 0.0):
@@ -337,7 +351,7 @@ class BertTopicExtractor:
         ]
 
         return ExtractionResult(topics=final_topics, errors=all_errors)
-    
+
     def aggregate_topics_for_project(
         self,
         project_id: str,
@@ -359,18 +373,21 @@ class BertTopicExtractor:
             topic_chunks_info[mention.topic].append((mention.chunk_id, mention.evidence))
 
         for topic_en, total_logit in topic_logit_sum.items():
-            if (total_logit/total_chunks) >= self.logit_threshold:
+            if (total_logit / total_chunks) >= self.logit_threshold:
                 es_topic = self._en_to_es_topic.get(topic_en, topic_en)
                 topic_id = self._normalize_id(es_topic)
                 relationships.append(
                     TIENE_TOPICO(
-                        project_id, topic_id, properties={"coverage_logit": float(total_logit/total_chunks), "mention_count":int(topic_count_sum[topic_en])},
+                        project_id,
+                        topic_id,
+                        properties={
+                            "coverage_logit": float(total_logit / total_chunks),
+                            "mention_count": int(topic_count_sum[topic_en]),
+                        },
                     )
                 )
                 for chunk_id, evidence in topic_chunks_info[topic_en]:
                     relationships.append(
-                        EXTRAIDO_DE(
-                            chunk_id, topic_id, properties={"evidence_text": evidence}
-                        )
+                        EXTRAIDO_DE(chunk_id, topic_id, properties={"evidence_text": evidence})
                     )
         return relationships

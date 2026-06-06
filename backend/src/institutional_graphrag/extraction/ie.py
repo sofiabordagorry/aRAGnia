@@ -5,9 +5,9 @@ import logging
 import os
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
-from decimal import Decimal
 
 import ijson
 
@@ -580,7 +580,7 @@ class EntityExtractor:
         for r in self.res.relationships:
             if r.type == "ES_DESCRITO_POR":
                 self.docs_by_project[r.source_id].append(r.target_id)
-        
+
         for project in projects:
             project_bert_results: list = []
             project_docs_success: list = []
@@ -645,7 +645,7 @@ class EntityExtractor:
                         project_bert_results.extend(bert_result.topics)
                         total_chunks += len(chunks)
                         project_docs_success.append(doc_id)
- 
+
                 except Exception as e:
                     self.res.errors.append(
                         {
@@ -654,21 +654,22 @@ class EntityExtractor:
                             "message": str(e),
                         }
                     )
-            new_relationships = self.bert_extractor.aggregate_topics_for_project(project_id, project_bert_results, total_chunks)
+            new_relationships = self.bert_extractor.aggregate_topics_for_project(
+                project_id, project_bert_results, total_chunks
+            )
             self.add_relationship(new_relationships)
-            
+
             for doc_id in project_docs_success:
                 self.mark_success(doc_id, "Topico")
-            if project_docs_success != []:    
-                logger.info(
-                    f"[BERT Topics] ✓ {project_id}: {len(project_bert_results)} tópicos"
-                )
+            if project_docs_success != []:
+                logger.info(f"[BERT Topics] ✓ {project_id}: {len(project_bert_results)} tópicos")
 
-            projects_processed  += 1
-            if checkpoint_every > 0 and projects_processed  % checkpoint_every == 0:
+            projects_processed += 1
+            if checkpoint_every > 0 and projects_processed % checkpoint_every == 0:
                 self._save_checkpoint(registry_path=registry_path)
-                
-        if projects_processed  > 0:
+
+        if projects_processed > 0:
             self._save_checkpoint(registry_path=registry_path)
-            logger.info("[BERT] Extracción completada — %d proyectos procesados", projects_processed)
-    
+            logger.info(
+                "[BERT] Extracción completada — %d proyectos procesados", projects_processed
+            )
