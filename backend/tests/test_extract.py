@@ -10,9 +10,8 @@ from pathlib import Path
 import pytest
 
 import institutional_graphrag.extraction.ie as ie_mod
-from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.extraction.bert_extractor import BertExtractionResult, TopicMention
-
+from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
 from institutional_graphrag.graph.schema import (
     Anio,
     Chunk,
@@ -309,164 +308,71 @@ def test_run_integration_minimal(tmp_path: Path, monkeypatch):
 # -------------------------
 
 
-def test_bert_topics_and_project_aggregation(
-    extractor: EntityExtractor, tmp_path: Path, monkeypatch
-):
-    """
-    Tópicos se deduplican GLOBALMENTE (mismo topic => 1 entidad).
-    _aggregate_topics_for_project crea TIENE_TOPICO con mention_count por proyecto.
-    """
-    # ---- setup dirs ----
-    extractor.documents_dir.mkdir(parents=True, exist_ok=True)
-    extractor.chunks_dir.mkdir(parents=True, exist_ok=True)
-    extractor.table_dir.mkdir(parents=True, exist_ok=True)
-    extractor.input_dir.mkdir(parents=True, exist_ok=True)
-
-    # ---- docs + proyectos + relaciones ES_DESCRITO_POR ----
-    doc1 = Documento(
-        id="doc1",
-        value={
-            "base_name": "proy_2014_148_informe",
-            "is_group": "proy",
-            "year_publisher": "2014",
-            "sub_id": "148",
-            "type": "informe",
-        },
+def test_bert_topics_and_project_aggregation():
+    bert_extractor = ie_mod.BertTopicExtractor(
+        threshold=0.5,
+        logit_threshold=0.5,
     )
-    doc2 = Documento(
-        id="doc2",
-        value={
-            "base_name": "proy_2014_148_propuesta",
-            "is_group": "proy",
-            "year_publisher": "2014",
-            "sub_id": "148",
-            "type": "propuesta",
-        },
-    )
-    doc3 = Documento(
-        id="doc3",
-        value={
-            "base_name": "proy_2012_28_informe",
-            "is_group": "proy",
-            "year_publisher": "2012",
-            "sub_id": "28",
-            "type": "informe",
-        },
-    )
-    extractor.add_entities([doc1, doc2, doc3])
-    extractor._build_doc_indexes()
+    bert_extractor._en_to_es_topic = {"Machine Learning": "machine learning"}
 
-    proyecto1 = Proyecto(id="proy_2014_148", value="Proyecto 148")
-    proyecto2 = Proyecto(id="proy_2012_28", value="Proyecto 28")
-    extractor.add_entities([proyecto1, proyecto2])
+    mentions = [
+        TopicMention(
+            topic="Machine Learning",
+            evidence="count=1 score=0.9500",
+            chunk_id="chunk1",
+            logit=0.8,
+        ),
+        TopicMention(
+            topic="Machine Learning",
+            evidence="count=1 score=0.9000",
+            chunk_id="chunk2",
+            logit=0.7,
+        ),
+    ]
 
-    extractor.add_relationship(
-        [
-            Relationship(
-                type="ES_DESCRITO_POR", source_id="proy_2014_148", target_id="doc1", properties={}
-            ),
-            Relationship(
-                type="ES_DESCRITO_POR", source_id="proy_2014_148", target_id="doc2", properties={}
-            ),
-            Relationship(
-                type="ES_DESCRITO_POR", source_id="proy_2012_28", target_id="doc3", properties={}
-            ),
-        ]
+    relationships = bert_extractor.aggregate_topics_for_project(
+        project_id="proy_2014_148",
+        project_bert_results=mentions,
+        total_chunks=2,
     )
 
-    # ---- chunks ----
-    write_chunks_file(
-        extractor.chunks_dir / "proy_2014_148_informe_chunks.json",
-        source="C:/tmp/proy_2014_148_informe.pdf",
-        chunks=[
-            {"chunk_id": "proy_2014_148_informe_chunk0", "text": "machine learning", "metadata": {}}
-        ],
-    )
-    write_chunks_file(
-        extractor.chunks_dir / "proy_2014_148_propuesta_chunks.json",
-        source="C:/tmp/proy_2014_148_propuesta.pdf",
-        chunks=[
-            {
-                "chunk_id": "proy_2014_148_propuesta_chunk0",
-                "text": "machine learning",
-                "metadata": {},
-            }
-        ],
-    )
-    write_chunks_file(
-        extractor.chunks_dir / "proy_2012_28_informe_chunks.json",
-        source="C:/tmp/proy_2012_28_informe.pdf",
-        chunks=[
-            {"chunk_id": "proy_2012_28_informe_chunk0", "text": "machine learning", "metadata": {}}
-        ],
-    )
+    tiene_topico_rels = [r for r in relationships if r.type == "TIENE_TOPICO"]
+    extraido_de_rels = [r for r in relationships if r.type == "EXTRAIDO_DE"]
 
-    extractor._extract_chunks()
+    assert len(tiene_topico_rels) == 1
+    assert len(extraido_de_rels) == 2
 
-    monkeypatch.setattr(extractor, "already_run", lambda *args, **kwargs: False)
-    monkeypatch.setattr(extractor, "mark_success", lambda *args, **kwargs: None)
+    rel = tiene_topico_rels[0]
+    assert rel.source_id == "proy_2014_148"
+    assert rel.target_id == "machine_learning"
+    assert rel.properties["mention_count"] == 2
+    assert rel.properties["coverage_logit"] == 0.75
+    assert isinstance(rel.properties["coverage_logit"], float)
 
-    def mock_extract_topics(chunks_list, max_chunks=None, **kwargs):
-        chunk_id = chunks_list[0].get("chunk_id")
-        return BertExtractionResult(
-            topics=[
-                TopicMention(topic="Machine Learning", evidence="score=0.9500", chunk_id=chunk_id)
-            ],
-            errors=[],
+
+def test_aggregate_topics_for_project_below_threshold_returns_no_relationships():
+    bert_extractor = ie_mod.BertTopicExtractor(
+        threshold=0.5,
+        logit_threshold=0.5,
+    )
+    bert_extractor._en_to_es_topic = {"Machine Learning": "machine learning"}
+
+    mentions = [
+        TopicMention(
+            topic="Machine Learning",
+            evidence="count=1 score=0.3000",
+            chunk_id="chunk1",
+            logit=0.3,
         )
-
-    monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.BertTopicExtractor.extract_topics_from_chunks",
-        lambda self, chunks, max_chunks=None, **kwargs: mock_extract_topics(chunks, max_chunks),
-    )
-
-    monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.BertTopicExtractor.load_all_topics_and_subcampos",
-        staticmethod(lambda: ([Topico(id="machine_learning", value="machine learning")], [])),
-    )
-
-    def fake_create_topics_from_bert_extraction(self, bert_result):
-        new_relationships = []
-        for m in bert_result.topics:
-            new_relationships.append(
-                Relationship(
-                    type="EXTRAIDO_DE",
-                    source_id=m.chunk_id,
-                    target_id="machine_learning",
-                    properties={"evidence_text": m.evidence or ""},
-                )
-            )
-        return [], new_relationships
-
-    monkeypatch.setattr(
-        "institutional_graphrag.extraction.ie.BertTopicExtractor.create_topics_from_bert_extraction",
-        fake_create_topics_from_bert_extraction,
-    )
-
-    extractor._extract_with_bert()
-
-    # ---- asserts tópicos ----
-    topicos = [e for e in extractor.res.entities if e.label == "Topico"]
-    assert len(topicos) == 1, "Topic global => 1 entidad Topico"
-
-    evidencia_top = [
-        r
-        for r in extractor.res.relationships
-        if r.type == "EXTRAIDO_DE" and r.target_id == "machine_learning"
     ]
-    assert len(evidencia_top) == 3, "3 chunks => 3 evidencias del tópico"
 
-    tiene_topico_rels = [
-        r
-        for r in extractor.res.relationships
-        if r.type == "TIENE_TOPICO" and r.target_id == "machine_learning"
-    ]
-    assert len(tiene_topico_rels) == 2, "2 proyectos => 2 relaciones TIENE_TOPICO"
+    relationships = bert_extractor.aggregate_topics_for_project(
+        project_id="proy_2014_148",
+        project_bert_results=mentions,
+        total_chunks=1,
+    )
 
-    rel_p1 = next(r for r in tiene_topico_rels if r.source_id == "proy_2014_148")
-    rel_p2 = next(r for r in tiene_topico_rels if r.source_id == "proy_2012_28")
-    assert rel_p1.properties.get("mention_count") == 2
-    assert rel_p2.properties.get("mention_count") == 1
+    assert relationships == []
 
 
 # -------------------------
@@ -612,6 +518,7 @@ def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_pa
     assert isinstance(proyecto.value, dict)
     assert proyecto.value == {
         "title": "proyecto a",
+        "display_title": "Proyecto A",
         "keywords": ["salud"],
         "description": "AA",
     }

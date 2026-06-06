@@ -5,6 +5,7 @@ import logging
 import os
 from collections import defaultdict
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
@@ -106,6 +107,18 @@ class EntityExtractor:
         )
         return self.res
 
+    def normalize_json_values(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+
+        if isinstance(obj, dict):
+            return {k: self.normalize_json_values(v) for k, v in obj.items()}
+
+        if isinstance(obj, list):
+            return [self.normalize_json_values(v) for v in obj]
+
+        return obj
+
     def load_subset_from_graph_json(
         self,
         json_path: str | Path,
@@ -192,7 +205,7 @@ class EntityExtractor:
                     rel_type = raw.get("type")
                     source_id = raw.get("source_id")
                     target_id = raw.get("target_id")
-                    props = raw.get("properties") or {}
+                    props = self.normalize_json_values(raw.get("properties") or {})
 
                     if (
                         not isinstance(rel_type, str)
@@ -386,9 +399,7 @@ class EntityExtractor:
         return cast(dict[str, Any], data)
 
     def save_in_file(self, filename: str) -> None:
-
         self.input_dir.mkdir(parents=True, exist_ok=True)
-
         out = self._result_to_json()
         out_path = self.input_dir / filename
         out_path.write_text(
@@ -584,6 +595,7 @@ class EntityExtractor:
             project_bert_results: list = []
             project_docs_success: list = []
             total_chunks = 0
+            doc_process = 0
             project_id = project.id
             project_docs = self.docs_by_project.get(project_id, [])
             if not project_docs:
@@ -626,6 +638,7 @@ class EntityExtractor:
                     if topic_cache:
                         logger.info(f"[BERT Topics] Cache: {doc_id}")
                     else:
+                        doc_process += 1
                         logger.info(
                             f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
@@ -653,19 +666,22 @@ class EntityExtractor:
                             "message": str(e),
                         }
                     )
-            new_relationships = self.bert_extractor.aggregate_topics_for_project(
-                project_id, project_bert_results, total_chunks
-            )
-            self.add_relationship(new_relationships)
+            if doc_process != 0:
+                new_relationships = self.bert_extractor.aggregate_topics_for_project(
+                    project_id, project_bert_results, total_chunks
+                )
+                self.add_relationship(new_relationships)
 
-            for doc_id in project_docs_success:
-                self.mark_success(doc_id, "Topico")
-            if project_docs_success != []:
-                logger.info(f"[BERT Topics] ✓ {project_id}: {len(project_bert_results)} tópicos")
+                for doc_id in project_docs_success:
+                    self.mark_success(doc_id, "Topico")
+                if project_docs_success != []:
+                    logger.info(
+                        f"[BERT Topics] ✓ {project_id}: {len(project_bert_results)} tópicos"
+                    )
 
-            projects_processed += 1
-            if checkpoint_every > 0 and projects_processed % checkpoint_every == 0:
-                self._save_checkpoint(registry_path=registry_path)
+                projects_processed += 1
+                if checkpoint_every > 0 and projects_processed % checkpoint_every == 0:
+                    self._save_checkpoint(registry_path=registry_path)
 
         if projects_processed > 0:
             self._save_checkpoint(registry_path=registry_path)
