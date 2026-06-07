@@ -3,8 +3,9 @@ from __future__ import annotations
 import json
 import logging
 import os
-from collections import Counter, defaultdict
+from collections import defaultdict
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
@@ -40,6 +41,9 @@ class EntityExtractor:
         self,
         llm_model: Optional[str] = None,
         data_dir: Path | None = None,
+        bert_threshold: float | None = None,
+        confidence_logit_threshold: float | None = None,
+        coverage_logit_threshold: float | None = None,
     ):
         base = data_dir if data_dir is not None else DATA_DIR
         self.data_dir = base
@@ -50,6 +54,9 @@ class EntityExtractor:
         self.res: ExtractionResult = ExtractionResult([], [], [])
         self.rule_based = RuleBasedExtractor()
         self.tabular = TabularExtractor()
+        self.bert_extractor = BertTopicExtractor(
+            bert_threshold, confidence_logit_threshold, coverage_logit_threshold
+        )
 
         self.doc_by_basename: dict[str, Documento] = {}
         self.doc_by_id: dict[str, Documento] = {}
@@ -79,7 +86,7 @@ class EntityExtractor:
 
     def run(
         self,
-        max_docs: int | None = None,
+        max_projects: int | None = None,
         checkpoint_every: int = 5,
     ) -> ExtractionResult:
         entities_json = self.input_dir / "entity_documents.json"
@@ -98,10 +105,22 @@ class EntityExtractor:
         self._extract_chunks()
         self._extract_projects_and_researchers_from_tabular()
         self._extract_with_bert(
-            max_docs=max_docs,
+            max_projects=max_projects,
             checkpoint_every=checkpoint_every,
         )
         return self.res
+
+    def normalize_json_values(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+
+        if isinstance(obj, dict):
+            return {k: self.normalize_json_values(v) for k, v in obj.items()}
+
+        if isinstance(obj, list):
+            return [self.normalize_json_values(v) for v in obj]
+
+        return obj
 
     def load_subset_from_graph_json(
         self,
@@ -189,7 +208,7 @@ class EntityExtractor:
                     rel_type = raw.get("type")
                     source_id = raw.get("source_id")
                     target_id = raw.get("target_id")
-                    props = raw.get("properties") or {}
+                    props = self.normalize_json_values(raw.get("properties") or {})
 
                     if (
                         not isinstance(rel_type, str)
@@ -383,9 +402,7 @@ class EntityExtractor:
         return cast(dict[str, Any], data)
 
     def save_in_file(self, filename: str) -> None:
-
         self.input_dir.mkdir(parents=True, exist_ok=True)
-
         out = self._result_to_json()
         out_path = self.input_dir / filename
         out_path.write_text(
@@ -557,7 +574,7 @@ class EntityExtractor:
 
     def _extract_with_bert(
         self,
-        max_docs: int | None = None,
+        max_projects: int | None = None,
         checkpoint_every: int = 5,
     ) -> None:
         """Extrae tópicos usando BERT (OpenAlex fine-tuned)."""
@@ -565,29 +582,32 @@ class EntityExtractor:
         self.add_entities(topic_entities)
         self.add_relationship(topic_rels)
 
-        bert_extractor = BertTopicExtractor()
         registry_path = self.input_dir / "llm_registry.json"
         self.reg = self.load_registry(registry_path)
         self._registry_dirty = False
 
         projects = [e for e in self.res.entities if e.label in ("Proyecto", "Grupo")]
 
-        docs_processed = 0
+        projects_processed = 0
         self.docs_by_project: dict[str, list[str]] = defaultdict(list)
         for r in self.res.relationships:
             if r.type == "ES_DESCRITO_POR":
                 self.docs_by_project[r.source_id].append(r.target_id)
 
         for project in projects:
+            project_bert_results: list = []
+            project_docs_success: list = []
+            total_chunks = 0
+            doc_process = 0
             project_id = project.id
             project_docs = self.docs_by_project.get(project_id, [])
             if not project_docs:
                 continue
 
+            if max_projects is not None and projects_processed >= max_projects:
+                logger.info(f"[BERT] Límite de {max_projects} proyectos alcanzado")
+                break
             for doc_id in project_docs:
-                if max_docs is not None and docs_processed >= max_docs:
-                    logger.info(f"[BERT] Límite de {max_docs} documentos alcanzado")
-                    return
 
                 if doc_id.endswith("_table"):
                     continue
@@ -621,6 +641,7 @@ class EntityExtractor:
                     if topic_cache:
                         logger.info(f"[BERT Topics] Cache: {doc_id}")
                     else:
+                        doc_process += 1
                         logger.info(
                             f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
@@ -630,24 +651,15 @@ class EntityExtractor:
                             project_title = project.value
                         else:
                             project_title = ""
-                        bert_result = bert_extractor.extract_topics_from_chunks(
+                        bert_result = self.bert_extractor.extract_topics_from_chunks(
                             chunks,
                             max_chunks=None,
                             project_title=project_title,
                         )
                         self.res.errors.extend(bert_result.errors)
-                        _, new_relationships = bert_extractor.create_topics_from_bert_extraction(
-                            bert_result
-                        )
-                        self.add_relationship(new_relationships)
-                        self.mark_success(doc_id, "Topico")
-                        logger.info(
-                            f"[BERT Topics] ✓ {base_name}: {len(bert_result.topics)} tópicos"
-                        )
-
-                    docs_processed += 1
-                    if checkpoint_every > 0 and docs_processed % checkpoint_every == 0:
-                        self._save_checkpoint(registry_path=registry_path)
+                        project_bert_results.extend(bert_result.topics)
+                        total_chunks += len(chunks)
+                        project_docs_success.append(doc_id)
 
                 except Exception as e:
                     self.res.errors.append(
@@ -657,61 +669,25 @@ class EntityExtractor:
                             "message": str(e),
                         }
                     )
-                    docs_processed += 1
+            if doc_process != 0:
+                new_relationships = self.bert_extractor.aggregate_topics_for_project(
+                    project_id, project_bert_results, total_chunks
+                )
+                self.add_relationship(new_relationships)
 
-            self._aggregate_topics_for_project(project_id)
+                for doc_id in project_docs_success:
+                    self.mark_success(doc_id, "Topico")
+                if project_docs_success != []:
+                    logger.info(
+                        f"[BERT Topics] ✓ {project_id}: {len(project_bert_results)} tópicos"
+                    )
 
-        if docs_processed > 0:
+                projects_processed += 1
+                if checkpoint_every > 0 and projects_processed % checkpoint_every == 0:
+                    self._save_checkpoint(registry_path=registry_path)
+
+        if projects_processed > 0:
             self._save_checkpoint(registry_path=registry_path)
-            logger.info("[BERT] Extracción completada — %d documentos procesados", docs_processed)
-
-    def _aggregate_topics_for_project(self, project_id: str) -> None:
-        """Agregar tópicos a nivel de proyecto basándose en los chunks.
-
-        Cuenta los tópicos de todos los chunks del proyecto y crea
-        relaciones Proyecto TIENE_TOPICO Topico para todos los tópicos mencionados.
-        """
-        # Obtener todos los chunks del proyecto (a través de documentos)
-        project_docs = self.docs_by_project.get(project_id, [])
-        topic_entity_ids = {e.id for e in self.res.entities if e.label == "Topico"}
-        chunk_by_doc: dict[str, list[str]] = defaultdict(list)
-        for r in self.res.relationships:
-            if r.type == "DE_DOCUMENTO":
-                chunk_by_doc[r.target_id].append(r.source_id)
-
-        project_chunks = set()
-        for doc_id in project_docs:
-            project_chunks.update(chunk_by_doc.get(doc_id, []))
-
-        # Contar tópicos usando el chunk_count guardado en evidence_text
-        topic_counts: Counter[str] = Counter()
-        for r in self.res.relationships:
-            if r.type != "EXTRAIDO_DE":
-                continue
-            if r.target_id not in topic_entity_ids:
-                continue
-            if r.source_id not in project_chunks:
-                continue
-            ev = r.properties.get("evidence_text", "")
-            if "count=" in ev:
-                try:
-                    count = int(ev.split("count=")[1].split(" ")[0])
-                except (ValueError, IndexError):
-                    count = 1
-            else:
-                count = 1
-            topic_counts[r.target_id] += count
-
-        # Top 3 tópicos más mencionados en los chunks del proyecto
-        top_topics = topic_counts.most_common(3)
-        relationships_to_add = []
-        for topic_id, count in top_topics:
-            rel = Relationship(
-                type="TIENE_TOPICO",
-                source_id=project_id,
-                target_id=topic_id,
-                properties={"mention_count": count},
+            logger.info(
+                "[BERT] Extracción completada — %d proyectos procesados", projects_processed
             )
-            relationships_to_add.append(rel)
-
-        self.add_relationship(relationships_to_add)

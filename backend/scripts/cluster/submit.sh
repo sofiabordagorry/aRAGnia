@@ -128,10 +128,6 @@ python "$REPO_ROOT/backend/scripts/cluster/multi_model_pipeline.py" \
     --data-dir "$SCRATCH_DATA" \
     --env-file "$REPO_ROOT/backend/.env"
 
-# Para desactivar LLM (más rápido, sin Groq):
-#   --no-llm-researchers
-#   --no-llm-topics
-
 echo ""
 echo "============================================================"
 echo "  Job finalizado: $(date)"

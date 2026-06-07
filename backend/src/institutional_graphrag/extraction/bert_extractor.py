@@ -5,14 +5,15 @@ from __future__ import annotations
 import logging
 import os
 import unicodedata
+from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.extraction.parse_topics import LLMExtractionResult, TopicMention
 from institutional_graphrag.graph.schema import (
     EXTRAIDO_DE,
     PERTENECE_A_SUBCAMPO,
-    Entity,
+    TIENE_TOPICO,
     Relationship,
     Subcampo,
     Topico,
@@ -28,7 +29,26 @@ TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
 DEFAULT_THRESHOLD = 0.04
-DEFAULT_TOP_K = 2
+DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 8
+DEFAULT_COVERAGE_LOGIT_THRESHOLD = 0.5
+
+
+@dataclass
+class TopicMention:
+    """Mención de tópico en un chunk."""
+
+    topic: str
+    evidence: str
+    logit: float
+    chunk_id: str
+
+
+@dataclass
+class BertExtractionResult:
+    """Resultado de extracción LLM."""
+
+    topics: List[TopicMention]
+    errors: List[Dict[str, Any]]
 
 
 class BertTopicExtractor:
@@ -36,12 +56,22 @@ class BertTopicExtractor:
 
     def __init__(
         self,
-        threshold: float = DEFAULT_THRESHOLD,
-        top_k: int = DEFAULT_TOP_K,
+        threshold: float | None,
+        confidence_logit_threshold: float | None,
+        coverage_logit_threshold: float | None,
         device: Optional[str] = None,
     ):
-        self.threshold = threshold
-        self.top_k = top_k
+        self.threshold = threshold if threshold is not None else DEFAULT_THRESHOLD
+        self.confidence_logit_threshold = (
+            confidence_logit_threshold
+            if confidence_logit_threshold is not None
+            else DEFAULT_CONFIDENCE_LOGIT_THRESHOLD
+        )
+        self.coverage_logit_threshold = (
+            coverage_logit_threshold
+            if coverage_logit_threshold is not None
+            else DEFAULT_COVERAGE_LOGIT_THRESHOLD
+        )
         self._model: Optional[Any] = None
         self._tokenizer: Optional[Any] = None
         self._id2label: Dict[int, str] = {}
@@ -210,13 +240,18 @@ class BertTopicExtractor:
         return f"<TITLE> {safe_title}"
 
     def _predict_chunk(self, title: str, text: str) -> List[Dict[str, Any]]:
-        """Corre el modelo sobre un chunk y retorna lista de {topic, score}."""
+        """Corre el modelo sobre un chunk y retorna lista de {topic, score, logit}."""
         import torch
 
         self._load_model()
         assert self._tokenizer is not None and self._model is not None
-
         input_text = self._format_input(title, text)
+
+        tokens = self._tokenizer(input_text, truncation=False)
+        n_tokens = len(tokens["input_ids"])
+        if n_tokens > 512:
+            logger.warning(f"Chunk excede 512 tokens ({n_tokens}), se truncará")
+
         inputs = self._tokenizer(
             input_text,
             return_tensors="pt",
@@ -225,27 +260,31 @@ class BertTopicExtractor:
             padding=True,
         )
         inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
         with torch.no_grad():
             outputs = self._model(**inputs)
+            logits = outputs.logits[0].cpu().tolist()
             # El modelo es single_label_classification: softmax da una probabilidad
             # calibrada (suma 1 entre los topics) y hace interpretable el threshold.
             probs = torch.softmax(outputs.logits, dim=-1)[0].cpu().tolist()
 
         results = [
-            {"topic": self._strip_label_prefix(self._id2label[i]), "score": score}
+            {
+                "topic": self._strip_label_prefix(self._id2label[i]),
+                "score": score,
+                "logit": logits[i],
+            }
             for i, score in enumerate(probs)
             if score >= self.threshold
         ]
         results.sort(key=lambda x: x["score"], reverse=True)
-        return results[: self.top_k]
+        return results
 
     def extract_topics_from_chunk(
         self, chunk_text: str, chunk_id: str, project_title: str = ""
-    ) -> LLMExtractionResult:
+    ) -> BertExtractionResult:
         """Extrae tópicos de un chunk usando BERT."""
         if not chunk_text.strip():
-            return LLMExtractionResult(topics=[], errors=[])
+            return BertExtractionResult(topics=[], errors=[])
 
         try:
             predictions = self._predict_chunk(project_title, chunk_text)
@@ -253,15 +292,16 @@ class BertTopicExtractor:
                 TopicMention(
                     topic=pred["topic"],
                     evidence=f"score={pred['score']:.4f}",
+                    logit=pred["logit"],
                     chunk_id=chunk_id,
                 )
                 for pred in predictions
             ]
-            return LLMExtractionResult(topics=topics, errors=[])
+            return BertExtractionResult(topics=topics, errors=[])
 
         except Exception as e:
             logger.error(f"Error BERT en chunk {chunk_id}: {e}")
-            return LLMExtractionResult(
+            return BertExtractionResult(
                 topics=[],
                 errors=[{"type": "BertExtractionError", "chunk_id": chunk_id, "message": str(e)}],
             )
@@ -271,11 +311,13 @@ class BertTopicExtractor:
         chunks: List[Dict[str, Any]],
         max_chunks: Optional[int] = None,
         project_title: str = "",
-    ) -> LLMExtractionResult:
+    ) -> BertExtractionResult:
         """Clasifica tópicos sobre una lista de chunks, agrega por frecuencia entre chunks."""
         topic_chunk_count: Dict[str, int] = {}
         topic_first_chunk: Dict[str, str] = {}
         topic_max_score: Dict[str, float] = {}
+        topic_sum_logit: Dict[str, float] = {}
+
         all_errors = []
 
         chunks_to_process = chunks[:max_chunks] if max_chunks else chunks
@@ -294,6 +336,9 @@ class BertTopicExtractor:
             for mention in result.topics:
                 score = float(mention.evidence.replace("score=", ""))
                 topic_chunk_count[mention.topic] = topic_chunk_count.get(mention.topic, 0) + 1
+                topic_sum_logit[mention.topic] = (
+                    topic_sum_logit.get(mention.topic, 0.0) + mention.logit
+                )
                 if mention.topic not in topic_first_chunk:
                     topic_first_chunk[mention.topic] = chunk_id
                 if score > topic_max_score.get(mention.topic, 0.0):
@@ -304,6 +349,7 @@ class BertTopicExtractor:
             TopicMention(
                 topic=topic,
                 evidence=f"count={count} max_score={topic_max_score[topic]:.4f}",
+                logit=topic_sum_logit[topic],
                 chunk_id=topic_first_chunk[topic],
             )
             for topic, count in sorted(
@@ -311,22 +357,49 @@ class BertTopicExtractor:
             )
         ]
 
-        return LLMExtractionResult(topics=final_topics, errors=all_errors)
+        return BertExtractionResult(topics=final_topics, errors=all_errors)
 
-    def create_topics_from_bert_extraction(
+    def aggregate_topics_for_project(
         self,
-        bert_result: LLMExtractionResult,
-    ) -> tuple[List[Entity], List[Relationship]]:
-        """Crea relaciones EXTRAIDO_DE desde chunks hacia tópicos ya cargados en el grafo."""
+        project_id: str,
+        project_bert_results: list,
+        total_chunks: int,
+    ) -> List[Relationship]:
+        """Suma logits por tópico a nivel proyecto y crea TIENE_TOPICO solo si supera el threshold."""
         relationships: List[Relationship] = []
+        if not project_bert_results:
+            return relationships
 
-        for mention in bert_result.topics:
-            es_topic = self._en_to_es_topic.get(mention.topic, mention.topic)
-            topic_id = self._normalize_id(es_topic)
-            relationships.append(
-                EXTRAIDO_DE(
-                    mention.chunk_id, topic_id, properties={"evidence_text": mention.evidence}
+        topic_logit_sum: Dict[str, float] = defaultdict(float)
+        topic_count_sum: Dict[str, int] = defaultdict(int)
+        topic_chunks_info: Dict[str, List[tuple[str, str]]] = defaultdict(list)
+        for mention in project_bert_results:
+            topic_logit_sum[mention.topic] += mention.logit
+            count = int(mention.evidence.split("count=")[1].split(" ")[0])
+            topic_count_sum[mention.topic] += count
+            topic_chunks_info[mention.topic].append((mention.chunk_id, mention.evidence))
+
+        for topic_en, total_logit in topic_logit_sum.items():
+            mention_count = int(topic_count_sum[topic_en])
+            if (
+                (mention_count / total_chunks) >= self.coverage_logit_threshold
+                and total_logit / mention_count >= self.confidence_logit_threshold
+            ):
+                es_topic = self._en_to_es_topic.get(topic_en, topic_en)
+                topic_id = self._normalize_id(es_topic)
+                relationships.append(
+                    TIENE_TOPICO(
+                        project_id,
+                        topic_id,
+                        properties={
+                            "coverage_logit": float(mention_count / total_chunks),
+                            "confidence_logit": float(total_logit / mention_count),
+                            "mention_count": int(topic_count_sum[topic_en]),
+                        },
+                    )
                 )
-            )
-
-        return [], relationships
+                for chunk_id, evidence in topic_chunks_info[topic_en]:
+                    relationships.append(
+                        EXTRAIDO_DE(chunk_id, topic_id, properties={"evidence_text": evidence})
+                    )
+        return relationships

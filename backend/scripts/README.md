@@ -64,9 +64,8 @@ cd backend
   - Ejecuta extracción de entidades/relaciones y postprocesado.
   - Salida: `data/entities_relations/entity_documents.json` (y luego se postprocesa sobre ese archivo).
   - Uso básico: `python scripts/run_extraction.py`
-  - Opciones útiles:
-    - `--max-docs N`
-    - `--no-llm-topics`
+  - Opcion útil:
+    - `--max-projects N`
 
 - `extract_end_to_end.py`
   - Corre un flujo de ingest end-to-end para un input configurado dentro del script.
