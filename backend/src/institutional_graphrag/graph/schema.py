@@ -192,7 +192,7 @@ def PERTENECE_A_AREA(
     """
     Crear una relación PERTENECE_A_AREA.
 
-    (Proyecto)-[PERTENECE_A_AREA]->(Area)
+    (Proyecto|Grupo)-[PERTENECE_A_AREA]->(Area)
     """
     return Relationship(
         type="PERTENECE_A_AREA",
@@ -382,7 +382,7 @@ def validate_relationship_endpoints(
         "PARTICIPO_EN": ("Investigador", PROJECT_TYPES),
         "TIENE_TOPICO": (PROJECT_TYPES, "Topico"),
         "PERTENECE_A_SUBCAMPO": ("Topico", "Subcampo"),
-        "PERTENECE_A_AREA": ("Proyecto", "Area"),
+        "PERTENECE_A_AREA": (PROJECT_TYPES, "Area"),
         "ES_DESCRITO_POR": (PROJECT_TYPES, "Documento"),
         "INICIO_EN": (PROJECT_TYPES, "Anio"),
         "PRIMER_CHUNK": ("Documento", "Chunk"),
