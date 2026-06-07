@@ -392,8 +392,8 @@ class BertTopicExtractor:
                         project_id,
                         topic_id,
                         properties={
-                            "coverage_logit": float(mention_count / mention_count),
-                            "confidence_logit": float(total_logit / total_chunks),
+                            "coverage_logit": float(mention_count / total_chunks),
+                            "confidence_logit": float(total_logit / mention_count),
                             "mention_count": int(topic_count_sum[topic_en]),
                         },
                     )
