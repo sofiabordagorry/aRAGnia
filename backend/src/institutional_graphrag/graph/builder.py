@@ -328,17 +328,11 @@ class GraphBuilder:
     def _display_value(label: str, props: dict[str, Any]) -> str:
         if label == "Investigador":
             return str(
-                props.get("nombre_de_despliegue")
-                or props.get("nombre")
-                or props.get("id")
-                or label
+                props.get("nombre_de_despliegue") or props.get("nombre") or props.get("id") or label
             )
         if label in ("Proyecto", "Grupo"):
             return str(
-                props.get("titulo_de_despliegue")
-                or props.get("titulo")
-                or props.get("id")
-                or label
+                props.get("titulo_de_despliegue") or props.get("titulo") or props.get("id") or label
             )
         if label == "Topico":
             return str(props.get("valor") or props.get("id") or label)
