@@ -174,17 +174,17 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
         if not isinstance(value, dict):
             add_issue(
                 issues, "error", "value", "Anio.value",
-                "Anio.value debe ser dict con campo 'year'.",
+                "Anio.value debe ser dict con campo 'anio'.",
                 entity_id=eid,
                 label=label,
                 value=value,
             )
         else:
-            year = value.get("year")
+            year = value.get("anio")
             if not is_non_empty_str(year):
                 add_issue(
-                    issues, "error", "value", "Anio.value.year",
-                    "Anio.value.year debe ser string no vacío.",
+                    issues, "error", "value", "Anio.value.anio",
+                    "Anio.value.anio debe ser string no vacío.",
                     entity_id=eid,
                     label=label,
                     value=value,
@@ -200,7 +200,7 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
                 value=value,
             )
         else:
-            required = ["base_name", "is_group", "year_publisher", "type"]
+            required = ["nombre_base", "es_grupo", "anio_publicacion", "tipo"]
             for key in required:
                 if key not in value:
                     add_issue(
@@ -210,10 +210,10 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
                         label=label,
                         value=value,
                     )
-            doc_type = value.get("type")
+            doc_type = value.get("tipo")
             if doc_type not in ALLOWED_DOCUMENT_TYPES:
                 add_issue(
-                    issues, "error", "value", "Documento.value.type",
+                    issues, "error", "value", "Documento.value.tipo",
                     f"Documento.value.type debe ser uno de {sorted(ALLOWED_DOCUMENT_TYPES)}.",
                     entity_id=eid,
                     label=label,
@@ -224,25 +224,27 @@ def validate_entity_value(entity: Dict[str, Any], issues: List[Issue]) -> None:
         if not isinstance(value, dict):
             add_issue(
                 issues, "error", "value", "Investigador.value",
-                "Investigador.value debe ser dict con campos 'name' y 'source'.",
+                "Investigador.value debe ser dict con campos 'nombre' y 'source'.",
                 entity_id=eid,
                 label=label,
                 value=value,
             )
         else:
-            if not is_non_empty_str(value.get("name")):
+            if not is_non_empty_str(value.get("nombre")):
                 add_issue(
-                    issues, "error", "value", "Investigador.value.name",
-                    "Investigador.value.name debe ser string no vacío.",
+                    issues, "error", "value", "Investigador.value.nombre",
+                    "Investigador.value.nombre debe ser string no vacío.",
                     entity_id=eid,
                     label=label,
                     value=value,
                 )
 
-            if "display_name" in value and not is_non_empty_str(value.get("display_name")):
+            if "nombre_de_despliegue" in value and not is_non_empty_str(
+                value.get("nombre_de_despliegue")
+            ):
                 add_issue(
-                    issues, "error", "value", "Investigador.value.display_name",
-                    "Investigador.value.display_name debe ser string no vacío si está presente.",
+                    issues, "error", "value", "Investigador.value.nombre_de_despliegue",
+                    "Investigador.value.nombre_de_despliegue debe ser string no vacío si está presente.",
                     entity_id=eid,
                     label=label,
                     value=value,
@@ -507,7 +509,7 @@ def validate_constraints(idx: Dict[str, Any], issues: List[Issue]) -> None:
     # 2.b) Todo documento debe tener al menos un PRIMER_CHUNK y al menos un DE_DOCUMENTO
     for document in idx["entities_by_label"].get("Documento", []):
         did = document["id"]
-        doc_type = document.get("value", {}).get("type")
+        doc_type = document.get("value", {}).get("tipo")
         if doc_type == "tabla":
             continue
         first_chunks = document_first_chunks(did)

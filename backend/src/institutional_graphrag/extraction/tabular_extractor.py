@@ -230,8 +230,8 @@ class TabularExtractor:
         seen_investigators[inv_id] = Investigador(
             id=inv_id,
             value={
-                "name": self._strip_accents_lowercase(display),
-                "display_name": display,
+                "nombre": self._strip_accents_lowercase(display),
+                "nombre_de_despliegue": display,
                 "documento": doc,
                 "tipo_documento": tipo,
                 "pais_documento": pais,
@@ -278,10 +278,10 @@ class TabularExtractor:
             value = cast(
                 FileValue,
                 {
-                    "title": project_title,
-                    "display_title": display_title,
-                    "keywords": keywords,
-                    "description": description,
+                    "titulo": project_title,
+                    "titulo_de_despliegue": display_title,
+                    "palabras_clave": keywords,
+                    "descripcion": description,
                 },
             )
             seen_projects[project_id] = entity(id=project_id, value=value)
@@ -351,7 +351,7 @@ class TabularExtractor:
         if not year:
             return None
         if year not in seen_anios:
-            seen_anios[year] = Anio(id=year, value={"year": year})
+            seen_anios[year] = Anio(id=year, value={"anio": year})
         return year
 
     def _add_participation_relationships(

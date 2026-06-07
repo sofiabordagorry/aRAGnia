@@ -107,7 +107,7 @@ class RuleBasedExtractor:
                 year = m.group("year")
                 anio = Anio(
                     id=year,
-                    value={"year": year},
+                    value={"anio": year},
                 )
                 entities.append(anio)
         else:
@@ -188,7 +188,9 @@ class RuleBasedExtractor:
 
             relationships.append(DE_DOCUMENTO(chunk_id, doc.id))
             meta = c.get("metadata", {})
-            meta["text"] = c.get("text", "")
+            if "page_numbers" in meta:
+                meta["paginas"] = meta.pop("page_numbers")
+            meta["texto"] = c.get("text", "")
             entities.append(Chunk(id=chunk_id, value=meta))
         return ExtractionResult(entities, relationships, errors)
 

@@ -110,11 +110,11 @@ def test_extract_documents_valid_creates_documento(extractor: EntityExtractor):
     assert len(docs) == 1
     d = docs[0]
     assert isinstance(d, Documento)
-    assert d.value["base_name"] == "proy_2014_148_informe"
-    assert str(d.value["is_group"]).lower() == "proy"
-    assert d.value["year_publisher"] == "2014"
+    assert d.value["nombre_base"] == "proy_2014_148_informe"
+    assert str(d.value["es_grupo"]).lower() == "proy"
+    assert d.value["anio_publicacion"] == "2014"
     assert d.value["sub_id"] == "148"
-    assert str(d.value["type"]).lower() == "informe"
+    assert str(d.value["tipo"]).lower() == "informe"
 
 
 # -------------------------
