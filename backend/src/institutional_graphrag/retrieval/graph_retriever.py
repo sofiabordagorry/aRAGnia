@@ -399,7 +399,7 @@ CRITICAL SYNTAX:
         - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
         - (Proyecto|Grupo)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
-        - (Proyecto)-[:PERTENECE_A_AREA]->(Area)
+        - (Proyecto|Grupo)-[:PERTENECE_A_AREA]->(Area)
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
@@ -418,6 +418,7 @@ CRITICAL SYNTAX:
             ("Proyecto", "INICIO_EN", "Anio"),
             ("Grupo", "INICIO_EN", "Anio"),
             ("Proyecto", "PERTENECE_A_AREA", "Area"),
+            ("Grupo", "PERTENECE_A_AREA", "Area"),
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
