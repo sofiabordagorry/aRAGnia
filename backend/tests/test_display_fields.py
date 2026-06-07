@@ -83,7 +83,7 @@ def test_neo4j_database_display_name_populated():
             # Query 5 random researchers to check their properties
             query = """
             MATCH (i:Investigador) 
-            RETURN i.id AS id, i.nombre AS name, i.nombre_de_despliegue AS display_name
+            RETURN i.id AS id, i.nombre AS nombre, i.nombre_de_despliegue AS nombre_de_despliegue
             LIMIT 5
             """
             result = session.run(query)
@@ -98,20 +98,20 @@ def test_neo4j_database_display_name_populated():
                 for record in records:
                     # Check standard properties exist
                     assert record["id"] is not None, "Found a node with a NULL id"
-                    assert record["name"] is not None, f"Node {record['id']} has a NULL name"
+                    assert record["nombre"] is not None, f"Node {record['id']} has a NULL nombre"
 
-                    # The critical check: display_name must be populated
+                    # The critical check: nombre_de_despliegue must be populated
                     assert (
-                        record["display_name"] is not None
-                    ), f"Node {record['id']} has a NULL display_name! Migration Cypher query might have failed."
+                        record["nombre_de_despliegue"] is not None
+                    ), f"Node {record['id']} has a NULL nombre_de_despliegue! Migration Cypher query might have failed."
                     assert isinstance(
-                        record["display_name"], str
-                    ), f"display_name for {record['id']} is not a string."
+                        record["nombre_de_despliegue"], str
+                    ), f"nombre_de_despliegue for {record['id']} is not a string."
 
-                    expected_format = record["display_name"].title()
+                    expected_format = record["nombre_de_despliegue"].title()
                     assert (
-                        record["display_name"] == expected_format
-                    ), f"El display_name '{record['display_name']}' del nodo {record['id']} no respeta el formato .title() (Se esperaba: '{expected_format}')"
+                        record["nombre_de_despliegue"] == expected_format
+                    ), f"El nombre_de_despliegue '{record['nombre_de_despliegue']}' del nodo {record['id']} no respeta el formato .title() (Se esperaba: '{expected_format}')"
 
         driver.close()
 
@@ -137,7 +137,7 @@ def test_neo4j_database_display_title_populated():
         with driver.session() as session:
             query = """
             MATCH (p:Proyecto)
-            RETURN p.id AS id, p.titulo AS title, p.titulo_de_despliegue AS display_title
+            RETURN p.id AS id, p.titulo AS titulo, p.titulo_de_despliegue AS titulo_de_despliegue
             LIMIT 5
             """
             result = session.run(query)
@@ -148,15 +148,15 @@ def test_neo4j_database_display_title_populated():
 
             for record in records:
                 assert record["id"] is not None, "Found a Proyecto node with a NULL id"
-                assert record["title"] is not None, f"Proyecto {record['id']} has a NULL title"
+                assert record["titulo"] is not None, f"Proyecto {record['id']} has a NULL titulo"
 
                 assert (
-                    record["display_title"] is not None
-                ), f"Proyecto {record['id']} has a NULL display_title! Migration Cypher query might have failed."
+                    record["titulo_de_despliegue"] is not None
+                ), f"Proyecto {record['id']} has a NULL titulo_de_despliegue! Migration Cypher query might have failed."
 
                 assert isinstance(
-                    record["display_title"], str
-                ), f"display_title for {record['id']} is not a string."
+                    record["titulo_de_despliegue"], str
+                ), f"titulo_de_despliegue for {record['id']} is not a string."
 
         driver.close()
 

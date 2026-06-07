@@ -127,11 +127,11 @@ def test_build_doc_indexes(extractor: EntityExtractor):
         Documento(
             id="doc1",
             value={
-                "base_name": "proy_2014_148_informe",
-                "is_group": "proy",
-                "year_publisher": "2014",
+                "nombre_base": "proy_2014_148_informe",
+                "es_grupo": "proy",
+                "anio_publicacion": "2014",
                 "sub_id": "148",
-                "type": "informe",
+                "tipo": "informe",
             },
         )
     )
@@ -178,11 +178,11 @@ def test_extract_chunks_links_document_and_chunks(extractor: EntityExtractor):
         Documento(
             id="doc1",
             value={
-                "base_name": "proy_2014_148_informe",
-                "is_group": "proy",
-                "year_publisher": "2014",
+                "nombre_base": "proy_2014_148_informe",
+                "es_grupo": "proy",
+                "anio_publicacion": "2014",
                 "sub_id": "148",
-                "type": "informe",
+                "tipo": "informe",
             },
         )
     )
@@ -243,7 +243,7 @@ def test_extract_chunks_missing_document_for_chunks_adds_error(extractor: Entity
 def test_save_and_load_roundtrip_semantic_equal(extractor: EntityExtractor):
     extractor.input_dir.mkdir(parents=True, exist_ok=True)
 
-    extractor.res.entities.append(Documento(id="doc1", value={"base_name": "a"}))
+    extractor.res.entities.append(Documento(id="doc1", value={"nombre_base": "a"}))
     extractor.res.entities.append(Proyecto(id="p1", value="Titulo"))
     extractor.res.entities.append(Anio(id="y1", value="2010"))
 
@@ -465,15 +465,15 @@ def test_ie_add_entities_dedup_by_id(extractor: EntityExtractor):
     Agregar dos investigadores con el mismo ID reemplaza con el último visto
     (sin crear duplicados).
     """
-    inv1 = Investigador(id="uy_ci_12345678", value={"name": "Juan Perez"})
+    inv1 = Investigador(id="uy_ci_12345678", value={"nombre": "Juan Perez"})
     extractor.add_entities([inv1])
 
-    inv2 = Investigador(id="uy_ci_12345678", value={"name": "Juan Pérez"})
+    inv2 = Investigador(id="uy_ci_12345678", value={"nombre": "Juan Pérez"})
     extractor.add_entities([inv2])
 
     matches = [e for e in extractor.res.entities if e.id == "uy_ci_12345678"]
     assert len(matches) == 1
-    assert matches[0].value["name"] == "Juan Pérez"
+    assert matches[0].value["nombre"] == "Juan Pérez"
 
 
 def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_path: Path):
@@ -520,10 +520,10 @@ def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_pa
     assert proyecto.id == "proy_2018_1"
     assert isinstance(proyecto.value, dict)
     assert proyecto.value == {
-        "title": "proyecto a",
-        "display_title": "Proyecto A",
-        "keywords": ["salud"],
-        "description": "AA",
+        "titulo": "proyecto a",
+        "titulo_de_despliegue": "Proyecto A",
+        "palabras_clave": ["salud"],
+        "descripcion": "AA",
     }
     titulo_rels = [r for r in result.relationships if r.type == "TITULO_EXTRAIDO_DE"]
 
