@@ -14,7 +14,7 @@ Opciones:
     --skip-docling          Saltear parseo Docling (si ya está hecho)
     --skip-chunks           Saltear generación de chunks
     --skip-extraction       Saltear extracción de entidades/relaciones
-    --max-proyect N         Límite de proyectos para extracción (debug)
+    --max-projects N         Límite de proyectos para extracción (debug)
     --env-file PATH         Archivo .env con variables de entorno (default: .env)
     --checkpoint-every      Guardar checkpoint cada N proyectos en extracción LLM (default: 5)
 """
