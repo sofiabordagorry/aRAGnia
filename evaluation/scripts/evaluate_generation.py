@@ -67,7 +67,6 @@ MODELS: List[Dict[str, str]] = [
     {"display": "Qwen2.5 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-7B-Instruct"},
     {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
     {"display": "Falcon3 10B", "backend": "huggingface", "model": "tiiuae/Falcon3-10B-Instruct"},
-    {"display": "Falcon3 10B", "backend": "huggingface", "model": "tiiuae/Falcon3-10B-Instruct"},
     {"display": "Gemma 3 12B", "backend": "huggingface", "model": "google/gemma-3-12b-it"},
     {"display": "Mistral Small 3.1 24B", "backend": "huggingface", "model": "mistralai/Mistral-Small-3.1-24B-Instruct-2503"},
 ]
