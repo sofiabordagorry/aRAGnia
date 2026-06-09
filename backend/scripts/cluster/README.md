@@ -19,7 +19,7 @@ Referencia oficial: [Como ejecutar un trabajo](https://www.cluster.uy/ayuda/como
 7. [Paso 6: Configurar acceso a HuggingFace (para Llama)](#paso-6-configurar-acceso-a-huggingface-para-llama)
 8. [Paso 7: Enviar el job](#paso-7-enviar-el-job)
 9. [Paso 8: Monitorear / relanzar](#paso-8-monitorear--relanzar)
-10. [Evaluación de generación (issue #239)](#evaluacion-de-generacion-issue-239)
+10. [Evaluación de generación](#evaluacion-de-generacion)
 11. [Cambios hechos al codigo](#cambios-hechos-al-codigo)
 12. [Troubleshooting: errores encontrados y soluciones](#troubleshooting-errores-encontrados-y-soluciones)
 
@@ -271,7 +271,7 @@ Los resultados parciales (ej. del primer Qwen) quedan guardados en `data/results
 
 ---
 
-## Evaluacion de generacion (issue #239)
+## Evaluacion de generacion
 
 Job aparte para evaluar **qué LLM / prompt genera mejores respuestas** en lenguaje natural
 sobre el GT de validación, y **registrar los tiempos de espera**. Usa

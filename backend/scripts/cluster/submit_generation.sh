@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # submit_generation.sh
-# Script SLURM para evaluar la GENERACIÓN de respuestas (issue #239) en cluster.uy
+# Script SLURM para evaluar la GENERACIÓN de respuestas en cluster.uy
 #
 # Corre evaluation/scripts/evaluate_generation.py: genera respuestas con varios
 # LLMs de HuggingFace × variantes de prompt sobre el GT de validación, las juzga

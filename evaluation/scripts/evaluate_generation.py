@@ -2,10 +2,7 @@
 """evaluate_generation.py
 
 Evalúa la GENERACIÓN de respuestas en lenguaje natural sobre el ground truth de
-validación (`datasetQA_GT.json`). Responde dos preguntas del issue #239:
-
-  - ¿Qué LLM / prompt genera mejores respuestas a partir del subgrafo recuperado?
-  - ¿Cuánto tarda cada modelo (tiempos de espera)?
+validación (`datasetQA_GT.json`).
 
 Para cada combinación de modelo × variante de prompt:
   1. Genera la respuesta a partir de `pregunta` + `retrieved_subgraph`
