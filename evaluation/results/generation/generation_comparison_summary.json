@@ -1,0 +1,176 @@
+[
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "concise",
+    "label": "Llama 3.1 8B / concise",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.9728,
+      "completeness": 0.9076,
+      "faithfulness": 0.9728
+    },
+    "quality_overall": 0.9511,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8929,
+      "Consultas Complejas": 0.9583,
+      "Consultas Estructurales Simples": 0.9722,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9931
+    },
+    "latency": {
+      "mean": 2.03,
+      "median": 1.62,
+      "p95": 6.26,
+      "n": 46
+    }
+  },
+  {
+    "display": "Qwen3 4B (2507)",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "prompt": "concise",
+    "label": "Qwen3 4B (2507) / concise",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.9511,
+      "completeness": 0.8913,
+      "faithfulness": 0.962
+    },
+    "quality_overall": 0.9348,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9524,
+      "Consultas Complejas": 0.7187,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9931
+    },
+    "latency": {
+      "mean": 1.88,
+      "median": 1.46,
+      "p95": 5.07,
+      "n": 46
+    }
+  },
+  {
+    "display": "Qwen2.5 7B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "prompt": "concise",
+    "label": "Qwen2.5 7B / concise",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.9402,
+      "completeness": 0.8859,
+      "faithfulness": 0.9457
+    },
+    "quality_overall": 0.9239,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9286,
+      "Consultas Complejas": 0.7813,
+      "Consultas Estructurales Simples": 0.9583,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9792
+    },
+    "latency": {
+      "mean": 1.51,
+      "median": 1.2,
+      "p95": 4.29,
+      "n": 46
+    }
+  },
+  {
+    "display": "Qwen2.5 7B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "prompt": "baseline",
+    "label": "Qwen2.5 7B / baseline",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.9076,
+      "completeness": 0.8641,
+      "faithfulness": 0.9348
+    },
+    "quality_overall": 0.9022,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8452,
+      "Consultas Complejas": 0.7188,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9931
+    },
+    "latency": {
+      "mean": 2.39,
+      "median": 2.05,
+      "p95": 6.12,
+      "n": 46
+    }
+  },
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "baseline",
+    "label": "Llama 3.1 8B / baseline",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.9239,
+      "completeness": 0.8913,
+      "faithfulness": 0.8587
+    },
+    "quality_overall": 0.8913,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8512,
+      "Consultas Complejas": 0.7813,
+      "Consultas Estructurales Simples": 0.9792,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9236
+    },
+    "latency": {
+      "mean": 3.85,
+      "median": 2.77,
+      "p95": 10.32,
+      "n": 46
+    }
+  },
+  {
+    "display": "Qwen3 4B (2507)",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "prompt": "baseline",
+    "label": "Qwen3 4B (2507) / baseline",
+    "n_judged": 46,
+    "n_sentinel": 14,
+    "dim_means": {
+      "factual_correctness": 0.8913,
+      "completeness": 0.8478,
+      "faithfulness": 0.913
+    },
+    "quality_overall": 0.8841,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8155,
+      "Consultas Complejas": 0.6667,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9931
+    },
+    "latency": {
+      "mean": 2.75,
+      "median": 1.99,
+      "p95": 8.56,
+      "n": 46
+    }
+  }
+]
