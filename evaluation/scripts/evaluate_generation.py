@@ -5,7 +5,7 @@ Evalúa la GENERACIÓN de respuestas en lenguaje natural sobre el ground truth d
 validación (`datasetQA_GT.json`).
 
 Para cada combinación de modelo × variante de prompt:
-  1. Genera la respuesta a partir de `pregunta` + `retrieved_subgraph`
+  1. Genera la respuesta a partir de `question` + `retrieved_subgraph`
      (HuggingFace u Ollama, según el backend de cada modelo), midiendo la latencia.
   2. Juzga la respuesta contra el `answer` de referencia del GT usando un
      LLM-as-a-judge vía la API de Anthropic (factual / completitud / fidelidad).
@@ -71,15 +71,15 @@ MODELS: List[Dict[str, str]] = [
     {"display": "Mistral Small 3.1 24B", "backend": "huggingface", "model": "mistralai/Mistral-Small-3.1-24B-Instruct-2503"},
 ]
 
-# Variantes de prompt: id -> builder(pregunta, subgrafo) -> messages.
+# Variantes de prompt: id -> builder(question, subgraph) -> messages.
 # "baseline" es el que esta en el sistema
-def _prompt_concise(pregunta: str, subgrafo: str) -> List[Dict[str, str]]:
+def _prompt_concise(question: str, subgraph: str) -> List[Dict[str, str]]:
     """Variante más corta y estricta, sin la rama de conteo."""
     system = (
         "Eres un asistente académico. Respondé en ESPAÑOL usando SOLO los resultados "
         "del grafo. Listá TODOS los resultados, sin inventar ni interpretar. Sé conciso."
     )
-    user = f"PREGUNTA: {pregunta}\n\nRESULTADOS DEL GRAFO:\n{subgrafo}\n\nRESPUESTA:"
+    user = f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\nRESPUESTA:"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
@@ -127,17 +127,17 @@ def build_client(spec: Dict[str, str]) -> Any:
 def generate_with_latency(
     client: Any,
     builder: Callable[[str, str], List[Dict[str, str]]],
-    pregunta: str,
-    subgrafo: str,
+    question: str,
+    subgraph: str,
 ) -> tuple[str, Optional[float]]:
     """Genera la respuesta y devuelve (respuesta, latencia_segundos | None si centinela)."""
-    subgrafo = (subgrafo or "").strip()
-    if not subgrafo or subgrafo == gen.NO_INFO:
+    subgraph = (subgraph or "").strip()
+    if not subgraph or subgraph == gen.NO_INFO:
         return gen.NO_INFO, None
-    if subgrafo == gen.OUT_OF_SCOPE:
+    if subgraph == gen.OUT_OF_SCOPE:
         return gen.OUT_OF_SCOPE, None
 
-    messages = builder(pregunta, subgrafo)
+    messages = builder(question, subgraph)
     t0 = time.perf_counter()
     answer = client.generate(messages=messages, temperature=0.1, max_tokens=2048)
     latency = time.perf_counter() - t0
@@ -166,16 +166,16 @@ def _extract_json(text: str) -> Dict[str, Any]:
 def judge_answer(
     api_key: str,
     model: str,
-    pregunta: str,
-    subgrafo: str,
+    question: str,
+    subgraph: str,
     gt_answer: str,
     candidate: str,
     retries: int = 3,
 ) -> Dict[str, Any]:
     """Llama a la API de Anthropic y devuelve los scores 1-5 + justificación."""
     user = (
-        f"PREGUNTA:\n{pregunta}\n\n"
-        f"RESULTADOS DEL GRAFO (fuente de verdad):\n{subgrafo}\n\n"
+        f"PREGUNTA:\n{question}\n\n"
+        f"RESULTADOS DEL GRAFO (fuente de verdad):\n{subgraph}\n\n"
         f"RESPUESTA DE REFERENCIA:\n{gt_answer}\n\n"
         f"RESPUESTA CANDIDATA:\n{candidate}\n\n"
         "Devolvé el JSON con los scores."
@@ -233,20 +233,20 @@ def evaluate_combo(
 
     records: List[Dict[str, Any]] = []
     for item in items:
-        pregunta = (item.get("pregunta") or "").strip()
-        if not pregunta:
+        question = (item.get("question") or "").strip()
+        if not question:
             continue
-        subgrafo = item.get("retrieved_subgraph", "")
+        subgraph = item.get("retrieved_subgraph", "")
         gt_answer = item.get("answer", "")
         qid = item.get("id", "?")
         sentinel = is_sentinel(item)
 
-        candidate, latency = generate_with_latency(client, builder, pregunta, subgrafo)
+        candidate, latency = generate_with_latency(client, builder, question, subgraph)
 
         rec: Dict[str, Any] = {
             "id": qid,
-            "categoria": item.get("categoria", ""),
-            "pregunta": pregunta,
+            "category": item.get("category", ""),
+            "question": question,
             "gt_answer": gt_answer,
             "candidate": candidate,
             "latency_s": latency,
@@ -260,7 +260,7 @@ def evaluate_combo(
             rec["sentinel_correct"] = sentinel_matches(candidate, gt_answer)
             print(f"  [{qid}] centinela -> {'OK' if rec['sentinel_correct'] else 'FAIL'}", flush=True)
         elif api_key:
-            scores = judge_answer(api_key, judge_model, pregunta, subgrafo, gt_answer, candidate)
+            scores = judge_answer(api_key, judge_model, question, subgraph, gt_answer, candidate)
             rec["scores"] = {d: scores[d] for d in JUDGE_DIMS}
             rec["justification"] = scores["justification"]
             avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
@@ -287,10 +287,10 @@ def aggregate_combo(
     sentinel_acc = mean([1.0 if r["sentinel_correct"] else 0.0 for r in sentinels])
 
     by_cat: Dict[str, float] = {}
-    cats = sorted({r["categoria"] for r in records})
+    cats = sorted({r["category"] for r in records})
     for cat in cats:
-        cat_judged = [r for r in judged if r["categoria"] == cat]
-        cat_sent = [r for r in sentinels if r["categoria"] == cat]
+        cat_judged = [r for r in judged if r["category"] == cat]
+        cat_sent = [r for r in sentinels if r["category"] == cat]
         if cat_judged:
             by_cat[cat] = mean(
                 [norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged]

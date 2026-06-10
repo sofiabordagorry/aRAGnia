@@ -63,7 +63,7 @@ def load_questions(path: Path) -> list[dict[str, Any]]:
         if not isinstance(item, dict):
             continue
 
-        question = item.get("pregunta", "")
+        question = item.get("question", "")
 
         if not isinstance(question, str) or not question.strip():
             continue
@@ -71,7 +71,7 @@ def load_questions(path: Path) -> list[dict[str, Any]]:
         questions.append(
             {
                 "id": item.get("id", idx),
-                "categoria": item.get("categoria", ""),
+                "category": item.get("category", ""),
                 "question": question.strip(),
                 "raw": item,
             }
@@ -174,7 +174,7 @@ def write_answers_jsonl(path: Path, results: list[dict[str, Any]]) -> None:
         json.dumps(
             {
                 "id": row["id"],
-                "pregunta": row["question"],
+                "question": row["question"],
                 "cypher_result": row["cypher_result"],
                 "ok": row["ok"],
             },

@@ -27,7 +27,7 @@ ANSWERS_OUTPUT_PATH = (
 
 def _extract_question_text(item: Any) -> str:
     if isinstance(item, dict):
-        value = item.get("pregunta")
+        value = item.get("question")
         if isinstance(value, str) and value.strip():
             return value.strip()
 
@@ -167,7 +167,7 @@ def write_answers_jsonl(path: Path, results: list[dict[str, Any]]) -> None:
     for row in results:
         out = {
             "id": row["id"],
-            "pregunta": row["question"],
+            "question": row["question"],
             "answer": row["answer"],
             "ok": row["ok"],
         }
