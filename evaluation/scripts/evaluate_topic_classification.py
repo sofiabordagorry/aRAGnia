@@ -30,7 +30,6 @@ También se pueden pasar flags que sobrescriben esas listas, por ejemplo:
 from __future__ import annotations
 
 import argparse
-import base64
 import itertools
 import json
 from datetime import datetime, timezone
@@ -465,16 +464,15 @@ def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_ylim(0, 1.05)
     ax.set_ylabel("Score (macro)")
     ax.set_title("Precision / Recall / F1 macro por configuración")
-    ax.legend(fontsize=8)
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
     ax.grid(axis="y", linestyle=":", alpha=0.5)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     p = images_dir / "chart_metrics_vs_param.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["metrics"] = p
 
-    # F1 por proyecto (una barra por configuración)
     all_projects = sorted(
         {pid for c in configs for pid in c["metrics"]["per_project"]}
     )
@@ -482,26 +480,27 @@ def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str
         n_series = len(configs)
         bar_w = 0.8 / max(n_series, 1)
         xp = np.arange(len(all_projects))
-        fig, ax = plt.subplots(figsize=(max(7, len(all_projects) * 1.3), 4.5))
-        for i, c in enumerate(configs):
-            offset = (i - n_series / 2 + 0.5) * bar_w
-            data = [
-                c["metrics"]["per_project"].get(pid, {}).get("f1", 0.0)
-                for pid in all_projects
-            ]
-            ax.bar(xp + offset, data, bar_w, label=c["label"], color=PALETTE[i % len(PALETTE)])
-        ax.set_xticks(xp)
-        ax.set_xticklabels(all_projects, rotation=25, ha="right", fontsize=8)
-        ax.set_ylim(0, 1.05)
-        ax.set_ylabel("F1")
-        ax.set_title("F1 por proyecto y configuración")
-        ax.legend(fontsize=7, ncol=2)
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        p = images_dir / "chart_f1_by_project.png"
-        fig.savefig(p, dpi=150)
-        plt.close(fig)
-        paths["by_project"] = p
+        for metric, metric_label in (("f1", "F1"), ("precision", "Precision"), ("recall", "Recall")):
+            fig, ax = plt.subplots(figsize=(max(7, len(all_projects) * 1.3), 4.5))
+            for i, c in enumerate(configs):
+                offset = (i - n_series / 2 + 0.5) * bar_w
+                data = [
+                    c["metrics"]["per_project"].get(pid, {}).get(metric, 0.0)
+                    for pid in all_projects
+                ]
+                ax.bar(xp + offset, data, bar_w, label=c["label"], color=PALETTE[i % len(PALETTE)])
+            ax.set_xticks(xp)
+            ax.set_xticklabels(all_projects, rotation=25, ha="right", fontsize=8)
+            ax.set_ylim(0, 1.05)
+            ax.set_ylabel(metric_label)
+            ax.set_title(f"{metric_label} por proyecto y configuración")
+            ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
+            ax.spines[["top", "right"]].set_visible(False)
+            fig.tight_layout()
+            p = images_dir / f"chart_{metric}_by_project.png"
+            fig.savefig(p, dpi=150, bbox_inches="tight")
+            plt.close(fig)
+            paths[f"by_project_{metric}"] = p
 
     return paths
 
@@ -530,22 +529,17 @@ REPORT_CSS = """
 """
 
 
-def _chart_src(path: Path, embed: bool, rel_to: Optional[Path]) -> str:
-    """Devuelve el src de una imagen: data-URI base64 (embed) o ruta relativa (archivo)."""
-    if embed:
-        b64 = base64.b64encode(path.read_bytes()).decode()
-        return f"data:image/png;base64,{b64}"
+def _chart_src(path: Path, rel_to: Optional[Path]) -> str:
+    """Devuelve el src de una imagen como ruta relativa al reporte."""
     return str(path.relative_to(rel_to)) if rel_to else str(path)
 
 
 def render_report_cards(
     summary: Dict[str, Any],
     chart_paths: Dict[str, Path],
-    embed_images: bool = False,
     rel_to: Optional[Path] = None,
 ) -> str:
-    """Genera el cuerpo del reporte (h1 + subtítulo + cards), reutilizable tanto por el
-    archivo HTML como por el servidor interactivo."""
+    """Genera el cuerpo del reporte (h1 + subtítulo + cards)."""
     configs = summary["configs"]
 
     def val_color(v: float) -> str:
@@ -622,16 +616,20 @@ def render_report_cards(
 
     img_metrics_block = (
         f'<div class="card"><h2>P / R / F1 macro por configuración</h2>'
-        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics"], embed_images, rel_to)}" alt="metrics"></div></div>'
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics"], rel_to)}" alt="metrics"></div></div>'
         if "metrics" in chart_paths
         else ""
     )
-    img_proj_block = (
-        f'<div class="card"><h2>F1 por proyecto</h2>'
-        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["by_project"], embed_images, rel_to)}" alt="f1 by project"></div></div>'
-        if "by_project" in chart_paths
-        else ""
-    )
+    proj_blocks = []
+    for metric, metric_label in (("f1", "F1"), ("precision", "Precision"), ("recall", "Recall")):
+        key = f"by_project_{metric}"
+        if key in chart_paths:
+            proj_blocks.append(
+                f'<div class="card"><h2>{metric_label} por proyecto</h2>'
+                f'<div class="chart-wrap"><img src="{_chart_src(chart_paths[key], rel_to)}" '
+                f'alt="{metric} by project"></div></div>'
+            )
+    img_proj_block = "\n".join(proj_blocks)
 
     return f"""
   <h1>Parámetros de clasificación de tópicos</h1>
@@ -696,9 +694,7 @@ def generate_html_report(
     chart_paths: Dict[str, Path],
 ) -> None:
     """Escribe el reporte HTML standalone (imágenes referenciadas por ruta relativa)."""
-    cards = render_report_cards(
-        summary, chart_paths, embed_images=False, rel_to=output_path.parent
-    )
+    cards = render_report_cards(summary, chart_paths, rel_to=output_path.parent)
     html = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
