@@ -124,6 +124,24 @@ def build_client(spec: Dict[str, str]) -> Any:
     raise ValueError(f"Backend desconocido: {spec['backend']!r}")
 
 
+def free_client(client: Any) -> None:
+    """Libera de la GPU el modelo de un cliente HuggingFace antes de cargar el siguiente."""
+    if not isinstance(client, HuggingFaceClient):
+        return
+
+    import gc
+
+    import torch
+
+    HuggingFaceClient._instances.pop(getattr(client, "model_id", None), None)
+    for attr in ("pipe", "model"):
+        if hasattr(client, attr):
+            delattr(client, attr)
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
 def generate_with_latency(
     client: Any,
     builder: Callable[[str, str], List[Dict[str, str]]],
@@ -226,10 +244,10 @@ def evaluate_combo(
     items: List[Dict[str, Any]],
     api_key: Optional[str],
     judge_model: str,
+    client: Any,
 ) -> Dict[str, Any]:
     combo_label = f"{spec['display']} / {prompt_id}"
     print(f"\n=== {combo_label} ===", flush=True)
-    client = build_client(spec)
 
     records: List[Dict[str, Any]] = []
     for item in items:
@@ -634,17 +652,33 @@ def main() -> None:
 
     # Si una combinación falla (modelo gated sin token, OOM, error de API, etc.)
     # seguimos con las demás para no perder los resultados ya generados.
+    # Cargamos un modelo por vez y lo liberamos antes del siguiente: así nunca hay
+    # más de un modelo en VRAM y entran todos.
     results: List[Dict[str, Any]] = []
     failed: List[tuple[str, str]] = []
     for spec in models:
-        for prompt_id, builder in PROMPT_VARIANTS.items():
-            label = f"{spec['display']} / {prompt_id}"
-            try:
-                results.append(evaluate_combo(spec, prompt_id, builder, items, api_key, args.judge_model))
-            except Exception as exc:  # noqa: BLE001 - aislar el fallo de una combinación
-                print(f"[ERROR] {label} falló: {type(exc).__name__}: {exc}", flush=True)
-                failed.append((label, f"{type(exc).__name__}: {exc}"))
-                continue
+        try:
+            client = build_client(spec)
+        except Exception as exc:  # noqa: BLE001
+            for prompt_id in PROMPT_VARIANTS:
+                label = f"{spec['display']} / {prompt_id}"
+                print(f"[ERROR] {label} no cargó: {type(exc).__name__}: {exc}", flush=True)
+                failed.append((label, f"load: {type(exc).__name__}: {exc}"))
+            continue
+
+        try:
+            for prompt_id, builder in PROMPT_VARIANTS.items():
+                label = f"{spec['display']} / {prompt_id}"
+                try:
+                    results.append(
+                        evaluate_combo(spec, prompt_id, builder, items, api_key, args.judge_model, client)
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    print(f"[ERROR] {label} falló: {type(exc).__name__}: {exc}", flush=True)
+                    failed.append((label, f"{type(exc).__name__}: {exc}"))
+                    continue
+        finally:
+            free_client(client)
 
     if not results:
         print("Ninguna combinación se evaluó con éxito.", flush=True)
