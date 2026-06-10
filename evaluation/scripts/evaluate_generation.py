@@ -429,6 +429,47 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["latency"] = p
 
+    # 5) Distribución de scores del juez (1-5) por combinación (barra apilada, % del total).
+    #    Revela la FORMA, no solo la media: dos modelos con media parecida pueden diferir
+    #    en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones juzgadas.
+    score_colors = {5: "#27ae60", 4: "#7fc97f", 3: "#f39c12", 2: "#e67e22", 1: "#e74c3c"}
+    dist_pct: Dict[int, List[float]] = {s: [] for s in (5, 4, 3, 2, 1)}
+    any_scores = False
+    for r in results:
+        counts = {s: 0 for s in (1, 2, 3, 4, 5)}
+        total = 0
+        for rec in r["records"]:
+            sc = rec.get("scores")
+            if not sc:
+                continue
+            for d in JUDGE_DIMS:
+                counts[int(sc[d])] += 1
+                total += 1
+        any_scores = any_scores or total > 0
+        for s in (5, 4, 3, 2, 1):
+            dist_pct[s].append(100.0 * counts[s] / total if total else 0.0)
+
+    if any_scores:
+        fig, ax = plt.subplots(figsize=(max(7, len(results) * 1.3), 4.5))
+        x = np.arange(len(results))
+        bottom = np.zeros(len(results))
+        for s in (5, 4, 3, 2, 1):
+            vals = np.array(dist_pct[s])
+            ax.bar(x, vals, 0.6, bottom=bottom, label=str(s), color=score_colors[s])
+            bottom += vals
+        ax.set_xticks(x)
+        ax.set_xticklabels(combo_labels, rotation=25, ha="right", fontsize=8)
+        ax.set_ylim(0, 100)
+        ax.set_ylabel("% de scores")
+        ax.set_title("Distribución de scores del juez (1-5) por combinación")
+        ax.legend(title="Score", fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
+        ax.spines[["top", "right"]].set_visible(False)
+        fig.tight_layout()
+        p = images_dir / "chart_score_distribution.png"
+        fig.savefig(p, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        paths["score_dist"] = p
+
     return paths
 
 def _val_color(val: float) -> str:
@@ -520,6 +561,16 @@ def generate_html_report(
     img_cats = chart_paths["categories"].relative_to(output_path.parent)
     img_lat = chart_paths["latency"].relative_to(output_path.parent)
 
+    dist_block = ""
+    if "score_dist" in chart_paths:
+        img_dist = chart_paths["score_dist"].relative_to(output_path.parent)
+        dist_block = (
+            '<div class="card">\n'
+            "    <h2>Distribución de scores del juez (1-5)</h2>\n"
+            f'    <div class="chart-wrap"><img src="{img_dist}" alt="Distribución de scores"></div>\n'
+            "  </div>"
+        )
+
     dim_headers = "".join(f"<th>{DIM_LABELS[d]}</th>" for d in JUDGE_DIMS)
 
     html = f"""<!DOCTYPE html>
@@ -599,6 +650,7 @@ def generate_html_report(
     <h2>Score por dimensión</h2>
     <div class="chart-wrap"><img src="{img_dims}" alt="Score por dimensión"></div>
   </div>
+  {dist_block}
   <div class="card">
     <h2>Score por categoría</h2>
     <div class="chart-wrap"><img src="{img_cats}" alt="Score por categoría"></div>
