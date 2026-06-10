@@ -358,7 +358,7 @@ def _grouped_bar(ax: Any, labels: List[str], series: List[Dict[str, Any]], title
     ax.set_xticklabels(labels, rotation=25, ha="right", fontsize=8)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
-    ax.legend(fontsize=7, loc="upper right")
+    ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
     ax.spines[["top", "right"]].set_visible(False)
 
 
@@ -377,11 +377,11 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_ylim(0, 1.05)
     ax.set_ylabel("Score (0-1)")
     ax.set_title("Calidad global y manejo de centinelas")
-    ax.legend(fontsize=8)
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     p = images_dir / "chart_overall.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["overall"] = p
 
@@ -394,7 +394,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_ylim(0, 1.05)
     fig.tight_layout()
     p = images_dir / "chart_dimensions.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["dimensions"] = p
 
@@ -408,7 +408,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_ylim(0, 1.05)
     fig.tight_layout()
     p = images_dir / "chart_categories.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["categories"] = p
 
@@ -421,11 +421,11 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_xticklabels(combo_labels, rotation=25, ha="right", fontsize=8)
     ax.set_ylabel("Segundos")
     ax.set_title("Latencia de generación por combinación")
-    ax.legend(fontsize=8)
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     p = images_dir / "chart_latency.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["latency"] = p
 
