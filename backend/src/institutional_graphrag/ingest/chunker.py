@@ -48,9 +48,9 @@ def chunk_document(doc: DoclingDocument, chunker: HybridChunker) -> list[dict]:
                 "metadata": {
                     "headings": headings,
                     "page_numbers": page_numbers,
-                    "element_type": element_type,
-                    "parent_doc": doc_name,
-                    "token_count": token_count,
+                    "tipo_elemento": element_type,
+                    "documento_padre": doc_name,
+                    "cantidad_tokens": token_count,
                 },
             }
         )

@@ -54,10 +54,10 @@ def entity_key(entity: dict, use_id: bool = False) -> Tuple:
 
     if isinstance(value, dict):
         if label == "Investigador":
-            return (label, normalize_text(value.get("name", "")))
+            return (label, normalize_text(value.get("nombre", "")))
 
         if label == "Anio":
-            return (label, normalize_text(value.get("year", "")))
+            return (label, normalize_text(value.get("anio", "")))
 
     return (label, normalize_text(value))
 

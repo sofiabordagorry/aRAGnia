@@ -14,19 +14,19 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     # COUNT queries
     (
         "cuántos proyectos tiene X?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nRETURN count(p) AS total",
+        "MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS 'lastname'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nRETURN count(p) AS total",
     ),
     (
         "de cuántos proyectos fue responsable X?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'lastname'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nRETURN count(p) AS total",
+        "MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS 'lastname'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nRETURN count(p) AS total",
     ),
     (
         "cuántos proyectos hay en 2018?",
-        "MATCH (a:Anio)\nWHERE a.year = '2018'\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nRETURN count(p) AS total",
+        "MATCH (a:Anio)\nWHERE a.anio = '2018'\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nRETURN count(p) AS total",
     ),
     (
         "cuántos proyectos de biotecnología hay?",
-        "MATCH (t:Topico)\nWHERE t.value = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(p) AS total",
+        "MATCH (t:Topico)\nWHERE t.valor = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(p) AS total",
     ),
     (
         "cuántos investigadores hay?",
@@ -34,40 +34,40 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "cuántos proyectos hay de ciencias naturales?",
-        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(DISTINCT p) AS total",
+        "MATCH (s:Subcampo)\nWHERE s.valor = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nRETURN count(DISTINCT p) AS total",
     ),
     (
         "cuántos proyectos hay del área tecnológica?",
-        "MATCH (a:Area)\nWHERE a.value = 'tecnologica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN count(p) AS total",
+        "MATCH (a:Area)\nWHERE a.valor = 'tecnologica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN count(p) AS total",
     ),
     # LIST queries
     (
         "qué proyectos hay de biotecnología?",
-        "MATCH (t:Topico)\nWHERE t.value = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
+        "MATCH (t:Topico)\nWHERE t.valor = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
     ),
     (
         "quiénes participaron en el proyecto Co-simulacion en Sistemas Ciber Fisicos?",
-        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWHERE p.title = 'Co-simulacion en Sistemas Ciber Fisicos'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWHERE p.titulo = 'Co-simulacion en Sistemas Ciber Fisicos'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "quién fue el responsable del proyecto Co-simulacion en Sistemas Ciber Fisicos?",
-        "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nWHERE p.title CONTAINS 'Co-simulacion en Sistemas Ciber Fisicos' \nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nWHERE p.titulo CONTAINS 'Co-simulacion en Sistemas Ciber Fisicos' \nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos hay de ciencias naturales?",
-        "MATCH (s:Subcampo)\nWHERE s.value = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, s, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (s:Subcampo)\nWHERE s.valor = 'ciencias naturales'\nMATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s)\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, s, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "busca el proyecto web warehouse de datos abiertos",
-        "MATCH (p:Proyecto)\nWHERE toLower(p.title) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(DISTINCT c) AS chunks",
+        "MATCH (p:Proyecto)\nWHERE toLower(p.titulo) CONTAINS 'web warehouse de datos abiertos'\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(DISTINCT c) AS chunks",
     ),
     (
         "qué proyectos tiene el investigador con apellido perez?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
+        "MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
     ),
     (
         "de qué proyectos fue responsable perez?",
-        "MATCH (i:Investigador) WHERE toLower(i.name) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
+        "MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS 'perez'\nMATCH (i)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(c) AS chunks",
     ),
     (
         "qué documentos tiene el proyecto proy_2020_513?",
@@ -79,24 +79,24 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     ),
     (
         "qué proyectos iniciaron en 2018?",
-        "MATCH (a:Anio {year: '2018'})\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
+        "MATCH (a:Anio {anio: '2018'})\nMATCH (p:Proyecto)-[:INICIO_EN]->(a)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, COLLECT(c) AS chunks",
     ),
     (
         "qué proyectos hay en el área básica?",
-        "MATCH (a:Area)\nWHERE a.value = 'basica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN DISTINCT p, a",
+        "MATCH (a:Area)\nWHERE a.valor = 'basica'\nMATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a)\nRETURN DISTINCT p, a",
     ),
     # AGGREGATION
     (
         "cuáles son los 10 tópicos con más proyectos?",
-        "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)\nRETURN t.value AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10",
+        "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)\nRETURN t.valor AS area, count(DISTINCT p) AS total ORDER BY total DESC LIMIT 10",
     ),
     (
         "qué investigadores participaron en más proyectos? top 10",
-        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWITH i, count(DISTINCT p) AS num_proyectos\nRETURN i.name AS investigador, num_proyectos\nORDER BY num_proyectos DESC\nLIMIT 10",
+        "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWITH i, count(DISTINCT p) AS num_proyectos\nRETURN i.nombre AS investigador, num_proyectos\nORDER BY num_proyectos DESC\nLIMIT 10",
     ),
     (
         "en qué año inició el proyecto proy_2020_513?",
-        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN a.year AS año, a",
+        "MATCH (p:Proyecto {id: 'proy_2020_513'})\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN a.anio AS año, a",
     ),
 ]
 

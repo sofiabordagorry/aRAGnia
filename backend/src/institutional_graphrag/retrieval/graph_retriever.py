@@ -327,14 +327,14 @@ SCHEMA:
 {schema}
 
 SCHEMA NOTES:
-- Anio uses property "year" (NOT "value" or "id"): Anio.year = '2014'
-- Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.name (lowercase, no accents)
+- Anio uses property "anio" (NOT "valor" or "id"): Anio.anio = '2014'
+- Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.nombre (lowercase, no accents)
 - PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
-- Proyecto.title contains the project title; Proyecto.id follows 'proy_2020_513'
-- Grupo.title contains the group title; Grupo.id follows 'gi_2014_133'
+- Proyecto.titulo contains the project title; Proyecto.id follows 'proy_2020_513'
+- Grupo.titulo contains the group title; Grupo.id follows 'gi_2014_133'
 - Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
-- Topico.value, Subcampo.value and Area.value are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
-- Documento.type is one of: 'informe', 'propuesta', 'resumen', 'tabla'
+- Topico.valor, Subcampo.valor and Area.valor are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
+- Documento.tipo is one of: 'informe', 'propuesta', 'resumen', 'tabla'
 
 RULES:
 
@@ -354,8 +354,8 @@ RULES:
 14. ALWAYS normalize text values: lowercase, no accents, never translate.
 15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
 16. Subfields are stored in Spanish, lowercase and without accents.
-17 Search project titles/names with toLower(p.title) CONTAINS.
-18. Convert Anio.year with toInteger() for numeric comparisons.
+17 Search project titles/names with toLower(p.titulo) CONTAINS.
+18. Convert Anio.anio with toInteger() for numeric comparisons.
 
 {fewshot_block}
 
@@ -365,13 +365,13 @@ CRITICAL DECISION - COUNT vs LIST:
 - If question asks "cuántos", "cuántas", "how many", "qué cantidad" → USE count() and RETURN count(x) AS total (NO chunks needed)
 - If question asks "cuáles", "qué proyectos", "quiénes", "list", "muéstrame" → RETURN entities + COLLECT(c) AS chunks
 - If question asks "quién/quiénes" (WHO) → RETURN investigators (i), NOT projects
-- If question asks "qué año" (WHAT year) → RETURN year value directly (a.year or a)
+- If question asks "qué año" (WHAT year) → RETURN year value directly (a.anio or a)
 - Analyze the question intent carefully before generating the query
 RETURN RULES:
 - "¿Quiénes participaron?" → RETURN investigadores (i), NOT proyecto (p)
-- "¿En qué año?" → RETURN año (a.year AS año) or (a) with OPTIONAL MATCH for chunks
+- "¿En qué año?" → RETURN año (a.anio AS año) or (a) with OPTIONAL MATCH for chunks
 - "¿Cuántos proyectos?" → RETURN count(p) AS total
-- "¿Qué investigadores con más proyectos?" → RETURN i.name, count(p) ORDER BY count(p) DESC LIMIT N
+- "¿Qué investigadores con más proyectos?" → RETURN i.nombre, count(p) ORDER BY count(p) DESC LIMIT N
 - NEVER return p.id unless the user explicitly asks for the project identifier
 
 
@@ -379,12 +379,12 @@ CRITICAL SYNTAX:
 - Wrap your query in <QUERY> and </QUERY> tags
 - Every variable in WITH/RETURN must be defined in a previous MATCH
 - Use [:EXTRAIDO_DE]->(entity) for investigators/topics, [:TITULO_EXTRAIDO_DE]->(chunk) for projects
-- Topico uses {{value: '...'}}, Anio uses {{year: '...'}}, all others use {{id: '...'}}
+- Topico uses {{valor: '...'}}, Anio uses {{anio: '...'}}, all others use {{id: '...'}}
 - NEVER name a relationship variable (never write -[r:TYPE]-> or -[rel:TYPE]->), always use -[:TYPE]->
 - NEVER use a variable as both a relationship and a node
 - NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
 - ALWAYS use WHERE for filtering
-- ALWAYS use toLower(p.title) CONTAINS 'normalized project text' for project titles/names
+- ALWAYS use toLower(p.titulo) CONTAINS 'normalized project text' for project titles/names
 - If the user asks for information not represented in the schema
   (for example salaries, emails if not stored, countries, universities, budgets, etc.),
   respond with <QUERY>NOT_IN_SCHEMA</QUERY>
@@ -508,8 +508,8 @@ CRITICAL SYNTAX:
     def _use_display_fields_for_return(cypher_query: str) -> str:
         """
         Reemplaza en la cláusula RETURN los campos normalizados por campos de visualización:
-        - Investigador.name -> Investigador.display_name
-        - Proyecto.title -> Proyecto.display_title
+        - Investigador.nombre -> Investigador.nombre_de_despliegue
+        - Proyecto.titulo -> Proyecto.titulo_de_despliegue
         """
 
         parts = re.split(r"\b(RETURN)\b", cypher_query, maxsplit=1, flags=re.IGNORECASE)
@@ -530,10 +530,14 @@ CRITICAL SYNTAX:
         )
 
         for var in investigador_vars:
-            after_return = re.sub(rf"\b{var}\.name\b", f"{var}.display_name", after_return)
+            after_return = re.sub(
+                rf"\b{var}\.nombre\b", f"{var}.nombre_de_despliegue", after_return
+            )
 
         for var in proyecto_vars:
-            after_return = re.sub(rf"\b{var}\.title\b", f"{var}.display_title", after_return)
+            after_return = re.sub(
+                rf"\b{var}\.titulo\b", f"{var}.titulo_de_despliegue", after_return
+            )
 
         return before_return + return_keyword + after_return
 
@@ -644,7 +648,10 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             label = labels[0] if labels else "Node"
             props = dict(node)
             display = (
-                props.get("value") or props.get("name") or props.get("title") or props.get("id", "")
+                props.get("valor")
+                or props.get("nombre")
+                or props.get("titulo")
+                or props.get("id", "")
             )
             return f"{display} ({label})"
 
@@ -753,17 +760,17 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 )
                 entity_id = props.get("id", "")
                 if entity_label == "Investigador":
-                    entity_id = props.get("name", entity_id) or entity_id
+                    entity_id = props.get("nombre", entity_id) or entity_id
                 elif entity_label in ("Proyecto", "Grupo"):
                     raw_id = props.get("id", "")
-                    title = props.get("title", "")
+                    title = props.get("titulo", "")
                     entity_id = f"{title} ({raw_id})" if title else raw_id
                 elif entity_label == "Documento":
                     entity_id = props.get("id", entity_id) or entity_id
                 elif entity_label in ("Topico", "Area"):
-                    entity_id = props.get("value", entity_id) or entity_id
+                    entity_id = props.get("valor", entity_id) or entity_id
                 elif entity_label == "Anio":
-                    entity_id = props.get("year", entity_id) or entity_id
+                    entity_id = props.get("anio", entity_id) or entity_id
                 return entity_id, entity_label, props
 
             # Agregar entidades collected a evidence_entities (para el contexto del LLM)
@@ -779,8 +786,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     continue
 
                 if chunk_id not in chunks_dict:
-                    text = chunk_node.get("text", "")
-                    page_numbers = chunk_node.get("page_numbers")
+                    text = chunk_node.get("texto", "")
+                    page_numbers = chunk_node.get("paginas")
                     page = int(page_numbers[0]) if page_numbers else 1
                     if text:
                         chunks_dict[chunk_id] = GraphRAGChunk(
@@ -834,14 +841,14 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             for (eid, _), props in sorted(entries, key=lambda x: x[0][0]):
                 if label in ("Proyecto", "Grupo"):
                     pid = props.get("id", "")
-                    title = props.get("title", "") or props.get("name", "")
+                    title = props.get("titulo", "") or props.get("nombre", "")
                     if title and pid:
                         lines.append(f"  - {title} ({pid})")
                     else:
                         lines.append(f"  - {pid or title}")
                 else:
                     props_str = " | ".join(
-                        f"{k}: {v}" for k, v in props.items() if v is not None and k != "text"
+                        f"{k}: {v}" for k, v in props.items() if v is not None and k != "texto"
                     )
                     lines.append(f"  - {props_str}")
 

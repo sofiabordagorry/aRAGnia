@@ -33,7 +33,7 @@ def neo4j_session():
 def test_areas_were_ingested_correctly(neo4j_session):
     """Verifies that the specific Area nodes exist with correct IDs and values."""
 
-    query = "MATCH (a:Area) RETURN a.id AS id, a.value AS value"
+    query = "MATCH (a:Area) RETURN a.id AS id, a.valor AS value"
     result = neo4j_session.run(query)
 
     areas_in_db = {record["id"]: record["value"] for record in result}

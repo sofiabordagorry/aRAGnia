@@ -148,7 +148,7 @@ class GraphBuilder:
         if isinstance(entity.value, dict):
             props.update(entity.value)
         else:
-            props["value"] = entity.value
+            props["valor"] = entity.value
         return props
 
     def upsert_entities(self, entities: Iterable[Entity], *, sample_ids: int = 50) -> Neo4jStats:
@@ -327,14 +327,18 @@ class GraphBuilder:
     @staticmethod
     def _display_value(label: str, props: dict[str, Any]) -> str:
         if label == "Investigador":
-            return str(props.get("display_name") or props.get("name") or props.get("id") or label)
+            return str(
+                props.get("nombre_de_despliegue") or props.get("nombre") or props.get("id") or label
+            )
         if label in ("Proyecto", "Grupo"):
-            return str(props.get("display_title") or props.get("title") or props.get("id") or label)
+            return str(
+                props.get("titulo_de_despliegue") or props.get("titulo") or props.get("id") or label
+            )
         if label == "Topico":
-            return str(props.get("value") or props.get("id") or label)
+            return str(props.get("valor") or props.get("id") or label)
         if label == "Anio":
-            return str(props.get("year") or props.get("id") or label)
-        return str(props.get("id") or props.get("value") or label)
+            return str(props.get("anio") or props.get("id") or label)
+        return str(props.get("id") or props.get("valor") or label)
 
     @staticmethod
     def _normalized_search(value: Optional[str]) -> str:
@@ -368,13 +372,13 @@ class GraphBuilder:
           AND (
               $search = ''
               OR toLower(coalesce(n.id, '')) CONTAINS $search
-              OR toLower(coalesce(n.name, '')) CONTAINS $search
-              OR toLower(coalesce(n.value, '')) CONTAINS $search
-              OR toLower(coalesce(n.title, '')) CONTAINS $search
-              OR toLower(coalesce(toString(n.year), '')) CONTAINS $search
+              OR toLower(coalesce(n.nombre, '')) CONTAINS $search
+              OR toLower(coalesce(n.valor, '')) CONTAINS $search
+              OR toLower(coalesce(n.titulo, '')) CONTAINS $search
+              OR toLower(coalesce(toString(n.anio), '')) CONTAINS $search
           )
         RETURN n, labels(n) AS labels
-        ORDER BY coalesce(n.name, n.value, n.title, n.id, '') ASC
+        ORDER BY coalesce(n.nombre, n.valor, n.titulo, n.id, '') ASC
         LIMIT $limit
         """
 
@@ -717,10 +721,10 @@ class GraphBuilder:
                 props.pop("id", None)
 
                 if label in {"Proyecto", "Grupo", "Topico", "Subcampo", "Area"}:
-                    value = props.get("value")
+                    value = props.get("valor")
 
-                    if isinstance(value, dict) and "value" in value:
-                        value = value["value"]
+                    if isinstance(value, dict) and "valor" in value:
+                        value = value["valor"]
 
                     if value is None:
                         value = ""

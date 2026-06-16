@@ -67,7 +67,7 @@ class ProjectSubgraphBuilder:
             for e in self.entities
             if (
                 e.get("label") == "Documento"
-                and e.get("value", {}).get("type") == "tabla"
+                and e.get("value", {}).get("tipo") == "tabla"
                 and "id" in e
             )
         }
