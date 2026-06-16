@@ -254,14 +254,14 @@ class EntityExtractor:
         self.doc_by_basename = {}
         self.id_projects = set()
         for d in docs:
-            base = d.value["base_name"]
+            base = d.value["nombre_base"]
             self.doc_by_basename[base] = d
 
-            if d.value.get("type") == "tabla":
+            if d.value.get("tipo") == "tabla":
                 continue
             else:
                 key_project = (
-                    f'{d.value["is_group"]}_{d.value["year_publisher"]}_{d.value["sub_id"]}'
+                    f'{d.value["es_grupo"]}_{d.value["anio_publicacion"]}_{d.value["sub_id"]}'
                 )
             self.id_projects.add(key_project)
 
@@ -335,19 +335,19 @@ class EntityExtractor:
             self.table_dir,
             PATTERN_TABLE,
             lambda base, _: {
-                "base_name": base,
-                "type": "tabla",
+                "nombre_base": base,
+                "tipo": "tabla",
             },
         )
         add_docs_from_dir(
             self.documents_dir,
             PATTERN_DOCUMENT,
             lambda base, m: {
-                "base_name": base,
-                "is_group": m.group("group"),
-                "year_publisher": m.group("year"),
+                "nombre_base": base,
+                "es_grupo": m.group("group"),
+                "anio_publicacion": m.group("year"),
                 "sub_id": m.group("doc_id"),
-                "type": m.group("kind"),
+                "tipo": m.group("kind"),
             },
         )
 
@@ -619,7 +619,7 @@ class EntityExtractor:
 
                 topic_cache = self.already_run(doc_id, "Topico")
 
-                base_name = doc.value.get("base_name", "")
+                base_name = doc.value.get("nombre_base", "")
                 if not base_name:
                     continue
 
@@ -644,7 +644,7 @@ class EntityExtractor:
                             f"[BERT Topics] Procesando {len(chunks)} chunks de {base_name}..."
                         )
                         if isinstance(project.value, dict):
-                            project_title = project.value.get("title", "") or ""
+                            project_title = project.value.get("titulo", "") or ""
                         elif isinstance(project.value, str):
                             project_title = project.value
                         else:

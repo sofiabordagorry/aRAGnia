@@ -240,11 +240,11 @@ class IngestService:
 
             def value_builder(base, m):
                 return {
-                    "base_name": base,
-                    "is_group": m.group("group"),
-                    "year_publisher": m.group("year"),
+                    "nombre_base": base,
+                    "es_grupo": m.group("group"),
+                    "anio_publicacion": m.group("year"),
                     "sub_id": m.group("doc_id"),
-                    "type": m.group("kind"),
+                    "tipo": m.group("kind"),
                 }
 
             doc_dict = parse_single_document(tmp_path)
@@ -318,7 +318,7 @@ class IngestService:
                 existing_rows = list(reader2)
                 existing_fieldnames = list(reader2.fieldnames or [])
 
-            _GENERATED_COLS = {"row_id", "file_type", "file_id"}
+            _GENERATED_COLS = {"row_id", "tipo_archivo", "id_archivo"}
 
             def _row_key(row: Dict[str, Any]) -> frozenset:
                 return frozenset((k, v) for k, v in row.items() if k not in _GENERATED_COLS)

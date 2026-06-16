@@ -82,7 +82,7 @@ class RuleBasedExtractor:
                 for csv_file in self.paths:
 
                     df = pd.read_csv(csv_file)
-                    if key_project in df["file_id"].astype(str).values:
+                    if key_project in df["id_archivo"].astype(str).values:
                         in_csv = True
                         break
 
@@ -180,7 +180,9 @@ class RuleBasedExtractor:
 
             relationships.append(DE_DOCUMENTO(chunk_id, doc.id))
             meta = c.get("metadata", {})
-            meta["text"] = c.get("text", "")
+            if "page_numbers" in meta:
+                meta["paginas"] = meta.pop("page_numbers")
+            meta["texto"] = c.get("text", "")
             entities.append(Chunk(id=chunk_id, value=meta))
         return ExtractionResult(entities, relationships, errors)
 

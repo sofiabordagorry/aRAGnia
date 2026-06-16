@@ -20,38 +20,38 @@ load_dotenv(env_path)
     [
         (
             "Standard Query",
-            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS 'garcia' RETURN i.name, p.value",
-            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.name) CONTAINS 'garcia' RETURN i.display_name, p.value",
+            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.nombre) CONTAINS 'garcia' RETURN i.nombre, p.valor",
+            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.nombre) CONTAINS 'garcia' RETURN i.nombre_de_despliegue, p.valor",
         ),
         (
             "Multiple Variables",
-            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.name AS investigador, y.name AS responsable",
-            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.display_name AS investigador, y.display_name AS responsable",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.nombre AS investigador, y.nombre AS responsable",
+            "MATCH (x:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN {calidad: 'responsable'}]-(y:Investigador) RETURN x.nombre_de_despliegue AS investigador, y.nombre_de_despliegue AS responsable",
         ),
         (
             "Query without Investigador (Should not modify)",
-            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.name, t.value",
-            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.name, t.value",
+            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.nombre, t.valor",
+            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.nombre, t.valor",
         ),
         (
-            "Proyecto title should become display_title",
-            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.title, t.value",
-            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.display_title, t.value",
+            "Proyecto title should become titulo_de_despliegue",
+            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.titulo, t.valor",
+            "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) RETURN p.titulo_de_despliegue, t.valor",
         ),
         (
             "Investigador and Proyecto display fields",
-            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) RETURN i.name AS investigador, p.title AS proyecto",
-            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) RETURN i.display_name AS investigador, p.display_title AS proyecto",
+            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) RETURN i.nombre AS investigador, p.titulo AS proyecto",
+            "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) RETURN i.nombre_de_despliegue AS investigador, p.titulo_de_despliegue AS proyecto",
         ),
         (
             "Should not modify title before RETURN",
-            "MATCH (p:Proyecto) WHERE toLower(p.title) CONTAINS 'datos abiertos' RETURN p.title AS proyecto",
-            "MATCH (p:Proyecto) WHERE toLower(p.title) CONTAINS 'datos abiertos' RETURN p.display_title AS proyecto",
+            "MATCH (p:Proyecto) WHERE toLower(p.titulo) CONTAINS 'datos abiertos' RETURN p.titulo AS proyecto",
+            "MATCH (p:Proyecto) WHERE toLower(p.titulo) CONTAINS 'datos abiertos' RETURN p.titulo_de_despliegue AS proyecto",
         ),
     ],
 )
 def test_use_display_fields_for_return(test_name, original_query, expected_final_query):
-    """Test that the regex correctly replaces .name with .display_name only after RETURN."""
+    """Test that the regex correctly replaces .nombre with .nombre_de_despliegue only after RETURN."""
 
     # Llamamos al método
     processed = GraphRAGRetriever._use_display_fields_for_return(original_query)
@@ -83,7 +83,7 @@ def test_neo4j_database_display_name_populated():
             # Query 5 random researchers to check their properties
             query = """
             MATCH (i:Investigador) 
-            RETURN i.id AS id, i.name AS name, i.display_name AS display_name 
+            RETURN i.id AS id, i.nombre AS nombre, i.nombre_de_despliegue AS nombre_de_despliegue
             LIMIT 5
             """
             result = session.run(query)
@@ -98,20 +98,20 @@ def test_neo4j_database_display_name_populated():
                 for record in records:
                     # Check standard properties exist
                     assert record["id"] is not None, "Found a node with a NULL id"
-                    assert record["name"] is not None, f"Node {record['id']} has a NULL name"
+                    assert record["nombre"] is not None, f"Node {record['id']} has a NULL nombre"
 
-                    # The critical check: display_name must be populated
+                    # The critical check: nombre_de_despliegue must be populated
                     assert (
-                        record["display_name"] is not None
-                    ), f"Node {record['id']} has a NULL display_name! Migration Cypher query might have failed."
+                        record["nombre_de_despliegue"] is not None
+                    ), f"Node {record['id']} has a NULL nombre_de_despliegue! Migration Cypher query might have failed."
                     assert isinstance(
-                        record["display_name"], str
-                    ), f"display_name for {record['id']} is not a string."
+                        record["nombre_de_despliegue"], str
+                    ), f"nombre_de_despliegue for {record['id']} is not a string."
 
-                    expected_format = record["display_name"].title()
+                    expected_format = record["nombre_de_despliegue"].title()
                     assert (
-                        record["display_name"] == expected_format
-                    ), f"El display_name '{record['display_name']}' del nodo {record['id']} no respeta el formato .title() (Se esperaba: '{expected_format}')"
+                        record["nombre_de_despliegue"] == expected_format
+                    ), f"El nombre_de_despliegue '{record['nombre_de_despliegue']}' del nodo {record['id']} no respeta el formato .title() (Se esperaba: '{expected_format}')"
 
         driver.close()
 
@@ -137,7 +137,7 @@ def test_neo4j_database_display_title_populated():
         with driver.session() as session:
             query = """
             MATCH (p:Proyecto)
-            RETURN p.id AS id, p.title AS title, p.display_title AS display_title
+            RETURN p.id AS id, p.titulo AS titulo, p.titulo_de_despliegue AS titulo_de_despliegue
             LIMIT 5
             """
             result = session.run(query)
@@ -148,15 +148,15 @@ def test_neo4j_database_display_title_populated():
 
             for record in records:
                 assert record["id"] is not None, "Found a Proyecto node with a NULL id"
-                assert record["title"] is not None, f"Proyecto {record['id']} has a NULL title"
+                assert record["titulo"] is not None, f"Proyecto {record['id']} has a NULL titulo"
 
                 assert (
-                    record["display_title"] is not None
-                ), f"Proyecto {record['id']} has a NULL display_title! Migration Cypher query might have failed."
+                    record["titulo_de_despliegue"] is not None
+                ), f"Proyecto {record['id']} has a NULL titulo_de_despliegue! Migration Cypher query might have failed."
 
                 assert isinstance(
-                    record["display_title"], str
-                ), f"display_title for {record['id']} is not a string."
+                    record["titulo_de_despliegue"], str
+                ), f"titulo_de_despliegue for {record['id']} is not a string."
 
         driver.close()
 

@@ -4,192 +4,192 @@
       "id": "proy_2012_638",
       "label": "Proyecto",
       "value": {
-        "title": "web warehouse de datos abiertos de gobierno con gestion de calidad",
-        "keywords": ["Web Warehouse", "Datos Abiertos", "Calidad"],
-        "description": "El presente proyecto busca estudiar y resolver los problemas que se presentan para desarrollar un Web Warehouse (en adelante, WW) de datos abiertos de gobierno electrónico, donde se conozca, valide y gestione la calidad de los datos. El encare del proyecto es "
+        "titulo": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "palabras_clave": ["Web Warehouse", "Datos Abiertos", "Calidad"],
+        "descripcion": "El presente proyecto busca estudiar y resolver los problemas que se presentan para desarrollar un Web Warehouse (en adelante, WW) de datos abiertos de gobierno electrónico, donde se conozca, valide y gestione la calidad de los datos. El encare del proyecto es "
       }
     },
     {
       "id": "proy_2012_638_propuesta",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2012_638_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2012",
+        "nombre_base": "proy_2012_638_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
         "sub_id": "638",
-        "type": "propuesta"
+        "tipo": "propuesta"
       }
     },
     {
       "id": "proy_2012_638_informe",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2012_638_informe",
-        "is_group": "proy",
-        "year_publisher": "2012",
+        "nombre_base": "proy_2012_638_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
         "sub_id": "638",
-        "type": "informe"
+        "tipo": "informe"
       }
     },
     {
       "id": "2018",
       "label": "Anio",
       "value": {
-        "year": "2018"
+        "anio": "2018"
       }
     },
     {
       "id": "2012",
       "label": "Anio",
       "value": {
-        "year": "2012"
+        "anio": "2012"
       }
     },
     {
       "id": "proy_2016_729",
       "label": "Proyecto",
       "value": {
-        "title": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
-        "keywords": ["Compresión", "Datos de secuenciación", "Nanoporos"],
-        "description": "En 2015 se liberó la primera versión comercial de un secuenciador de genomas por nanoporos, una tecnología que se perfila como la próxima generación de instrumentos de secuenciación. Este tipo de secuenciadores generan lecturas de fragmentos de secuencia de AD"
+        "titulo": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
+        "palabras_clave": ["Compresión", "Datos de secuenciación", "Nanoporos"],
+        "descripcion": "En 2015 se liberó la primera versión comercial de un secuenciador de genomas por nanoporos, una tecnología que se perfila como la próxima generación de instrumentos de secuenciación. Este tipo de secuenciadores generan lecturas de fragmentos de secuencia de AD"
       }
     },
     {
       "id": "proy_2016_395",
       "label": "Proyecto",
       "value": {
-        "title": "sistemas binarios estocasticos dinamicos",
-        "keywords": [
+        "titulo": "sistemas binarios estocasticos dinamicos",
+        "palabras_clave": [
           "Sistema Binario Estocástico",
           "Confiabilidad",
           "Complejidad Computacional"
         ],
-        "description": "Un sistema binario estocástico (SBS por sus siglas en inglés) es un sistema de múltiples componentes, al que se asocia un estado binario: de correcto funcionamiento o falla. Sus componentes fallan u operan, con ciertas probabilidades denominadas “elementales“."
+        "descripcion": "Un sistema binario estocástico (SBS por sus siglas en inglés) es un sistema de múltiples componentes, al que se asocia un estado binario: de correcto funcionamiento o falla. Sus componentes fallan u operan, con ciertas probabilidades denominadas “elementales“."
       }
     },
     {
       "id": "proy_2016_395_propuesta",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2016_395_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2016",
+        "nombre_base": "proy_2016_395_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
         "sub_id": "395",
-        "type": "propuesta"
+        "tipo": "propuesta"
       }
     },
     {
       "id": "proy_2016_395_informe",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2016_395_informe",
-        "is_group": "proy",
-        "year_publisher": "2016",
+        "nombre_base": "proy_2016_395_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
         "sub_id": "395",
-        "type": "informe"
+        "tipo": "informe"
       }
     },
     {
       "id": "2016",
       "label": "Anio",
       "value": {
-        "year": "2016"
+        "anio": "2016"
       }
     },
     {
       "id": "proy_2018_260",
       "label": "Proyecto",
       "value": {
-        "title": "diseño optimo de redes de ciclovias",
-        "keywords": ["ciclovías", "diseño de redes", "optimización"],
-        "description": "Se aplican metodologías de diseño de redes al problema del diseño óptimo de redes de ciclovías urbanas. Una red de ciclovías es la conjunción de todas las ciclovías de un área de estudio. Una ciclovía es una especialización del espacio urbano dedicado a la cir"
+        "titulo": "diseño optimo de redes de ciclovias",
+        "palabras_clave": ["ciclovías", "diseño de redes", "optimización"],
+        "descripcion": "Se aplican metodologías de diseño de redes al problema del diseño óptimo de redes de ciclovías urbanas. Una red de ciclovías es la conjunción de todas las ciclovías de un área de estudio. Una ciclovía es una especialización del espacio urbano dedicado a la cir"
       }
     },
     {
       "id": "proy_2018_413",
       "label": "Proyecto",
       "value": {
-        "title": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
-        "keywords": [
+        "titulo": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
+        "palabras_clave": [
           "índice verde",
           "aprendizaje profundo",
           "análisis de redes"
         ],
-        "description": "Existen varios satélites que proveen, en forma gratuita y periódica, imágenes de la superficie agrícola del país. Esta información es utilizada por científicos de todo el mundo, pero es poco utilizada por los sectores productivos a escala de parcela (o inferio"
+        "descripcion": "Existen varios satélites que proveen, en forma gratuita y periódica, imágenes de la superficie agrícola del país. Esta información es utilizada por científicos de todo el mundo, pero es poco utilizada por los sectores productivos a escala de parcela (o inferio"
       }
     },
     {
       "id": "proy_2016_729_propuesta",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2016_729_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2016",
+        "nombre_base": "proy_2016_729_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
         "sub_id": "729",
-        "type": "propuesta"
+        "tipo": "propuesta"
       }
     },
     {
       "id": "proy_2016_729_informe",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2016_729_informe",
-        "is_group": "proy",
-        "year_publisher": "2016",
+        "nombre_base": "proy_2016_729_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
         "sub_id": "729",
-        "type": "informe"
+        "tipo": "informe"
       }
     },
     {
       "id": "proy_2018_260_propuesta",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2018_260_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2018",
+        "nombre_base": "proy_2018_260_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
         "sub_id": "260",
-        "type": "propuesta"
+        "tipo": "propuesta"
       }
     },
     {
       "id": "proy_2018_260_informe",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2018_260_informe",
-        "is_group": "proy",
-        "year_publisher": "2018",
+        "nombre_base": "proy_2018_260_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
         "sub_id": "260",
-        "type": "informe"
+        "tipo": "informe"
       }
     },
     {
       "id": "proy_2018_413_propuesta",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2018_413_propuesta",
-        "is_group": "proy",
-        "year_publisher": "2018",
+        "nombre_base": "proy_2018_413_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
         "sub_id": "413",
-        "type": "propuesta"
+        "tipo": "propuesta"
       }
     },
     {
       "id": "proy_2018_413_informe",
       "label": "Documento",
       "value": {
-        "base_name": "proy_2018_413_informe",
-        "is_group": "proy",
-        "year_publisher": "2018",
+        "nombre_base": "proy_2018_413_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
         "sub_id": "413",
-        "type": "informe"
+        "tipo": "informe"
       }
     },
     {
       "id": "uruguay_cedula_de_identidad_1884198_9",
       "label": "Investigador",
       "value": {
-        "name": "alvaro martin menoni",
-        "display_name": "Álvaro Martín Menoni",
+        "nombre": "alvaro martin menoni",
+        "nombre_de_despliegue": "Álvaro Martín Menoni",
         "documento": "1884198-9",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -200,8 +200,8 @@
       "id": "uruguay_cedula_de_identidad_2915995_1",
       "label": "Investigador",
       "value": {
-        "name": "flavia serra sosa",
-        "display_name": "Flavia Serra Sosa",
+        "nombre": "flavia serra sosa",
+        "nombre_de_despliegue": "Flavia Serra Sosa",
         "documento": "2915995-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -212,8 +212,8 @@
       "id": "uruguay_cedula_de_identidad_4168464_1",
       "label": "Investigador",
       "value": {
-        "name": "lorena etcheverry venturini",
-        "display_name": "Lorena Etcheverry Venturini",
+        "nombre": "lorena etcheverry venturini",
+        "nombre_de_despliegue": "Lorena Etcheverry Venturini",
         "documento": "4168464-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -224,8 +224,8 @@
       "id": "uruguay_cedula_de_identidad_1676959_1",
       "label": "Investigador",
       "value": {
-        "name": "raul ruggia frick",
-        "display_name": "Raúl Ruggia Frick",
+        "nombre": "raul ruggia frick",
+        "nombre_de_despliegue": "Raúl Ruggia Frick",
         "documento": "1676959-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -236,8 +236,8 @@
       "id": "uruguay_cedula_de_identidad_2760527_1",
       "label": "Investigador",
       "value": {
-        "name": "adriana alejandra marotta llambi",
-        "display_name": "Adriana Alejandra Marotta Llambí",
+        "nombre": "adriana alejandra marotta llambi",
+        "nombre_de_despliegue": "Adriana Alejandra Marotta Llambí",
         "documento": "2760527-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -248,8 +248,8 @@
       "id": "uruguay_cedula_de_identidad_3642724_0",
       "label": "Investigador",
       "value": {
-        "name": "daniel callejas canepa",
-        "display_name": "Daniel Callejas Cánepa",
+        "nombre": "daniel callejas canepa",
+        "nombre_de_despliegue": "Daniel Callejas Cánepa",
         "documento": "3642724-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -260,8 +260,8 @@
       "id": "uruguay_cedula_de_identidad_1320065_7",
       "label": "Investigador",
       "value": {
-        "name": "gadiel seroussi blusztein",
-        "display_name": "Gadiel Seroussi Blusztein",
+        "nombre": "gadiel seroussi blusztein",
+        "nombre_de_despliegue": "Gadiel Seroussi Blusztein",
         "documento": "1320065-7",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -272,8 +272,8 @@
       "id": "uruguay_cedula_de_identidad_3246827_0",
       "label": "Investigador",
       "value": {
-        "name": "jose roberto sotelo silveira",
-        "display_name": "Jose Roberto Sotelo Silveira",
+        "nombre": "jose roberto sotelo silveira",
+        "nombre_de_despliegue": "Jose Roberto Sotelo Silveira",
         "documento": "3246827-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -284,8 +284,8 @@
       "id": "uruguay_cedula_de_identidad_2597542_0",
       "label": "Investigador",
       "value": {
-        "name": "antonio daniel mauttone vidales",
-        "display_name": "Antonio Daniel Mauttone Vidales",
+        "nombre": "antonio daniel mauttone vidales",
+        "nombre_de_despliegue": "Antonio Daniel Mauttone Vidales",
         "documento": "2597542-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -296,8 +296,8 @@
       "id": "uruguay_cedula_de_identidad_3988305_5",
       "label": "Investigador",
       "value": {
-        "name": "maria elizabeth urquhart perez",
-        "display_name": "María Elizabeth Urquhart Pérez",
+        "nombre": "maria elizabeth urquhart perez",
+        "nombre_de_despliegue": "María Elizabeth Urquhart Pérez",
         "documento": "3988305-5",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -308,8 +308,8 @@
       "id": "uruguay_cedula_de_identidad_3348401_1",
       "label": "Investigador",
       "value": {
-        "name": "pablo alejandro rodriguez bocca",
-        "display_name": "Pablo Alejandro Rodríguez Bocca",
+        "nombre": "pablo alejandro rodriguez bocca",
+        "nombre_de_despliegue": "Pablo Alejandro Rodríguez Bocca",
         "documento": "3348401-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -320,8 +320,8 @@
       "id": "uruguay_cedula_de_identidad_2981586_6",
       "label": "Investigador",
       "value": {
-        "name": "andres berger ricca",
-        "display_name": "Andrés Berger Ricca",
+        "nombre": "andres berger ricca",
+        "nombre_de_despliegue": "Andrés Berger Ricca",
         "documento": "2981586-6",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -332,8 +332,8 @@
       "id": "uruguay_cedula_de_identidad_5294489_8",
       "label": "Investigador",
       "value": {
-        "name": "gustavo ricardo guerberoff aguirregomezcorta",
-        "display_name": "Gustavo Ricardo Guerberoff Aguirregomezcorta",
+        "nombre": "gustavo ricardo guerberoff aguirregomezcorta",
+        "nombre_de_despliegue": "Gustavo Ricardo Guerberoff Aguirregomezcorta",
         "documento": "5294489-8",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -344,8 +344,8 @@
       "id": "uruguay_cedula_de_identidad_3645500_3",
       "label": "Investigador",
       "value": {
-        "name": "franco rafael robledo amoza",
-        "display_name": "Franco Rafael Robledo Amoza",
+        "nombre": "franco rafael robledo amoza",
+        "nombre_de_despliegue": "Franco Rafael Robledo Amoza",
         "documento": "3645500-3",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -356,8 +356,8 @@
       "id": "uruguay_cedula_de_identidad_3702465_5",
       "label": "Investigador",
       "value": {
-        "name": "pablo gabriel romero rodriguez",
-        "display_name": "Pablo Gabriel Romero Rodríguez",
+        "nombre": "pablo gabriel romero rodriguez",
+        "nombre_de_despliegue": "Pablo Gabriel Romero Rodríguez",
         "documento": "3702465-5",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -368,8 +368,8 @@
       "id": "uruguay_cedula_de_identidad_1539915_9",
       "label": "Investigador",
       "value": {
-        "name": "hector cancela bosi",
-        "display_name": "Héctor Cancela Bosi",
+        "nombre": "hector cancela bosi",
+        "nombre_de_despliegue": "Héctor Cancela Bosi",
         "documento": "1539915-9",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -380,8 +380,8 @@
       "id": "uruguay_cedula_de_identidad_1908216_2",
       "label": "Investigador",
       "value": {
-        "name": "fernando carpani fernandez",
-        "display_name": "Fernando Carpani Fernández",
+        "nombre": "fernando carpani fernandez",
+        "nombre_de_despliegue": "Fernando Carpani Fernández",
         "documento": "1908216-2",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -392,8 +392,8 @@
       "id": "uruguay_cedula_de_identidad_2839112_0",
       "label": "Investigador",
       "value": {
-        "name": "laura gonzalez lopez",
-        "display_name": "Laura González López",
+        "nombre": "laura gonzalez lopez",
+        "nombre_de_despliegue": "Laura González López",
         "documento": "2839112-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",

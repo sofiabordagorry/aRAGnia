@@ -11,20 +11,20 @@ from typing_extensions import NotRequired, TypedDict
 
 
 class AnioValue(TypedDict):
-    year: str
+    anio: str
 
 
 class DocumentoValue(TypedDict):
-    base_name: str
-    is_group: str
-    year_publisher: str
+    nombre_base: str
+    es_grupo: str
+    anio_publicacion: str
     sub_id: NotRequired[str]
-    type: Literal["informe", "propuesta", "resumen", "tabla"]
+    tipo: Literal["informe", "propuesta", "resumen", "tabla"]
 
 
 class InvestigadorValue(TypedDict):
-    name: str
-    display_name: str
+    nombre: str
+    nombre_de_despliegue: str
     documento: str
     tipo_documento: str
     pais_documento: str
@@ -32,10 +32,10 @@ class InvestigadorValue(TypedDict):
 
 
 class FileValue(TypedDict):
-    title: str
-    display_title: str
-    keywords: List[str]
-    description: str
+    titulo: str
+    titulo_de_despliegue: str
+    palabras_clave: List[str]
+    descripcion: str
 
 
 @dataclass
