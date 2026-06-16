@@ -320,13 +320,9 @@ class EntityExtractor:
         if not ensure_dir(self.documents_dir) or not ensure_dir(self.table_dir):
             return
 
-        def add_docs_from_dir(
-            d: Path, pattern, value_builder, create_year_entity: bool = False
-        ) -> None:
+        def add_docs_from_dir(d: Path, pattern, value_builder) -> None:
             for path in sorted(p for p in d.iterdir() if p.is_file()):
-                res = self.rule_based.extract_document(
-                    path, pattern, value_builder, create_year_entity
-                )
+                res = self.rule_based.extract_document(path, pattern, value_builder)
                 self.add_entities(res.entities)
                 self.add_relationship(res.relationships)
                 self.res.errors.extend(res.errors)
@@ -338,7 +334,6 @@ class EntityExtractor:
                 "nombre_base": base,
                 "tipo": "tabla",
             },
-            create_year_entity=False,
         )
         add_docs_from_dir(
             self.documents_dir,
@@ -350,7 +345,6 @@ class EntityExtractor:
                 "sub_id": m.group("doc_id"),
                 "tipo": m.group("kind"),
             },
-            create_year_entity=True,
         )
 
     def _extract_chunks(self) -> None:
