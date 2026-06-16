@@ -400,6 +400,6 @@ class BertTopicExtractor:
                 )
                 for chunk_id, evidence in topic_chunks_info[topic_en]:
                     relationships.append(
-                        EXTRAIDO_DE(chunk_id, topic_id, properties={"evidence_text": evidence})
+                        EXTRAIDO_DE(chunk_id, topic_id, properties={"texto_evidencia": evidence})
                     )
         return relationships

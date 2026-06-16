@@ -64,11 +64,11 @@ class TestNativeDoclingChunker:
         meta = chunks[0]["metadata"]
 
         # Verifica los campos que agregaste manualmente
-        assert meta["parent_doc"] == sample_doc.name
+        assert meta["documento_padre"] == sample_doc.name
         assert len(meta["page_numbers"]) > 0
-        assert "element_type" in meta
-        assert "token_count" in meta
-        assert meta["token_count"] > 0
+        assert "tipo_elemento" in meta
+        assert "cantidad_tokens" in meta
+        assert meta["cantidad_tokens"] > 0
 
     def test_heading_extraction_logic(self, sample_doc):
         """Verifica que los encabezados se extraigan correctamente en la metadata."""

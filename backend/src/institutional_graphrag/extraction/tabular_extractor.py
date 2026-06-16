@@ -123,7 +123,7 @@ class TabularExtractor:
             with open(csv_path, encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
                 for row_number, row in enumerate(reader, start=2):
-                    doc_id = row["file_id"]
+                    doc_id = row["id_archivo"]
                     if doc_id not in id_projects:
                         continue
                     errors.extend(
@@ -249,7 +249,7 @@ class TabularExtractor:
     ) -> Optional[str]:
         id_formulario = self._cell(row.get("id_formulario"))
         anio = self._cell(row.get("anio"))
-        document_type = "gi" if self._cell(row.get("file_type")) == "Grupo" else "proy"
+        document_type = "gi" if self._cell(row.get("tipo_archivo")) == "Grupo" else "proy"
         keywords = [
             k
             for k in [
@@ -261,7 +261,7 @@ class TabularExtractor:
         ]
         description = self._cell(row.get("descripcion"))
         entity: type[Entity]
-        entity = Grupo if self._cell(row.get("file_type")) == "Grupo" else Proyecto
+        entity = Grupo if self._cell(row.get("tipo_archivo")) == "Grupo" else Proyecto
         title = self._cell(row.get("titulo"))
         if not id_formulario or not anio or not title:
             errors.append(
@@ -310,7 +310,7 @@ class TabularExtractor:
             TITULO_EXTRAIDO_DE(
                 project_id,
                 table_chunk_id,
-                properties={"evidence_text": evidence_text},
+                properties={"texto_evidencia": evidence_text},
             ),
             relationships,
             seen_rel_keys,
@@ -383,7 +383,7 @@ class TabularExtractor:
             EXTRAIDO_DE(
                 table_chunk_id,
                 inv_id,
-                properties={"evidence_text": evidence_text},
+                properties={"texto_evidencia": evidence_text},
             ),
             relationships,
             seen_rel_keys,

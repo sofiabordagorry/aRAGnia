@@ -318,7 +318,7 @@ class IngestService:
                 existing_rows = list(reader2)
                 existing_fieldnames = list(reader2.fieldnames or [])
 
-            _GENERATED_COLS = {"row_id", "file_type", "file_id"}
+            _GENERATED_COLS = {"row_id", "tipo_archivo", "id_archivo"}
 
             def _row_key(row: Dict[str, Any]) -> frozenset:
                 return frozenset((k, v) for k, v in row.items() if k not in _GENERATED_COLS)

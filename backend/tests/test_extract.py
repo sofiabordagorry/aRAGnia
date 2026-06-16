@@ -404,7 +404,7 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
-            "file_id": "proy_2018_1",
+            "id_archivo": "proy_2018_1",
         },
         {
             "row_id": "1",
@@ -419,7 +419,7 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
-            "file_id": "proy_2018_1",
+            "id_archivo": "proy_2018_1",
         },
         {
             "row_id": "2",
@@ -434,7 +434,7 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
             "anio": "2018",
             "programa": "I+D",
             "titulo": "Proyecto A",
-            "file_id": "proy_2018_1",
+            "id_archivo": "proy_2018_1",
         },
     ]
     id_projects: set[str] = set()
@@ -499,7 +499,7 @@ def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_pa
             "titulo": "Proyecto A",
             "palabras_claves2": "salud",
             "descripcion": "AA",
-            "file_id": "proy_2018_1",
+            "id_archivo": "proy_2018_1",
         },
     ]
 

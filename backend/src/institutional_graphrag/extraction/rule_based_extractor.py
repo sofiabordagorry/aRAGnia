@@ -83,7 +83,7 @@ class RuleBasedExtractor:
                 for csv_file in self.paths:
 
                     df = pd.read_csv(csv_file)
-                    if key_project in df["file_id"].astype(str).values:
+                    if key_project in df["id_archivo"].astype(str).values:
                         in_csv = True
                         break
 

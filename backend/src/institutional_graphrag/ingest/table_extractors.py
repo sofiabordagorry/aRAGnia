@@ -38,7 +38,7 @@ def clean_table(input_file: str | Path, output_file: str | Path | None, doc_type
         year_idx = header.index("anio")
         form_id_idx = header.index("id_formulario")
         header.insert(0, "row_id")
-        header.extend(["file_type", "file_id"])
+        header.extend(["tipo_archivo", "id_archivo"])
         writer.writerow(header)
 
         current_line = ""
@@ -110,9 +110,9 @@ def build_table_chunks(csv_path: Path) -> None:
 
             metadata = {
                 **row,
-                "element_type": "table_row",
-                "parent_doc": source,
-                "token_count": len(text.split()),
+                "tipo_elemento": "table_row",
+                "documento_padre": source,
+                "cantidad_tokens": len(text.split()),
             }
 
             column_id = row.get("row_id")
