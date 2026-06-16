@@ -56,9 +56,7 @@ class RuleBasedExtractor:
     def cleanup(self):
         self.datasets = []
 
-    def extract_document(
-        self, path: Path, pattern, value_builder
-    ) -> ExtractionResult:
+    def extract_document(self, path: Path, pattern, value_builder) -> ExtractionResult:
         entities: List[Entity] = []
         relationships: List[Relationship] = []
         errors: list[dict[str, Any]] = []
