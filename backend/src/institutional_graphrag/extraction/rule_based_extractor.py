@@ -10,7 +10,6 @@ from institutional_graphrag.graph.schema import (
     ES_DESCRITO_POR,
     PRIMER_CHUNK,
     SIGUIENTE_CHUNK,
-    Anio,
     Chunk,
     Documento,
     Entity,
@@ -58,7 +57,7 @@ class RuleBasedExtractor:
         self.datasets = []
 
     def extract_document(
-        self, path: Path, pattern, value_builder, create_year_entity: bool = False
+        self, path: Path, pattern, value_builder
     ) -> ExtractionResult:
         entities: List[Entity] = []
         relationships: List[Relationship] = []
@@ -103,13 +102,6 @@ class RuleBasedExtractor:
                 return ExtractionResult(entities, relationships, errors)
 
             relationships.append(ES_DESCRITO_POR(key_project, base_name))
-            if create_year_entity:
-                year = m.group("year")
-                anio = Anio(
-                    id=year,
-                    value={"year": year},
-                )
-                entities.append(anio)
         else:
             errors.append(
                 {

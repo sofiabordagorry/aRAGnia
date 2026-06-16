@@ -449,7 +449,6 @@ class IngestService:
             path=file_path,
             pattern=pattern,
             value_builder=value_builder,
-            create_year_entity=True,
         )
         self.entity_extractor.add_entities(res.entities)
         self.entity_extractor.add_relationship(res.relationships)
