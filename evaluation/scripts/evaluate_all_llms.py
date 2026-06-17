@@ -174,7 +174,7 @@ def _grouped_bar(
     ax.set_ylim(0, 1.05)
     ax.set_ylabel("F1 Score")
     ax.set_title(title)
-    ax.legend(fontsize=7, loc="upper right")
+    ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
     ax.spines[["top", "right"]].set_visible(False)
 
 
@@ -217,7 +217,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     _grouped_bar(ax, ["Entidades", "Relaciones"], series_overall, "F1 Macro Global por Modelo")
     fig.tight_layout()
     p = images_dir / "chart_overall.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["overall"] = p
 
@@ -225,7 +225,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     _grouped_bar(ax, all_labels, series_entity, "F1 por Tipo de Entidad")
     fig.tight_layout()
     p = images_dir / "chart_entities.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["entities"] = p
 
@@ -233,7 +233,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     _grouped_bar(ax, all_rel_types, series_rel, "F1 por Tipo de Relación")
     fig.tight_layout()
     p = images_dir / "chart_relations.png"
-    fig.savefig(p, dpi=150)
+    fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["relations"] = p
 

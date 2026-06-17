@@ -19,8 +19,9 @@ Referencia oficial: [Como ejecutar un trabajo](https://www.cluster.uy/ayuda/como
 7. [Paso 6: Configurar acceso a HuggingFace (para Llama)](#paso-6-configurar-acceso-a-huggingface-para-llama)
 8. [Paso 7: Enviar el job](#paso-7-enviar-el-job)
 9. [Paso 8: Monitorear / relanzar](#paso-8-monitorear--relanzar)
-10. [Cambios hechos al codigo](#cambios-hechos-al-codigo)
-11. [Troubleshooting: errores encontrados y soluciones](#troubleshooting-errores-encontrados-y-soluciones)
+10. [Evaluación de generación](#evaluacion-de-generacion)
+11. [Cambios hechos al codigo](#cambios-hechos-al-codigo)
+12. [Troubleshooting: errores encontrados y soluciones](#troubleshooting-errores-encontrados-y-soluciones)
 
 ---
 
@@ -267,6 +268,64 @@ Solo usar `--skip-docling --skip-chunks` si querés ahorrar tiempo en una segund
 Si un modelo falla (ej. Llama sin HF_TOKEN), el pipeline **continua con los siguientes modelos** (hay un try/except envolviendo el loop, ver [Cambios hechos al codigo](#cambios-hechos-al-codigo)). Al final imprime un resumen de cuales fallaron.
 
 Los resultados parciales (ej. del primer Qwen) quedan guardados en `data/results/Qwen_Qwen2.5-7B-Instruct/entity_documents.json` aunque el siguiente modelo falle.
+
+---
+
+## Evaluacion de generacion
+
+Job aparte para evaluar **qué LLM / prompt genera mejores respuestas** en lenguaje natural
+sobre el GT de validación, y **registrar los tiempos de espera**. Usa
+[`submit_generation.sh`](submit_generation.sh) → corre `evaluation/scripts/evaluate_generation.py`.
+
+A diferencia de `submit.sh`, este job **no necesita el corpus ni scratch**: la entrada es
+`evaluation/ground_truth/datasetQA_GT.json` (ya en el repo). Itera internamente por los
+modelos definidos en la constante `MODELS` del script (no hace falta un pipeline aparte).
+
+### Diferencias de dependencias
+
+El entorno necesita dos paquetes extra respecto al de extracción (ya agregados al
+`environment.yml`; en el cluster se instalan con pip por el flujo manual del [Paso 5](#paso-5-crear-entorno-e-instalar-dependencias-manual)):
+
+```bash
+conda activate graphrag
+pip install matplotlib            # gráficas de los reportes
+pip install bitsandbytes          # opcional: cuantización 4-bit (HF_QUANTIZATION=bnb4)
+```
+
+### El juez (API de Anthropic)
+
+La comparación contra el `answer` de referencia la hace un LLM-as-a-judge vía la API de
+Anthropic, así que el nodo de cómputo necesita:
+
+1. `ANTHROPIC_API_KEY` en `backend/.env` (o exportada).
+2. **Salida a internet** desde el nodo de cómputo (igual que para descargar modelos de HF).
+   Si el nodo no tiene internet, correr con `--no-judge` (solo genera y mide latencias) y
+   ejecutar el juicio después donde haya conexión, reusando `generation_details.json`.
+
+### Enviar el job
+
+```bash
+cd ~/institutional-graphrag
+sbatch backend/scripts/cluster/submit_generation.sh
+```
+
+Para una prueba rápida, editar la línea final de `submit_generation.sh` agregando
+`--max-questions 3` (y `--no-judge` si todavía no configuraste la API key).
+
+### Salidas
+
+Quedan en `evaluation/results/generation/`:
+
+- `generation_comparison_summary.json` — métricas agregadas por modelo×prompt
+- `generation_details.json` — detalle por pregunta (respuesta de cada modelo + juicio)
+- `images/*.png` y `generation_report.html` — gráficas y reporte
+
+### Modelos grandes en la A40 (48GB)
+
+Los modelos por defecto van de 4B a 24B. En bf16, un 24B (Mistral Small) ronda los 48GB y
+**puede no entrar** con el overhead del KV cache. Si da OOM, descomentar
+`export HF_QUANTIZATION="bnb4"` en `submit_generation.sh`. Si un modelo falla (gated sin
+token, OOM, etc.) el script **sigue con los demás** y al final lista los que fallaron.
 
 ---
 

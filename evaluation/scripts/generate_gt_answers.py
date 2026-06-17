@@ -1,6 +1,6 @@
 """Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
 
-Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en
+Toma un JSON cualquiera cuyos items tengan los campos `question` (pregunta en
 lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para
 cada uno, genera el campo `answer` en lenguaje natural.
 
@@ -9,7 +9,7 @@ Reutiliza la misma lógica de generación de respuestas del pipeline de GraphRAG
 con la variable de entorno LLM_BACKEND (ollama | huggingface).
 
 Entrada:
-    - Un archivo JSON donde cada item tenga al menos: pregunta, retrieved_subgraph.
+    - Un archivo JSON donde cada item tenga al menos: question, retrieved_subgraph.
 
 Salida:
     - Agrega/completa el campo `answer` en cada item.
@@ -34,23 +34,23 @@ OUT_OF_SCOPE = "La consulta solicitada está fuera del alcance del esquema actua
 NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 
 
-def _is_count_context(subgrafo: str) -> bool:
-    lowered = subgrafo.lower()
+def _is_count_context(subgraph: str) -> bool:
+    lowered = subgraph.lower()
     return any(key in lowered for key in ("cantidad", "frecuencia", "total", "count"))
 
 
-def build_messages(pregunta: str, subgrafo: str) -> list[dict[str, str]]:
+def build_messages(question: str, subgraph: str) -> list[dict[str, str]]:
     """Construye los mensajes para el LLM a partir de la pregunta y el subgrafo.
     Replica los prompts usados en `GraphRAGRetriever.generate_result`.
     """
-    if _is_count_context(subgrafo):
+    if _is_count_context(subgraph):
         system = (
             "Respondé en español de forma DIRECTA y NUMÉRICA. Si los resultados "
             "muestran un número, respondé ese número exacto. No digas 'no se puede "
             "determinar' si el número está ahí."
         )
         user = (
-            f"PREGUNTA: {pregunta}\n\nRESULTADOS DEL GRAFO:\n{subgrafo}\n\n"
+            f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
             "RESPONDE con el número exacto que aparece en los resultados e incluí "
             "todos los valores mostrados."
         )
@@ -63,7 +63,7 @@ def build_messages(pregunta: str, subgrafo: str) -> list[dict[str, str]]:
             "completa de resultados."
         )
         user = (
-            f"PREGUNTA: {pregunta}\n\nRESULTADOS DEL GRAFO:\n{subgrafo}\n\n"
+            f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
             "IMPORTANTE: Los resultados de arriba contienen la respuesta. Usalos "
             "TODOS. No digas que no hay información si los resultados muestran datos."
         )
@@ -82,16 +82,16 @@ def _resolve_answer_model() -> str | None:
     return os.getenv("OLLAMA_MODEL_ANSWER")
 
 
-def generate_answer(client: Any, pregunta: str, subgrafo: str) -> str:
+def generate_answer(client: Any, question: str, subgraph: str) -> str:
     """Genera la respuesta en lenguaje natural para una pregunta."""
-    subgrafo = (subgrafo or "").strip()
+    subgraph = (subgraph or "").strip()
 
-    if not subgrafo or subgrafo == NO_INFO:
+    if not subgraph or subgraph == NO_INFO:
         return NO_INFO
-    if subgrafo == OUT_OF_SCOPE:
+    if subgraph == OUT_OF_SCOPE:
         return OUT_OF_SCOPE
 
-    messages = build_messages(pregunta, subgrafo)
+    messages = build_messages(question, subgraph)
     answer = client.generate(messages=messages, temperature=0.1, max_tokens=2048)
     return answer.strip()
 
@@ -123,7 +123,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "questions_file",
         type=Path,
-        help="Ruta al archivo JSON con items que tengan 'pregunta' y 'retrieved_subgraph'.",
+        help="Ruta al archivo JSON con items que tengan 'question' y 'retrieved_subgraph'.",
     )
     parser.add_argument(
         "--overwrite",
@@ -151,8 +151,8 @@ def main() -> None:
         if not isinstance(item, dict):
             continue
 
-        pregunta = (item.get("pregunta") or "").strip()
-        if not pregunta:
+        question = (item.get("question") or "").strip()
+        if not question:
             continue
 
         if item.get("answer") and not args.overwrite:
@@ -161,7 +161,7 @@ def main() -> None:
 
         qid = item.get("id", "?")
         print(f"Generando respuesta para pregunta {qid}...", flush=True)
-        item["answer"] = generate_answer(client, pregunta, item.get("retrieved_subgraph", ""))
+        item["answer"] = generate_answer(client, question, item.get("retrieved_subgraph", ""))
         generated += 1
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
