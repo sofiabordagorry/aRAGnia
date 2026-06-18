@@ -15,7 +15,7 @@
 
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/jsx-source" id="app-source">
         const { useState, useMemo } = React;
 
         function TaxonomyExplorer() {
@@ -139,6 +139,14 @@
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<TaxonomyExplorer />);
+    </script>
+
+    <script>
+        (function () {
+            var source = document.getElementById('app-source').textContent;
+            var compiled = Babel.transform(source, { presets: [['react', { runtime: 'classic' }]] }).code;
+            (0, eval)(compiled);
+        })();
     </script>
 </body>
 </html>
