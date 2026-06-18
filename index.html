@@ -18,6 +18,46 @@
     <script type="text/jsx-source" id="app-source">
         const { useState, useMemo } = React;
 
+        function CopyButton({ text }) {
+            const [copied, setCopied] = useState(false);
+            const [hover, setHover] = useState(false);
+            const handleCopy = (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(text).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1400);
+                });
+            };
+            const btnStyle = {
+                marginLeft: 'auto', flexShrink: 0, display: 'inline-flex', alignItems: 'center',
+                gap: '5px', cursor: 'pointer', fontSize: '11px', fontWeight: '600',
+                padding: '4px 9px', borderRadius: '7px',
+                border: '1px solid ' + (copied ? '#bcdcc7' : hover ? '#d4d4d4' : '#e7e7e7'),
+                background: copied ? '#eef7f1' : hover ? '#f4f4f4' : '#fff',
+                color: copied ? '#3f8559' : '#8a8a8a',
+                transition: 'all 0.15s ease'
+            };
+            const iconProps = {
+                width: '13', height: '13', viewBox: '0 0 24 24', fill: 'none',
+                stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round'
+            };
+            const icon = copied
+                ? <svg {...iconProps} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                : <svg {...iconProps}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>;
+            return (
+                <button
+                    onClick={handleCopy}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                    title={copied ? 'Copiado' : 'Copiar'}
+                    style={btnStyle}
+                >
+                    {icon}
+                    {copied ? 'Copiado' : 'Copiar'}
+                </button>
+            );
+        }
+
         function TaxonomyExplorer() {
             const data = typeof mergedData !== 'undefined' ? mergedData : [];
             const [searchTerm, setSearchTerm] = useState("");
@@ -29,16 +69,17 @@
 
             const filteredData = useMemo(() => {
                 if (!searchTerm) return data;
-                const lowerSearch = searchTerm.toLowerCase();
+                const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                const lowerSearch = norm(searchTerm);
 
                 return data.map(field => {
-                    const matchField = field.nameEs.toLowerCase().includes(lowerSearch) || field.nameEn.toLowerCase().includes(lowerSearch);
-                    
+                    const matchField = norm(field.nameEs).includes(lowerSearch) || norm(field.nameEn).includes(lowerSearch);
+
                     const filteredSubfields = field.subfields.map(subfield => {
-                        const matchSubfield = subfield.nameEs.toLowerCase().includes(lowerSearch) || subfield.nameEn.toLowerCase().includes(lowerSearch);
-                        
-                        const filteredTopics = subfield.topics.filter(topic => 
-                            topic.es.toLowerCase().includes(lowerSearch) || topic.en.toLowerCase().includes(lowerSearch)
+                        const matchSubfield = norm(subfield.nameEs).includes(lowerSearch) || norm(subfield.nameEn).includes(lowerSearch);
+
+                        const filteredTopics = subfield.topics.filter(topic =>
+                            norm(topic.es).includes(lowerSearch) || norm(topic.en).includes(lowerSearch)
                         );
 
                         if (matchField || matchSubfield || filteredTopics.length > 0) {
@@ -119,6 +160,7 @@
                                                                         <span style={{...styles.chip, ...styles.topicChip}}>Topic</span>
                                                                         <span style={{...styles.esText, fontSize: '0.95em'}}>{topic.es}</span>
                                                                         <span style={styles.enText}>({topic.en})</span>
+                                                                        <CopyButton text={`${field.nameEs} / ${subfield.nameEs} / ${topic.es}`} />
                                                                     </div>
                                                                 ))}
                                                             </div>
