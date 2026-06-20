@@ -142,7 +142,6 @@ def main() -> None:
         raise FileNotFoundError(f"No existe el archivo: {in_path}")
 
     items = load_items(in_path)
-
     client = get_llm_client(model=_resolve_answer_model())
 
     generated = 0
@@ -151,7 +150,7 @@ def main() -> None:
         if not isinstance(item, dict):
             continue
 
-        question = (item.get("question") or "").strip()
+        question = (item.get("pregunta") or "").strip()
         if not question:
             continue
 
