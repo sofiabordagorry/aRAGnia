@@ -649,6 +649,8 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
             props = dict(node)
             display = (
                 props.get("valor")
+                or props.get("nombre_de_despliegue")
+                or props.get("titulo_de_despliegue")
                 or props.get("nombre")
                 or props.get("titulo")
                 or props.get("id", "")

@@ -1,10 +1,83 @@
 {
   "entities": [
     {
+      "id": "proy_2018_300",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "mineria de procesos y datos para la mejora de procesos en las organizaciones",
+        "titulo_de_despliegue": "Minería de procesos y datos para la mejora de procesos en las organizaciones",
+        "palabras_clave": [
+          "Minería de procesos y datos",
+          "Análisis y mejora de procesos",
+          "Calidad y gestión de datos"
+        ],
+        "descripcion": "En los últimos años el fenómeno de la “explosión de datos” caracterizado por el crecimiento exponencial de la cantidad de datos disponibles en internet y las organizaciones, provenientes de fuentes como computadoras personales/empresariales, redes sociales, cá"
+      }
+    },
+    {
+      "id": "proy_2018_300_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2018_300_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
+        "sub_id": "300",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_300_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2018_300_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
+        "sub_id": "300",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "proy_2016_429",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "generacion automatica de variantes en familias de procesos de negocio",
+        "titulo_de_despliegue": "Generación automática de variantes en familias de procesos de negocio",
+        "palabras_clave": [
+          "Gestión de Procesos de Negocio",
+          "Desarrollo Dirigido por Modelos",
+          "Variabilidad en procesos"
+        ],
+        "descripcion": "Como parte de su operativa diaria, las organizaciones realizan procesos de negocio para alcanzar sus objetivos. Muchos procesos pueden ser vistos como un marco general adaptable a diferentes organizaciones, cada una con sus particularidades tecnológicas y de d"
+      }
+    },
+    {
+      "id": "proy_2016_429_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2016_429_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
+        "sub_id": "429",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_429_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2016_429_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
+        "sub_id": "429",
+        "tipo": "informe"
+      }
+    },
+    {
       "id": "proy_2012_638",
       "label": "Proyecto",
       "value": {
         "titulo": "web warehouse de datos abiertos de gobierno con gestion de calidad",
+        "titulo_de_despliegue": "Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
         "palabras_clave": ["Web Warehouse", "Datos Abiertos", "Calidad"],
         "descripcion": "El presente proyecto busca estudiar y resolver los problemas que se presentan para desarrollar un Web Warehouse (en adelante, WW) de datos abiertos de gobierno electrónico, donde se conozca, valide y gestione la calidad de los datos. El encare del proyecto es "
       }
@@ -50,6 +123,7 @@
       "label": "Proyecto",
       "value": {
         "titulo": "aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos",
+        "titulo_de_despliegue": "Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos",
         "palabras_clave": ["Compresión", "Datos de secuenciación", "Nanoporos"],
         "descripcion": "En 2015 se liberó la primera versión comercial de un secuenciador de genomas por nanoporos, una tecnología que se perfila como la próxima generación de instrumentos de secuenciación. Este tipo de secuenciadores generan lecturas de fragmentos de secuencia de AD"
       }
@@ -59,6 +133,7 @@
       "label": "Proyecto",
       "value": {
         "titulo": "sistemas binarios estocasticos dinamicos",
+        "titulo_de_despliegue": "Sistemas binarios estocásticos dinámicos",
         "palabras_clave": [
           "Sistema Binario Estocástico",
           "Confiabilidad",
@@ -97,28 +172,6 @@
       }
     },
     {
-      "id": "proy_2018_260",
-      "label": "Proyecto",
-      "value": {
-        "titulo": "diseño optimo de redes de ciclovias",
-        "palabras_clave": ["ciclovías", "diseño de redes", "optimización"],
-        "descripcion": "Se aplican metodologías de diseño de redes al problema del diseño óptimo de redes de ciclovías urbanas. Una red de ciclovías es la conjunción de todas las ciclovías de un área de estudio. Una ciclovía es una especialización del espacio urbano dedicado a la cir"
-      }
-    },
-    {
-      "id": "proy_2018_413",
-      "label": "Proyecto",
-      "value": {
-        "titulo": "prediccion de ndvi dentro de parcelas de cultivos agricolas mediante tecnicas de aprendizaje profundo",
-        "palabras_clave": [
-          "índice verde",
-          "aprendizaje profundo",
-          "análisis de redes"
-        ],
-        "descripcion": "Existen varios satélites que proveen, en forma gratuita y periódica, imágenes de la superficie agrícola del país. Esta información es utilizada por científicos de todo el mundo, pero es poco utilizada por los sectores productivos a escala de parcela (o inferio"
-      }
-    },
-    {
       "id": "proy_2016_729_propuesta",
       "label": "Documento",
       "value": {
@@ -137,50 +190,6 @@
         "es_grupo": "proy",
         "anio_publicacion": "2016",
         "sub_id": "729",
-        "tipo": "informe"
-      }
-    },
-    {
-      "id": "proy_2018_260_propuesta",
-      "label": "Documento",
-      "value": {
-        "nombre_base": "proy_2018_260_propuesta",
-        "es_grupo": "proy",
-        "anio_publicacion": "2018",
-        "sub_id": "260",
-        "tipo": "propuesta"
-      }
-    },
-    {
-      "id": "proy_2018_260_informe",
-      "label": "Documento",
-      "value": {
-        "nombre_base": "proy_2018_260_informe",
-        "es_grupo": "proy",
-        "anio_publicacion": "2018",
-        "sub_id": "260",
-        "tipo": "informe"
-      }
-    },
-    {
-      "id": "proy_2018_413_propuesta",
-      "label": "Documento",
-      "value": {
-        "nombre_base": "proy_2018_413_propuesta",
-        "es_grupo": "proy",
-        "anio_publicacion": "2018",
-        "sub_id": "413",
-        "tipo": "propuesta"
-      }
-    },
-    {
-      "id": "proy_2018_413_informe",
-      "label": "Documento",
-      "value": {
-        "nombre_base": "proy_2018_413_informe",
-        "es_grupo": "proy",
-        "anio_publicacion": "2018",
-        "sub_id": "413",
         "tipo": "informe"
       }
     },
@@ -281,54 +290,6 @@
       }
     },
     {
-      "id": "uruguay_cedula_de_identidad_2597542_0",
-      "label": "Investigador",
-      "value": {
-        "nombre": "antonio daniel mauttone vidales",
-        "nombre_de_despliegue": "Antonio Daniel Mauttone Vidales",
-        "documento": "2597542-0",
-        "tipo_documento": "Cédula de Identidad",
-        "pais_documento": "Uruguay",
-        "sexo": "Masculino"
-      }
-    },
-    {
-      "id": "uruguay_cedula_de_identidad_3988305_5",
-      "label": "Investigador",
-      "value": {
-        "nombre": "maria elizabeth urquhart perez",
-        "nombre_de_despliegue": "María Elizabeth Urquhart Pérez",
-        "documento": "3988305-5",
-        "tipo_documento": "Cédula de Identidad",
-        "pais_documento": "Uruguay",
-        "sexo": "Femenino"
-      }
-    },
-    {
-      "id": "uruguay_cedula_de_identidad_3348401_1",
-      "label": "Investigador",
-      "value": {
-        "nombre": "pablo alejandro rodriguez bocca",
-        "nombre_de_despliegue": "Pablo Alejandro Rodríguez Bocca",
-        "documento": "3348401-1",
-        "tipo_documento": "Cédula de Identidad",
-        "pais_documento": "Uruguay",
-        "sexo": "Masculino"
-      }
-    },
-    {
-      "id": "uruguay_cedula_de_identidad_2981586_6",
-      "label": "Investigador",
-      "value": {
-        "nombre": "andres berger ricca",
-        "nombre_de_despliegue": "Andrés Berger Ricca",
-        "documento": "2981586-6",
-        "tipo_documento": "Cédula de Identidad",
-        "pais_documento": "Uruguay",
-        "sexo": "Masculino"
-      }
-    },
-    {
       "id": "uruguay_cedula_de_identidad_5294489_8",
       "label": "Investigador",
       "value": {
@@ -389,15 +350,111 @@
       }
     },
     {
+      "id": "españa_cedula_de_identidad_03882548X",
+      "label": "Investigador",
+      "value": {
+        "nombre": "felix oscar garcia rubio",
+        "nombre_de_despliegue": "Félix Oscar García Rubio",
+        "documento": "03882548X",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "España",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2765408_4",
+      "label": "Investigador",
+      "value": {
+        "nombre": "daniel calegari garcia",
+        "nombre_de_despliegue": "Daniel Calegari García",
+        "documento": "2765408-4",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "austria_pasaporte_l01073430",
+      "label": "Investigador",
+      "value": {
+        "nombre": "barbara weber",
+        "nombre_de_despliegue": "Barbara Weber",
+        "documento": "L01073430",
+        "tipo_documento": "Pasaporte",
+        "pais_documento": "Austria",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "holanda_pasaporte_NWHD9DL44",
+      "label": "Investigador",
+      "value": {
+        "nombre": "hajo reijers",
+        "nombre_de_despliegue": "Hajo Reijers",
+        "documento": "NWHD9DL44",
+        "tipo_documento": "Pasaporte",
+        "pais_documento": "Holanda",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3255489_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "andrea veronica delgado cavaliere",
+        "nombre_de_despliegue": "Andrea Verónica Delgado Cavaliere",
+        "documento": "3255489-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "venezuela_otro_8033498",
+      "label": "Investigador",
+      "value": {
+        "nombre": "jose lisandro aguilar castro",
+        "nombre_de_despliegue": "José Lisandro Aguilar Castro",
+        "documento": "8033498",
+        "tipo_documento": "Otro",
+        "pais_documento": "Venezuela",
+        "sexo": "Masculino"
+      }
+    },
+    {
       "id": "uruguay_cedula_de_identidad_2839112_0",
       "label": "Investigador",
       "value": {
-        "nombre": "laura gonzalez lopez",
-        "nombre_de_despliegue": "Laura González López",
+        "nombre": "maria laura gonzalez lopez",
+        "nombre_de_despliegue": "María Laura González López",
         "documento": "2839112-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
         "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1831699_6",
+      "label": "Investigador",
+      "value": {
+        "nombre": "libertad tansini mercader",
+        "nombre_de_despliegue": "Libertad Tansini Mercader",
+        "documento": "1831699-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "españa_otro_03895830k",
+      "label": "Investigador",
+      "value": {
+        "nombre": "ricardo perez del castillo",
+        "nombre_de_despliegue": "Ricardo Pérez del Castillo",
+        "documento": "03895830K",
+        "tipo_documento": "Otro",
+        "pais_documento": "España",
+        "sexo": "Masculino"
       }
     },
     {
@@ -406,27 +463,188 @@
       "value": "tecnologica"
     },
     {
-      "id": "ingenieria_general_topic",
+      "id": "aplicaciones_web_y_gestion_de_datos",
       "label": "Topico",
-      "value": "ingenieria general"
+      "value": "aplicaciones web y gestion de datos"
     },
     {
-      "id": "ingenieria_general_subfield",
-      "label": "SubCampo",
-      "value": "ingenieria general"
+      "id": "optimizacion_y_programacion_matematica",
+      "label": "Topico",
+      "value": "optimizacion y programacion matematica"
+    },
+    {
+      "id": "arquitectura_orientada_a_servicios_y_servicios_web",
+      "label": "Topico",
+      "value": "arquitectura orientada a servicios y servicios web"
+    },
+    {
+      "id": "algoritmos_y_compresion_de_datos",
+      "label": "Topico",
+      "value": "algoritmos y compresion de datos"
+    },
+    {
+      "id": "investigacion_cientifica_y_tecnologia",
+      "label": "Topico",
+      "value": "investigacion cientifica y tecnologia"
+    },
+    {
+      "id": "investigacion_avanzada_en_teoria_de_grafos",
+      "label": "Topico",
+      "value": "investigacion avanzada en teoria de grafos"
+    },
+    {
+      "id": "cadenas_de_markov_y_metodos_de_montecarlo",
+      "label": "Topico",
+      "value": "cadenas de markov y metodos de montecarlo"
+    },
+
+    {
+      "id": "modelado,_simulacion_y_optimizacion",
+      "label": "Topico",
+      "value": "modelado, simulacion y optimizacion"
+    },
+    {
+      "id": "tecnicas_de_ingenieria_de_software_basadas_en_modelos",
+      "label": "Topico",
+      "value": "tecnicas de ingenieria de software basadas en modelos"
+    },
+    {
+      "id": "modelado_y_analisis_de_procesos_de_negocio",
+      "label": "Topico",
+      "value": "modelado y análisis de procesos de negocio"
+    },
+    {
+      "id": "algoritmos_y_aplicaciones_de_mineria_de_datos",
+      "label": "Topico",
+      "value": "algoritmos y aplicaciones de mineria de datos"
+    },
+    {
+      "id": "sistemas_de_informacion_de_gestion",
+      "label": "Subcampo",
+      "value": "sistemas de informacion de gestion"
+    },
+    {
+      "id": "software",
+      "label": "Subcampo",
+      "value": "software"
+    },
+    {
+      "id": "estadistica_y_probabilidad",
+      "label": "Subcampo",
+      "value": "estadistica y probabilidad"
+    },
+    {
+      "id": "matematicas_discretas_y_combinatoria",
+      "label": "Subcampo",
+      "value": "matematicas discretas y combinatoria"
+    },
+    {
+      "id": "sistemas_de_informacion",
+      "label": "Subcampo",
+      "value": "sistemas de informacion"
+    },
+    {
+      "id": "teoria_computacional_y_matematicas",
+      "label": "Subcampo",
+      "value": "teoria computacional y matematicas"
+    },
+    {
+      "id": "ingenieria_de_control_y_sistemas",
+      "label": "Subcampo",
+      "value": "ingenieria de control y sistemas"
+    },
+    {
+      "id": "aplicaciones_de_ciencias_de_la_computacion",
+      "label": "Subcampo",
+      "value": "aplicaciones de ciencias de la Computacion"
+    },
+    {
+      "id": "inteligencia_artificial",
+      "label": "Subcampo",
+      "value": "inteligencia artificial"
     }
   ],
   "relationships": [
     {
       "type": "PERTENECE_A_SUBCAMPO",
-      "source_id": "ingenieria_general_topic",
-      "target_id": "ingenieria_general_subfield",
+      "source_id": "algoritmos_y_aplicaciones_de_mineria_de_datos",
+      "target_id": "sistemas_de_informacion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "modelado_y_analisis_de_procesos_de_negocio",
+      "target_id": "sistemas_de_informacion_de_gestion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "tecnicas_de_ingenieria_de_software_basadas_en_modelos",
+      "target_id": "software",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "cadenas_de_markov_y_metodos_de_montecarlo",
+      "target_id": "estadistica_y_probabilidad",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "modelado,_simulacion_y_optimizacion",
+      "target_id": "matematicas_discretas_y_combinatoria",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "investigacion_avanzada_en_teoria_de_grafos",
+      "target_id": "teoria_computacional_y_matematicas",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "optimizacion_y_programacion_matematica",
+      "target_id": "ingenieria_de_control_y_sistemas",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "investigacion_cientifica_y_tecnologia",
+      "target_id": "aplicaciones_de_ciencias_de_la_computacion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "algoritmos_y_compresion_de_datos",
+      "target_id": "inteligencia_artificial",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "aplicaciones_web_y_gestion_de_datos",
+      "target_id": "sistemas_de_informacion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "arquitectura_orientada_a_servicios_y_servicios_web",
+      "target_id": "sistemas_de_informacion",
       "properties": {}
     },
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2012_638",
-      "target_id": "ingenieria_general_topic",
+      "target_id": "aplicaciones_web_y_gestion_de_datos"
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_638",
+      "target_id": "arquitectura_orientada_a_servicios_y_servicios_web"
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_395",
+      "target_id": "optimizacion_y_programacion_matematica",
       "properties": {
         "mention_count": 11
       }
@@ -434,7 +652,63 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_395",
-      "target_id": "ingenieria_general_topic",
+      "target_id": "investigacion_avanzada_en_teoria_de_grafos",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_395",
+      "target_id": "modelado,_simulacion_y_optimizacion",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_395",
+      "target_id": "cadenas_de_markov_y_metodos_de_montecarlo",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_429",
+      "target_id": "tecnicas_de_ingenieria_de_software_basadas_en_modelos",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_429",
+      "target_id": "modelado_y_analisis_de_procesos_de_negocio",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_300",
+      "target_id": "algoritmos_y_aplicaciones_de_mineria_de_datos",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_300",
+      "target_id": "modelado_y_analisis_de_procesos_de_negocio",
+      "properties": {
+        "mention_count": 11
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_300",
+      "target_id": "tecnicas_de_ingenieria_de_software_basadas_en_modelos",
       "properties": {
         "mention_count": 11
       }
@@ -442,28 +716,19 @@
     {
       "type": "TIENE_TOPICO",
       "source_id": "proy_2016_729",
-      "target_id": "ingenieria_general_topic",
+      "target_id": "algoritmos_y_compresion_de_datos",
       "properties": {
         "mention_count": 11
       }
     },
     {
       "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_260",
-      "target_id": "ingenieria_general_topic",
+      "source_id": "proy_2016_729",
+      "target_id": "investigacion_cientifica_y_tecnologia",
       "properties": {
         "mention_count": 11
       }
     },
-    {
-      "type": "TIENE_TOPICO",
-      "source_id": "proy_2018_413",
-      "target_id": "ingenieria_general_topic",
-      "properties": {
-        "mention_count": 11
-      }
-    },
-
     {
       "type": "INICIO_EN",
       "source_id": "proy_2012_638",
@@ -472,6 +737,18 @@
     },
     {
       "type": "INICIO_EN",
+      "source_id": "proy_2016_429",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_300",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
       "source_id": "proy_2016_729",
       "target_id": "2016",
       "properties": {}
@@ -483,15 +760,27 @@
       "properties": {}
     },
     {
-      "type": "INICIO_EN",
-      "source_id": "proy_2018_260",
-      "target_id": "2018",
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_300",
+      "target_id": "proy_2018_300_propuesta",
       "properties": {}
     },
     {
-      "type": "INICIO_EN",
-      "source_id": "proy_2018_413",
-      "target_id": "2018",
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_300",
+      "target_id": "proy_2018_300_informe",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_429",
+      "target_id": "proy_2016_429_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_429",
+      "target_id": "proy_2016_429_informe",
       "properties": {}
     },
     {
@@ -528,30 +817,6 @@
       "type": "ES_DESCRITO_POR",
       "source_id": "proy_2016_395",
       "target_id": "proy_2016_395_informe",
-      "properties": {}
-    },
-    {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2018_260",
-      "target_id": "proy_2018_260_propuesta",
-      "properties": {}
-    },
-    {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2018_260",
-      "target_id": "proy_2018_260_informe",
-      "properties": {}
-    },
-    {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2018_413",
-      "target_id": "proy_2018_413_propuesta",
-      "properties": {}
-    },
-    {
-      "type": "ES_DESCRITO_POR",
-      "source_id": "proy_2018_413",
-      "target_id": "proy_2018_413_informe",
       "properties": {}
     },
     {
@@ -612,6 +877,102 @@
     },
     {
       "type": "PARTICIPO_EN",
+      "source_id": "españa_cedula_de_identidad_03882548X",
+      "target_id": "proy_2016_429",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2765408_4",
+      "target_id": "proy_2016_429",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "austria_pasaporte_l01073430",
+      "target_id": "proy_2016_429",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "holanda_pasaporte_NWHD9DL44",
+      "target_id": "proy_2016_429",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3255489_7",
+      "target_id": "proy_2016_429",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "venezuela_otro_8033498",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1831699_6",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "españa_otro_03895830k",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2839112_0",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3255489_7",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2765408_4",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2760527_1",
+      "target_id": "proy_2018_300",
+      "properties": {
+        "calidad": "integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
       "source_id": "uruguay_cedula_de_identidad_1884198_9",
       "target_id": "proy_2016_729",
       "properties": {
@@ -632,38 +993,6 @@
       "target_id": "proy_2016_729",
       "properties": {
         "calidad": "integrante"
-      }
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_3988305_5",
-      "target_id": "proy_2018_260",
-      "properties": {
-        "calidad": "integrante"
-      }
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_2597542_0",
-      "target_id": "proy_2018_260",
-      "properties": {
-        "calidad": "responsable"
-      }
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_3348401_1",
-      "target_id": "proy_2018_413",
-      "properties": {
-        "calidad": "responsable"
-      }
-    },
-    {
-      "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_2981586_6",
-      "target_id": "proy_2018_413",
-      "properties": {
-        "calidad": "responsable"
       }
     },
     {
@@ -700,19 +1029,7 @@
     },
     {
       "type": "PERTENECE_A_AREA",
-      "source_id": "proy_2018_413",
-      "target_id": "area_tecnologica",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_AREA",
       "source_id": "proy_2016_395",
-      "target_id": "area_tecnologica",
-      "properties": {}
-    },
-    {
-      "type": "PERTENECE_A_AREA",
-      "source_id": "proy_2018_260",
       "target_id": "area_tecnologica",
       "properties": {}
     },
@@ -725,6 +1042,18 @@
     {
       "type": "PERTENECE_A_AREA",
       "source_id": "proy_2012_638",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_300",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_429",
       "target_id": "area_tecnologica",
       "properties": {}
     }
