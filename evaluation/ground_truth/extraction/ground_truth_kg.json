@@ -354,7 +354,7 @@
       "label": "Investigador",
       "value": {
         "nombre": "felix oscar garcia rubio",
-        "nombre_de_despliegue": "Félix oscar garcía rubio",
+        "nombre_de_despliegue": "Félix Oscar García Rubio",
         "documento": "03882548X",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "España",
@@ -389,8 +389,8 @@
       "id": "holanda_pasaporte_NWHD9DL44",
       "label": "Investigador",
       "value": {
-        "nombre": "ajo reijers",
-        "nombre_de_despliegue": "Ajo Reijers",
+        "nombre": "hajo reijers",
+        "nombre_de_despliegue": "Hajo Reijers",
         "documento": "NWHD9DL44",
         "tipo_documento": "Pasaporte",
         "pais_documento": "Holanda",
@@ -426,7 +426,7 @@
       "label": "Investigador",
       "value": {
         "nombre": "maria laura gonzalez lopez",
-        "nombre_de_despliegue": "Maria Laura González López",
+        "nombre_de_despliegue": "María Laura González López",
         "documento": "2839112-0",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
