@@ -54,7 +54,6 @@ from institutional_graphrag.extraction.bert_extractor import (  # noqa: E402
 )
 
 DEFAULT_GT_PATH = EVAL_DIR / "ground_truth" / "extraction" / "ground_truth_kg.json"
-DEFAULT_CHUNKS_DIR = REPO_ROOT / "data" / "chunks"
 DEFAULT_DOCLING_DIR = REPO_ROOT / "data" / "docling"
 RESULTS_DIR = EVAL_DIR / "results" / "topic_classification"
 CACHE_DIR = RESULTS_DIR / "cache"
@@ -78,7 +77,7 @@ PARAM_SHORT = {
 CHUNKING_THRESHOLDS: List[float] = [0.02, 0.04, 0.06, 0.08]  # umbral etapa de chunking (score por chunk)
 COVERAGE_THRESHOLDS: List[float] = [DEFAULT_COVERAGE_LOGIT_THRESHOLD]      # umbral final: fracción de chunks (default 0.5)
 CONFIDENCE_THRESHOLDS: List[float] = [DEFAULT_CONFIDENCE_LOGIT_THRESHOLD]  # umbral final: logit promedio (default 8)
-CHUNK_SIZES: List[Optional[int]] = [None]   # tamaño de chunk; None = usar los chunks ya generados en data/chunks
+CHUNK_SIZES: List[int] = [256, 512, 768]   # max_tokens por chunk; 512 = config de prod (e5-large-v2)
 
 # Opciones de corrida:
 MAX_PROJECTS: Optional[int] = None  # limitar numero de proyectos (None = todos)
@@ -110,15 +109,15 @@ def build_ground_truth(gt_data: dict) -> Tuple[Dict[str, List[str]], Dict[str, s
     entities = gt_data.get("entities", [])
     relationships = gt_data.get("relationships", [])
 
-    # id de Documento -> base_name (descartando tablas)
+    # id de Documento -> nombre_base (descartando tablas)
     doc_base_name: Dict[str, str] = {}
     for e in entities:
         if e.get("label") != "Documento":
             continue
         value = e.get("value", {}) or {}
-        if value.get("type") == "tabla":
+        if value.get("tipo") == "tabla":
             continue
-        base_name = value.get("base_name")
+        base_name = value.get("nombre_base")
         if base_name and not str(base_name).endswith("_table"):
             doc_base_name[e["id"]] = base_name
 
@@ -153,28 +152,22 @@ def build_ground_truth(gt_data: dict) -> Tuple[Dict[str, List[str]], Dict[str, s
 
     return docs_by_project, gt_topics_by_project
 
-def _load_chunks(chunks_dir: Path, base_name: str) -> Optional[List[dict]]:
-    path = chunks_dir / f"{base_name}_chunks.json"
-    if not path.exists():
-        return None
-    payload = load_json(path)
-    chunks = payload.get("chunks", [])
-    return chunks if isinstance(chunks, list) else []
-
-
 def _rechunk_project(
     docling_dir: Path,
     base_names: List[str],
     chunk_size: int,
 ) -> Dict[str, List[dict]]:
-    """Re-chunkea los documentos del proyecto desde data/docling con un max_tokens dado."""
+    """Re-chunkea los documentos del proyecto desde data/docling con un max_tokens dado.
+
+    Usa el mismo chunker que producción (HybridChunker + merge_peers); con chunk_size=512
+    reproduce exactamente los chunks del pipeline real (max_tokens default de e5-large-v2)."""
     from docling.chunking import HybridChunker
     from docling_core.types.doc import DoclingDocument
 
     from institutional_graphrag.config import EMBED_MODEL_ID
     from institutional_graphrag.ingest.chunker import chunk_document
 
-    chunker = HybridChunker(tokenizer=EMBED_MODEL_ID, max_tokens=chunk_size)
+    chunker = HybridChunker(tokenizer=EMBED_MODEL_ID, max_tokens=chunk_size, merge_peers=True)
     out: Dict[str, List[dict]] = {}
     for base_name in base_names:
         doc_path = docling_dir / f"{base_name}.json"
@@ -188,16 +181,14 @@ def _rechunk_project(
 
 def compute_raw_predictions(
     docs_by_project: Dict[str, List[str]],
-    chunks_dir: Path,
     docling_dir: Path,
-    chunk_size: Optional[int],
+    chunk_size: int,
     project_title_by_id: Dict[str, str],
     device: Optional[str],
     max_projects: Optional[int],
 ) -> Dict[str, Any]:
     """Corre BERT una vez por proyecto y devuelve, por chunk, todos los tópicos con
-    score >= RAW_SCORE_FLOOR. ``chunk_size=None`` usa los chunks ya existentes en disco;
-    un valor entero re-chunkea desde docling con ese max_tokens.
+    score >= RAW_SCORE_FLOOR. Re-chunkea desde docling con ``chunk_size`` como max_tokens.
     """
     extractor = BertTopicExtractor(
         threshold=RAW_SCORE_FLOOR,
@@ -212,10 +203,7 @@ def compute_raw_predictions(
         if max_projects is not None and processed >= max_projects:
             break
 
-        if chunk_size is None:
-            chunks_by_doc = {bn: _load_chunks(chunks_dir, bn) for bn in base_names}
-        else:
-            chunks_by_doc = _rechunk_project(docling_dir, base_names, chunk_size)
+        chunks_by_doc = _rechunk_project(docling_dir, base_names, chunk_size)
 
         available = [bn for bn, c in chunks_by_doc.items() if c]
         if not available:
@@ -255,16 +243,14 @@ def compute_raw_predictions(
     return {"chunk_size": chunk_size, "projects": projects_out}
 
 
-def raw_cache_path(chunk_size: Optional[int]) -> Path:
-    key = "default" if chunk_size is None else f"size{chunk_size}"
-    return CACHE_DIR / f"raw_preds_{key}.json"
+def raw_cache_path(chunk_size: int) -> Path:
+    return CACHE_DIR / f"raw_preds_size{chunk_size}.json"
 
 
 def get_raw_predictions(
     docs_by_project: Dict[str, List[str]],
-    chunks_dir: Path,
     docling_dir: Path,
-    chunk_size: Optional[int],
+    chunk_size: int,
     project_title_by_id: Dict[str, str],
     device: Optional[str],
     max_projects: Optional[int],
@@ -276,11 +262,9 @@ def get_raw_predictions(
         print(f"  [cache] usando predicciones crudas de {cache_path.name}")
         return load_json(cache_path)
 
-    label = "default (chunks en disco)" if chunk_size is None else f"chunk_size={chunk_size}"
-    print(f"Corriendo BERT sobre los proyectos [{label}]...")
+    print(f"Corriendo BERT sobre los proyectos [chunk_size={chunk_size}]...")
     raw = compute_raw_predictions(
         docs_by_project,
-        chunks_dir,
         docling_dir,
         chunk_size,
         project_title_by_id,
@@ -391,7 +375,7 @@ def build_param_grid(
     chunking: List[float],
     coverage: List[float],
     confidence: List[float],
-    sizes: List[Optional[int]],
+    sizes: List[int],
 ) -> List[Dict[str, Any]]:
     """Producto cartesiano de las listas -> lista de combinaciones de parámetros."""
     combos: List[Dict[str, Any]] = []
@@ -418,12 +402,6 @@ def sweep_description(varying: List[str]) -> str:
     return " × ".join(varying)
 
 
-def _fmt_value(dim: str, value: Any) -> Any:
-    if dim == "chunk_size":
-        return "def" if value is None else value
-    return value
-
-
 def config_signature(params: Dict[str, Any]) -> str:
     return (
         f"ck{params['chunking_threshold']}_cov{params['coverage_threshold']}"
@@ -436,66 +414,99 @@ def config_label(params: Dict[str, Any], varying: List[str]) -> str:
 
     Si no varía ninguno (una sola combinación) muestra los cuatro valores."""
     dims = varying if varying else list(PARAM_DIMENSIONS)
-    return " ".join(f"{PARAM_SHORT[d]}={_fmt_value(d, params[d])}" for d in dims)
+    return " ".join(f"{PARAM_SHORT[d]}={params[d]}" for d in dims)
 
 
 PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c", "#34495e"]
 
 
+def _facet_setup(configs: List[Dict[str, Any]]):
+    """Prepara el facetado por chunk_size: lista de tamaños, dims que varían (sin size),
+    los configs ordenados por cada tamaño, los anchos por panel y los ticks x salteados."""
+    sizes = sorted({c["params"]["chunk_size"] for c in configs})
+    nonsize_dims = [
+        d
+        for d in PARAM_DIMENSIONS
+        if d != "chunk_size" and len({c["params"][d] for c in configs}) > 1
+    ] or [d for d in PARAM_DIMENSIONS if d != "chunk_size"]
+
+    by_size: Dict[int, List[Dict[str, Any]]] = {}
+    for s in sizes:
+        cs = [c for c in configs if c["params"]["chunk_size"] == s]
+        cs.sort(key=lambda c: tuple(c["params"][d] for d in nonsize_dims))
+        by_size[s] = cs
+
+    # Ancho común acotado para que la imagen no se vuelva enorme con muchos combos.
+    width = min(20.0, max(6.0, max(len(by_size[s]) for s in sizes) * 0.22))
+
+    def flabel(params: Dict[str, Any]) -> str:
+        return " ".join(f"{PARAM_SHORT[d]}={params[d]}" for d in nonsize_dims)
+
+    def ticks(n: int) -> List[int]:
+        # Con muchos combos, mostrar ~20 labels salteados (la línea se ve completa igual).
+        if n <= 25:
+            return list(range(n))
+        step = max(1, n // 20)
+        return list(range(0, n, step))
+
+    return sizes, by_size, width, flabel, ticks
+
+
 def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
     images_dir.mkdir(parents=True, exist_ok=True)
     paths: Dict[str, Path] = {}
+    sizes, by_size, width, flabel, ticks = _facet_setup(configs)
 
-    labels = [c["label"] for c in configs]
-    x = np.arange(len(configs))
-
-    # P / R / F1 macro por configuración
-    fig, ax = plt.subplots(figsize=(max(6, len(configs) * 1.2), 4.5))
-    for i, key in enumerate(("precision_macro", "recall_macro", "f1_macro")):
-        ax.plot(
-            x,
-            [c["metrics"]["macro"][key] for c in configs],
-            marker="o",
-            color=PALETTE[i],
-            label=key.replace("_macro", "").capitalize(),
+    def _faceted_fig():
+        # Un panel por chunk_size, apilados verticalmente (ancho parejo, alto completo).
+        fig, axes = plt.subplots(
+            len(sizes), 1, figsize=(width, 3.6 * len(sizes)), sharey=True, squeeze=False
         )
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=25, ha="right", fontsize=8)
-    ax.set_ylim(0, 1.05)
-    ax.set_ylabel("Score (macro)")
-    ax.set_title("Precision / Recall / F1 macro por configuración")
-    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
-    ax.grid(axis="y", linestyle=":", alpha=0.5)
-    ax.spines[["top", "right"]].set_visible(False)
+        return fig, list(axes[:, 0])
+
+    def _xaxis(ax, cs):
+        tk = ticks(len(cs))
+        ax.set_xticks(tk)
+        ax.set_xticklabels([flabel(cs[i]["params"]) for i in tk], rotation=90, fontsize=6)
+        ax.set_ylim(0, 1.05)
+        ax.spines[["top", "right"]].set_visible(False)
+
+    # P / R / F1 macro, un panel por chunk_size
+    fig, axes = _faceted_fig()
+    for ax, s in zip(axes, sizes):
+        cs = by_size[s]
+        x = np.arange(len(cs))
+        for i, key in enumerate(("precision_macro", "recall_macro", "f1_macro")):
+            ax.plot(x, [c["metrics"]["macro"][key] for c in cs], marker="o", markersize=3,
+                    color=PALETTE[i], label=key.replace("_macro", "").capitalize())
+        ax.set_title(f"chunk_size={s}")
+        ax.grid(axis="y", linestyle=":", alpha=0.5)
+        ax.set_ylabel("Score (macro)")
+        _xaxis(ax, cs)
+    axes[0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
+    fig.suptitle("Precision / Recall / F1 macro (facetado por chunk_size)")
     fig.tight_layout()
     p = images_dir / "chart_metrics_vs_param.png"
     fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["metrics"] = p
 
-    all_projects = sorted(
-        {pid for c in configs for pid in c["metrics"]["per_project"]}
-    )
+    # Por proyecto: un chart por métrica, una línea por proyecto, facetado por chunk_size
+    all_projects = sorted({pid for c in configs for pid in c["metrics"]["per_project"]})
     if all_projects:
-        n_series = len(configs)
-        bar_w = 0.8 / max(n_series, 1)
-        xp = np.arange(len(all_projects))
         for metric, metric_label in (("f1", "F1"), ("precision", "Precision"), ("recall", "Recall")):
-            fig, ax = plt.subplots(figsize=(max(7, len(all_projects) * 1.3), 4.5))
-            for i, c in enumerate(configs):
-                offset = (i - n_series / 2 + 0.5) * bar_w
-                data = [
-                    c["metrics"]["per_project"].get(pid, {}).get(metric, 0.0)
-                    for pid in all_projects
-                ]
-                ax.bar(xp + offset, data, bar_w, label=c["label"], color=PALETTE[i % len(PALETTE)])
-            ax.set_xticks(xp)
-            ax.set_xticklabels(all_projects, rotation=25, ha="right", fontsize=8)
-            ax.set_ylim(0, 1.05)
-            ax.set_ylabel(metric_label)
-            ax.set_title(f"{metric_label} por proyecto y configuración")
-            ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
-            ax.spines[["top", "right"]].set_visible(False)
+            fig, axes = _faceted_fig()
+            for ax, s in zip(axes, sizes):
+                cs = by_size[s]
+                x = np.arange(len(cs))
+                for j, pid in enumerate(all_projects):
+                    ax.plot(x, [c["metrics"]["per_project"].get(pid, {}).get(metric, 0.0) for c in cs],
+                            marker=".", markersize=3, color=PALETTE[j % len(PALETTE)], label=pid)
+                ax.set_title(f"chunk_size={s}")
+                ax.set_ylabel(metric_label)
+                _xaxis(ax, cs)
+            axes[0].legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
+            fig.suptitle(f"{metric_label} por proyecto (facetado por chunk_size)")
             fig.tight_layout()
             p = images_dir / f"chart_{metric}_by_project.png"
             fig.savefig(p, dpi=150, bbox_inches="tight")
@@ -566,7 +577,7 @@ def render_report_cards(
             f"<td>{p['chunking_threshold']}</td>"
             f"<td>{p['coverage_threshold']}</td>"
             f"<td>{p['confidence_threshold']}</td>"
-            f"<td>{p['chunk_size'] if p['chunk_size'] is not None else 'default'}</td>"
+            f"<td>{p['chunk_size']}</td>"
             f"<td>{c['metrics']['n_projects']}</td>"
             + mcell(macro["precision_macro"])
             + mcell(macro["recall_macro"])
@@ -596,7 +607,7 @@ def render_report_cards(
     best = max(configs, key=lambda c: c["metrics"]["macro"]["f1_macro"])
     fixed = summary.get("fixed_params", {})
     fixed_str = (
-        ", ".join(f"{PARAM_SHORT[d]}={_fmt_value(d, v)}" for d, v in fixed.items())
+        ", ".join(f"{PARAM_SHORT[d]}={v}" for d, v in fixed.items())
         if fixed
         else "(ninguno)"
     )
@@ -734,21 +745,15 @@ def parse_float_list(raw: str, name: str) -> List[float]:
         raise ValueError(f"Valores inválidos para {name}: {raw!r}")
 
 
-def parse_size_list(raw: str) -> List[Optional[int]]:
-    """Lista de tamaños de chunk; acepta 'none'/'default' para usar los chunks existentes."""
+def parse_size_list(raw: str) -> List[int]:
+    """Lista de tamaños de chunk (max_tokens). 512 = config de prod."""
     parts = [v.strip() for v in raw.split(",") if v.strip()]
     if not parts:
         raise ValueError("La lista de chunk_size no puede estar vacía.")
-    out: List[Optional[int]] = []
-    for v in parts:
-        if v.lower() in ("none", "default", "def"):
-            out.append(None)
-        else:
-            try:
-                out.append(int(v))
-            except ValueError:
-                raise ValueError(f"chunk_size inválido: {v!r}")
-    return out
+    try:
+        return [int(v) for v in parts]
+    except ValueError:
+        raise ValueError(f"Valores inválidos para chunk_size: {raw!r}")
 
 
 def validate_grid(combos: List[Dict[str, Any]]) -> None:
@@ -779,7 +784,6 @@ def load_gt_context(gt_file: Path, device: Optional[str]) -> Dict[str, Any]:
 def evaluate_combos(
     combos: List[Dict[str, Any]],
     ctx: Dict[str, Any],
-    chunks_dir: Path,
     docling_dir: Path,
     device: Optional[str],
     max_projects: Optional[int],
@@ -787,7 +791,7 @@ def evaluate_combos(
 ) -> List[Dict[str, Any]]:
     """Evalúa cada combinación de parámetros y devuelve las configuraciones con métricas."""
     new_configs: List[Dict[str, Any]] = []
-    raw_by_size: Dict[Optional[int], Dict[str, Any]] = {}  # cache en memoria por chunk_size
+    raw_by_size: Dict[int, Dict[str, Any]] = {}  # cache en memoria por chunk_size
 
     varying = varying_dims([{"params": c} for c in combos])
 
@@ -796,7 +800,6 @@ def evaluate_combos(
         if size not in raw_by_size:
             raw_by_size[size] = get_raw_predictions(
                 ctx["docs_by_project"],
-                chunks_dir,
                 docling_dir,
                 size,
                 ctx["project_titles"],
@@ -859,9 +862,7 @@ def merge_and_write(
         c["label"] = config_label(c["params"], varying)
 
     sort_dims = varying if varying else list(PARAM_DIMENSIONS)
-    configs.sort(
-        key=lambda c: tuple((c["params"][d] is None, c["params"][d]) for d in sort_dims)
-    )
+    configs.sort(key=lambda c: tuple(c["params"][d] for d in sort_dims))
 
     fixed = {d: configs[0]["params"][d] for d in PARAM_DIMENSIONS if d not in varying}
 
@@ -906,10 +907,9 @@ def main() -> None:
     ap.add_argument("--confidence-thresholds", default=None,
                     help="Lista (coma) de confidence final. Default: constante CONFIDENCE_THRESHOLDS.")
     ap.add_argument("--chunk-sizes", default=None,
-                    help="Lista (coma) de tamaños de chunk; 'none' = chunks existentes. "
+                    help="Lista (coma) de tamaños de chunk (max_tokens); 512 = prod. "
                          "Default: constante CHUNK_SIZES.")
     ap.add_argument("--gt-file", type=Path, default=DEFAULT_GT_PATH)
-    ap.add_argument("--chunks-dir", type=Path, default=DEFAULT_CHUNKS_DIR)
     ap.add_argument("--docling-dir", type=Path, default=DEFAULT_DOCLING_DIR)
     ap.add_argument("--max-projects", type=int, default=MAX_PROJECTS)
     ap.add_argument("--device", default=DEVICE, help="cuda / cpu (auto si no se especifica).")
@@ -941,7 +941,6 @@ def main() -> None:
     new_configs = evaluate_combos(
         combos,
         ctx,
-        args.chunks_dir,
         args.docling_dir,
         args.device,
         args.max_projects,
