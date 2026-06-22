@@ -100,6 +100,18 @@ Guía rápida de los scripts en esta carpeta.
   - Las corridas son **acumulativas**: cada vez que se prueban nuevas combinaciones se mergean en el reporte (por firma de parámetros), se re-etiquetan según qué parámetros varían y se regeneran las gráficas (poner `FRESH = True` o pasar `--fresh` para empezar de cero).
   - **Configuración**: se edita el bloque de CONSTANTES en MAYÚSCULA al principio del archivo (`CHUNKING_THRESHOLDS`, `COVERAGE_THRESHOLDS`, `CONFIDENCE_THRESHOLDS`, `CHUNK_SIZES`, etc.) y se corre el script sin argumentos. Opcionalmente hay flags que sobrescriben cada lista para una corrida puntual.
   - Requiere `matplotlib` y que el paquete `institutional_graphrag` esté instalado (mismo entorno que el pipeline). No usa Neo4j.
+  - **Flags** (todos opcionales; los de listas sobrescriben la constante correspondiente):
+    - `--chunking-thresholds`: lista (separada por coma) de umbrales de chunking. Default: `CHUNKING_THRESHOLDS`. Ej: `--chunking-thresholds 0.04,0.06,0.08`.
+    - `--coverage-thresholds`: lista de coverage final (fracción de chunks). Default: `COVERAGE_THRESHOLDS`. Ej: `--coverage-thresholds 0.05,0.1,0.5`.
+    - `--confidence-thresholds`: lista de confidence final (logit promedio). Default: `CONFIDENCE_THRESHOLDS`. Ej: `--confidence-thresholds 8,12,14`.
+    - `--chunk-sizes`: lista de tamaños de chunk (`max_tokens`); `512` = config de prod. **Re-chunkea + re-corre BERT por cada tamaño nuevo.** Default: `CHUNK_SIZES`. Ej: `--chunk-sizes 256,512,768`.
+    - `--gt-file`: ruta al ground truth. Default: `evaluation/ground_truth/extraction/ground_truth_kg.json`.
+    - `--docling-dir`: carpeta con los `DoclingDocument` ya parseados de donde re-chunkear. Default: `data/docling/`.
+    - `--max-projects`: limita la cantidad de proyectos a evaluar (smoke test). Default: todos.
+    - `--device`: `cuda` / `cpu` para BERT. Default: autodetecta.
+    - `--no-cache`: ignora la cache de predicciones crudas de BERT y **re-corre BERT** (igual reescribe la cache al terminar). Usar cuando cambió el corpus, el GT de documentos o el modelo.
+    - `--fresh`: **ignora el reporte previo y arranca de cero.** Ver nota de acumulación abajo.
+  - **Las corridas son acumulativas.** BERT y la evaluación corren solo con los combos que pasás (lo ves en `Grilla: N combinación(es)` al arrancar), pero el **reporte HTML, las gráficas y los JSON mergean con las configuraciones de corridas anteriores** guardadas en `topic_params_details.json` (por firma de parámetros). Por eso el reporte final puede mostrar **más combinaciones de las que pediste** (`Configuraciones totales en el reporte: ...`). Si querés ver **solo** los parámetros de tu corrida, pasá **`--fresh`**.
   - Salida (en `evaluation/results/topic_classification/`):
     - Resumen JSON en `topic_params_summary.json`
     - Detalle por proyecto en `topic_params_details.json`
@@ -109,6 +121,8 @@ Guía rápida de los scripts en esta carpeta.
     - Editar las constantes y correr: `python evaluation/scripts/evaluate_topic_classification.py`
     - Grilla por flags (chunking × coverage): `python evaluation/scripts/evaluate_topic_classification.py --chunking-thresholds 0.04,0.06,0.08 --coverage-thresholds 0.4,0.6`
     - Tamaño de chunk (re-chunkea + re-corre BERT): `python evaluation/scripts/evaluate_topic_classification.py --chunk-sizes 256,384,512`
+    - Solo tus combos, sin acumular las corridas previas: `python evaluation/scripts/evaluate_topic_classification.py --chunking-thresholds 0.08 --coverage-thresholds 0.05 --confidence-thresholds 14 --chunk-sizes 512 --fresh`
+    - Forzar recomputar BERT (invalidar cache): `python evaluation/scripts/evaluate_topic_classification.py --no-cache`
 
 - `result_cypher_GT.py`
   - Ejecuta queries Cypher almacenadas en un archivo JSON.
