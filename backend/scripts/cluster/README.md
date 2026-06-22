@@ -20,8 +20,9 @@ Referencia oficial: [Como ejecutar un trabajo](https://www.cluster.uy/ayuda/como
 8. [Paso 7: Enviar el job](#paso-7-enviar-el-job)
 9. [Paso 8: Monitorear / relanzar](#paso-8-monitorear--relanzar)
 10. [Evaluación de generación](#evaluacion-de-generacion)
-11. [Cambios hechos al codigo](#cambios-hechos-al-codigo)
-12. [Troubleshooting: errores encontrados y soluciones](#troubleshooting-errores-encontrados-y-soluciones)
+11. [Evaluación de recuperación (Neo4j con Singularity)](#evaluacion-de-recuperacion-neo4j-con-singularity)
+12. [Cambios hechos al codigo](#cambios-hechos-al-codigo)
+13. [Troubleshooting: errores encontrados y soluciones](#troubleshooting-errores-encontrados-y-soluciones)
 
 ---
 
@@ -328,6 +329,41 @@ Los modelos por defecto van de 4B a 24B. En bf16, un 24B (Mistral Small) ronda l
 token, OOM, etc.) el script **sigue con los demás** y al final lista los que fallaron.
 
 ---
+
+## Evaluacion de recuperacion (Neo4j con Singularity)
+
+Para evaluar la etapa de *Retrieval* (qué tan bien el sistema genera queries Cypher y recupera subgrafos), el script necesita consultar una base de datos Neo4j viva. Como los nodos de ClusterUY no pueden acceder a tu entorno local (Docker Desktop), usamos **Singularity** (Apptainer) para levantar una base de datos efímera dentro del mismo nodo de cómputo asignado por SLURM.
+
+Esta arquitectura garantiza latencia cero, ya que la base de datos, el LLM y el evaluador comparten la misma RAM y CPU/GPU durante el job, destruyéndose de forma segura al finalizar.
+
+### 1. Descargar la imagen de Neo4j en el clúster
+
+Singularity permite importar contenedores de Docker Hub directamente. Debes hacer esto **en un nodo interactivo**, no en el nodo de login.
+
+```bash
+# 1. Pedir nodo interactivo
+srun -p normal -c 1 --time=00:30:00 --ntasks=1 --mem=4G --pty bash -l
+
+# 2. Descargar la imagen estable de Neo4j v5
+cd ~/institutional-graphrag
+singularity pull --name neo4j.simg docker://neo4j:5
+
+# 3. Salir del nodo
+exit
+```
+### 2. Poblar el grafo con el ground truth y evaluar el retrieval
+
+Nota: Para esto se debe editar load_graph.py para que carque el ground_truth_kg.json en vez del entity_documents.json
+```bash
+cd ~/institutional-graphrag
+
+conda activate graphrag
+
+sbatch backend/scripts/cluster/submit_retrieval.sh
+```
+Continuar...
+
+
 
 ## Cambios hechos al codigo
 
