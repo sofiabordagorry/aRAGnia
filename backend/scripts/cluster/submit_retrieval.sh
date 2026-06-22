@@ -50,9 +50,32 @@ fi
 export LLM_BACKEND="huggingface"
 export HF_CACHE_DIR="${HF_CACHE_DIR:-$HOME/.cache/huggingface}"
 
+SCRATCH_NEO4J="/scratch/${USER}/neo4j_gt_eval"
 
-echo "[INFO] Iniciando evaluación de recuperación (Cypher -> Neo4j)..."
+rm -rf "$SCRATCH_NEO4J"
+mkdir -p "$SCRATCH_NEO4J"
+
+export SINGULARITYENV_NEO4J_AUTH="neo4j/password"
+export SINGULARITYENV_NEO4J_ACCEPT_LICENSE_AGREEMENT="yes"
+
+echo "[INFO] Levantando Neo4j vacío en Singularity..."
+singularity exec --bind "$SCRATCH_NEO4J:/data" "$REPO_ROOT/neo4j.simg" bin/neo4j console &
+NEO4J_PID=$!
+
+echo "[INFO] Esperando 45 segundos a que el motor Neo4j inicie..."
+sleep 45
+
+export HOST="localhost"
+export NEO4J_BOLT_PORT="7687"
+export NEO4J_USER="neo4j"
+export NEO4J_PASSWORD="password"
+
 echo "============================================================"
+echo "[INFO] Poblando el grafo con ground_truth_kg.json..."
+python "$REPO_ROOT/backend/scripts/load_graph.py"
+
+echo "============================================================"
+echo "[INFO] Iniciando evaluación de recuperación (Cypher -> Neo4j)..."
 
 python "$REPO_ROOT/evaluation/scripts/evaluate_retrieval.py" \
     --max-questions 1 \
@@ -62,4 +85,7 @@ echo ""
 echo "============================================================"
 echo "  Job finalizado: $(date)"
 echo "  Resultados en:  $REPO_ROOT/evaluation/results/retrieval/"
+echo "  Apagando base de datos Neo4j efímera (PID: $NEO4J_PID)..."
+kill $NEO4J_PID
+rm -rf "$SCRATCH_NEO4J"
 echo "============================================================"

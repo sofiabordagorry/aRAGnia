@@ -8,7 +8,7 @@ from institutional_graphrag.graph.graph_loader import load_graph_json
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)
-JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
+JSON_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "ground_truth_kg.json"
 
 
 def main():
