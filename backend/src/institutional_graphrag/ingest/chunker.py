@@ -13,7 +13,9 @@ def get_native_chunker(
     merge_peers: bool = True,
     max_tokens: int = CHUNK_MAX_TOKENS,
 ) -> HybridChunker:
-    return HybridChunker(tokenizer=tokenizer, merge_peers=merge_peers, max_tokens=max_tokens)
+    return HybridChunker(  # type: ignore[call-arg]
+        tokenizer=tokenizer, merge_peers=merge_peers, max_tokens=max_tokens
+    )
 
 
 def chunk_document(doc: DoclingDocument, chunker: HybridChunker) -> list[dict]:
