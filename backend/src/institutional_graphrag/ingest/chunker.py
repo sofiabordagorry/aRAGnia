@@ -5,11 +5,17 @@ from typing import Any, cast
 from docling.chunking import HybridChunker
 from docling_core.types.doc import DoclingDocument
 
-from ..config import EMBED_MODEL_ID
+from ..config import CHUNK_MAX_TOKENS, EMBED_MODEL_ID
 
 
-def get_native_chunker(tokenizer: Any = EMBED_MODEL_ID, merge_peers: bool = True) -> HybridChunker:
-    return HybridChunker(tokenizer=tokenizer, merge_peers=merge_peers)
+def get_native_chunker(
+    tokenizer: Any = EMBED_MODEL_ID,
+    merge_peers: bool = True,
+    max_tokens: int = CHUNK_MAX_TOKENS,
+) -> HybridChunker:
+    return HybridChunker(  # type: ignore[call-arg]
+        tokenizer=tokenizer, merge_peers=merge_peers, max_tokens=max_tokens
+    )
 
 
 def chunk_document(doc: DoclingDocument, chunker: HybridChunker) -> list[dict]:

@@ -28,9 +28,9 @@ MODEL_NAME = os.getenv(
 TOPICS_PATH = Path(__file__).parents[4] / "data" / "openalex_topics.json"
 TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 
-DEFAULT_THRESHOLD = 0.04
-DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 8
-DEFAULT_COVERAGE_LOGIT_THRESHOLD = 0.5
+DEFAULT_THRESHOLD = 0.15
+DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 14
+DEFAULT_COVERAGE_LOGIT_THRESHOLD = 0.08
 
 
 @dataclass
