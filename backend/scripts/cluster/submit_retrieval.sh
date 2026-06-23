@@ -50,20 +50,29 @@ fi
 export LLM_BACKEND="huggingface"
 export HF_CACHE_DIR="${HF_CACHE_DIR:-$HOME/.cache/huggingface}"
 
-SCRATCH_NEO4J="/scratch/${USER}/neo4j_gt_eval"
+TEMP_NEO4J="$REPO_ROOT/neo4j_temp"
 
-rm -rf "$SCRATCH_NEO4J"
-mkdir -p "$SCRATCH_NEO4J"
+rm -rf "$TEMP_NEO4J"
+mkdir -p "$TEMP_NEO4J/data" "$TEMP_NEO4J/logs" "$TEMP_NEO4J/run"
+
+echo "[INFO] Extrayendo configuración por defecto de la imagen..."
+singularity exec "$REPO_ROOT/neo4j.simg" cp -r /var/lib/neo4j/conf "$TEMP_NEO4J/conf"
+chmod -R 777 "$TEMP_NEO4J/conf"
 
 export SINGULARITYENV_NEO4J_AUTH="neo4j/password"
 export SINGULARITYENV_NEO4J_ACCEPT_LICENSE_AGREEMENT="yes"
 
 echo "[INFO] Levantando Neo4j vacío en Singularity..."
-singularity exec --bind "$SCRATCH_NEO4J:/data" "$REPO_ROOT/neo4j.simg" bin/neo4j console &
+singularity run \
+    --bind "$TEMP_NEO4J/data:/data" \
+    --bind "$TEMP_NEO4J/logs:/logs" \
+    --bind "$TEMP_NEO4J/run:/var/lib/neo4j/run" \
+    --bind "$TEMP_NEO4J/conf:/var/lib/neo4j/conf" \
+    "$REPO_ROOT/neo4j.simg" > "$REPO_ROOT/logs/neo4j_db.log" 2>&1 &
 NEO4J_PID=$!
 
-echo "[INFO] Esperando 45 segundos a que el motor Neo4j inicie..."
-sleep 45
+echo "[INFO] Esperando 60 segundos a que el motor Neo4j inicie..."
+sleep 60
 
 export HOST="localhost"
 export NEO4J_BOLT_PORT="7687"
@@ -79,7 +88,8 @@ echo "[INFO] Iniciando evaluación de recuperación (Cypher -> Neo4j)..."
 
 python "$REPO_ROOT/evaluation/scripts/evaluate_retrieval.py" \
     --max-questions 1 \
-    --local-judge llama3.1
+    --no-judge
+    # --local-judge llama3.1
 
 echo ""
 echo "============================================================"

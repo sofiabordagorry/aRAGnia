@@ -361,8 +361,14 @@ conda activate graphrag
 
 sbatch backend/scripts/cluster/submit_retrieval.sh
 ```
-Continuar...
 
+```bash
+# Para ver los logs
+# log de evaluación del retrieval:
+cat ~/institutional-graphrag/logs/ret_eval_5546514.log
+# log de neo4j:
+cat ~/institutional-graphrag/logs/neo4j_db.log
+```
 
 
 ## Cambios hechos al codigo
