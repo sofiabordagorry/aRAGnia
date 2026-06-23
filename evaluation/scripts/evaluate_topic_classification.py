@@ -371,6 +371,34 @@ def score_config(
     }
 
 
+def build_topic_to_subfield(extractor: BertTopicExtractor) -> Dict[str, str]:
+    """Mapeo clave-de-tópico (ES, normalizada) -> clave-de-subcampo (ES, normalizada),
+    derivado de la jerarquía OpenAlex del extractor."""
+    mapping: Dict[str, str] = {}
+    for topic_en, subfield_en in extractor._topic_to_subfield.items():
+        es_topic = extractor._en_to_es_topic.get(topic_en, topic_en)
+        es_subfield = extractor._en_to_es_subfield.get(subfield_en, subfield_en)
+        mapping[normalize_topic_key(es_topic)] = normalize_topic_key(es_subfield)
+    return mapping
+
+
+def to_subfields(topic_keys: set, topic_to_subfield: Dict[str, str]) -> set:
+    """Colapsa un set de claves de tópico a sus claves de subcampo (tópico sin mapeo
+    queda como su propia clave, para no perderlo silenciosamente)."""
+    return {topic_to_subfield.get(k, k) for k in topic_keys}
+
+
+def score_at_subfield(
+    predicted: Dict[str, set],
+    gt_topics_by_project: Dict[str, set],
+    topic_to_subfield: Dict[str, str],
+) -> Dict[str, Any]:
+    """Igual que score_config pero comparando conjuntos de subcampos en vez de tópicos."""
+    predicted_sf = {pid: to_subfields(s, topic_to_subfield) for pid, s in predicted.items()}
+    gt_sf = {pid: to_subfields(s, topic_to_subfield) for pid, s in gt_topics_by_project.items()}
+    return score_config(predicted_sf, gt_sf)
+
+
 def build_param_grid(
     chunking: List[float],
     coverage: List[float],
@@ -471,25 +499,32 @@ def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str
         ax.set_ylim(0, 1.05)
         ax.spines[["top", "right"]].set_visible(False)
 
-    # P / R / F1 macro, un panel por chunk_size
-    fig, axes = _faceted_fig()
-    for ax, s in zip(axes, sizes):
-        cs = by_size[s]
-        x = np.arange(len(cs))
-        for i, key in enumerate(("precision_macro", "recall_macro", "f1_macro")):
-            ax.plot(x, [c["metrics"]["macro"][key] for c in cs], marker="o", markersize=3,
-                    color=PALETTE[i], label=key.replace("_macro", "").capitalize())
-        ax.set_title(f"chunk_size={s}")
-        ax.grid(axis="y", linestyle=":", alpha=0.5)
-        ax.set_ylabel("Score (macro)")
-        _xaxis(ax, cs)
-    axes[0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
-    fig.suptitle("Precision / Recall / F1 macro (facetado por chunk_size)")
-    fig.tight_layout()
-    p = images_dir / "chart_metrics_vs_param.png"
-    fig.savefig(p, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    paths["metrics"] = p
+    # P / R / F1 macro, un panel por chunk_size. Se genera a nivel tópico y a nivel
+    # subcampo (colapsando tópico -> subcampo en predicho y GT).
+    def _metrics_chart(metrics_key: str, nivel: str, filename: str, paths_key: str) -> None:
+        if not any(c.get(metrics_key) for c in configs):
+            return
+        fig, axes = _faceted_fig()
+        for ax, s in zip(axes, sizes):
+            cs = [c for c in by_size[s] if c.get(metrics_key)]
+            x = np.arange(len(cs))
+            for i, key in enumerate(("precision_macro", "recall_macro", "f1_macro")):
+                ax.plot(x, [c[metrics_key]["macro"][key] for c in cs], marker="o", markersize=3,
+                        color=PALETTE[i], label=key.replace("_macro", "").capitalize())
+            ax.set_title(f"chunk_size={s}")
+            ax.grid(axis="y", linestyle=":", alpha=0.5)
+            ax.set_ylabel("Score (macro)")
+            _xaxis(ax, cs)
+        axes[0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
+        fig.suptitle(f"Precision / Recall / F1 macro a nivel {nivel} (facetado por chunk_size)")
+        fig.tight_layout()
+        p = images_dir / filename
+        fig.savefig(p, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        paths[paths_key] = p
+
+    _metrics_chart("metrics", "tópico", "chart_metrics_vs_param.png", "metrics")
+    _metrics_chart("metrics_subfield", "subcampo", "chart_metrics_subfield_vs_param.png", "metrics_subfield")
 
     # Por proyecto: un chart por métrica, una línea por proyecto, facetado por chunk_size
     all_projects = sorted({pid for c in configs for pid in c["metrics"]["per_project"]})
@@ -612,10 +647,23 @@ def render_report_cards(
         else "(ninguno)"
     )
     analysis = [
-        f"La mejor configuración por F1 macro es <strong>{best['label']}</strong> "
+        f"La mejor configuración por F1 macro (nivel tópico) es <strong>{best['label']}</strong> "
         f"(F1={best['metrics']['macro']['f1_macro']:.3f}, "
         f"P={best['metrics']['macro']['precision_macro']:.3f}, "
         f"R={best['metrics']['macro']['recall_macro']:.3f}).",
+    ]
+    sf_configs = [c for c in configs if c.get("metrics_subfield")]
+    if sf_configs:
+        best_sf = max(sf_configs, key=lambda c: c["metrics_subfield"]["macro"]["f1_macro"])
+        analysis.append(
+            f"A <strong>nivel subcampo</strong> (colapsando tópico → subcampo) la mejor es "
+            f"<strong>{best_sf['label']}</strong> "
+            f"(F1={best_sf['metrics_subfield']['macro']['f1_macro']:.3f}, "
+            f"P={best_sf['metrics_subfield']['macro']['precision_macro']:.3f}, "
+            f"R={best_sf['metrics_subfield']['macro']['recall_macro']:.3f}). "
+            f"Suele ser bastante más alta: BERT acierta el subcampo aunque erre el tópico exacto."
+        )
+    analysis += [
         f"Parámetros que varían: <strong>{summary['sweep']}</strong> · "
         f"{len(configs)} combinación(es).",
         f"Parámetros fijos: <strong>{fixed_str}</strong>.",
@@ -626,9 +674,15 @@ def render_report_cards(
     analysis_html = "\n".join(f"<li>{a}</li>" for a in analysis)
 
     img_metrics_block = (
-        f'<div class="card"><h2>P / R / F1 macro por configuración</h2>'
+        f'<div class="card"><h2>P / R / F1 macro por configuración (nivel tópico)</h2>'
         f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics"], rel_to)}" alt="metrics"></div></div>'
         if "metrics" in chart_paths
+        else ""
+    )
+    img_metrics_subfield_block = (
+        f'<div class="card"><h2>P / R / F1 macro por configuración (nivel subcampo)</h2>'
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics_subfield"], rel_to)}" alt="metrics subfield"></div></div>'
+        if "metrics_subfield" in chart_paths
         else ""
     )
     proj_blocks = []
@@ -695,6 +749,7 @@ def render_report_cards(
   </div>
 
   {img_metrics_block}
+  {img_metrics_subfield_block}
   {img_proj_block}
 """
 
@@ -778,6 +833,7 @@ def load_gt_context(gt_file: Path, device: Optional[str]) -> Dict[str, Any]:
         "gt_topics_by_project": gt_topics_by_project,
         "project_titles": project_titles,
         "en_to_es": mapping_extractor._en_to_es_topic,
+        "topic_to_subfield": build_topic_to_subfield(mapping_extractor),
     }
 
 
@@ -817,6 +873,9 @@ def evaluate_combos(
             ctx["en_to_es"],
         )
         metrics = score_config(predicted, ctx["gt_topics_by_project"])
+        metrics_subfield = score_at_subfield(
+            predicted, ctx["gt_topics_by_project"], ctx["topic_to_subfield"]
+        )
         label = config_label(params, varying)
         new_configs.append(
             {
@@ -824,6 +883,7 @@ def evaluate_combos(
                 "label": label,
                 "params": params,
                 "metrics": metrics,
+                "metrics_subfield": metrics_subfield,
             }
         )
         print(
@@ -831,7 +891,8 @@ def evaluate_combos(
             f"F1 macro={metrics['macro']['f1_macro']:.3f} "
             f"P={metrics['macro']['precision_macro']:.3f} "
             f"R={metrics['macro']['recall_macro']:.3f} "
-            f"(n={metrics['n_projects']})"
+            f"(n={metrics['n_projects']}) "
+            f"| subcampo F1={metrics_subfield['macro']['f1_macro']:.3f}"
         )
     return new_configs
 
@@ -877,11 +938,13 @@ def merge_and_write(
 
     stripped_summary = dict(full_summary)
     stripped_summary["configs"] = [
-        {k: v for k, v in c.items() if k != "metrics"}
+        {k: v for k, v in c.items() if k not in ("metrics", "metrics_subfield")}
         | {
             "n_projects": c["metrics"]["n_projects"],
             "macro": c["metrics"]["macro"],
             "micro": c["metrics"]["micro"],
+            "macro_subfield": c.get("metrics_subfield", {}).get("macro"),
+            "micro_subfield": c.get("metrics_subfield", {}).get("micro"),
         }
         for c in configs
     ]
