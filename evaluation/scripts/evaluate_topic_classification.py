@@ -77,7 +77,7 @@ PARAM_SHORT = {
 CHUNKING_THRESHOLDS: List[float] = [0.02, 0.04, 0.06, 0.08]  # umbral etapa de chunking (score por chunk)
 COVERAGE_THRESHOLDS: List[float] = [DEFAULT_COVERAGE_LOGIT_THRESHOLD]      # umbral final: fracción de chunks (default 0.5)
 CONFIDENCE_THRESHOLDS: List[float] = [DEFAULT_CONFIDENCE_LOGIT_THRESHOLD]  # umbral final: logit promedio (default 8)
-CHUNK_SIZES: List[int] = [256, 512, 768]   # max_tokens por chunk; 512 = config de prod (e5-large-v2)
+CHUNK_SIZES: List[int] = [256, 300, 512]   # max_tokens por chunk
 
 # Opciones de corrida:
 MAX_PROJECTS: Optional[int] = None  # limitar numero de proyectos (None = todos)
@@ -746,7 +746,7 @@ def parse_float_list(raw: str, name: str) -> List[float]:
 
 
 def parse_size_list(raw: str) -> List[int]:
-    """Lista de tamaños de chunk (max_tokens). 512 = config de prod."""
+    """Lista de tamaños de chunk (max_tokens). 300 = config de prod."""
     parts = [v.strip() for v in raw.split(",") if v.strip()]
     if not parts:
         raise ValueError("La lista de chunk_size no puede estar vacía.")
@@ -907,7 +907,7 @@ def main() -> None:
     ap.add_argument("--confidence-thresholds", default=None,
                     help="Lista (coma) de confidence final. Default: constante CONFIDENCE_THRESHOLDS.")
     ap.add_argument("--chunk-sizes", default=None,
-                    help="Lista (coma) de tamaños de chunk (max_tokens); 512 = prod. "
+                    help="Lista (coma) de tamaños de chunk (max_tokens); 300 = prod. "
                          "Default: constante CHUNK_SIZES.")
     ap.add_argument("--gt-file", type=Path, default=DEFAULT_GT_PATH)
     ap.add_argument("--docling-dir", type=Path, default=DEFAULT_DOCLING_DIR)

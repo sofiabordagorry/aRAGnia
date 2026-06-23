@@ -104,7 +104,7 @@ Guía rápida de los scripts en esta carpeta.
     - `--chunking-thresholds`: lista (separada por coma) de umbrales de chunking. Default: `CHUNKING_THRESHOLDS`. Ej: `--chunking-thresholds 0.04,0.06,0.08`.
     - `--coverage-thresholds`: lista de coverage final (fracción de chunks). Default: `COVERAGE_THRESHOLDS`. Ej: `--coverage-thresholds 0.05,0.1,0.5`.
     - `--confidence-thresholds`: lista de confidence final (logit promedio). Default: `CONFIDENCE_THRESHOLDS`. Ej: `--confidence-thresholds 8,12,14`.
-    - `--chunk-sizes`: lista de tamaños de chunk (`max_tokens`); `512` = config de prod. **Re-chunkea + re-corre BERT por cada tamaño nuevo.** Default: `CHUNK_SIZES`. Ej: `--chunk-sizes 256,512,768`.
+    - `--chunk-sizes`: lista de tamaños de chunk (`max_tokens`); `300` = config de prod. Acepta cualquier entero, no solo potencias de 2. **Re-chunkea + re-corre BERT por cada tamaño nuevo.** Default: `CHUNK_SIZES`. Ej: `--chunk-sizes 256,300,512`.
     - `--gt-file`: ruta al ground truth. Default: `evaluation/ground_truth/extraction/ground_truth_kg.json`.
     - `--docling-dir`: carpeta con los `DoclingDocument` ya parseados de donde re-chunkear. Default: `data/docling/`.
     - `--max-projects`: limita la cantidad de proyectos a evaluar (smoke test). Default: todos.
