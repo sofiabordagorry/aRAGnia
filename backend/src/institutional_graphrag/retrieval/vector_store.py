@@ -38,7 +38,7 @@ class VectorStore:
 
         host = os.getenv("HOST", "localhost")
         port = int(os.getenv("QDRANT_PORT", "6333"))
-        self.client = QdrantClient(host=host, port=port)
+        self.client = QdrantClient(host=host, port=port, timeout=60.0)
         self._ensure_collection_exists()
 
     def _ensure_collection_exists(self) -> None:

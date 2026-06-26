@@ -57,8 +57,9 @@ SENTINEL_OUT_OF_SCOPE = "La consulta solicitada está fuera del alcance del esqu
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 
 MODELS: List[Dict[str, str]] = [
+    {"display": "Qwen 2.5 3B", "backend": "huggingface", "model": "Qwen/Qwen2.5-3B-Instruct"},
     {"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
-    {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
+    # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
     {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
 ]
 
@@ -94,6 +95,9 @@ PROMPT_VARIANTS: Dict[str, Callable[[GraphRAGRetriever, str], str]] = {
 }
 
 JUDGE_DIMS = ["recall", "precision"]
+DIM_LABELS = {"recall": "Recall", "precision": "Precision"}
+
+PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#34495e"]
 
 def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "")).strip().lower()
@@ -154,7 +158,7 @@ def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_subgra
 def judge_retrieval_local(model: str, question: str, gt_subgraph: str, candidate_subgraph: str) -> Dict[str, Any]:
     """Usa un modelo de Ollama local como juez."""
     client = OllamaClient(model=model)
-    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_subgraph}\n\nCONTEXTO RECUPERADO:\n{candidate_subgraph}\n\nDevolvé el JSON con los scores."
+    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_subgraph}\n\nCONTEXTO RECUPERADO:\n{candidate_subgraph}\n\nDevolvé el JSON con los scores del 1 al 5."
     messages = [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": user}]
     
     response = client.generate(messages=messages, temperature=0.0, max_tokens=512)
@@ -225,22 +229,8 @@ def evaluate_combo(
             print(f"  [{qid}] {latency:.1f}s  (sin juez)", flush=True)
 
         records_res.append(rec)
-
-    judged = [r for r in records_res if r["scores"] is not None]
-    sentinels = [r for r in records_res if r["is_sentinel"]]
-    latencies = [r["latency_s"] for r in records_res if r["latency_s"] is not None]
-
-    dim_means = {d: mean([norm_score(r["scores"][d]) for r in judged]) for d in JUDGE_DIMS}
-    quality_overall = mean([norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in judged])
     
-    return {
-        "display": spec["display"], "prompt": prompt_id, "label": label,
-        "n_judged": len(judged), "n_sentinel": len(sentinels),
-        "dim_means": dim_means, "quality_overall": quality_overall,
-        "sentinel_accuracy": mean([1.0 if r["sentinel_correct"] else 0.0 for r in sentinels]),
-        "latency": {"mean": round(statistics.mean(latencies), 2) if latencies else 0.0},
-        "records": records_res,
-    }
+    return aggregate_combo(spec, prompt_id, records_res)
 
 def aggregate_combo(
     spec: Dict[str, str], prompt_id: str, records: List[Dict[str, Any]]
@@ -617,6 +607,9 @@ def generate_html_report(
     output_path.write_text(html, encoding="utf-8")
 
 def main() -> None:
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
     parser.add_argument("--judge-model", default=DEFAULT_JUDGE_MODEL, help="Modelo de Anthropic.")
@@ -626,12 +619,20 @@ def main() -> None:
     args = parser.parse_args()
 
     load_dotenv(BACKEND_DIR / ".env")
+
+    original_backend = os.getenv("LLM_BACKEND")
+    os.environ["LLM_BACKEND"] = "ollama"
     
     retriever = GraphRAGRetriever(
         neo4j_uri=f"bolt://{os.getenv('HOST', 'localhost')}:{os.getenv('NEO4J_BOLT_PORT', '7687')}",
         neo4j_user=os.getenv("NEO4J_USER", "neo4j"),
         neo4j_password=os.getenv("NEO4J_PASSWORD", "password")
     )
+
+    if original_backend:
+        os.environ["LLM_BACKEND"] = original_backend
+    else:
+        del os.environ["LLM_BACKEND"]
 
     items = json.loads(args.dataset.read_text(encoding="utf-8"))
     

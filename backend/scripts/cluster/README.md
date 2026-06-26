@@ -368,6 +368,10 @@ sbatch backend/scripts/cluster/submit_retrieval.sh
 cat ~/institutional-graphrag/logs/ret_eval_5546514.log
 # log de neo4j:
 cat ~/institutional-graphrag/logs/neo4j_db.log
+# log de qdrant:
+cat ~/institutional-graphrag/logs/qdrant_db.log
+# log de ollama:
+cat ~/institutional-graphrag/logs/ollama_db.log
 ```
 
 
