@@ -344,9 +344,13 @@ Singularity permite importar contenedores de Docker Hub directamente. Debes hace
 # 1. Pedir nodo interactivo
 srun -p normal -c 1 --time=00:30:00 --ntasks=1 --mem=4G --pty bash -l
 
-# 2. Descargar la imagen estable de Neo4j v5
+# 2. Descargar la imagen estable de Neo4j v5, de qdrant y de ollama
 cd ~/institutional-graphrag
 singularity pull --name neo4j.simg docker://neo4j:5
+
+singularity pull --name qdrant.simg docker://qdrant/qdrant:latest
+
+singularity pull --name ollama.simg docker://ollama/ollama:latest
 
 # 3. Salir del nodo
 exit
