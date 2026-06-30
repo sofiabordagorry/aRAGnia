@@ -60,7 +60,7 @@ SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esq
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 
 MODELS: List[Dict[str, str]] = [
-    {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "Qwen/Qwen2.5-3B-Instruct"},
+    {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
     # {"display": "Qwen 2.5 3B", "backend": "huggingface", "model": "Qwen/Qwen2.5-3B-Instruct"},
     # {"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
@@ -194,6 +194,7 @@ def evaluate_combo(
         gt_subgraph = item.get("retrieved_subgraph", "")
         qid = item.get("id", "?")
         sentinel = is_sentinel(gt_subgraph)
+        cypher_query = ""
 
         logger.info(f"[{qid}] Procesando pregunta: '{question[:60]}...'")
         t0 = time.perf_counter()
@@ -206,7 +207,21 @@ def evaluate_combo(
             if result_obj.answer == SENTINEL_NOT_IN_SCHEMA:
                 candidate_subgraph = SENTINEL_NOT_IN_SCHEMA
             else:
-                candidate_subgraph = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
+                chunks, evidence_entities, chunk_to_entities = (
+                    retriever.extract_chunks_and_entities_from_results(neo_records)
+                )
+                if not chunks:
+                    logger.warning("No se encontraron chunks en los resultados del grafo")
+                    if neo_records:
+                        logger.info("Sin chunks pero con resultados del grafo, procesando...")
+                        candidate_subgraph = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
+                    else:
+                        candidate_subgraph = SENTINEL_NO_INFO
+                else:
+                    if evidence_entities:
+                        candidate_subgraph = retriever.build_entity_context(evidence_entities, chunk_to_entities)
+                    else:
+                        candidate_subgraph = retriever._build_aggregation_context(neo_records)    
         except Exception as e:
             logger.warning(f"[{qid}] Excepción no controlada: {e}")
             candidate_subgraph = SENTINEL_NO_INFO
@@ -216,7 +231,7 @@ def evaluate_combo(
 
         rec = {
             "id": qid, "category": item.get("categoria", item.get("category", "")),
-            "question": question, "gt_subgraph": gt_subgraph, "candidate_subgraph": candidate_subgraph,
+            "question": question, "gt_subgraph": gt_subgraph, "generated query": cypher_query, "candidate_subgraph": candidate_subgraph,
             "latency_s": latency, "is_sentinel": sentinel, "scores": None, "sentinel_correct": None, "justification": "",
         }
 
