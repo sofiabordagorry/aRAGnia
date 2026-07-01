@@ -68,7 +68,7 @@ MODELS: List[Dict[str, str]] = [
     {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
     {"display": "Falcon3 10B", "backend": "huggingface", "model": "tiiuae/Falcon3-10B-Instruct"},
     {"display": "Gemma 3 12B", "backend": "huggingface", "model": "google/gemma-3-12b-it"},
-    {"display": "Mistral Small 3.1 24B", "backend": "huggingface", "model": "mistralai/Mistral-Small-3.1-24B-Instruct-2503"},
+    {"display": "Mistral Small 3 24B", "backend": "huggingface", "model": "mistralai/Mistral-Small-24B-Instruct-2501"},
 ]
 
 # Variantes de prompt: id -> builder(question, subgraph) -> messages.
@@ -304,7 +304,7 @@ def evaluate_combo(
 
     records: List[Dict[str, Any]] = []
     for item in items:
-        question = (item.get("question") or "").strip()
+        question = (item.get("pregunta") or "").strip()
         if not question:
             continue
         subgraph = item.get("retrieved_subgraph", "")
@@ -316,7 +316,7 @@ def evaluate_combo(
 
         rec: Dict[str, Any] = {
             "id": qid,
-            "category": item.get("category", ""),
+            "category": item.get("categoria", ""),
             "question": question,
             "gt_answer": gt_answer,
             "candidate": candidate,
