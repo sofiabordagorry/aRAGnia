@@ -50,8 +50,9 @@ from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 from institutional_graphrag.llm.llm_provider import HuggingFaceClient, OllamaClient
 
 DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "datasetQA_GT.json"
-RESULTS_DIR = EVAL_DIR / "results" / "retrieval"
 
+RESULTS_DIR = EVAL_DIR / "results" / "retrieval"
+PROMPTS_JSON_PATH = EVAL_DIR / "prompts_variants.json"
 DEFAULT_JUDGE_MODEL = "claude-opus-4-8"
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
@@ -66,37 +67,6 @@ MODELS: List[Dict[str, str]] = [
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
     # {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
 ]
-
-def prompt_baseline(retriever: GraphRAGRetriever, user_query: str) -> str:
-    return retriever.__class__._build_cypher_generation_prompt(retriever, user_query)
-
-def prompt_concise(retriever: GraphRAGRetriever, user_query: str) -> str:
-    schema = retriever._fetch_schema()
-    fewshot = retriever._fetch_fewshot_examples(user_query)
-    return f"""Generate a precise Neo4j Cypher query to answer the user's question.
-
-SCHEMA:
-{schema}
-
-{fewshot}
-
-CRITICAL RULES:
-1. Read-only queries only (MATCH, OPTIONAL MATCH, WHERE, RETURN).
-2. Query MUST be enclosed exactly between <QUERY> and </QUERY> tags.
-3. For text search on project titles, use: `toLower(p.titulo) CONTAINS 'text'`.
-4. If asking 'how many' (cuántos), use `count()` aggregation.
-5. If listing entities (who, which, list), return the entities and `COLLECT(c) AS chunks` (where c:Chunk).
-6. Do NOT define relationship variables (use `-[:TYPE]->` not `-[r:TYPE]->`).
-7. Ensure all node variables in RETURN/WITH are defined in a prior MATCH.
-
-QUESTION: {user_query}
-<QUERY>
-"""
-
-PROMPT_VARIANTS: Dict[str, Callable[[GraphRAGRetriever, str], str]] = {
-    "baseline": prompt_baseline,
-    "concise": prompt_concise,
-}
 
 JUDGE_DIMS = ["recall", "precision"]
 DIM_LABELS = {"recall": "Recall", "precision": "Precision"}
@@ -176,15 +146,30 @@ def judge_retrieval_local(model: str, question: str, gt_subgraph: str, candidate
 def norm_score(score_1_5: float) -> float: return (score_1_5 - 1.0) / 4.0
 def mean(values: List[float]) -> float: return round(sum(values) / len(values), 4) if values else 0.0
 
+def fill_placeholders(retriever: GraphRAGRetriever, template: str, query: str) -> str:
+    """Rellena los marcadores de posición del prompt dinámico con datos reales de Neo4j."""
+    schema_text = retriever._fetch_schema()
+    fewshot_text = retriever._fetch_fewshot_examples(query)
+    
+    return template.replace(
+        "{schema}", schema_text
+    ).replace(
+        "{fewshot}", fewshot_text
+    ).replace(
+        "{user_query}", query
+    )
+
 def evaluate_combo(
-    spec: Dict[str, str], prompt_id: str, builder: Callable, items: List[Dict[str, Any]], 
+    spec: Dict[str, str], prompt_id: str, prompt_template: Callable, items: List[Dict[str, Any]], 
     api_key: Optional[str], judge_model: str, local_judge: Optional[str], client: Any, retriever: GraphRAGRetriever
 ) -> Dict[str, Any]:
     label = f"{spec['display']} / {prompt_id}"
     print(f"\n=== Evaluando: {label} ===", flush=True)
 
-    retriever.cypher_llm_client = client 
-    retriever._build_cypher_generation_prompt = lambda q: builder(retriever, q)
+    retriever.cypher_llm_client = client
+    retriever.answer_llm_client = client
+    retriever._build_cypher_generation_prompt = lambda q: fill_placeholders(retriever, prompt_template, q)
+    candidate_subgraph = "Placeholder"
     
     records_res: List[Dict[str, Any]] = []
     
@@ -196,16 +181,15 @@ def evaluate_combo(
         sentinel = is_sentinel(gt_subgraph)
         cypher_query = ""
 
-        logger.info(f"[{qid}] Procesando pregunta: '{question[:60]}...'")
+        logger.info(f"Procesando pregunta: [{qid}]")
         t0 = time.perf_counter()
         
-        try:
-            logger.info(f"[{qid}] Invocando retriever.generate_cypher_query_result...")            
+        try:         
             result_obj, neo_records, cypher_query = retriever.generate_cypher_query_result(user_query=question)
-            logger.info(f"[{qid}] QUERY RETORNADA AL SCRIPT: {cypher_query}")
-            logger.info(f"[{qid}] Registros obtenidos de Neo4j: {len(neo_records) if neo_records else 0}")
             if result_obj.answer == SENTINEL_NOT_IN_SCHEMA:
                 candidate_subgraph = SENTINEL_NOT_IN_SCHEMA
+            elif neo_records == []:
+                logger.warning(result_obj.answer)
             else:
                 chunks, evidence_entities, chunk_to_entities = (
                     retriever.extract_chunks_and_entities_from_results(neo_records)
@@ -637,7 +621,7 @@ def _percentile(values: List[float], pct: float) -> float:
 
 def main() -> None:
     import logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', force=True)
+    logging.basicConfig(level=logging.INFO, format='%(filename)s:%(lineno)d - %(levelname)s - %(message)s', force=True)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=Path, default=DEFAULT_DATASET)
@@ -645,6 +629,7 @@ def main() -> None:
     parser.add_argument("--local-judge", type=str, default=None, help="Nombre del modelo Ollama para usar como juez local (ej. llama3.1).")
     parser.add_argument("--max-questions", type=int, default=None, help="Limita a N preguntas (smoke test).")
     parser.add_argument("--no-judge", action="store_true")
+    parser.add_argument("--prompts", type=Path, default=PROMPTS_JSON_PATH, help="Ruta al JSON de variantes de prompts.")
     args = parser.parse_args()
 
     load_dotenv(BACKEND_DIR / ".env")
@@ -664,6 +649,11 @@ def main() -> None:
         del os.environ["LLM_BACKEND"]
 
     items = json.loads(args.dataset.read_text(encoding="utf-8"))
+
+    if not args.prompts.exists():
+        raise FileNotFoundError(f"No se encontró el archivo de prompts en {args.prompts}")
+    prompt_variants: Dict[str, str] = json.loads(args.prompts.read_text(encoding="utf-8"))
+    print(f"[INFO] Se cargaron {len(prompt_variants)} variantes de prompts desde el JSON.", flush=True)
     
     if args.max_questions is not None:
         items = items[:args.max_questions]
@@ -679,9 +669,9 @@ def main() -> None:
         try:
             client = None
             client = build_client(spec)
-            for prompt_id, builder in PROMPT_VARIANTS.items():
+            for prompt_id, prompt_template in prompt_variants.items():
                 try:
-                    results.append(evaluate_combo(spec, prompt_id, builder, items, api_key, args.judge_model, args.local_judge, client, retriever))
+                    results.append(evaluate_combo(spec, prompt_id, prompt_template, items, api_key, args.judge_model, args.local_judge, client, retriever))
                 except Exception as exc:
                     print(f"[ERROR] Falló combinación {spec['display']} / {prompt_id}: {exc}")
         except Exception as exc:
