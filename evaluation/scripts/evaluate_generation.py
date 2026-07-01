@@ -83,9 +83,62 @@ def _prompt_concise(question: str, subgraph: str) -> List[Dict[str, str]]:
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
+def _prompt_cot(question: str, subgraph: str) -> List[Dict[str, str]]:
+    """Razonamiento paso a paso antes de la respuesta final (chain-of-thought)."""
+    system = (
+        "Eres un asistente de investigación académica. Respondé en ESPAÑOL usando "
+        "SOLO los resultados del grafo, sin inventar ni interpretar. Primero razoná "
+        "internamente qué resultados son relevantes y cuáles incluir; luego escribí "
+        "la respuesta final completa, sin omitir ninguno."
+    )
+    user = (
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        "Pensá paso a paso qué resultados responden la pregunta y, al final, escribí "
+        "una línea que empiece exactamente con 'RESPUESTA:' seguida de la respuesta "
+        "completa con TODOS los resultados."
+    )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def _prompt_structured(question: str, subgraph: str) -> List[Dict[str, str]]:
+    """Fuerza una salida estructurada en lista (viñetas/numerada)."""
+    system = (
+        "Eres un asistente académico. Respondé en ESPAÑOL basándote EXACTAMENTE en "
+        "los resultados del grafo. Devolvé una breve frase introductoria y luego "
+        "UNA LISTA con viñetas ('- ') con TODOS los resultados, un ítem por resultado. "
+        "No inventes datos ni agregues interpretaciones."
+    )
+    user = (
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        "Formato: una frase introductoria + lista con viñetas. Incluí TODOS los "
+        "resultados, sin omitir ninguno."
+    )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def _prompt_grounded(question: str, subgraph: str) -> List[Dict[str, str]]:
+    """Anti-alucinación fuerte: cita textualmente los valores de los resultados."""
+    system = (
+        "Eres un asistente académico riguroso. Respondé en ESPAÑOL usando ÚNICAMENTE "
+        "los datos presentes en los resultados del grafo. Está PROHIBIDO inventar, "
+        "inferir o completar información que no aparezca literalmente. Citá los valores "
+        "tal como figuran en los resultados e incluí TODOS sin excepción. Si un dato no "
+        "está en los resultados, no lo menciones."
+    )
+    user = (
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        "Respondé usando solo los valores que aparecen arriba, copiándolos literalmente. "
+        "No agregues nada que no esté en los resultados."
+    )
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
 PROMPT_VARIANTS: Dict[str, Callable[[str, str], List[Dict[str, str]]]] = {
     "baseline": gen.build_messages,
     "concise": _prompt_concise,
+    "cot": _prompt_cot,
+    "structured": _prompt_structured,
+    "grounded": _prompt_grounded,
 }
 
 # Dimensiones juzgadas por el LLM (escala 1-5).
