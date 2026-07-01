@@ -116,7 +116,7 @@ echo "[INFO] Poblando el grafo con ground_truth_kg.json..."
 python "$REPO_ROOT/backend/scripts/load_graph.py"
 
 echo "[INFO] Poblando Qdrant (Few-Shot Store)..."
-python "$REPO_ROOT/backend/scripts/load_fewshot_examples.py"
+python "$REPO_ROOT/backend/scripts/load_fewshot_examples.py --clear"
 
 echo "============================================================"
 echo "[INFO] Iniciando evaluación de recuperación (Cypher -> Neo4j)..."

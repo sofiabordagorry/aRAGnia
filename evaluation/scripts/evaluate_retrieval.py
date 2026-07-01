@@ -166,7 +166,6 @@ def evaluate_combo(
     print(f"\n=== Evaluando: {label} ===", flush=True)
 
     retriever.cypher_llm_client = client
-    retriever.answer_llm_client = client
     retriever._build_cypher_generation_prompt = lambda q: fill_placeholders(retriever, prompt_template, q)
     candidate_subgraph = "Placeholder"
     
@@ -383,8 +382,6 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     paths["latency"] = p
 
     # 5) Distribución de scores del juez (1-5) por combinación (barra apilada, % del total).
-    #    Revela la FORMA, no solo la media: dos modelos con media parecida pueden diferir
-    #    en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones juzgadas.
     score_colors = {5: "#27ae60", 4: "#7fc97f", 3: "#f39c12", 2: "#e67e22", 1: "#e74c3c"}
     dist_pct: Dict[int, List[float]] = {s: [] for s in (5, 4, 3, 2, 1)}
     any_scores = False

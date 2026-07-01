@@ -19,10 +19,10 @@ echo [INFO] Iniciando evaluacion local en Windows (CMD)...
 echo [INFO] Modelo: Qwen 2.5 3B (Ollama)
 echo ============================================================
 
-:: 2. Activar el entorno virtual local de tu proyecto (dentro de backend)
-if exist backend\.venv\Scripts\activate.bat (
-    echo [INFO] Activando entorno virtual .venv de backend...
-    call backend\.venv\Scripts\activate.bat
+:: 2. Activar el entorno virtual
+if exist .venv\Scripts\activate.bat (
+    echo [INFO] Activando entorno virtual .venv de institutional-graphrag...
+    call .venv\Scripts\activate.bat
     echo [INFO] Entorno virtual activado.
 )
 

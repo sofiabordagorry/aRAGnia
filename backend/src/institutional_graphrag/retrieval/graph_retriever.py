@@ -21,6 +21,7 @@ from institutional_graphrag.retrieval.fewshot_store import FewShotStore
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class GraphRAGChunk:
     """Chunk de contexto obtenido del grafo."""
@@ -256,7 +257,9 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
-            logger.warning(f"La query generada falló la validación de seguridad. Motivo {error} | Query: {cypher_query}")
+            logger.warning(
+                f"La query generada falló la validación de seguridad. Motivo {error} | Query: {cypher_query}"
+            )
             raise ValueError(f"Query generada no es segura: {error}")
 
         logger.info(f"Query Cypher generada: {cypher_query}")
@@ -311,7 +314,9 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 examples = self._fewshot.search(user_query, top_k=3)
                 if examples:
                     formatted_examples = [f"Pregunta: {q}\nQuery cypher:\n{c}" for q, c in examples]
-                    logger.info("Few-shot examples retrieved: \n %s", "\n\n".join(formatted_examples))
+                    logger.info(
+                        "Few-shot examples retrieved: \n %s", "\n\n".join(formatted_examples)
+                    )
                     lines = ["SIMILAR EXAMPLES (use as reference patterns):"]
                     for q, c in examples:
                         lines.append(f"\nQuestion: {q}\n<QUERY>\n{c}\n</QUERY>")
@@ -622,7 +627,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)
         if not is_safe:
-            logger.warning(f"La query corregida falló la validación de seguridad. Motivo {error} | Query: {fixed_query}")
+            logger.warning(
+                f"La query corregida falló la validación de seguridad. Motivo {error} | Query: {fixed_query}"
+            )
             raise ValueError(f"Query corregida no es segura: {error}")
 
         logger.info(f"Query corregida por LLM: {fixed_query}")
@@ -634,7 +641,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         """
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
-            logger.warning(f"La query falló la validación de seguridad. Motivo {error} | Query: {cypher_query}")
+            logger.warning(
+                f"La query falló la validación de seguridad. Motivo {error} | Query: {cypher_query}"
+            )
             raise ValueError(f"Query no pasó validación de seguridad: {error}")
 
         with self.driver.session() as session:
