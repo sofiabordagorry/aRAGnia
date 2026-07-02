@@ -62,6 +62,7 @@ SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterio
 
 MODELS: List[Dict[str, str]] = [
     # {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
+    {"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
     {"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
     {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
@@ -166,8 +167,16 @@ def evaluate_combo(
     print(f"\n=== Evaluando: {label} ===", flush=True)
 
     retriever.cypher_llm_client = client
+    # retriever.answer_llm_client = client
     retriever._build_cypher_generation_prompt = lambda q: fill_placeholders(retriever, prompt_template, q)
     candidate_subgraph = "Placeholder"
+
+    original_classify = retriever._classify_query_intent
+    def tracking_classify(q):
+        intent = original_classify(q)
+        retriever._last_intent = intent
+        return intent
+    retriever._classify_query_intent = tracking_classify
     
     records_res: List[Dict[str, Any]] = []
     
@@ -216,6 +225,14 @@ def evaluate_combo(
             "question": question, "gt_subgraph": gt_subgraph, "generated query": cypher_query, "candidate_subgraph": candidate_subgraph,
             "latency_s": latency, "is_sentinel": sentinel, "scores": None, "sentinel_correct": None, "justification": "",
         }
+
+        if getattr(retriever, "_last_intent", None) == "CHAT":
+            # Penalización inmediata: 1 de 5 (normalizado es 0.0)
+            scores = {"recall": 1, "precision": 1, "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."}
+            rec["scores"] = scores
+            rec["justification"] = scores["justification"]
+            avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
+            print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (FAIL DIRECTO: Intención CHAT)", flush=True)
 
         if sentinel:
             rec["sentinel_correct"] = sentinel_matches(candidate_subgraph, gt_subgraph)
