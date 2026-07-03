@@ -1,60 +1,292 @@
 [
   {
-    "display": "Llama 3.1 8B",
+    "display": "Gemma 3 12B",
     "backend": "huggingface",
-    "model": "meta-llama/Llama-3.1-8B-Instruct",
-    "prompt": "concise",
-    "label": "Llama 3.1 8B / concise",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "model": "google/gemma-3-12b-it",
+    "prompt": "grounded",
+    "label": "Gemma 3 12B / grounded",
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.9728,
-      "completeness": 0.9076,
-      "faithfulness": 0.9728
+      "factual_correctness": 1.0,
+      "completeness": 0.9943,
+      "faithfulness": 1.0
     },
-    "quality_overall": 0.9511,
+    "quality_overall": 0.9981,
     "sentinel_accuracy": 1.0,
     "by_category": {
-      "Análisis Temporal": 0.8929,
-      "Consultas Complejas": 0.9583,
-      "Consultas Estructurales Simples": 0.9722,
+      "Análisis Temporal": 0.994,
+      "Consultas Complejas": 1.0,
+      "Consultas Estructurales Simples": 1.0,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9931
+      "Lenguaje Natural Informal": 1.0
     },
     "latency": {
-      "mean": 2.03,
-      "median": 1.62,
-      "p95": 6.26,
-      "n": 46
+      "mean": 6.06,
+      "median": 4.59,
+      "p95": 17.87,
+      "n": 44
+    }
+  },
+  {
+    "display": "Gemma 3 12B",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "structured",
+    "label": "Gemma 3 12B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 1.0,
+      "completeness": 0.9886,
+      "faithfulness": 1.0
+    },
+    "quality_overall": 0.9962,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9881,
+      "Consultas Complejas": 1.0,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 6.82,
+      "median": 4.96,
+      "p95": 16.37,
+      "n": 44
+    }
+  },
+  {
+    "display": "Gemma 3 12B",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "cot",
+    "label": "Gemma 3 12B / cot",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 1.0,
+      "completeness": 0.9886,
+      "faithfulness": 0.9943
+    },
+    "quality_overall": 0.9943,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9881,
+      "Consultas Complejas": 0.9881,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 9.5,
+      "median": 7.17,
+      "p95": 26.63,
+      "n": 44
+    }
+  },
+  {
+    "display": "Falcon3 10B",
+    "backend": "huggingface",
+    "model": "tiiuae/Falcon3-10B-Instruct",
+    "prompt": "cot",
+    "label": "Falcon3 10B / cot",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9943,
+      "completeness": 0.9886,
+      "faithfulness": 0.983
+    },
+    "quality_overall": 0.9886,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.994,
+      "Consultas Complejas": 0.9881,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9697
+    },
+    "latency": {
+      "mean": 10.02,
+      "median": 7.6,
+      "p95": 15.47,
+      "n": 44
+    }
+  },
+  {
+    "display": "Falcon3 10B",
+    "backend": "huggingface",
+    "model": "tiiuae/Falcon3-10B-Instruct",
+    "prompt": "structured",
+    "label": "Falcon3 10B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9886,
+      "completeness": 0.9886,
+      "faithfulness": 0.983
+    },
+    "quality_overall": 0.9867,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9583,
+      "Consultas Complejas": 1.0,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 6.39,
+      "median": 3.6,
+      "p95": 11.19,
+      "n": 44
     }
   },
   {
     "display": "Qwen3 4B (2507)",
     "backend": "huggingface",
     "model": "Qwen/Qwen3-4B-Instruct-2507",
-    "prompt": "concise",
-    "label": "Qwen3 4B (2507) / concise",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "prompt": "structured",
+    "label": "Qwen3 4B (2507) / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.9511,
-      "completeness": 0.8913,
-      "faithfulness": 0.962
+      "factual_correctness": 0.9943,
+      "completeness": 0.9773,
+      "faithfulness": 0.983
     },
-    "quality_overall": 0.9348,
+    "quality_overall": 0.9848,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9702,
+      "Consultas Complejas": 0.9881,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9848
+    },
+    "latency": {
+      "mean": 3.31,
+      "median": 2.7,
+      "p95": 6.84,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen2.5 7B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "prompt": "cot",
+    "label": "Qwen2.5 7B / cot",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9886,
+      "completeness": 0.983,
+      "faithfulness": 0.9773
+    },
+    "quality_overall": 0.983,
     "sentinel_accuracy": 1.0,
     "by_category": {
       "Análisis Temporal": 0.9524,
-      "Consultas Complejas": 0.7187,
+      "Consultas Complejas": 1.0,
       "Consultas Estructurales Simples": 1.0,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9931
+      "Lenguaje Natural Informal": 0.9924
     },
     "latency": {
-      "mean": 1.88,
-      "median": 1.46,
-      "p95": 5.07,
-      "n": 46
+      "mean": 2.39,
+      "median": 2.04,
+      "p95": 4.54,
+      "n": 44
+    }
+  },
+  {
+    "display": "Gemma 3 12B",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "concise",
+    "label": "Gemma 3 12B / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 1.0,
+      "completeness": 0.9432,
+      "faithfulness": 1.0
+    },
+    "quality_overall": 0.9811,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9524,
+      "Consultas Complejas": 0.9762,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 3.26,
+      "median": 2.38,
+      "p95": 8.04,
+      "n": 44
+    }
+  },
+  {
+    "display": "Falcon3 10B",
+    "backend": "huggingface",
+    "model": "tiiuae/Falcon3-10B-Instruct",
+    "prompt": "concise",
+    "label": "Falcon3 10B / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9943,
+      "completeness": 0.9432,
+      "faithfulness": 1.0
+    },
+    "quality_overall": 0.9792,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9583,
+      "Consultas Complejas": 0.9524,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 3.19,
+      "median": 2.19,
+      "p95": 6.18,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen2.5 7B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "prompt": "structured",
+    "label": "Qwen2.5 7B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9886,
+      "completeness": 0.9545,
+      "faithfulness": 0.9886
+    },
+    "quality_overall": 0.9773,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9405,
+      "Consultas Complejas": 0.9881,
+      "Consultas Estructurales Simples": 0.9931,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 2.69,
+      "median": 2.01,
+      "p95": 5.27,
+      "n": 44
     }
   },
   {
@@ -63,27 +295,346 @@
     "model": "Qwen/Qwen2.5-7B-Instruct",
     "prompt": "concise",
     "label": "Qwen2.5 7B / concise",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.9402,
-      "completeness": 0.8859,
-      "faithfulness": 0.9457
+      "factual_correctness": 1.0,
+      "completeness": 0.9261,
+      "faithfulness": 1.0
     },
-    "quality_overall": 0.9239,
+    "quality_overall": 0.9754,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9524,
+      "Consultas Complejas": 0.9643,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9848
+    },
+    "latency": {
+      "mean": 1.81,
+      "median": 1.52,
+      "p95": 4.37,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen3 4B (2507)",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "prompt": "grounded",
+    "label": "Qwen3 4B (2507) / grounded",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9943,
+      "completeness": 0.9318,
+      "faithfulness": 0.9886
+    },
+    "quality_overall": 0.9716,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9583,
+      "Consultas Complejas": 0.9405,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9773
+    },
+    "latency": {
+      "mean": 3.75,
+      "median": 1.6,
+      "p95": 5.11,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen2.5 7B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "prompt": "grounded",
+    "label": "Qwen2.5 7B / grounded",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 1.0,
+      "completeness": 0.9148,
+      "faithfulness": 1.0
+    },
+    "quality_overall": 0.9716,
     "sentinel_accuracy": 1.0,
     "by_category": {
       "Análisis Temporal": 0.9286,
-      "Consultas Complejas": 0.7813,
-      "Consultas Estructurales Simples": 0.9583,
+      "Consultas Complejas": 0.9643,
+      "Consultas Estructurales Simples": 1.0,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9792
+      "Lenguaje Natural Informal": 1.0
     },
     "latency": {
-      "mean": 1.51,
-      "median": 1.2,
-      "p95": 4.29,
-      "n": 46
+      "mean": 2.27,
+      "median": 1.63,
+      "p95": 6.63,
+      "n": 44
+    }
+  },
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "cot",
+    "label": "Llama 3.1 8B / cot",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9716,
+      "completeness": 0.9375,
+      "faithfulness": 0.9489
+    },
+    "quality_overall": 0.9527,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9048,
+      "Consultas Complejas": 1.0,
+      "Consultas Estructurales Simples": 0.9861,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.947
+    },
+    "latency": {
+      "mean": 10.37,
+      "median": 7.52,
+      "p95": 18.17,
+      "n": 44
+    }
+  },
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "concise",
+    "label": "Llama 3.1 8B / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9659,
+      "completeness": 0.9148,
+      "faithfulness": 0.9716
+    },
+    "quality_overall": 0.9508,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8869,
+      "Consultas Complejas": 0.9643,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9697
+    },
+    "latency": {
+      "mean": 3.64,
+      "median": 1.64,
+      "p95": 5.5,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen3 4B (2507)",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "prompt": "concise",
+    "label": "Qwen3 4B (2507) / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9659,
+      "completeness": 0.8977,
+      "faithfulness": 0.9773
+    },
+    "quality_overall": 0.947,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9286,
+      "Consultas Complejas": 0.8214,
+      "Consultas Estructurales Simples": 0.9931,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 2.13,
+      "median": 1.65,
+      "p95": 5.45,
+      "n": 44
+    }
+  },
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "structured",
+    "label": "Llama 3.1 8B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9318,
+      "completeness": 0.9375,
+      "faithfulness": 0.9034
+    },
+    "quality_overall": 0.9242,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.7976,
+      "Consultas Complejas": 1.0,
+      "Consultas Estructurales Simples": 0.9861,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9697
+    },
+    "latency": {
+      "mean": 4.98,
+      "median": 2.52,
+      "p95": 9.2,
+      "n": 44
+    }
+  },
+  {
+    "display": "Gemma 3 12B",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "baseline",
+    "label": "Gemma 3 12B / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9318,
+      "completeness": 0.875,
+      "faithfulness": 0.9432
+    },
+    "quality_overall": 0.9167,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8571,
+      "Consultas Complejas": 0.7619,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 7.33,
+      "median": 4.79,
+      "p95": 23.77,
+      "n": 44
+    }
+  },
+  {
+    "display": "Falcon3 10B",
+    "backend": "huggingface",
+    "model": "tiiuae/Falcon3-10B-Instruct",
+    "prompt": "grounded",
+    "label": "Falcon3 10B / grounded",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9091,
+      "completeness": 0.8807,
+      "faithfulness": 0.9545
+    },
+    "quality_overall": 0.9148,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9881,
+      "Consultas Complejas": 0.9643,
+      "Consultas Estructurales Simples": 0.9306,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.7727
+    },
+    "latency": {
+      "mean": 3.09,
+      "median": 2.56,
+      "p95": 6.48,
+      "n": 44
+    }
+  },
+  {
+    "display": "Llama 3.1 8B",
+    "backend": "huggingface",
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "prompt": "grounded",
+    "label": "Llama 3.1 8B / grounded",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9205,
+      "completeness": 0.8693,
+      "faithfulness": 0.9318
+    },
+    "quality_overall": 0.9072,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.875,
+      "Consultas Complejas": 0.7857,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9242
+    },
+    "latency": {
+      "mean": 3.84,
+      "median": 1.84,
+      "p95": 6.15,
+      "n": 44
+    }
+  },
+  {
+    "display": "Falcon3 10B",
+    "backend": "huggingface",
+    "model": "tiiuae/Falcon3-10B-Instruct",
+    "prompt": "baseline",
+    "label": "Falcon3 10B / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.9318,
+      "completeness": 0.858,
+      "faithfulness": 0.9318
+    },
+    "quality_overall": 0.9072,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.8512,
+      "Consultas Complejas": 0.7857,
+      "Consultas Estructurales Simples": 1.0,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.9545
+    },
+    "latency": {
+      "mean": 3.7,
+      "median": 2.91,
+      "p95": 6.43,
+      "n": 44
+    }
+  },
+  {
+    "display": "Qwen3 4B (2507)",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen3-4B-Instruct-2507",
+    "prompt": "cot",
+    "label": "Qwen3 4B (2507) / cot",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "factual_correctness": 0.8977,
+      "completeness": 0.8864,
+      "faithfulness": 0.9148
+    },
+    "quality_overall": 0.8996,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9405,
+      "Consultas Complejas": 0.6667,
+      "Consultas Estructurales Simples": 0.9931,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 0.8939
+    },
+    "latency": {
+      "mean": 7.36,
+      "median": 5.91,
+      "p95": 18.1,
+      "n": 44
     }
   },
   {
@@ -92,27 +643,27 @@
     "model": "Qwen/Qwen2.5-7B-Instruct",
     "prompt": "baseline",
     "label": "Qwen2.5 7B / baseline",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.9076,
-      "completeness": 0.8641,
-      "faithfulness": 0.9348
+      "factual_correctness": 0.9034,
+      "completeness": 0.8693,
+      "faithfulness": 0.9091
     },
-    "quality_overall": 0.9022,
+    "quality_overall": 0.8939,
     "sentinel_accuracy": 1.0,
     "by_category": {
-      "Análisis Temporal": 0.8452,
-      "Consultas Complejas": 0.7188,
+      "Análisis Temporal": 0.8095,
+      "Consultas Complejas": 0.7262,
       "Consultas Estructurales Simples": 1.0,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9931
+      "Lenguaje Natural Informal": 0.9924
     },
     "latency": {
-      "mean": 2.39,
-      "median": 2.05,
-      "p95": 6.12,
-      "n": 46
+      "mean": 2.89,
+      "median": 1.83,
+      "p95": 8.84,
+      "n": 44
     }
   },
   {
@@ -121,27 +672,27 @@
     "model": "meta-llama/Llama-3.1-8B-Instruct",
     "prompt": "baseline",
     "label": "Llama 3.1 8B / baseline",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.9239,
-      "completeness": 0.8913,
-      "faithfulness": 0.8587
+      "factual_correctness": 0.9318,
+      "completeness": 0.875,
+      "faithfulness": 0.875
     },
-    "quality_overall": 0.8913,
+    "quality_overall": 0.8939,
     "sentinel_accuracy": 1.0,
     "by_category": {
-      "Análisis Temporal": 0.8512,
-      "Consultas Complejas": 0.7813,
-      "Consultas Estructurales Simples": 0.9792,
+      "Análisis Temporal": 0.8333,
+      "Consultas Complejas": 0.7381,
+      "Consultas Estructurales Simples": 0.9722,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9236
+      "Lenguaje Natural Informal": 0.9848
     },
     "latency": {
-      "mean": 3.85,
-      "median": 2.77,
-      "p95": 10.32,
-      "n": 46
+      "mean": 5.53,
+      "median": 2.48,
+      "p95": 14.88,
+      "n": 44
     }
   },
   {
@@ -150,27 +701,27 @@
     "model": "Qwen/Qwen3-4B-Instruct-2507",
     "prompt": "baseline",
     "label": "Qwen3 4B (2507) / baseline",
-    "n_judged": 46,
-    "n_sentinel": 14,
+    "n_judged": 44,
+    "n_sentinel": 16,
     "dim_means": {
-      "factual_correctness": 0.8913,
-      "completeness": 0.8478,
-      "faithfulness": 0.913
+      "factual_correctness": 0.8977,
+      "completeness": 0.8693,
+      "faithfulness": 0.9034
     },
-    "quality_overall": 0.8841,
+    "quality_overall": 0.8902,
     "sentinel_accuracy": 1.0,
     "by_category": {
-      "Análisis Temporal": 0.8155,
-      "Consultas Complejas": 0.6667,
+      "Análisis Temporal": 0.7857,
+      "Consultas Complejas": 0.7381,
       "Consultas Estructurales Simples": 1.0,
       "Fuera de Alcance": 1.0,
-      "Lenguaje Natural Informal": 0.9931
+      "Lenguaje Natural Informal": 1.0
     },
     "latency": {
-      "mean": 2.75,
-      "median": 1.99,
-      "p95": 8.56,
-      "n": 46
+      "mean": 3.24,
+      "median": 2.08,
+      "p95": 9.67,
+      "n": 44
     }
   }
 ]
