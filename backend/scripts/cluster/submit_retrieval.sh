@@ -111,18 +111,21 @@ echo "============================================================"
 echo "[INFO] Descargando/Verificando modelo del juez local (mistral)..."
 singularity exec "$REPO_ROOT/ollama.simg" ollama pull mistral
 
+echo "[INFO] Descargando/Verificando modelo clasificador de preguntas: CHAT or SEARCH."
+singularity exec "$REPO_ROOT/ollama.simg" ollama pull "$OLLAMA_MODEL_ANSWER"
+echo "============================================================"
+
 echo "============================================================"
 echo "[INFO] Poblando el grafo con ground_truth_kg.json..."
 python "$REPO_ROOT/backend/scripts/load_graph.py"
 
 echo "[INFO] Poblando Qdrant (Few-Shot Store)..."
-python "$REPO_ROOT/backend/scripts/load_fewshot_examples.py --clear"
+python "$REPO_ROOT/backend/scripts/load_fewshot_examples.py"
 
 echo "============================================================"
 echo "[INFO] Iniciando evaluación de recuperación (Cypher -> Neo4j)..."
 
 python -u "$REPO_ROOT/evaluation/scripts/evaluate_retrieval.py" \
-    --max-questions 1 \
     --local-judge mistral
 
 echo ""
@@ -133,5 +136,8 @@ echo "  Apagando contenedores..."
 kill $NEO4J_PID
 kill $QDRANT_PID
 kill $OLLAMA_PID
+
+sleep 10
+
 rm -rf "$TEMP_NEO4J" "$TEMP_QDRANT"
 echo "============================================================"
