@@ -400,37 +400,83 @@ def _percentile(values: List[float], pct: float) -> float:
         return 0.0
     return float(np.percentile(np.array(values), pct))
     
-def _grouped_bar(ax: Any, labels: List[str], series: List[Dict[str, Any]], title: str, ylabel: str) -> None:
-    n_series = len(series)
-    bar_w = 0.8 / max(n_series, 1)
-    x = np.arange(len(labels))
-    for i, s in enumerate(series):
-        offset = (i - n_series / 2 + 0.5) * bar_w
-        ax.bar(x + offset, s["data"], bar_w, label=s["label"], color=PALETTE[i % len(PALETTE)])
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=25, ha="right", fontsize=8)
-    ax.set_ylabel(ylabel)
+def _zoom_floor(values: List[float], pad: float = 0.03) -> float:
+    """Piso 'redondo' para un eje cuando los valores se agolpan cerca del techo (1.0).
+
+    Devuelve el múltiplo de 0.05 inmediatamente por debajo de (min - pad), acotado a
+    [0, 0.95]. Sirve para que las diferencias en la zona 0.89–1.0 sean visibles en vez
+    de quedar aplastadas contra un eje que arranca en 0.
+    """
+    if not values:
+        return 0.0
+    lo = float(np.floor((min(values) - pad) * 20) / 20.0)
+    return min(max(lo, 0.0), 0.95)
+
+
+def _heatmap(
+    path: Path, matrix: np.ndarray, row_labels: List[str], col_labels: List[str], title: str, fig_h: float
+) -> Path:
+    """Heatmap combos × columnas con anotación numérica y colormap con zoom cerca del techo.
+
+    Reemplaza a las barras agrupadas de 25 series (ilegibles): cada fila es una
+    combinación (mejor arriba) y cada columna una dimensión/categoría.
+    """
+    finite = matrix[np.isfinite(matrix)]
+    vmin = _zoom_floor(list(finite)) if finite.size else 0.0
+    fig, ax = plt.subplots(figsize=(max(4.5, 1.25 * len(col_labels) + 2.5), fig_h))
+    im = ax.imshow(matrix, aspect="auto", cmap="YlGn", vmin=vmin, vmax=1.0)
+    ax.set_xticks(np.arange(len(col_labels)))
+    ax.set_xticklabels(col_labels, rotation=20, ha="right", fontsize=8)
+    ax.set_yticks(np.arange(len(row_labels)))
+    ax.set_yticklabels(row_labels, fontsize=8)
     ax.set_title(title)
-    ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
-    ax.spines[["top", "right"]].set_visible(False)
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            v = matrix[i, j]
+            if not np.isfinite(v):
+                ax.text(j, i, "–", va="center", ha="center", fontsize=7, color="#999")
+                continue
+            frac = (v - vmin) / (1.0 - vmin) if vmin < 1.0 else 1.0
+            ax.text(j, i, f"{v:.3f}", va="center", ha="center", fontsize=7,
+                    color="white" if frac > 0.6 else "#222")
+    fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02, label="Score (0–1)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return path
 
 
 def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
+    """Gráficas en formato imprimible (para el informe).
+
+    Todas las combinaciones se muestran en barras horizontales / heatmaps con las
+    etiquetas legibles (una por fila), ordenadas mejor-primero, y con ejes/colormap
+    recortados cerca del techo para que las diferencias no queden aplastadas.
+    """
     images_dir.mkdir(parents=True, exist_ok=True)
     paths: Dict[str, Path] = {}
-    combo_labels = [r["label"] for r in results]
 
-    # 1) Calidad global 
-    fig, ax = plt.subplots(figsize=(max(7, len(results) * 1.3), 4.5))
-    x = np.arange(len(results))
-    ax.bar(x - 0.2, [r["quality_overall"] for r in results], 0.4, label="Calidad global", color=PALETTE[0])
-    ax.bar(x + 0.2, [r["sentinel_accuracy"] for r in results], 0.4, label="Centinelas", color=PALETTE[2])
-    ax.set_xticks(x)
-    ax.set_xticklabels(combo_labels, rotation=25, ha="right", fontsize=8)
-    ax.set_ylim(0, 1.05)
-    ax.set_ylabel("Score (0-1)")
+    results = sorted(results, key=lambda r: r["quality_overall"], reverse=True)
+    labels = [r["label"] for r in results]
+    n = len(results)
+    y = np.arange(n)[::-1]  # fila 0 (mejor) arriba
+    fig_h = max(4.0, 0.34 * n + 1.6)
+
+    # 1) Calidad global: barras horizontales con eje recortado; centinelas como marcador
+    #    (son ~1.0 en todas las combinaciones, así que un rombo alcanza para verlo).
+    quality = [r["quality_overall"] for r in results]
+    sent = [r["sentinel_accuracy"] for r in results]
+    fig, ax = plt.subplots(figsize=(8.0, fig_h))
+    ax.barh(y, quality, 0.62, color=PALETTE[0], label="Calidad global", zorder=3)
+    ax.scatter(sent, y, marker="D", s=20, color=PALETTE[1], label="Centinelas (exact-match)", zorder=4)
+    for yi, q in zip(y, quality):
+        ax.text(q - 0.001, yi, f"{q:.3f}", va="center", ha="right", fontsize=7, color="white", zorder=5)
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=8)
+    ax.set_xlim(_zoom_floor(quality + sent), 1.005)
+    ax.set_xlabel("Score (0–1)")
     ax.set_title("Calidad global y manejo de centinelas")
-    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
+    ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     p = images_dir / "chart_overall.png"
@@ -438,43 +484,32 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["overall"] = p
 
-    # 2) Score por dimensión.
-    series_dim = [
-        {"label": r["label"], "data": [r["dim_means"][d] for d in JUDGE_DIMS]} for r in results
-    ]
-    fig, ax = plt.subplots(figsize=(max(7, len(results) * 1.4), 4.5))
-    _grouped_bar(ax, [DIM_LABELS[d] for d in JUDGE_DIMS], series_dim, "Score por dimensión", "Score (0-1)")
-    ax.set_ylim(0, 1.05)
-    fig.tight_layout()
-    p = images_dir / "chart_dimensions.png"
-    fig.savefig(p, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    paths["dimensions"] = p
+    # 2) Score por dimensión → heatmap (combos × 3 dimensiones).
+    dim_matrix = np.array([[r["dim_means"][d] for d in JUDGE_DIMS] for r in results])
+    paths["dimensions"] = _heatmap(
+        images_dir / "chart_dimensions.png", dim_matrix, labels,
+        [DIM_LABELS[d] for d in JUDGE_DIMS], "Score por dimensión", fig_h,
+    )
 
-    # 3) Score por categoría.
+    # 3) Score por categoría → heatmap (combos × categorías).
     all_cats = sorted({c for r in results for c in r["by_category"]})
-    series_cat = [
-        {"label": r["label"], "data": [r["by_category"].get(c, 0.0) for c in all_cats]} for r in results
-    ]
-    fig, ax = plt.subplots(figsize=(max(8, len(all_cats) * 1.4), 5))
-    _grouped_bar(ax, all_cats, series_cat, "Score por categoría", "Score (0-1)")
-    ax.set_ylim(0, 1.05)
-    fig.tight_layout()
-    p = images_dir / "chart_categories.png"
-    fig.savefig(p, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    paths["categories"] = p
+    cat_matrix = np.array([[r["by_category"].get(c, np.nan) for c in all_cats] for r in results])
+    paths["categories"] = _heatmap(
+        images_dir / "chart_categories.png", cat_matrix, labels, all_cats, "Score por categoría", fig_h,
+    )
 
-    # 4) Latencia (mean + p95) por combinación
-    fig, ax = plt.subplots(figsize=(max(7, len(results) * 1.3), 4.5))
-    x = np.arange(len(results))
-    ax.bar(x - 0.2, [r["latency"]["mean"] for r in results], 0.4, label="Media", color=PALETTE[3])
-    ax.bar(x + 0.2, [r["latency"]["p95"] for r in results], 0.4, label="p95", color=PALETTE[1])
-    ax.set_xticks(x)
-    ax.set_xticklabels(combo_labels, rotation=25, ha="right", fontsize=8)
-    ax.set_ylabel("Segundos")
-    ax.set_title("Latencia de generación por combinación")
-    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
+    # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
+    by_lat = sorted(results, key=lambda r: r["latency"]["mean"])
+    lat_labels = [r["label"] for r in by_lat]
+    yl = np.arange(len(by_lat))[::-1]
+    fig, ax = plt.subplots(figsize=(8.0, fig_h))
+    ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
+    ax.barh(yl - 0.2, [r["latency"]["p95"] for r in by_lat], 0.4, color=PALETTE[1], label="p95")
+    ax.set_yticks(yl)
+    ax.set_yticklabels(lat_labels, fontsize=8)
+    ax.set_xlabel("Segundos")
+    ax.set_title("Latencia de generación por combinación (menor es mejor)")
+    ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
     p = images_dir / "chart_latency.png"
@@ -482,16 +517,16 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["latency"] = p
 
-    # 5) Distribución de scores del juez (1-5) por combinación (barra apilada, % del total).
-    #    Revela la FORMA, no solo la media: dos modelos con media parecida pueden diferir
-    #    en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones juzgadas.
+    # 5) Distribución de scores del juez (1-5): barras horizontales apiladas (% del total).
+    #    Revela la FORMA, no solo la media: dos combinaciones con media parecida pueden
+    #    diferir en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones.
     score_colors = {5: "#27ae60", 4: "#7fc97f", 3: "#f39c12", 2: "#e67e22", 1: "#e74c3c"}
     dist_pct: Dict[int, List[float]] = {s: [] for s in (5, 4, 3, 2, 1)}
     any_scores = False
     for r in results:
         counts = {s: 0 for s in (1, 2, 3, 4, 5)}
         total = 0
-        for rec in r["records"]:
+        for rec in r.get("records", []):
             sc = rec.get("scores")
             if not sc:
                 continue
@@ -503,19 +538,19 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
             dist_pct[s].append(100.0 * counts[s] / total if total else 0.0)
 
     if any_scores:
-        fig, ax = plt.subplots(figsize=(max(7, len(results) * 1.3), 4.5))
-        x = np.arange(len(results))
-        bottom = np.zeros(len(results))
+        fig, ax = plt.subplots(figsize=(8.0, fig_h))
+        left = np.zeros(n)
         for s in (5, 4, 3, 2, 1):
             vals = np.array(dist_pct[s])
-            ax.bar(x, vals, 0.6, bottom=bottom, label=str(s), color=score_colors[s])
-            bottom += vals
-        ax.set_xticks(x)
-        ax.set_xticklabels(combo_labels, rotation=25, ha="right", fontsize=8)
-        ax.set_ylim(0, 100)
-        ax.set_ylabel("% de scores")
-        ax.set_title("Distribución de scores del juez (1-5) por combinación")
-        ax.legend(title="Score", fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9, borderaxespad=0.0)
+            ax.barh(y, vals, 0.62, left=left, label=str(s), color=score_colors[s])
+            left += vals
+        ax.set_yticks(y)
+        ax.set_yticklabels(labels, fontsize=8)
+        ax.set_xlim(0, 100)
+        ax.set_xlabel("% de scores del juez")
+        ax.set_title("Distribución de scores del juez (1–5) por combinación")
+        ax.legend(title="Score", fontsize=8, ncol=5, loc="upper center",
+                  bbox_to_anchor=(0.5, -0.06 - 2.0 / fig_h), framealpha=0.9)
         ax.spines[["top", "right"]].set_visible(False)
         fig.tight_layout()
         p = images_dir / "chart_score_distribution.png"
@@ -725,6 +760,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-questions", type=int, default=None, help="Limita N preguntas (smoke test).")
     parser.add_argument("--no-judge", action="store_true", help="No juzga: solo genera y mide latencias.")
     parser.add_argument(
+        "--replot",
+        action="store_true",
+        help="No corre generación ni juez: regenera solo las gráficas y el HTML "
+        "desde generation_details.json ya existente.",
+    )
+    parser.add_argument(
         "--models-file",
         type=Path,
         default=None,
@@ -736,6 +777,20 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     load_dotenv(EVAL_DIR.parent / "backend" / ".env")
+
+    if args.replot:
+        details_path = RESULTS_DIR / "generation_details.json"
+        if not details_path.exists():
+            raise FileNotFoundError(f"No existe {details_path}; corré la evaluación primero.")
+        results = json.loads(details_path.read_text(encoding="utf-8"))
+        results.sort(key=lambda r: r["quality_overall"], reverse=True)
+        chart_paths = generate_charts(results, RESULTS_DIR / "images")
+        judged = any(rec.get("scores") for r in results for rec in r.get("records", []))
+        generate_html_report(
+            results, RESULTS_DIR / "generation_report.html", chart_paths, args.judge_model, judged=judged
+        )
+        print(f"Regeneradas {len(chart_paths)} gráficas + HTML desde {details_path.name} (sin re-evaluar).")
+        return
 
     if not args.dataset.exists():
         raise FileNotFoundError(f"No existe el dataset: {args.dataset}")
