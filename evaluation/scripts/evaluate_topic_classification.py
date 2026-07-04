@@ -447,106 +447,109 @@ def config_label(params: Dict[str, Any], varying: List[str]) -> str:
 
 PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c", "#34495e"]
 
+PARAM_LABELS_FULL = {
+    "chunking_threshold": "Umbral de chunking",
+    "coverage_threshold": "Umbral de cobertura",
+    "confidence_threshold": "Umbral de confianza (logit)",
+    "chunk_size": "Tamaño de chunk",
+}
+OPERATING_POINT = {
+    "chunking_threshold": DEFAULT_THRESHOLD,
+    "coverage_threshold": DEFAULT_COVERAGE_LOGIT_THRESHOLD,
+    "confidence_threshold": float(DEFAULT_CONFIDENCE_LOGIT_THRESHOLD),
+    "chunk_size": 512,
+}
 
-def _facet_setup(configs: List[Dict[str, Any]]):
-    """Prepara el facetado por chunk_size: lista de tamaños, dims que varían (sin size),
-    los configs ordenados por cada tamaño, los anchos por panel y los ticks x salteados."""
-    sizes = sorted({c["params"]["chunk_size"] for c in configs})
-    nonsize_dims = [
-        d
-        for d in PARAM_DIMENSIONS
-        if d != "chunk_size" and len({c["params"][d] for c in configs}) > 1
-    ] or [d for d in PARAM_DIMENSIONS if d != "chunk_size"]
 
-    by_size: Dict[int, List[Dict[str, Any]]] = {}
-    for s in sizes:
-        cs = [c for c in configs if c["params"]["chunk_size"] == s]
-        cs.sort(key=lambda c: tuple(c["params"][d] for d in nonsize_dims))
-        by_size[s] = cs
-
-    # Ancho común acotado para que la imagen no se vuelva enorme con muchos combos.
-    width = min(20.0, max(6.0, max(len(by_size[s]) for s in sizes) * 0.22))
-
-    def flabel(params: Dict[str, Any]) -> str:
-        return " ".join(f"{PARAM_SHORT[d]}={params[d]}" for d in nonsize_dims)
-
-    def ticks(n: int) -> List[int]:
-        # Con muchos combos, mostrar ~20 labels salteados (la línea se ve completa igual).
-        if n <= 25:
-            return list(range(n))
-        step = max(1, n // 20)
-        return list(range(0, n, step))
-
-    return sizes, by_size, width, flabel, ticks
+def _reference_config(configs: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Config de referencia para las gráficas: el punto de operación deployado si está en
+    el barrido; si no, la mejor por F1 macro a nivel tópico."""
+    for c in configs:
+        if all(c["params"].get(k) == v for k, v in OPERATING_POINT.items()):
+            return c
+    return max(configs, key=lambda c: c["metrics"]["macro"]["f1_macro"])
 
 
 def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
+    """Gráficas representativas para el informe (no el barrido completo de 600+ configs).
+
+    Toma una config de referencia (el punto de operación deployado) y produce:
+      - chart_topic_sensitivity.png: P/R/F1 macro variando cada hiperparámetro de a uno.
+      - chart_topic_by_project.png:  P/R/F1 por proyecto en ese punto, tópico y subcampo.
+    """
     images_dir.mkdir(parents=True, exist_ok=True)
     paths: Dict[str, Path] = {}
-    sizes, by_size, width, flabel, ticks = _facet_setup(configs)
+    if not configs:
+        return paths
 
-    def _faceted_fig():
-        # Un panel por chunk_size, apilados verticalmente (ancho parejo, alto completo).
-        fig, axes = plt.subplots(
-            len(sizes), 1, figsize=(width, 3.6 * len(sizes)), sharey=True, squeeze=False
-        )
-        return fig, list(axes[:, 0])
+    ref = _reference_config(configs)
+    ref_params = ref["params"]
+    metric_keys = ("precision_macro", "recall_macro", "f1_macro")
+    metric_labels = ("Precisión", "Recall", "F1")
+    sub_keys = ("precision", "recall", "f1")
 
-    def _xaxis(ax, cs):
-        tk = ticks(len(cs))
-        ax.set_xticks(tk)
-        ax.set_xticklabels([flabel(cs[i]["params"]) for i in tk], rotation=90, fontsize=6)
-        ax.set_ylim(0, 1.05)
+    # 1) Sensibilidad: una gráfica por hiperparámetro. Cada una es un corte 1-D del barrido:
+    #    se varía ese parámetro y se dejan los otros tres fijos en la config de referencia.
+    #    La línea punteada marca el valor elegido.
+    for param in PARAM_DIMENSIONS:
+        sl = [c for c in configs
+              if all(c["params"][k] == v for k, v in ref_params.items() if k != param)]
+        sl.sort(key=lambda c: c["params"][param])
+        xs = [c["params"][param] for c in sl]
+        idx = np.arange(len(sl))
+        fig, ax = plt.subplots(figsize=(6.0, 4.2))
+        for color, mk, ml in zip(PALETTE, metric_keys, metric_labels):
+            ax.plot(idx, [c["metrics"]["macro"][mk] for c in sl], marker="o", markersize=6,
+                    color=color, label=ml)
+        if ref_params[param] in xs:
+            ax.axvline(xs.index(ref_params[param]), color="#7f8c8d", linestyle="--", linewidth=1.2,
+                       label="valor elegido")
+        ax.set_xticks(idx)
+        ax.set_xticklabels([f"{x:g}" for x in xs], fontsize=10)
+        ax.set_title(f"Sensibilidad a: {PARAM_LABELS_FULL[param]}", fontsize=12)
+        ax.set_xlabel(PARAM_LABELS_FULL[param])
+        ax.set_ylabel("Score macro (nivel tópico)")
+        top = max([c["metrics"]["macro"][k] for c in sl for k in ("recall_macro", "f1_macro")] + [0.3])
+        ax.set_ylim(0, min(1.02, top + 0.05))
+        ax.grid(axis="y", linestyle=":", alpha=0.5)
         ax.spines[["top", "right"]].set_visible(False)
-
-    # P / R / F1 macro, un panel por chunk_size. Se genera a nivel tópico y a nivel
-    # subcampo (colapsando tópico -> subcampo en predicho y GT).
-    def _metrics_chart(metrics_key: str, nivel: str, filename: str, paths_key: str) -> None:
-        if not any(c.get(metrics_key) for c in configs):
-            return
-        fig, axes = _faceted_fig()
-        for ax, s in zip(axes, sizes):
-            cs = [c for c in by_size[s] if c.get(metrics_key)]
-            x = np.arange(len(cs))
-            for i, key in enumerate(("precision_macro", "recall_macro", "f1_macro")):
-                ax.plot(x, [c[metrics_key]["macro"][key] for c in cs], marker="o", markersize=3,
-                        color=PALETTE[i], label=key.replace("_macro", "").capitalize())
-            ax.set_title(f"chunk_size={s}")
-            ax.grid(axis="y", linestyle=":", alpha=0.5)
-            ax.set_ylabel("Score (macro)")
-            _xaxis(ax, cs)
-        axes[0].legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
-        fig.suptitle(f"Precision / Recall / F1 macro a nivel {nivel} (facetado por chunk_size)")
+        ax.legend(fontsize=9, loc="best", framealpha=0.9)
         fig.tight_layout()
-        p = images_dir / filename
+        p = images_dir / f"chart_topic_sens_{PARAM_SHORT[param]}.png"
         fig.savefig(p, dpi=150, bbox_inches="tight")
         plt.close(fig)
-        paths[paths_key] = p
+        paths[f"sens_{PARAM_SHORT[param]}"] = p
 
-    _metrics_chart("metrics", "tópico", "chart_metrics_vs_param.png", "metrics")
-    _metrics_chart("metrics_subfield", "subcampo", "chart_metrics_subfield_vs_param.png", "metrics_subfield")
-
-    # Por proyecto: un chart por métrica, una línea por proyecto, facetado por chunk_size
-    all_projects = sorted({pid for c in configs for pid in c["metrics"]["per_project"]})
-    if all_projects:
-        for metric, metric_label in (("f1", "F1"), ("precision", "Precision"), ("recall", "Recall")):
-            fig, axes = _faceted_fig()
-            for ax, s in zip(axes, sizes):
-                cs = by_size[s]
-                x = np.arange(len(cs))
-                for j, pid in enumerate(all_projects):
-                    ax.plot(x, [c["metrics"]["per_project"].get(pid, {}).get(metric, 0.0) for c in cs],
-                            marker=".", markersize=3, color=PALETTE[j % len(PALETTE)], label=pid)
-                ax.set_title(f"chunk_size={s}")
-                ax.set_ylabel(metric_label)
-                _xaxis(ax, cs)
-            axes[0].legend(fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.9)
-            fig.suptitle(f"{metric_label} por proyecto (facetado por chunk_size)")
-            fig.tight_layout()
-            p = images_dir / f"chart_{metric}_by_project.png"
-            fig.savefig(p, dpi=150, bbox_inches="tight")
-            plt.close(fig)
-            paths[f"by_project_{metric}"] = p
+    # 2) Por proyecto en la config de referencia (nivel tópico y, si está, subcampo).
+    projects = list(ref["metrics"]["per_project"])
+    if projects:
+        levels = [("metrics", "Nivel tópico")]
+        if ref.get("metrics_subfield", {}).get("per_project"):
+            levels.append(("metrics_subfield", "Nivel subcampo"))
+        y = np.arange(len(projects))
+        bar_w = 0.26
+        fig, axarr = plt.subplots(
+            1, len(levels), figsize=(6 * len(levels), max(3.2, 0.55 * len(projects) + 1.8)),
+            sharey=True, squeeze=False,
+        )
+        axs = axarr[0]
+        for ax, (mk, title) in zip(axs, levels):
+            per = ref[mk]["per_project"]
+            for i, (color, sub, ml) in enumerate(zip(PALETTE, sub_keys, metric_labels)):
+                ax.barh(y + (1 - i) * bar_w, [per[p][sub] for p in projects], bar_w, color=color, label=ml)
+            ax.set_title(title, fontsize=11)
+            ax.set_xlim(0, 1.05)
+            ax.set_xlabel("Score (0–1)")
+            ax.spines[["top", "right"]].set_visible(False)
+        axs[0].set_yticks(y)
+        axs[0].set_yticklabels(projects, fontsize=9)
+        axs[-1].legend(fontsize=9, loc="lower right", framealpha=0.9)
+        fig.suptitle(f"Desempeño por proyecto en el punto de operación ({ref['label']})", fontsize=12)
+        fig.tight_layout()
+        p = images_dir / "chart_topic_by_project.png"
+        fig.savefig(p, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        paths["by_project"] = p
 
     return paths
 
@@ -673,28 +676,22 @@ def render_report_cards(
     ]
     analysis_html = "\n".join(f"<li>{a}</li>" for a in analysis)
 
-    img_metrics_block = (
-        f'<div class="card"><h2>P / R / F1 macro por configuración (nivel tópico)</h2>'
-        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics"], rel_to)}" alt="metrics"></div></div>'
-        if "metrics" in chart_paths
+    sens_imgs = "".join(
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths[k], rel_to)}" alt="{k}"></div>'
+        for k in ("sens_ck", "sens_cov", "sens_conf", "sens_size")
+        if k in chart_paths
+    )
+    img_sensitivity_block = (
+        f'<div class="card"><h2>Sensibilidad a cada hiperparámetro (punto de operación)</h2>{sens_imgs}</div>'
+        if sens_imgs
         else ""
     )
-    img_metrics_subfield_block = (
-        f'<div class="card"><h2>P / R / F1 macro por configuración (nivel subcampo)</h2>'
-        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["metrics_subfield"], rel_to)}" alt="metrics subfield"></div></div>'
-        if "metrics_subfield" in chart_paths
+    img_by_project_block = (
+        f'<div class="card"><h2>Desempeño por proyecto (punto de operación)</h2>'
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["by_project"], rel_to)}" alt="por proyecto"></div></div>'
+        if "by_project" in chart_paths
         else ""
     )
-    proj_blocks = []
-    for metric, metric_label in (("f1", "F1"), ("precision", "Precision"), ("recall", "Recall")):
-        key = f"by_project_{metric}"
-        if key in chart_paths:
-            proj_blocks.append(
-                f'<div class="card"><h2>{metric_label} por proyecto</h2>'
-                f'<div class="chart-wrap"><img src="{_chart_src(chart_paths[key], rel_to)}" '
-                f'alt="{metric} by project"></div></div>'
-            )
-    img_proj_block = "\n".join(proj_blocks)
 
     return f"""
   <h1>Parámetros de clasificación de tópicos</h1>
@@ -748,9 +745,8 @@ def render_report_cards(
     </div>
   </div>
 
-  {img_metrics_block}
-  {img_metrics_subfield_block}
-  {img_proj_block}
+  {img_sensitivity_block}
+  {img_by_project_block}
 """
 
 
@@ -980,7 +976,27 @@ def main() -> None:
                     help="Ignorar el cache de predicciones crudas (re-corre BERT).")
     ap.add_argument("--fresh", action="store_true",
                     help="Ignorar el reporte previo y empezar de cero.")
+    ap.add_argument("--replot", action="store_true",
+                    help="No corre el barrido: regenera solo las gráficas y el HTML "
+                         "desde topic_params_details.json ya existente.")
     args = ap.parse_args()
+
+    if args.replot:
+        details_path = RESULTS_DIR / "topic_params_details.json"
+        summary_path = RESULTS_DIR / "topic_params_summary.json"
+        if not details_path.exists():
+            raise FileNotFoundError(f"No existe {details_path}; corré la calibración primero.")
+        configs = json.loads(details_path.read_text(encoding="utf-8"))["configs"]
+        meta = json.loads(summary_path.read_text(encoding="utf-8"))
+        full_summary = {**meta, "configs": configs}
+        chart_paths = generate_charts(configs, RESULTS_DIR / "images")
+        generate_html_report(full_summary, RESULTS_DIR / "topic_params_report.html", chart_paths)
+        ref = _reference_config(configs)
+        print(f"Punto de operación: {ref['label']} · "
+              f"F1 tópico={ref['metrics']['macro']['f1_macro']:.3f} "
+              f"subcampo={ref['metrics_subfield']['macro']['f1_macro']:.3f}")
+        print(f"Regeneradas {len(chart_paths)} gráficas + HTML (sin re-correr el barrido).")
+        return
 
     # Cada dimensión: del flag (string a parsear) o de la constante.
     chunking = parse_float_list(args.chunking_thresholds, "chunking_threshold") if args.chunking_thresholds else list(CHUNKING_THRESHOLDS)
