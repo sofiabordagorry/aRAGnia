@@ -138,8 +138,8 @@ def judge_retrieval_local(model: str, question: str, gt_subgraph: str, candidate
     response = client.generate(messages=messages, temperature=0.0, max_tokens=512)
     data = _extract_json(response)
     return {
-        "recall": int(data.get("recall", 1)), 
-        "precision": int(data.get("precision", 1)), 
+        "recall": max(1, min(5, int(data.get("recall", 1)))), 
+        "precision": max(1, min(5, int(data.get("precision", 1)))),
         "justification": str(data.get("justification", ""))
     }
 
@@ -227,7 +227,6 @@ def evaluate_combo(
         }
 
         if getattr(retriever, "_last_intent", None) == "CHAT":
-            # Penalización inmediata: 1 de 5 (normalizado es 0.0)
             scores = {"recall": 1, "precision": 1, "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."}
             rec["scores"] = scores
             rec["justification"] = scores["justification"]
@@ -410,7 +409,9 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
             if not sc:
                 continue
             for d in JUDGE_DIMS:
-                counts[int(sc[d])] += 1
+                score_val = int(sc[d])
+                score_val = max(1, min(5, score_val))
+                counts[score_val] += 1
                 total += 1
         any_scores = any_scores or total > 0
         for s in (5, 4, 3, 2, 1):
