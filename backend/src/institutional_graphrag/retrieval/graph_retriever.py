@@ -221,6 +221,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 logger.warning(
                     f"LLM no devolvió query entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
+                logger.info(f"Respuesta fallida cruda del LLM al corregir: {response}")
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo para reintento...")
@@ -410,7 +411,7 @@ CRITICAL SYNTAX:
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-        - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+        - (Investigador|Topico)-[:EXTRAIDO_DE]->(Chunk)
         - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
@@ -429,8 +430,8 @@ CRITICAL SYNTAX:
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
-            ("Chunk", "EXTRAIDO_DE", "Investigador"),
-            ("Chunk", "EXTRAIDO_DE", "Topico"),
+            ("Investigador", "EXTRAIDO_DE", "Chunk"),
+            ("Topico", "EXTRAIDO_DE", "Chunk"),
             ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
             ("Grupo", "TITULO_EXTRAIDO_DE", "Chunk"),
         ]
@@ -601,6 +602,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 logger.warning(
                     f"LLM no devolvió query corregida entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
+
+                logger.info(f"Respuesta fallida cruda del LLM al corregir: {response}")
+
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo de corrección para reintento...")
@@ -998,6 +1002,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                 logger.warning(
                     f"Error de sintaxis Cypher (intento {attempt + 1}/{MAX_SYNTAX_RETRIES}): {exc}"
                 )
+                logger.info(f"Query original que provocó el error de sintaxis:\n{cypher_query}")
                 if attempt == MAX_SYNTAX_RETRIES - 1:
                     logger.error("Se agotaron los reintentos de corrección de sintaxis")
                     return _too_complex_result, [], ""
