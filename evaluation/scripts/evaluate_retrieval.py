@@ -441,7 +441,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_yticks(yl)
     ax.set_yticklabels(lat_labels, fontsize=8)
     ax.set_xlabel("Segundos")
-    ax.set_title("Latencia de retrieval por combinación (menor es mejor)")
+    ax.set_title("Latencia de recuperación por combinación (menor es mejor)")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
@@ -625,7 +625,7 @@ def generate_html_report(
   </style>
 </head>
 <body>
-  <h1>Evaluación de Retrieval – Comparación de LLMs y Prompts</h1>
+  <h1>Evaluación de Recuperación – Comparación de LLMs y Prompts</h1>
   <p class="subtitle">{len(results)} combinaciones modelo×prompt evaluadas sobre el GT de validación. Juez: <code>{judge_model}</code>. Scores normalizados 0-1.</p>
 
   <div class="card">
@@ -681,7 +681,7 @@ def generate_html_report(
     <div class="chart-wrap"><img src="{img_cats}" alt="Score por categoría"></div>
   </div>
   <div class="card">
-    <h2>Latencia de retrieval</h2>
+    <h2>Latencia de recuperación </h2>
     <div class="chart-wrap"><img src="{img_lat}" alt="Latencia"></div>
   </div>
 </body>
