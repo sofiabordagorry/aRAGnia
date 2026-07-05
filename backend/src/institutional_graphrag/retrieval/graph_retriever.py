@@ -18,6 +18,7 @@ from neo4j.graph import Node
 from institutional_graphrag.llm.llm_provider import get_llm_client
 from institutional_graphrag.retrieval.fewshot_store import FewShotStore
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -220,6 +221,7 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
                 logger.warning(
                     f"LLM no devolvió query entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
+                logger.info(f"Respuesta fallida cruda del LLM al corregir: {response}")
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo para reintento...")
@@ -256,6 +258,9 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
+            logger.warning(
+                f"La query generada falló la validación de seguridad. Motivo {error} | Query: {cypher_query}"
+            )
             raise ValueError(f"Query generada no es segura: {error}")
 
         logger.info(f"Query Cypher generada: {cypher_query}")
@@ -309,7 +314,10 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
             try:
                 examples = self._fewshot.search(user_query, top_k=3)
                 if examples:
-                    logger.debug("Few-shot examples retrieved: %s", [q for q, _ in examples])
+                    formatted_examples = [f"Pregunta: {q}\nQuery cypher:\n{c}" for q, c in examples]
+                    logger.info(
+                        "Few-shot examples retrieved: \n %s", "\n\n".join(formatted_examples)
+                    )
                     lines = ["SIMILAR EXAMPLES (use as reference patterns):"]
                     for q, c in examples:
                         lines.append(f"\nQuestion: {q}\n<QUERY>\n{c}\n</QUERY>")
@@ -403,7 +411,7 @@ CRITICAL SYNTAX:
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-        - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+        - (Investigador|Topico)-[:EXTRAIDO_DE]->(Chunk)
         - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
         # Definir las relaciones correctas: (source_type, rel_type, target_type)
@@ -422,8 +430,8 @@ CRITICAL SYNTAX:
             ("Documento", "PRIMER_CHUNK", "Chunk"),
             ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
             ("Chunk", "DE_DOCUMENTO", "Documento"),
-            ("Chunk", "EXTRAIDO_DE", "Investigador"),
-            ("Chunk", "EXTRAIDO_DE", "Topico"),
+            ("Investigador", "EXTRAIDO_DE", "Chunk"),
+            ("Topico", "EXTRAIDO_DE", "Chunk"),
             ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
             ("Grupo", "TITULO_EXTRAIDO_DE", "Chunk"),
         ]
@@ -594,6 +602,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                 logger.warning(
                     f"LLM no devolvió query corregida entre tags <QUERY>...</QUERY> (intento {attempt + 1}/{MAX_TAG_RETRIES})"
                 )
+
+                logger.info(f"Respuesta fallida cruda del LLM al corregir: {response}")
+
                 if attempt < MAX_TAG_RETRIES - 1:
                     # Regenerar el prompt completo para mantener el contexto
                     logger.info("Regenerando prompt completo de corrección para reintento...")
@@ -620,6 +631,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
 
         is_safe, error = CypherQueryValidator.is_safe(fixed_query)
         if not is_safe:
+            logger.warning(
+                f"La query corregida falló la validación de seguridad. Motivo {error} | Query: {fixed_query}"
+            )
             raise ValueError(f"Query corregida no es segura: {error}")
 
         logger.info(f"Query corregida por LLM: {fixed_query}")
@@ -631,6 +645,9 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
         """
         is_safe, error = CypherQueryValidator.is_safe(cypher_query)
         if not is_safe:
+            logger.warning(
+                f"La query falló la validación de seguridad. Motivo {error} | Query: {cypher_query}"
+            )
             raise ValueError(f"Query no pasó validación de seguridad: {error}")
 
         with self.driver.session() as session:
@@ -985,6 +1002,7 @@ Tu respuesta (frase introductoria + lista completa):"""
                 logger.warning(
                     f"Error de sintaxis Cypher (intento {attempt + 1}/{MAX_SYNTAX_RETRIES}): {exc}"
                 )
+                logger.info(f"Query original que provocó el error de sintaxis:\n{cypher_query}")
                 if attempt == MAX_SYNTAX_RETRIES - 1:
                     logger.error("Se agotaron los reintentos de corrección de sintaxis")
                     return _too_complex_result, [], ""

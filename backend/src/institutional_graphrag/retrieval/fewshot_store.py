@@ -138,3 +138,6 @@ class FewShotStore:
 
     def close(self) -> None:
         self._store.close()
+
+    def clear(self) -> None:
+        self._store.clear_collection()

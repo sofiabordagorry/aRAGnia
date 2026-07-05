@@ -87,7 +87,6 @@ Guía rápida de los scripts en esta carpeta.
     - `python evaluation/scripts/evaluate_generation.py --max-questions 3` (smoke test)
     - `python evaluation/scripts/evaluate_generation.py --no-judge` (solo genera y mide latencias)
     - `python evaluation/scripts/evaluate_generation.py --judge-model claude-opus-4-8`
-    
 - `evaluate_topic_classification.py`
   - Ayuda a **definir los parámetros de la clasificación de tópicos** (issue #234) probando combinaciones de parámetros y comparando contra el GT de tópicos (`ground_truth_kg.json`, relación `TIENE_TOPICO`).
   - Parámetros (cada uno es una **lista**; se evalúan **todas las combinaciones** = producto cartesiano):
@@ -137,3 +136,31 @@ Guía rápida de los scripts en esta carpeta.
 
   - Uso:
     - `python evaluation/scripts/result_cypher_GT.py`
+
+- `evaluate_retrieval.py`
+  - Evalúa la **recuperación (retrieval)** del pipeline GraphRAG sobre el GT de validación (`datasetQA_GT.json`): responde qué combinación de LLM y prompt recupera el mejor subgrafo para cada pregunta.
+  - Para cada combinación de modelo × variante de prompt:
+    - Genera automáticamente la consulta Cypher a partir de la pregunta.
+    - Ejecuta la consulta en Neo4j y recupera el subgrafo correspondiente.
+    - Compara el subgrafo recuperado contra el subgrafo de referencia (`retrieved_subgraph`) mediante un **LLM-as-a-judge**, evaluando:
+      - **Recall:** qué tan completa es la información recuperada.
+      - **Precision:** qué tan relevante es el contexto recuperado (evitando ruido).
+  - Configuración:
+    - Editar las constantes `MODELS` y `prompts_variants.json`, o pasar `--models-file`.
+    - El juez puede ser Anthropic (`ANTHROPIC_API_KEY`) o un modelo local de Ollama mediante `--local-judge`.
+  - Requiere:
+    - Neo4j con el grafo cargado.
+    - `matplotlib`.
+    - `ANTHROPIC_API_KEY` (salvo que se utilice `--local-judge` o `--no-judge`).
+  - Salida:
+    - Resumen agregado en `evaluation/results/retrieval/retrieval_comparison_summary.json`
+    - Detalle por pregunta en `evaluation/results/retrieval/retrieval_details.json`
+    - Gráficas PNG en `evaluation/results/retrieval/images/`
+    - Reporte HTML en `evaluation/results/retrieval/retrieval_report.html`
+  - Uso:
+    - `python evaluation/scripts/evaluate_retrieval.py`
+    - `python evaluation/scripts/evaluate_retrieval.py --max-questions 3` (smoke test)
+    - `python evaluation/scripts/evaluate_retrieval.py --local-judge llama3.1`
+    - `python evaluation/scripts/evaluate_retrieval.py --no-judge`
+    - `python evaluation/scripts/evaluate_retrieval.py --judge-model claude-opus-4-8`
+    - `python evaluation/scripts/evaluate_retrieval.py --replot` (regenera únicamente las gráficas y el reporte HTML a partir de `retrieval_details.json`)
