@@ -31,8 +31,8 @@ def test_fix_relationship_directions_chunk_investigador():
 
     # 2. Test using a mocked instance of GraphRAGRetriever
     with (
-        patch("institutional_graphrag.retrieval.graph_retriever.GraphDatabase") as mock_db,
-        patch("institutional_graphrag.retrieval.graph_retriever.get_llm_client") as mock_llm,
+        patch("institutional_graphrag.retrieval.graph_retriever.GraphDatabase"),
+        patch("institutional_graphrag.retrieval.graph_retriever.get_llm_client"),
     ):
 
         # Instantiate retriever with dummy parameters, mocking out FewShotStore
