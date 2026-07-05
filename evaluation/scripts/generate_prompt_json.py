@@ -1,11 +1,9 @@
 import json
 from pathlib import Path
 
-# Definimos la ruta donde se guardará el JSON (dentro de la carpeta evaluation)
 EVAL_DIR = Path(__file__).resolve().parents[1]
 PROMPTS_JSON_PATH = EVAL_DIR / "prompts_variants.json"
 
-# Extraemos el prompt baseline de tu graph_retriever.py
 baseline_template = """Generate a Cypher query for Neo4j to answer this question.
 SCHEMA:
 {schema}
@@ -72,7 +70,6 @@ CRITICAL SYNTAX:
   respond with <QUERY>NOT_IN_SCHEMA</QUERY>
 <QUERY>"""
 
-# Extraemos el prompt concise que ya tenías
 concise_template = """Generate a precise Neo4j Cypher query to answer the user's question.
 
 SCHEMA:
@@ -92,13 +89,11 @@ CRITICAL RULES:
 QUESTION: {user_query}
 <QUERY>"""
 
-# Estructuramos el diccionario
 prompts = {
     "baseline": baseline_template,
     "concise": concise_template
 }
 
-# Escribimos el archivo JSON
 with open(PROMPTS_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(prompts, f, ensure_ascii=False, indent=4)
 

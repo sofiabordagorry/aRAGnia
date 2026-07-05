@@ -8,7 +8,8 @@ Para cada modelo evaluado:
   2. Ejecuta la query en Neo4j y extrae el subgrafo (`retrieved_subgraph`).
   3. Compara el subgrafo recuperado contra el subgrafo de referencia (GT) usando
      un LLM-as-a-judge (API de Anthropic), evaluando Recall y Precision.
-  4. Mide latencias y la tasa de acierto en casos centinela.
+  4. Calcula F1-score a partir de Precision y Recall.
+  5. Mide latencias y la tasa de acierto en casos centinela.
 
 Salidas (en evaluation/results/retrieval/):
   - retrieval_comparison_summary.json
@@ -45,7 +46,6 @@ sys.path.append(str(BACKEND_DIR))
 
 logger = logging.getLogger(__name__)
 
-# Importamos tu retriever y clientes LLM
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 from institutional_graphrag.llm.llm_provider import HuggingFaceClient, OllamaClient
 
@@ -61,11 +61,11 @@ SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esq
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 
 MODELS: List[Dict[str, str]] = [
-    # {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
-    {"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
-    {"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
+     {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
+    #{"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
+    #{"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
-    {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
+    #{"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
 ]
 
 JUDGE_DIMS = ["recall", "precision"]
@@ -124,7 +124,11 @@ def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_subgra
             r = requests.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
             r.raise_for_status()
             data = _extract_json(r.json()["content"][0]["text"])
-            return {"recall": int(data["recall"]), "precision": int(data["precision"]), "justification": str(data.get("justification", ""))}
+            return {
+                "recall": max(1, min(5, int(data.get("recall", 1)))), 
+                "precision": max(1, min(5, int(data.get("precision", 1)))),
+                "justification": str(data.get("justification", ""))
+            }
         except Exception as exc:
             if attempt == retries - 1: raise RuntimeError(f"El juez falló: {exc}")
             time.sleep(2 * (attempt + 1))
@@ -145,6 +149,12 @@ def judge_retrieval_local(model: str, question: str, gt_subgraph: str, candidate
 
 def norm_score(score_1_5: float) -> float: return (score_1_5 - 1.0) / 4.0
 def mean(values: List[float]) -> float: return round(sum(values) / len(values), 4) if values else 0.0
+
+def compute_f1_score(precision: float, recall: float) -> float:
+    """Calcula F1-score usando Precision y Recall ya normalizados en escala 0-1."""
+    if precision + recall == 0:
+        return 0.0
+    return round(2 * precision * recall / (precision + recall), 4)
 
 def fill_placeholders(retriever: GraphRAGRetriever, template: str, query: str) -> str:
     """Rellena los marcadores de posición del prompt dinámico con datos reales de Neo4j."""
@@ -167,7 +177,6 @@ def evaluate_combo(
     print(f"\n=== Evaluando: {label} ===", flush=True)
 
     retriever.cypher_llm_client = client
-    # retriever.answer_llm_client = client
     retriever._build_cypher_generation_prompt = lambda q: fill_placeholders(retriever, prompt_template, q)
     candidate_subgraph = "Placeholder"
 
@@ -179,84 +188,88 @@ def evaluate_combo(
     retriever._classify_query_intent = tracking_classify
     
     records_res: List[Dict[str, Any]] = []
-    
-    for item in items:
-        question = (item.get("pregunta") or item.get("question", "")).strip()
-        if not question: continue
-        gt_subgraph = item.get("retrieved_subgraph", "")
-        qid = item.get("id", "?")
-        sentinel = is_sentinel(gt_subgraph)
-        cypher_query = ""
+    try:
+        for item in items:
+            question = (item.get("pregunta") or item.get("question", "")).strip()
+            if not question: continue
+            gt_subgraph = item.get("retrieved_subgraph", "")
+            qid = item.get("id", "?")
+            sentinel = is_sentinel(gt_subgraph)
+            cypher_query = ""
 
-        logger.info(f"Procesando pregunta: [{qid}]")
-        t0 = time.perf_counter()
-        
-        try:         
-            result_obj, neo_records, cypher_query = retriever.generate_cypher_query_result(user_query=question)
-            if result_obj.answer == SENTINEL_NOT_IN_SCHEMA:
-                candidate_subgraph = SENTINEL_NOT_IN_SCHEMA
-            elif neo_records == []:
-                logger.warning(result_obj.answer)
-            else:
-                chunks, evidence_entities, chunk_to_entities = (
-                    retriever.extract_chunks_and_entities_from_results(neo_records)
-                )
-                if not chunks:
-                    logger.warning("No se encontraron chunks en los resultados del grafo")
-                    if neo_records:
-                        logger.info("Sin chunks pero con resultados del grafo, procesando...")
-                        candidate_subgraph = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
-                    else:
-                        candidate_subgraph = SENTINEL_NO_INFO
+            logger.info(f"Procesando pregunta: [{qid}]")
+            t0 = time.perf_counter()
+            
+            try:         
+                result_obj, neo_records, cypher_query = retriever.generate_cypher_query_result(user_query=question)
+                if result_obj.answer == SENTINEL_NOT_IN_SCHEMA:
+                    candidate_subgraph = SENTINEL_NOT_IN_SCHEMA
+                elif neo_records == []:
+                    logger.warning(result_obj.answer)
+                    candidate_subgraph = result_obj.answer
                 else:
-                    if evidence_entities:
-                        candidate_subgraph = retriever.build_entity_context(evidence_entities, chunk_to_entities)
+                    chunks, evidence_entities, chunk_to_entities = (
+                        retriever.extract_chunks_and_entities_from_results(neo_records)
+                    )
+                    if not chunks:
+                        logger.warning("No se encontraron chunks en los resultados del grafo")
+                        if neo_records:
+                            logger.info("Sin chunks pero con resultados del grafo, procesando...")
+                            candidate_subgraph = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
+                        else:
+                            candidate_subgraph = SENTINEL_NO_INFO
                     else:
-                        candidate_subgraph = retriever._build_aggregation_context(neo_records)    
-        except Exception as e:
-            logger.warning(f"[{qid}] Excepción no controlada: {e}")
-            candidate_subgraph = SENTINEL_NO_INFO
-                
-        latency = time.perf_counter() - t0
-        logger.info(f"[{qid}] Generación y recuperación finalizada en {latency:.2f}s")
+                        if evidence_entities:
+                            candidate_subgraph = retriever.build_entity_context(evidence_entities, chunk_to_entities)
+                        else:
+                            candidate_subgraph = retriever._build_aggregation_context(neo_records)    
+            except Exception as e:
+                logger.warning(f"[{qid}] Excepción no controlada: {e}")
+                candidate_subgraph = SENTINEL_NO_INFO
+                    
+            latency = time.perf_counter() - t0
+            logger.info(f"[{qid}] Generación y recuperación finalizada en {latency:.2f}s")
 
-        rec = {
-            "id": qid, "category": item.get("categoria", item.get("category", "")),
-            "question": question, "gt_subgraph": gt_subgraph, "generated query": cypher_query, "candidate_subgraph": candidate_subgraph,
-            "latency_s": latency, "is_sentinel": sentinel, "scores": None, "sentinel_correct": None, "justification": "",
-        }
+            rec = {
+                "id": qid, "category": item.get("categoria", item.get("category", "")),
+                "question": question, "gt_subgraph": gt_subgraph, "generated query": cypher_query, "candidate_subgraph": candidate_subgraph,
+                "latency_s": latency, "is_sentinel": sentinel, "scores": None, "sentinel_correct": None, "justification": "",
+            }
 
-        if getattr(retriever, "_last_intent", None) == "CHAT":
-            scores = {"recall": 1, "precision": 1, "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."}
-            rec["scores"] = scores
-            rec["justification"] = scores["justification"]
-            avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-            print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (FAIL DIRECTO: Intención CHAT)", flush=True)
-
-        if sentinel:
-            rec["sentinel_correct"] = sentinel_matches(candidate_subgraph, gt_subgraph)
-            print(f"  [{qid}] centinela -> {'OK' if rec['sentinel_correct'] else 'FAIL'} ({latency:.1f}s)", flush=True)
-        elif local_judge:
-            try:
-                logger.info(f"[{qid}] Enviando candidato al juez local ({local_judge})...")
-                scores = judge_retrieval_local(local_judge, question, gt_subgraph, candidate_subgraph)
+            if getattr(retriever, "_last_intent", None) == "CHAT":
+                scores = {"recall": 1, "precision": 1, "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."}
                 rec["scores"] = scores
                 rec["justification"] = scores["justification"]
                 avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-                print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (Juez Local)", flush=True)
-            except Exception as e:
-                print(f"  [{qid}] Falló el juez local: {e}", flush=True)
-        elif api_key:
-            scores = judge_retrieval_anthropic(api_key, judge_model, question, gt_subgraph, candidate_subgraph)
-            rec["scores"] = scores
-            rec["justification"] = scores["justification"]
-            avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-            print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f}", flush=True)
-        else:
-            print(f"  [{qid}] {latency:.1f}s  (sin juez)", flush=True)
+                print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (FAIL DIRECTO: Intención CHAT)", flush=True)
+                records_res.append(rec)
+                continue
 
-        records_res.append(rec)
-    
+            if sentinel:
+                rec["sentinel_correct"] = sentinel_matches(candidate_subgraph, gt_subgraph)
+                print(f"  [{qid}] centinela -> {'OK' if rec['sentinel_correct'] else 'FAIL'} ({latency:.1f}s)", flush=True)
+            elif local_judge:
+                try:
+                    logger.info(f"[{qid}] Enviando candidato al juez local ({local_judge})...")
+                    scores = judge_retrieval_local(local_judge, question, gt_subgraph, candidate_subgraph)
+                    rec["scores"] = scores
+                    rec["justification"] = scores["justification"]
+                    avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
+                    print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (Juez Local)", flush=True)
+                except Exception as e:
+                    print(f"  [{qid}] Falló el juez local: {e}", flush=True)
+            elif api_key:
+                scores = judge_retrieval_anthropic(api_key, judge_model, question, gt_subgraph, candidate_subgraph)
+                rec["scores"] = scores
+                rec["justification"] = scores["justification"]
+                avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
+                print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f}", flush=True)
+            else:
+                print(f"  [{qid}] {latency:.1f}s  (sin juez)", flush=True)
+
+            records_res.append(rec)
+    finally:
+        retriever._classify_query_intent = original_classify
     return aggregate_combo(spec, prompt_id, records_res)
 
 def aggregate_combo(
@@ -269,6 +282,7 @@ def aggregate_combo(
     dim_means = {
         d: mean([norm_score(r["scores"][d]) for r in judged]) for d in JUDGE_DIMS
     }
+    f1_score = compute_f1_score(dim_means.get("precision", 0.0), dim_means.get("recall", 0.0))
     quality_overall = mean([norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in judged])
     sentinel_acc = mean([1.0 if r["sentinel_correct"] else 0.0 for r in sentinels])
 
@@ -302,6 +316,7 @@ def aggregate_combo(
         "n_judged": len(judged),
         "n_sentinel": len(sentinels),
         "dim_means": dim_means,
+        "f1_score": f1_score,
         "quality_overall": quality_overall,
         "sentinel_accuracy": sentinel_acc,
         "by_category": by_cat,
@@ -399,11 +414,14 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["overall"] = p
 
-    # 2) Score por dimensión → heatmap (combos × 3 dimensiones).
-    dim_matrix = np.array([[r["dim_means"][d] for d in JUDGE_DIMS] for r in results])
+    # 2) Score por dimensión → heatmap (combos × dimensiones + F1).
+    dim_matrix = np.array([
+        [r["dim_means"]["recall"], r["dim_means"]["precision"], r.get("f1_score", 0.0)]
+        for r in results
+    ])
     paths["dimensions"] = _heatmap(
         images_dir / "chart_dimensions.png", dim_matrix, labels,
-        [DIM_LABELS[d] for d in JUDGE_DIMS], "Score por dimensión", fig_h,
+        ["Recall", "Precision", "F1"], "Score por dimensión", fig_h,
     )
 
     # 3) Score por categoría → heatmap (combos × categorías).
@@ -423,7 +441,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_yticks(yl)
     ax.set_yticklabels(lat_labels, fontsize=8)
     ax.set_xlabel("Segundos")
-    ax.set_title("Latencia de generación por combinación (menor es mejor)")
+    ax.set_title("Latencia de retrieval por combinación (menor es mejor)")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
@@ -505,6 +523,7 @@ def generate_html_report(
             row = f"<tr><td class='llm-name'>{r['label']}</td>"
             for d in JUDGE_DIMS:
                 row += _metric_cell(r["dim_means"][d])
+            row += _metric_cell(r.get("f1_score", 0.0))
             row += _metric_cell(r["quality_overall"])
             row += _metric_cell(r["sentinel_accuracy"])
             lat = r["latency"]
@@ -606,7 +625,7 @@ def generate_html_report(
   </style>
 </head>
 <body>
-  <h1>Evaluación de Generación – Comparación de LLMs y Prompts</h1>
+  <h1>Evaluación de Retrieval – Comparación de LLMs y Prompts</h1>
   <p class="subtitle">{len(results)} combinaciones modelo×prompt evaluadas sobre el GT de validación. Juez: <code>{judge_model}</code>. Scores normalizados 0-1.</p>
 
   <div class="card">
@@ -624,6 +643,7 @@ def generate_html_report(
           <tr>
             <th rowspan="2">Modelo / Prompt</th>
             <th colspan="{len(JUDGE_DIMS)}" style="background:#1a252f;">Calidad (juez)</th>
+            <th rowspan="2">F1</th>
             <th rowspan="2">Calidad global</th>
             <th rowspan="2">Centinelas</th>
             <th colspan="3" style="background:#1a252f;">Latencia</th>
@@ -661,7 +681,7 @@ def generate_html_report(
     <div class="chart-wrap"><img src="{img_cats}" alt="Score por categoría"></div>
   </div>
   <div class="card">
-    <h2>Latencia de generación</h2>
+    <h2>Latencia de retrieval</h2>
     <div class="chart-wrap"><img src="{img_lat}" alt="Latencia"></div>
   </div>
 </body>
@@ -684,7 +704,7 @@ def main() -> None:
     parser.add_argument(
         "--replot",
         action="store_true",
-        help="No corre generación ni juez: regenera solo las gráficas y el HTML "
+        help="No corre retrieval ni juez: regenera solo las gráficas y el HTML "
         "desde retrieval_details.json ya existente.",
     )
     parser.add_argument(
@@ -742,7 +762,11 @@ def main() -> None:
         print(f"[INFO] Usando juez local: {args.local_judge}", flush=True)
 
     results = []
-    for spec in MODELS:
+    models_to_run = MODELS
+    if args.models_file is not None:
+        models_to_run = json.loads(args.models_file.read_text(encoding="utf-8"))
+
+    for spec in models_to_run:
         try:
             client = None
             client = build_client(spec)
@@ -762,7 +786,7 @@ def main() -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     (RESULTS_DIR / "retrieval_details.json").write_text(json.dumps(results, ensure_ascii=False, indent=2))
     (RESULTS_DIR / "retrieval_comparison_summary.json").write_text(json.dumps([{k: v for k, v in r.items() if k != "records"} for r in results], ensure_ascii=False, indent=2))
-
+    
     print("\n[INFO] Generando gráficas y reporte HTML...", flush=True)
     chart_paths = generate_charts(results, RESULTS_DIR / "images")
     html_path = RESULTS_DIR / "retrieval_report.html"
@@ -770,10 +794,17 @@ def main() -> None:
     print(f"[INFO] Reporte HTML listo en: {html_path}", flush=True)
 
     print("\n" + "=" * 78)
-    print(f"{'Modelo / Prompt':<34} {'Calidad':>8} {'Centin.':>8} {'Lat.med':>9}")
+    print(f"{'Modelo / Prompt':<34} {'Recall':>8} {'Prec.':>8} {'F1':>8} {'Centin.':>8} {'Lat.med':>9}")
     print("=" * 78)
     for r in sorted(results, key=lambda x: x["quality_overall"], reverse=True):
-        print(f"{r['label']:<34} {r['quality_overall']:>8.3f} {r['sentinel_accuracy']:>8.3f} {r['latency']['mean']:>8.1f}s")
+        print(
+            f"{r['label']:<34} "
+            f"{r['dim_means']['recall']:>8.3f} "
+            f"{r['dim_means']['precision']:>8.3f} "
+            f"{r.get('f1_score', 0.0):>8.3f} "
+            f"{r['sentinel_accuracy']:>8.3f} "
+            f"{r['latency']['mean']:>8.1f}s"
+        )
     print("=" * 78)
 
 if __name__ == "__main__":
