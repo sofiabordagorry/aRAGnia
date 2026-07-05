@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 
 
