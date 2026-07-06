@@ -130,7 +130,7 @@ def get_llm_client(*, model: Optional[str] = None) -> OllamaClient | HuggingFace
 
     backend = os.getenv("LLM_BACKEND", "ollama").lower()
     if backend == "huggingface":
-        model_id = model or os.getenv("HF_MODEL") or "Qwen/Qwen2.5-3B-Instruct"
+        model_id = model or os.getenv("HF_MODEL") or "google/gemma-3-12b-it"
         if model_id not in HuggingFaceClient._instances:
             HuggingFaceClient._instances[model_id] = HuggingFaceClient(model_id)
         return HuggingFaceClient._instances[model_id]
