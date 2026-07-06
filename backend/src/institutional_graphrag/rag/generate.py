@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -40,8 +41,7 @@ class RAG:
         self.top_k = top_k
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.llm_model = llm_model
-        pass
+        self.llm_model = llm_model or os.getenv("HF_GENERATION_MODEL")
 
     def build_context(self, chunks: List[RAGChunk], max_chars: int = 12000) -> str:
         parts: List[str] = []
@@ -67,29 +67,18 @@ class RAG:
 
     def build_messages(self, question: str, context: str) -> List[Dict[str, str]]:
         system = (
-            "Mantener una conversación sobre extractos de documentos relacionados con temas académicos.\n"
-            "Dar respuestas cortas, concretas y precisas.\n"
-            "Utilizar únicamente la información de los siguientes extractos para construir la respuesta.\n"
-            "===\n"
-            "Extracto de Documento de investigación con nombre de documento: {Nombre del documento del primer chunk}\n"
-            "Chunk: {ID del primer chunk}\n"
-            "{Texto del primer chunk}\n"
-            "...\n"
-            "Extracto de Documento de investigación con nombre de documento: {Nombre del documento del último chunk}\n"
-            "Chunk: {ID del último chunk}\n"
-            "{Texto del último chunk}\n"
-            "===\n"
-            "Si los extractos no tienen una relación evidente con la pregunta, ignóralos y responde que no se cuenta con información para responder la pregunta.\n"
-            "Evita las suposiciones.\n"
-            "La conversación debe ser en español. Recuerda ser concreto.\n"
-            "Si la respuesta se construye utilizando información de más de un chunk, indica claramente qué información proviene de cada chunk.\n"
-            "Para cada afirmación relevante, menciona el chunk correspondiente.\n"
-            "No mezcles información de distintos chunks sin aclarar su origen.\n"
-            "Siempre agrega al final de la respuesta los documentos y chunks utilizados bajo el título:\n"
-            "**Referencias:**\n"
+            "Eres un asistente académico riguroso. Respondé en ESPAÑOL usando ÚNICAMENTE "
+            "los datos presentes en los resultados del grafo. Está PROHIBIDO inventar, "
+            "inferir o completar información que no aparezca literalmente. Citá los valores "
+            "tal como figuran en los resultados e incluí TODOS sin excepción. Si un dato no "
+            "está en los resultados, no lo menciones."
         )
 
-        user = f"Pregunta: {question}\n\n" f"CONTEXTO:\n{context}\n\n" "===\n" "Respuesta:"
+        user = (
+            f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{context}\n\n"
+            "Respondé usando solo los valores que aparecen arriba, copiándolos literalmente. "
+            "No agregues nada que no esté en los resultados."
+        )
 
         return [
             {"role": "system", "content": system},
