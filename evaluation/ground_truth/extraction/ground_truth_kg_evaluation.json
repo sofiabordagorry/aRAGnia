@@ -4794,18 +4794,18 @@
     },
     {
       "type": "PARTICIPO_EN",
-      "source_id": "uruguay_cedula_de_identidad_4081256_0",
-      "target_id": "proy_2014_248",
-      "properties": {
-        "calidad": "Responsable"
-      }
-    },
-    {
-      "type": "PARTICIPO_EN",
       "source_id": "uruguay_cedula_de_identidad_3817247_3",
       "target_id": "proy_2014_248",
       "properties": {
         "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4081256_0",
+      "target_id": "proy_2014_248",
+      "properties": {
+        "calidad": "Responsable"
       }
     },
     {
