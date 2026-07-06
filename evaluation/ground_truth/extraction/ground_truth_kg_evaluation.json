@@ -1213,18 +1213,6 @@
       }
     },
     {
-      "id": "uruguay_cedula_de_identidad_2027238_8",
-      "label": "Investigador",
-      "value": {
-        "nombre": "martin pedemonte",
-        "nombre_de_despliegue": "Martín Pedemonte",
-        "documento": "2027238-8",
-        "tipo_documento": "Cédula de Identidad",
-        "pais_documento": "Uruguay",
-        "sexo": "Masculino"
-      }
-    },
-    {
       "id": "uruguay_cedula_de_identidad_3243381_7",
       "label": "Investigador",
       "value": {
@@ -1529,7 +1517,7 @@
       "label": "Investigador",
       "value": {
         "nombre": "jorge martin perez zerpa",
-        "nombre_de_despliegue": "Jorge Martín Perez Zerpa",
+        "nombre_de_despliegue": "Jorge Martín Pérez Zerpa",
         "documento": "4176740-1",
         "tipo_documento": "Cédula de Identidad",
         "pais_documento": "Uruguay",
@@ -2931,6 +2919,766 @@
       "id": "vision_e_imagenes_avanzadas",
       "label": "Topico",
       "value": "vision e imagenes avanzadas"
+    },
+    {
+      "id": "proy_2012_342",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "la estrategia de la polarizacion en america latina",
+        "titulo_de_despliegue": "La Estrategia de la Polarización en América Latina",
+        "palabras_clave": [
+          "Polarización Ideológica",
+          "Partidos Políticos",
+          "América Latina"
+        ],
+        "descripcion": "La polarización ideológica ha sido tradicionalmente considerada como el origen de una larga serie de problemas para la política en América Latina. Sin embargo, a pesar de su uso permanente como factor explicativo, los determinantes de la polarización carecen d"
+      }
+    },
+    {
+      "id": "proy_2012_342_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_342_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "342",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2012_342_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_342_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "342",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2013415_0",
+      "label": "Investigador",
+      "value": {
+        "nombre": "juan andres moraes fernandez",
+        "nombre_de_despliegue": "Juan Andrés Moraes Fernández",
+        "documento": "2013415-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "proy_2012_457",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "pib y desarrollo regional en uruguay: 1900-2010",
+        "titulo_de_despliegue": "PIB y desarrollo regional en Uruguay: 1900-2010",
+        "palabras_clave": [
+          "desarrollo regional",
+          "PIB regional",
+          "1900-2010 Uruguay"
+        ],
+        "descripcion": "El propósito general de esta investigación es contribuir con la identificación de los fundamentos del desarrollo territorial en Uruguay desde una perspectiva histórica, considerando como período de referencia todo el siglo XX hasta 2010. Cumplir con este objet"
+      }
+    },
+    {
+      "id": "proy_2012_457_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_457_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "457",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2012_457_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_457_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "457",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "españa_cedula_de_identidad_33459998n",
+      "label": "Investigador",
+      "value": {
+        "nombre": "julio martinez-galarraga",
+        "nombre_de_despliegue": "Julio Martínez-Galarraga",
+        "documento": "33459998N",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "España",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4083568_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "henry francisco willebald remedios",
+        "nombre_de_despliegue": "Henry Francisco Willebald Remedios",
+        "documento": "4083568-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2990322_1",
+      "label": "Investigador",
+      "value": {
+        "nombre": "adrian ademar rodriguez miranda",
+        "nombre_de_despliegue": "Adrián Ademar Rodríguez Miranda",
+        "documento": "2990322-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "proy_2014_258",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "practicas de manejo para disminuir la huella de carbono de los sistemas pastoriles de produccion de leche",
+        "titulo_de_despliegue": "Practicas de manejo para disminuir la huella de carbono de los sistemas pastoriles de producción de leche",
+        "palabras_clave": ["pastoreo", "gasto energetico", "metano"],
+        "descripcion": "La preocupación por el impacto ambiental de la producción de alimentos es creciente a nivel mundial y también a nivel nacional. Los rumiantes han sido cuestionados por su contribución al cambio climático, sobre todo por la emisión de metano entérico (Gerber et"
+      }
+    },
+    {
+      "id": "proy_2014_258_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2014_258_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2014",
+        "sub_id": "258",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2014_258_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2014_258_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2014",
+        "sub_id": "258",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4516408_1",
+      "label": "Investigador",
+      "value": {
+        "nombre": "cecilia loza acosta",
+        "nombre_de_despliegue": "Cecilia Loza Acosta",
+        "documento": "4516408-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2574228_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "xenia vieira guasque",
+        "nombre_de_despliegue": "Xenia Vieira Guasque",
+        "documento": "2574228-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3492648_2",
+      "label": "Investigador",
+      "value": {
+        "nombre": "shirley lilian furtado coceres",
+        "nombre_de_despliegue": "Shirley Lilian Furtado Coceres",
+        "documento": "3492648-2",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1439242_3",
+      "label": "Investigador",
+      "value": {
+        "nombre": "laura astigarraga fernandez",
+        "nombre_de_despliegue": "Laura Astigarraga Fernandez",
+        "documento": "1439242-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2908188_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "valentin picasso risso",
+        "nombre_de_despliegue": "Valentin Picasso Risso",
+        "documento": "2908188-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3300837_2",
+      "label": "Investigador",
+      "value": {
+        "nombre": "alberto casal spera",
+        "nombre_de_despliegue": "Alberto Casal Spera",
+        "documento": "3300837-2",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "proy_2018_51",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "definicion de estrategias para la aplicacion de metodos de identificacion de material al diagnostico no invasivo de cancer de mama",
+        "titulo_de_despliegue": "Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama",
+        "palabras_clave": [
+          "Problemas inversos",
+          "Elasticidad no lineal",
+          "Cáncer de mama"
+        ],
+        "descripcion": "En las últimas décadas, el Cáncer ha aumentado su incidencia como causa de muerte a nivel nacional, ubicandose en casi el 30 % (nivel similar a las Enfermedades Cardiovasculares). En particular el Cáncer de mama es la principal causa de muerte de mujeres en Ur"
+      }
+    },
+    {
+      "id": "proy_2018_51_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2018_51_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
+        "sub_id": "51",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2018_51_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2018_51_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2018",
+        "sub_id": "51",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "argentina_cedula_de_identidad_27416269",
+      "label": "Investigador",
+      "value": {
+        "nombre": "pablo javier blanco",
+        "nombre_de_despliegue": "Pablo Javier Blanco",
+        "documento": "27416269",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Argentina",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3098313_3",
+      "label": "Investigador",
+      "value": {
+        "nombre": "juan bruno bazzano garcia",
+        "nombre_de_despliegue": "Juan Bruno Bazzano García",
+        "documento": "3098313-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4671884_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "mauricio camilo vanzulli pena",
+        "nombre_de_despliegue": "Mauricio Camilo Vanzulli Pena",
+        "documento": "4671884-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3606629_0",
+      "label": "Investigador",
+      "value": {
+        "nombre": "fernando lavista bonino",
+        "nombre_de_despliegue": "Fernando Lavista Bonino",
+        "documento": "3606629-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "proy_2012_331",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "rol de factores de iniciacion de la traduccion en la regulacion general y selectiva de la sintesis proteica como mecanismo adaptativo al estres hidrico en plantas.",
+        "titulo_de_despliegue": "Rol de factores de iniciación de la traducción en la regulación general y selectiva de la síntesis proteica como mecanismo adaptativo al estrés hídrico en plantas.",
+        "palabras_clave": ["sequía", "plantas", "control traduccional"],
+        "descripcion": "La sequía es el principal factor ambiental limitante de la producción de muchos cultivos. La identificación de genes asociados a la tolerancia al estrés hídrico es clave para los programas de mejoramiento genético para la obtención de cultivares resistentes al"
+      }
+    },
+    {
+      "id": "proy_2012_331_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_331_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "331",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2012_331_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_331_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "331",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3194200_3",
+      "label": "Investigador",
+      "value": {
+        "nombre": "maria cecilia ruibal croce",
+        "nombre_de_despliegue": "María Cecilia Ruibal Croce",
+        "documento": "3194200-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4154522_1",
+      "label": "Investigador",
+      "value": {
+        "nombre": "marcel lucien bentancor lado",
+        "nombre_de_despliegue": "Marcel Lucién Bentancor Lado",
+        "documento": "4154522-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4185484_0",
+      "label": "Investigador",
+      "value": {
+        "nombre": "lucia blixen bidegaray",
+        "nombre_de_despliegue": "Lucía Blixen Bidegaray",
+        "documento": "4185484-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_2964869_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "maria alexandra castro novelle",
+        "nombre_de_despliegue": "María Alexandra Castro Novelle",
+        "documento": "2964869-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3058750_1",
+      "label": "Investigador",
+      "value": {
+        "nombre": "juan pablo gallino malcuori",
+        "nombre_de_despliegue": "Juan Pablo Gallino Malcuori",
+        "documento": "3058750-1",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1663074_8",
+      "label": "Investigador",
+      "value": {
+        "nombre": "sabina vidal",
+        "nombre_de_despliegue": "Sabina Vidal",
+        "documento": "1663074-8",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1803909_2",
+      "label": "Investigador",
+      "value": {
+        "nombre": "maria del rosario duran munoz",
+        "nombre_de_despliegue": "María del Rosario Durán Muñoz",
+        "documento": "1803909-2",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "proy_2016_472",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "glicosidasas inmovilizadas sobre nanoparticulas: una herramienta biotecnologica aplicable al estudio de procesos biologicos mediados por glicanos.",
+        "titulo_de_despliegue": "Glicosidasas inmovilizadas sobre nanopartículas: Una herramienta biotecnológica aplicable al estudio de procesos biológicos mediados por glicanos.",
+        "palabras_clave": [
+          "Inmovilización enzimática",
+          "Glicosidasas",
+          "Glicoproteínas"
+        ],
+        "descripcion": "Los glicanos que componen las glicoproteínas o glicolípidos de las células participan en procesos biológicos como la interacción célula-célula, célula-matriz extracelular, fundamentales en la modulación de la respuesta inmune, desarrollo embrionario, diferenci"
+      }
+    },
+    {
+      "id": "proy_2016_472_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2016_472_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
+        "sub_id": "472",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2016_472_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2016_472_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2016",
+        "sub_id": "472",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4694465_6",
+      "label": "Investigador",
+      "value": {
+        "nombre": "juan ernesto rodriguez camejo",
+        "nombre_de_despliegue": "Juan Ernesto Rodriguez Camejo",
+        "documento": "4694465-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3813032_6",
+      "label": "Investigador",
+      "value": {
+        "nombre": "veronica noya",
+        "nombre_de_despliegue": "Verónica Noya",
+        "documento": "3813032-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "argentina_pasaporte_aaa626635",
+      "label": "Investigador",
+      "value": {
+        "nombre": "paula carasi",
+        "nombre_de_despliegue": "Paula Carasi",
+        "documento": "AAA626635",
+        "tipo_documento": "Pasaporte",
+        "pais_documento": "Argentina",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1925159_9",
+      "label": "Investigador",
+      "value": {
+        "nombre": "teresa ines freire gard",
+        "nombre_de_despliegue": "Teresa Inés Freire Gard",
+        "documento": "1925159-9",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1903817_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "cecilia ines giacomini veira",
+        "nombre_de_despliegue": "Cecilia Inés Giacomini Veira",
+        "documento": "1903817-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "ciencias_politicas_y_relaciones_internacionales",
+      "label": "Subcampo",
+      "value": "ciencias politicas y relaciones internacionales"
+    },
+    {
+      "id": "politica_y_sociedad_en_america_latina",
+      "label": "Topico",
+      "value": "politica y sociedad en america latina"
+    },
+    {
+      "id": "desarrollo",
+      "label": "Subcampo",
+      "value": "desarrollo"
+    },
+    {
+      "id": "desarrollo_regional_e_innovacion",
+      "label": "Topico",
+      "value": "desarrollo regional e innovacion"
+    },
+    {
+      "id": "geografia_planificacion_y_desarrollo",
+      "label": "Subcampo",
+      "value": "geografia, planificacion y desarrollo"
+    },
+    {
+      "id": "geografia_historica_y_cartografia",
+      "label": "Topico",
+      "value": "geografia historica y cartografia"
+    },
+    {
+      "id": "gobernanza_local_y_desarrollo",
+      "label": "Topico",
+      "value": "gobernanza local y desarrollo"
+    },
+    {
+      "id": "estudios_historicos_economicos_y_sociales",
+      "label": "Topico",
+      "value": "estudios historicos economicos y sociales"
+    },
+    {
+      "id": "teoria_e_instituciones_economicas",
+      "label": "Topico",
+      "value": "teoria e instituciones economicas"
+    },
+    {
+      "id": "crecimiento_economico_y_productividad",
+      "label": "Topico",
+      "value": "crecimiento economico y productividad"
+    },
+    {
+      "id": "analisis_economico_y_espacial_regional",
+      "label": "Topico",
+      "value": "analisis economico y espacial regional"
+    },
+    {
+      "id": "politicas_ambientales_y_emisiones",
+      "label": "Topico",
+      "value": "politicas ambientales y emisiones"
+    },
+    {
+      "id": "estudios_de_mecanica_y_biomecanica",
+      "label": "Topico",
+      "value": "estudios de mecanica y biomecanica"
+    },
+    {
+      "id": "imagenes_y_analisis_medicos",
+      "label": "Topico",
+      "value": "imagenes y analisis medicos"
+    },
+    {
+      "id": "investigacion_en_biologia_molecular_vegetal",
+      "label": "Topico",
+      "value": "investigacion en biologia molecular vegetal"
+    },
+    {
+      "id": "proy_2012_717",
+      "label": "Proyecto",
+      "value": {
+        "titulo": "espectroscopia de atomos alcalinos en medios porosos",
+        "titulo_de_despliegue": "Espectroscopía de átomos alcalinos en medios porosos",
+        "palabras_clave": [
+          "Física atómica",
+          "Materiales porosos",
+          "Átomos confinados"
+        ],
+        "descripcion": "El estudio espectroscópico de la materia diluida en vapores ha permitido desde los comienzos de la Física Atómica estudiar el mundo cuántico. La Física Atómica experimental ha permitido la medida de constantes fundamentales de la Física con precisiones sin pre"
+      }
+    },
+    {
+      "id": "proy_2012_717_propuesta",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_717_propuesta",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "717",
+        "tipo": "propuesta"
+      }
+    },
+    {
+      "id": "proy_2012_717_informe",
+      "label": "Documento",
+      "value": {
+        "nombre_base": "proy_2012_717_informe",
+        "es_grupo": "proy",
+        "anio_publicacion": "2012",
+        "sub_id": "717",
+        "tipo": "informe"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_5506381_7",
+      "label": "Investigador",
+      "value": {
+        "nombre": "lorenzo lenci",
+        "nombre_de_despliegue": "Lorenzo Lenci",
+        "documento": "5506381-7",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1878105_8",
+      "label": "Investigador",
+      "value": {
+        "nombre": "sergio vladimir barreiro degiorgi",
+        "nombre_de_despliegue": "Sergio Vladimir Barreiro Degiorgi",
+        "documento": "1878105-8",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1186786_3",
+      "label": "Investigador",
+      "value": {
+        "nombre": "arturo lezama",
+        "nombre_de_despliegue": "Arturo Lezama",
+        "documento": "1186786-3",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_4951912_9",
+      "label": "Investigador",
+      "value": {
+        "nombre": "paulo jose torres homem valente",
+        "nombre_de_despliegue": "Paulo Jose Torres Homem Valente",
+        "documento": "4951912-9",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_1785384_8",
+      "label": "Investigador",
+      "value": {
+        "nombre": "adriana auyuanet larrieu",
+        "nombre_de_despliegue": "Adriana Auyuanet Larrieu",
+        "documento": "1785384-8",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Femenino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3659214_6",
+      "label": "Investigador",
+      "value": {
+        "nombre": "horacio failache estellano",
+        "nombre_de_despliegue": "Horacio Failache Estellano",
+        "documento": "3659214-6",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "uruguay_cedula_de_identidad_3235079_0",
+      "label": "Investigador",
+      "value": {
+        "nombre": "santiago villalba arnabal",
+        "nombre_de_despliegue": "Santiago Villalba Arnábal",
+        "documento": "3235079-0",
+        "tipo_documento": "Cédula de Identidad",
+        "pais_documento": "Uruguay",
+        "sexo": "Masculino"
+      }
+    },
+    {
+      "id": "sistemas_y_practicas_agricolas",
+      "label": "Topico",
+      "value": "sistemas y practicas agricolas"
+    },
+    {
+      "id": "tecnicas_avanzadas_de_procesamiento_de_imagenes",
+      "label": "Topico",
+      "value": "tecnicas avanzadas de procesamiento de imagenes"
+    },
+    {
+      "id": "tecnicas_de_deteccion_de_imagenes_y_objetos",
+      "label": "Topico",
+      "value": "tecnicas de deteccion de imagenes y objetos"
+    },
+    {
+      "id": "atencion_visual_y_deteccion_de_prominencia",
+      "label": "Topico",
+      "value": "atencion visual y deteccion de prominencia"
+    },
+    {
+      "id": "fisica_atomica_y_molecular_y_optica",
+      "label": "Subcampo",
+      "value": "fisica atomica y molecular, y optica"
+    },
+    {
+      "id": "espectroscopia_y_estudios_de_quimica_cuantica",
+      "label": "Topico",
+      "value": "espectroscopia y estudios de quimica cuantica"
+    },
+    {
+      "id": "interacciones_y_aplicaciones_laser_materia",
+      "label": "Topico",
+      "value": "interacciones y aplicaciones laser-materia"
+    },
+    {
+      "id": "fisica_atomica_y_molecular",
+      "label": "Topico",
+      "value": "fisica atomica y molecular"
+    },
+    {
+      "id": "ecologia_evolucion_comportamiento_y_sistematica",
+      "label": "Subcampo",
+      "value": "ecologia, evolucion, comportamiento y sistematica"
     }
   ],
   "relationships": [
@@ -5720,6 +6468,706 @@
       "type": "PERTENECE_A_SUBCAMPO",
       "source_id": "teledeteccion_en_la_agricultura",
       "target_id": "ecologia",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_342",
+      "target_id": "proy_2012_342_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_342",
+      "target_id": "proy_2012_342_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2012_342",
+      "target_id": "2012",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2012_342",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2013415_0",
+      "target_id": "proy_2012_342",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_457",
+      "target_id": "proy_2012_457_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_457",
+      "target_id": "proy_2012_457_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2012_457",
+      "target_id": "2012",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2012_457",
+      "target_id": "area_social_y_artistica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "españa_cedula_de_identidad_33459998n",
+      "target_id": "proy_2012_457",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4083568_7",
+      "target_id": "proy_2012_457",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2990322_1",
+      "target_id": "proy_2012_457",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2014_258",
+      "target_id": "proy_2014_258_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2014_258",
+      "target_id": "proy_2014_258_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2014_258",
+      "target_id": "2014",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2014_258",
+      "target_id": "area_agraria",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4516408_1",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2574228_7",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Otros"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3492648_2",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Otros"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1439242_3",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2908188_7",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3300837_2",
+      "target_id": "proy_2014_258",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_51",
+      "target_id": "proy_2018_51_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2018_51",
+      "target_id": "proy_2018_51_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2018_51",
+      "target_id": "2018",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2018_51",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4506720_7",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "argentina_cedula_de_identidad_27416269",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3098313_3",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4671884_7",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3606629_0",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4176740_1",
+      "target_id": "proy_2018_51",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_331",
+      "target_id": "proy_2012_331_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_331",
+      "target_id": "proy_2012_331_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2012_331",
+      "target_id": "2012",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2012_331",
+      "target_id": "area_basica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3194200_3",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4154522_1",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4185484_0",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_2964869_7",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3058750_1",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1663074_8",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1803909_2",
+      "target_id": "proy_2012_331",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_472",
+      "target_id": "proy_2016_472_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2016_472",
+      "target_id": "proy_2016_472_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2016_472",
+      "target_id": "2016",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2016_472",
+      "target_id": "area_tecnologica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4694465_6",
+      "target_id": "proy_2016_472",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3813032_6",
+      "target_id": "proy_2016_472",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "argentina_pasaporte_aaa626635",
+      "target_id": "proy_2016_472",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1925159_9",
+      "target_id": "proy_2016_472",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1903817_7",
+      "target_id": "proy_2016_472",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_342",
+      "target_id": "politica_y_sociedad_en_america_latina",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "politica_y_sociedad_en_america_latina",
+      "target_id": "ciencias_politicas_y_relaciones_internacionales",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "desarrollo_regional_e_innovacion",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "desarrollo_regional_e_innovacion",
+      "target_id": "desarrollo",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "geografia_historica_y_cartografia",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "geografia_historica_y_cartografia",
+      "target_id": "geografia_planificacion_y_desarrollo",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "gobernanza_local_y_desarrollo",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "gobernanza_local_y_desarrollo",
+      "target_id": "geografia_planificacion_y_desarrollo",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "estudios_historicos_economicos_y_sociales",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "estudios_historicos_economicos_y_sociales",
+      "target_id": "economia_y_econometria",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "teoria_e_instituciones_economicas",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "teoria_e_instituciones_economicas",
+      "target_id": "economia_y_econometria",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "crecimiento_economico_y_productividad",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "crecimiento_economico_y_productividad",
+      "target_id": "economia_y_econometria",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_457",
+      "target_id": "analisis_economico_y_espacial_regional",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "analisis_economico_y_espacial_regional",
+      "target_id": "economia_y_econometria",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2014_258",
+      "target_id": "politicas_ambientales_y_emisiones",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "politicas_ambientales_y_emisiones",
+      "target_id": "contaminacion",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_51",
+      "target_id": "estudios_de_mecanica_y_biomecanica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "estudios_de_mecanica_y_biomecanica",
+      "target_id": "ingenieria_biomedica",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_51",
+      "target_id": "metodos_numericos_en_problemas_inversos",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2018_51",
+      "target_id": "imagenes_y_analisis_medicos",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "imagenes_y_analisis_medicos",
+      "target_id": "ingenieria_biomedica",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_331",
+      "target_id": "investigacion_en_biologia_molecular_vegetal",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "investigacion_en_biologia_molecular_vegetal",
+      "target_id": "ciencias_de_las_plantas",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_472",
+      "target_id": "produccion_y_caracterizacion_de_enzimas",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_717",
+      "target_id": "proy_2012_717_propuesta",
+      "properties": {}
+    },
+    {
+      "type": "ES_DESCRITO_POR",
+      "source_id": "proy_2012_717",
+      "target_id": "proy_2012_717_informe",
+      "properties": {}
+    },
+    {
+      "type": "INICIO_EN",
+      "source_id": "proy_2012_717",
+      "target_id": "2012",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_AREA",
+      "source_id": "proy_2012_717",
+      "target_id": "area_basica",
+      "properties": {}
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_5506381_7",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1878105_8",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1186786_3",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_4951912_9",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_1785384_8",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3659214_6",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Responsable"
+      }
+    },
+    {
+      "type": "PARTICIPO_EN",
+      "source_id": "uruguay_cedula_de_identidad_3235079_0",
+      "target_id": "proy_2012_717",
+      "properties": {
+        "calidad": "Integrante"
+      }
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "tecnicas_avanzadas_de_procesamiento_de_imagenes",
+      "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "tecnicas_de_deteccion_de_imagenes_y_objetos",
+      "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "atencion_visual_y_deteccion_de_prominencia",
+      "target_id": "vision_por_computadora_y_reconocimiento_de_patrones",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_304",
+      "target_id": "sistemas_y_practicas_agricolas",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_304",
+      "target_id": "metodos_y_aplicaciones_estadisticas",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_89",
+      "target_id": "tecnicas_y_aplicaciones_de_procesamiento_de_imagenes",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_89",
+      "target_id": "tecnicas_avanzadas_de_procesamiento_de_imagenes",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_89",
+      "target_id": "tecnicas_de_deteccion_de_imagenes_y_objetos",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2016_89",
+      "target_id": "atencion_visual_y_deteccion_de_prominencia",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_717",
+      "target_id": "espectroscopia_y_estudios_de_quimica_cuantica",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_717",
+      "target_id": "interacciones_y_aplicaciones_laser_materia",
+      "properties": {}
+    },
+    {
+      "type": "TIENE_TOPICO",
+      "source_id": "proy_2012_717",
+      "target_id": "fisica_atomica_y_molecular",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "espectroscopia_y_estudios_de_quimica_cuantica",
+      "target_id": "fisica_atomica_y_molecular_y_optica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "fisica_atomica_y_molecular",
+      "target_id": "fisica_atomica_y_molecular_y_optica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "interacciones_y_aplicaciones_laser_materia",
+      "target_id": "fisica_atomica_y_molecular_y_optica",
+      "properties": {}
+    },
+    {
+      "type": "PERTENECE_A_SUBCAMPO",
+      "source_id": "sistemas_y_practicas_agricolas",
+      "target_id": "ecologia_evolucion_comportamiento_y_sistematica",
       "properties": {}
     }
   ]
