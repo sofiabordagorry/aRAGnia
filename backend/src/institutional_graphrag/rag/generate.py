@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -40,8 +41,7 @@ class RAG:
         self.top_k = top_k
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.llm_model = llm_model
-        pass
+        self.llm_model = llm_model or os.getenv("HF_GENERATION_MODEL")
 
     def build_context(self, chunks: List[RAGChunk], max_chars: int = 12000) -> str:
         parts: List[str] = []
