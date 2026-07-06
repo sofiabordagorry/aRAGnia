@@ -1,0 +1,642 @@
+[
+  {
+    "id": 1,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Quién es el investigador responsable del proyecto Caracterización de astringencia de vino Tannat?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 2,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿En qué proyecto participó gabriela mordecki?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 3,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Cuáles son los tópicos principales a los que pertenece el proyecto sobre senales estructurales en arnm de trypanosoma cruzi?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 4,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿A qué subcampo general pertenece el tópico Optimización y programación matemática?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 5,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Qué investigadores conforman el equipo del proyecto Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 6,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿En qué año inició oficialmente el proyecto de Diseño óptimo de redes de ciclovías?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 7,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "Nombra todos los proyectos que están asociados de alguna manera al subcampo ingenieria oceanica.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 8,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "Lista todos los proyectos en los que figura la participación de Ernesto Dufrechou.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 9,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Cuáles son los tópicos específicos vinculados al proyecto liderado por Juan Pablo Tosar?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 10,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Quiénes figuran como responsables directos del proyecto de Aprendizaje Profundo No Supervisado de Distribuciones a Priori para Problemas Inversos en Imágenes?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 11,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿A qué área pertenece el proyecto la estrategia de la polarizacion en america latina?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 12,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Qué proyectos pertenecen al área agraria?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 13,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cómo ha evolucionado la cantidad de proyectos en el subcampo de Ingeniería Oceánica?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 14,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2016?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 15,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cuáles fueron los temas de investigación más frecuentes en los proyectos que tuvieron su inicio en 2016?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 16,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿En qué años específicos comenzaron a desarrollarse proyectos relacionados con Optimización y programación matemática?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 17,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Se observa un cambio en los subcampos de investigación si se comparan los proyectos iniciados antes de 2014 con los de 2018?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 18,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto espectroscopia de atomos alcalinos en medios porosos?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 19,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cuántos proyectos sobre Producción y caracterización de enzimas se iniciaron cada año según los datos disponibles?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 20,
+    "categoria": "Análisis Temporal",
+    "pregunta": "Muestra la progresión cronológica de los proyectos en los que ha participado Ernesto Dufrechou.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 21,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué subcampo de investigación experimentó un mayor ingreso de proyectos nuevos en el año 2016?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 22,
+    "categoria": "Análisis Temporal",
+    "pregunta": "Compara los tópicos de los proyectos de 2014 con los de 2018. ¿Qué diferencias principales o nuevos enfoques se notan?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 23,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué investigadores comenzaron proyectos nuevos dentro del subcampo Ciencias de la Gestión e Investigación Operativa durante el año 2014?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 24,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cuál es el año o años que presentan la mayor diversidad de tópicos investigados simultáneamente?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 25,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 26,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cómo ha cambiado el enfoque de investigación o los tópicos asociados a Pablo Maximiliano Ezzatti Infante a lo largo del tiempo?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 27,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos del área tecnologica?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 28,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el subcampo Mecánica Computacional?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 29,
+    "categoria": "Consultas Complejas",
+    "pregunta": "Lista únicamente a los responsables de proyectos que abarquen el tópico Optimización y programación matemática.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 30,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Existen investigadores que participen en proyectos de subcampos completamente distintos entre sí? ¿Quiénes son?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 31,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Investigación marina y costera, y Navegación y seguridad marítima?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 32,
+    "categoria": "Consultas Complejas",
+    "pregunta": "Identifica a todos los investigadores asociados directa o indirectamente al tópico Cadenas de Markov y métodos de Montecarlo.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 33,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Qué áreas o tópicos investigan en conjunto Gastón Ares y Ana Giménez?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 34,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos subcampos diferentes a la vez?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 35,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Qué otros investigadores comparten los mismos subcampos de investigación que Juan Pablo Tosar?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 36,
+    "categoria": "Consultas Complejas",
+    "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 37,
+    "categoria": "Consultas Complejas",
+    "pregunta": "¿Cuál es el subcampo transversal más común entre todos los proyectos integrados en el sistema?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 38,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 39,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías en Diseño óptimo de redes de ciclovías?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 40,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Gastón Ares?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 41,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuál es la dirección de correo electrónico o teléfono de Ernesto Dufrechou para contactarlo?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 42,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Estadística y Probabilidad?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 43,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿En qué universidad internacional realizó su doctorado Tormod Naes?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 44,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 45,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 46,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Héctor Cancela Bosi?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 47,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Qué institución internacional financió la compra de los biosensores mencionados en el proyecto de detección del virus del Dengue?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 48,
+    "categoria": "Fuera de Alcance",
+    "pregunta": "¿Cuántas horas semanales dedica cada investigador en promedio a su respectivo proyecto?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 49,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "proyectos año 2016",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 50,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "gaston ares temas",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 51,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "investigadores cadenas de markov y metodos de montecarlo",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 52,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "proyectos analisis sensorial y metodos estadisticos y optimizacion y programacion matematica",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 53,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "quien investiga el proyecto de redes de ciclovias",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 54,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "proyectos compartidos gaston ares y ana gimenez",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 55,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "subcampos de investigacion 2012 vs 2016",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 56,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "de que habla el proyecto de astringencia de vino tannat",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 57,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "mostrame nombre, sexo y pais de los investigadores que participaron en proyectos de optimizacion y programacion matematica",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 58,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "cual es la cedula de los investigadores que comparten al menos un proyecto en comun?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 59,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "que mujeres trabajan en el area tecnologica?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 60,
+    "categoria": "Lenguaje Natural Informal",
+    "pregunta": "que investigadores de uruguay trabajaron en el topico de agricultura inteligente e ia?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 61,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Quién es el investigador responsable del proyecto Espectroscopía de átomos alcalinos en medios porosos?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 62,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿A qué área pertenece el proyecto PIB y desarrollo regional en Uruguay: 1900-2010?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 63,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Cuáles son los tópicos a los que pertenece el proyecto Agrupamiento perceptual de puntos en 2D y 3D?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 64,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Qué investigadores participaron en el proyecto Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 65,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿A qué subcampo general pertenece el tópico Cadenas de Markov y métodos de Montecarlo?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 66,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿En qué año inició oficialmente el proyecto Análisis y Visualización de Virus y su Evolución?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 67,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "Nombra todos los proyectos que están asociados al subcampo inteligencia artificial.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 68,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Quiénes figuran como responsables directos del proyecto Biomarcadores, Neuroinflamación e Inflamación Sistémica en HSA Aneurismática Aguda?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 69,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿En qué proyecto participó Tormod Naes?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 70,
+    "categoria": "Consultas Estructurales Simples",
+    "pregunta": "¿Qué proyectos pertenecen al área basica?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 71,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cómo ha evolucionado la cantidad de proyectos en el subcampo de Ingeniería Civil y Estructural a lo largo de los años?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 72,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cuántos proyectos se iniciaron en cada año según los datos disponibles?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 73,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué tópicos de investigación nuevos aparecieron en los proyectos iniciados en 2018 respecto a los años anteriores?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 74,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿En qué años se registran proyectos del área tecnológica y cómo se distribuye su cantidad?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 75,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cuáles fueron los temas de investigación de los proyectos que tuvieron su inicio en 2012?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 76,
+    "categoria": "Análisis Temporal",
+    "pregunta": "Muestra la progresión cronológica de los proyectos en los que ha participado Antonio Daniel Mauttone Vidales.",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 77,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Qué subcampos de investigación estuvieron presentes en proyectos de más de un año distinto?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 78,
+    "categoria": "Análisis Temporal",
+    "pregunta": "Compara los tópicos de los proyectos de 2012 con los de 2016. ¿Qué cambios o continuidades se observan?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 79,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿En qué año se inició el mayor número de proyectos según los datos disponibles?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  },
+  {
+    "id": 80,
+    "categoria": "Análisis Temporal",
+    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo Ingeniería Oceánica?",
+    "cypher_query": "",
+    "retrieved_subgraph": "",
+    "answer": ""
+  }
+]
