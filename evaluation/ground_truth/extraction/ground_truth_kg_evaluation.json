@@ -3711,7 +3711,7 @@
       "source_id": "argentina_otro_dni_13888318",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3719,7 +3719,7 @@
       "source_id": "uruguay_cedula_de_identidad_4370245_5",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -3727,7 +3727,7 @@
       "source_id": "argentina_otro_dni_23859299",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3735,7 +3735,7 @@
       "source_id": "argentina_otro_dni29_241_579",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3743,7 +3743,7 @@
       "source_id": "uruguay_cedula_de_identidad_2779683_2",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3751,7 +3751,7 @@
       "source_id": "uruguay_cedula_de_identidad_2598942_9",
       "target_id": "proy_2012_266",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -3867,7 +3867,7 @@
       "source_id": "uruguay_cedula_de_identidad_2923660_4",
       "target_id": "proy_2012_304",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3875,7 +3875,7 @@
       "source_id": "uruguay_cedula_de_identidad_1539915_9",
       "target_id": "proy_2012_304",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3883,7 +3883,7 @@
       "source_id": "uruguay_cedula_de_identidad_3599141_2",
       "target_id": "proy_2012_304",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -3891,7 +3891,7 @@
       "source_id": "uruguay_cedula_de_identidad_1663502_7",
       "target_id": "proy_2012_304",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -3899,7 +3899,7 @@
       "source_id": "uruguay_cedula_de_identidad_3789990_3",
       "target_id": "proy_2012_304",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3979,7 +3979,7 @@
       "source_id": "uruguay_cedula_de_identidad_1419558_4",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3987,7 +3987,7 @@
       "source_id": "uruguay_cedula_de_identidad_1424495_7",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -3995,7 +3995,7 @@
       "source_id": "uruguay_cedula_de_identidad_1784387_3",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4003,7 +4003,7 @@
       "source_id": "uruguay_cedula_de_identidad_1392517",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4011,7 +4011,7 @@
       "source_id": "uruguay_cedula_de_identidad_3061396_0",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4019,7 +4019,7 @@
       "source_id": "uruguay_cedula_de_identidad_3014045_6",
       "target_id": "proy_2012_491",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4123,7 +4123,7 @@
       "source_id": "uruguay_cedula_de_identidad_2994165_1",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4131,7 +4131,7 @@
       "source_id": "uruguay_cedula_de_identidad_1484878_9",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4139,7 +4139,7 @@
       "source_id": "uruguay_cedula_de_identidad_1737889_4",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4147,7 +4147,7 @@
       "source_id": "uruguay_cedula_de_identidad_3072800_6",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4155,7 +4155,7 @@
       "source_id": "uruguay_cedula_de_identidad_1309556_9",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4163,7 +4163,7 @@
       "source_id": "uruguay_cedula_de_identidad_1475208_7",
       "target_id": "proy_2012_588",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4255,7 +4255,7 @@
       "source_id": "uruguay_cedula_de_identidad_1906431_8",
       "target_id": "proy_2012_616",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4263,7 +4263,7 @@
       "source_id": "uruguay_cedula_de_identidad_3537962_6",
       "target_id": "proy_2012_616",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4271,7 +4271,7 @@
       "source_id": "uruguay_cedula_de_identidad_1381747_8",
       "target_id": "proy_2012_616",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4279,7 +4279,7 @@
       "source_id": "uruguay_cedula_de_identidad_4507229_4",
       "target_id": "proy_2012_616",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4287,7 +4287,7 @@
       "source_id": "uruguay_cedula_de_identidad_3159445_6",
       "target_id": "proy_2012_616",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4331,7 +4331,7 @@
       "source_id": "uruguay_cedula_de_identidad_4506720_7",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4339,7 +4339,7 @@
       "source_id": "uruguay_cedula_de_identidad_3254320_4",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4347,7 +4347,7 @@
       "source_id": "uruguay_cedula_de_identidad_2027238_8",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4355,7 +4355,7 @@
       "source_id": "uruguay_cedula_de_identidad_3243381_7",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4363,7 +4363,7 @@
       "source_id": "uruguay_cedula_de_identidad_3196065_3",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4371,7 +4371,7 @@
       "source_id": "uruguay_cedula_de_identidad_4227533_8",
       "target_id": "proy_2012_637",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4475,7 +4475,7 @@
       "source_id": "uruguay_cedula_de_identidad_1422522_8",
       "target_id": "proy_2012_661",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4483,7 +4483,7 @@
       "source_id": "uruguay_cedula_de_identidad_3686660_0",
       "target_id": "proy_2012_661",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4491,7 +4491,7 @@
       "source_id": "uruguay_cedula_de_identidad_4278707_2",
       "target_id": "proy_2012_661",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4571,7 +4571,7 @@
       "source_id": "uruguay_cedula_de_identidad_1424495_7",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4579,7 +4579,7 @@
       "source_id": "uruguay_cedula_de_identidad_3061396_0",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4587,7 +4587,7 @@
       "source_id": "uruguay_cedula_de_identidad_4199616_5",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4595,7 +4595,7 @@
       "source_id": "uruguay_cedula_de_identidad_4740734_0",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4603,7 +4603,7 @@
       "source_id": "uruguay_cedula_de_identidad_3264566_8",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4611,7 +4611,7 @@
       "source_id": "noruega_pasaporte_25645973",
       "target_id": "proy_2014_91",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4655,7 +4655,7 @@
       "source_id": "uruguay_cedula_de_identidad_4051654_8",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4663,7 +4663,7 @@
       "source_id": "uruguay_cedula_de_identidad_1741524_4",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4671,7 +4671,7 @@
       "source_id": "uruguay_cedula_de_identidad_2603464_3",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4679,7 +4679,7 @@
       "source_id": "uruguay_cedula_de_identidad_1719756_3",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4687,7 +4687,7 @@
       "source_id": "uruguay_cedula_de_identidad_3152343_9",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4695,7 +4695,7 @@
       "source_id": "uruguay_cedula_de_identidad_1207254_8",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4703,7 +4703,7 @@
       "source_id": "uruguay_cedula_de_identidad_2699731_2",
       "target_id": "proy_2014_151",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4765,7 +4765,7 @@
       "source_id": "uruguay_cedula_de_identidad_1532627_5",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4773,7 +4773,7 @@
       "source_id": "uruguay_cedula_de_identidad_4478701_8",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4781,7 +4781,7 @@
       "source_id": "uruguay_cedula_de_identidad_2947938_9",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4789,7 +4789,7 @@
       "source_id": "uruguay_cedula_de_identidad_4222623_0",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4797,7 +4797,7 @@
       "source_id": "uruguay_cedula_de_identidad_3817247_3",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4805,7 +4805,7 @@
       "source_id": "uruguay_cedula_de_identidad_4081256_0",
       "target_id": "proy_2014_248",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4861,7 +4861,7 @@
       "source_id": "uruguay_cedula_de_identidad_2597542_0",
       "target_id": "proy_2014_276",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4869,7 +4869,7 @@
       "source_id": "uruguay_cedula_de_identidad_3988305_5",
       "target_id": "proy_2014_276",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4961,7 +4961,7 @@
       "source_id": "uruguay_cedula_de_identidad_3157923_4",
       "target_id": "proy_2014_402",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4969,7 +4969,7 @@
       "source_id": "uruguay_cedula_de_identidad_4409861_3",
       "target_id": "proy_2014_402",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -4977,7 +4977,7 @@
       "source_id": "uruguay_cedula_de_identidad_4176740_1",
       "target_id": "proy_2014_402",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -4985,7 +4985,7 @@
       "source_id": "uruguay_cedula_de_identidad_4528662_3",
       "target_id": "proy_2014_402",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5053,7 +5053,7 @@
       "source_id": "uruguay_cedula_de_identidad_3882905_0",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5061,7 +5061,7 @@
       "source_id": "uruguay_cedula_de_identidad_3650893_5",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5069,7 +5069,7 @@
       "source_id": "uruguay_cedula_de_identidad_2842525_2",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5077,7 +5077,7 @@
       "source_id": "uruguay_cedula_de_identidad_2869012_2",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5085,7 +5085,7 @@
       "source_id": "uruguay_cedula_de_identidad_4674110_5",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5093,7 +5093,7 @@
       "source_id": "uruguay_cedula_de_identidad_3536628_9",
       "target_id": "proy_2014_407",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5173,7 +5173,7 @@
       "source_id": "uruguay_cedula_de_identidad_1539915_9",
       "target_id": "proy_2016_57",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5181,7 +5181,7 @@
       "source_id": "uruguay_cedula_de_identidad_3212332_9",
       "target_id": "proy_2016_57",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5261,7 +5261,7 @@
       "source_id": "uruguay_cedula_de_identidad_1964968_7",
       "target_id": "proy_2016_89",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5269,7 +5269,7 @@
       "source_id": "uruguay_cedula_de_identidad_4560598_0",
       "target_id": "proy_2016_89",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5277,7 +5277,7 @@
       "source_id": "uruguay_cedula_de_identidad_1918805_5",
       "target_id": "proy_2016_89",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5321,7 +5321,7 @@
       "source_id": "uruguay_cedula_de_identidad_4561696_5",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5329,7 +5329,7 @@
       "source_id": "uruguay_cedula_de_identidad_1933865_6",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5337,7 +5337,7 @@
       "source_id": "uruguay_cedula_de_identidad_4061791_4",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5345,7 +5345,7 @@
       "source_id": "uruguay_cedula_de_identidad_4427384_3",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5353,7 +5353,7 @@
       "source_id": "uruguay_cedula_de_identidad_4227533_8",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5361,7 +5361,7 @@
       "source_id": "uruguay_cedula_de_identidad_3432313_7",
       "target_id": "proy_2016_160",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5477,7 +5477,7 @@
       "source_id": "uruguay_cedula_de_identidad_3089764_1",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5485,7 +5485,7 @@
       "source_id": "uruguay_cedula_de_identidad_4275697_2",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -5493,7 +5493,7 @@
       "source_id": "uruguay_cedula_de_identidad_1851585_5",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5501,7 +5501,7 @@
       "source_id": "uruguay_cedula_de_identidad_4401607_5",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -5509,7 +5509,7 @@
       "source_id": "uruguay_cedula_de_identidad_3196065_3",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5517,7 +5517,7 @@
       "source_id": "uruguay_cedula_de_identidad_4609518_0",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5597,7 +5597,7 @@
       "source_id": "uruguay_cedula_de_identidad_2769975_7",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5605,7 +5605,7 @@
       "source_id": "francia_cedula_de_identidad_3641820_7",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5613,7 +5613,7 @@
       "source_id": "uruguay_cedula_de_identidad_3855415_0",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5621,7 +5621,7 @@
       "source_id": "uruguay_cedula_de_identidad_3843673_0",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5629,7 +5629,7 @@
       "source_id": "uruguay_cedula_de_identidad_4558921_7",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5637,7 +5637,7 @@
       "source_id": "uruguay_cedula_de_identidad_1918805_5",
       "target_id": "proy_2016_442",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5729,7 +5729,7 @@
       "source_id": "uruguay_cedula_de_identidad_4506720_7",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5737,7 +5737,7 @@
       "source_id": "uruguay_cedula_de_identidad_2027238_8",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5745,7 +5745,7 @@
       "source_id": "uruguay_cedula_de_identidad_4485862_3",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5753,7 +5753,7 @@
       "source_id": "uruguay_cedula_de_identidad_3243381_7",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5761,7 +5761,7 @@
       "source_id": "uruguay_cedula_de_identidad_3196065_3",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5769,7 +5769,7 @@
       "source_id": "uruguay_cedula_de_identidad_4227533_8",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5777,7 +5777,7 @@
       "source_id": "uruguay_cedula_de_identidad_3554543_7",
       "target_id": "proy_2016_547",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5845,7 +5845,7 @@
       "source_id": "uruguay_cedula_de_identidad_1397120_8",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5853,7 +5853,7 @@
       "source_id": "uruguay_cedula_de_identidad_1961845_2",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5861,7 +5861,7 @@
       "source_id": "uruguay_cedula_de_identidad_4422955_7",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -5869,7 +5869,7 @@
       "source_id": "uruguay_cedula_de_identidad_1893802_7",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5877,7 +5877,7 @@
       "source_id": "uruguay_cedula_de_identidad_4614097_7",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5885,7 +5885,7 @@
       "source_id": "uruguay_cedula_de_identidad_4791516_3",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5893,7 +5893,7 @@
       "source_id": "uruguay_cedula_de_identidad_1887896_4",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5901,7 +5901,7 @@
       "source_id": "uruguay_cedula_de_identidad_4940676_8",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -5909,7 +5909,7 @@
       "source_id": "uruguay_cedula_de_identidad_3733389_8",
       "target_id": "proy_2016_671",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6001,7 +6001,7 @@
       "source_id": "uruguay_cedula_de_identidad_3778635_4",
       "target_id": "proy_2018_112",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6009,7 +6009,7 @@
       "source_id": "uruguay_cedula_de_identidad_4122500_3",
       "target_id": "proy_2018_112",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6017,7 +6017,7 @@
       "source_id": "uruguay_cedula_de_identidad_3902776_2",
       "target_id": "proy_2018_112",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6025,7 +6025,7 @@
       "source_id": "uruguay_cedula_de_identidad_4561047_2",
       "target_id": "proy_2018_112",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6105,7 +6105,7 @@
       "source_id": "uruguay_cedula_de_identidad_2000387_6",
       "target_id": "proy_2018_256",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6113,7 +6113,7 @@
       "source_id": "uruguay_cedula_de_identidad_3920670_0",
       "target_id": "proy_2018_256",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6121,7 +6121,7 @@
       "source_id": "uruguay_cedula_de_identidad_3853039_6",
       "target_id": "proy_2018_256",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6129,7 +6129,7 @@
       "source_id": "uruguay_cedula_de_identidad_2019085_1",
       "target_id": "proy_2018_256",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6221,7 +6221,7 @@
       "source_id": "uruguay_cedula_de_identidad_2597542_0",
       "target_id": "proy_2018_260",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6229,7 +6229,7 @@
       "source_id": "uruguay_cedula_de_identidad_3988305_5",
       "target_id": "proy_2018_260",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6291,7 +6291,7 @@
       "source_id": "uruguay_cedula_de_identidad_4696359_5",
       "target_id": "proy_2018_354",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6299,7 +6299,7 @@
       "source_id": "uruguay_cedula_de_identidad_1907166_0",
       "target_id": "proy_2018_354",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6307,7 +6307,7 @@
       "source_id": "uruguay_cedula_de_identidad_1741506_2",
       "target_id": "proy_2018_354",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6399,7 +6399,7 @@
       "source_id": "uruguay_cedula_de_identidad_2981586_6",
       "target_id": "proy_2018_413",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6407,7 +6407,7 @@
       "source_id": "uruguay_cedula_de_identidad_3348401_1",
       "target_id": "proy_2018_413",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6499,7 +6499,7 @@
       "source_id": "uruguay_cedula_de_identidad_2013415_0",
       "target_id": "proy_2012_342",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6531,7 +6531,7 @@
       "source_id": "españa_cedula_de_identidad_33459998n",
       "target_id": "proy_2012_457",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6539,7 +6539,7 @@
       "source_id": "uruguay_cedula_de_identidad_4083568_7",
       "target_id": "proy_2012_457",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6547,7 +6547,7 @@
       "source_id": "uruguay_cedula_de_identidad_2990322_1",
       "target_id": "proy_2012_457",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6579,7 +6579,7 @@
       "source_id": "uruguay_cedula_de_identidad_4516408_1",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6587,7 +6587,7 @@
       "source_id": "uruguay_cedula_de_identidad_2574228_7",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -6595,7 +6595,7 @@
       "source_id": "uruguay_cedula_de_identidad_3492648_2",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -6603,7 +6603,7 @@
       "source_id": "uruguay_cedula_de_identidad_1439242_3",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6611,7 +6611,7 @@
       "source_id": "uruguay_cedula_de_identidad_2908188_7",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6619,7 +6619,7 @@
       "source_id": "uruguay_cedula_de_identidad_3300837_2",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6651,7 +6651,7 @@
       "source_id": "uruguay_cedula_de_identidad_4506720_7",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6659,7 +6659,7 @@
       "source_id": "argentina_cedula_de_identidad_27416269",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6667,7 +6667,7 @@
       "source_id": "uruguay_cedula_de_identidad_3098313_3",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6675,7 +6675,7 @@
       "source_id": "uruguay_cedula_de_identidad_4671884_7",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6683,7 +6683,7 @@
       "source_id": "uruguay_cedula_de_identidad_3606629_0",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6691,7 +6691,7 @@
       "source_id": "uruguay_cedula_de_identidad_4176740_1",
       "target_id": "proy_2018_51",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6723,7 +6723,7 @@
       "source_id": "uruguay_cedula_de_identidad_3194200_3",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6731,7 +6731,7 @@
       "source_id": "uruguay_cedula_de_identidad_4154522_1",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6739,7 +6739,7 @@
       "source_id": "uruguay_cedula_de_identidad_4185484_0",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6747,7 +6747,7 @@
       "source_id": "uruguay_cedula_de_identidad_2964869_7",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6755,7 +6755,7 @@
       "source_id": "uruguay_cedula_de_identidad_3058750_1",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6763,7 +6763,7 @@
       "source_id": "uruguay_cedula_de_identidad_1663074_8",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -6771,7 +6771,7 @@
       "source_id": "uruguay_cedula_de_identidad_1803909_2",
       "target_id": "proy_2012_331",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6803,7 +6803,7 @@
       "source_id": "uruguay_cedula_de_identidad_4694465_6",
       "target_id": "proy_2016_472",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6811,7 +6811,7 @@
       "source_id": "uruguay_cedula_de_identidad_3813032_6",
       "target_id": "proy_2016_472",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6819,7 +6819,7 @@
       "source_id": "argentina_pasaporte_aaa626635",
       "target_id": "proy_2016_472",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6827,7 +6827,7 @@
       "source_id": "uruguay_cedula_de_identidad_1925159_9",
       "target_id": "proy_2016_472",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -6835,7 +6835,7 @@
       "source_id": "uruguay_cedula_de_identidad_1903817_7",
       "target_id": "proy_2016_472",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -7023,7 +7023,7 @@
       "source_id": "uruguay_cedula_de_identidad_5506381_7",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -7031,7 +7031,7 @@
       "source_id": "uruguay_cedula_de_identidad_1878105_8",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -7039,7 +7039,7 @@
       "source_id": "uruguay_cedula_de_identidad_1186786_3",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -7047,7 +7047,7 @@
       "source_id": "uruguay_cedula_de_identidad_4951912_9",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -7055,7 +7055,7 @@
       "source_id": "uruguay_cedula_de_identidad_1785384_8",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
@@ -7063,7 +7063,7 @@
       "source_id": "uruguay_cedula_de_identidad_3659214_6",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Responsable"
+        "calidad": "responsable"
       }
     },
     {
@@ -7071,7 +7071,7 @@
       "source_id": "uruguay_cedula_de_identidad_3235079_0",
       "target_id": "proy_2012_717",
       "properties": {
-        "calidad": "Integrante"
+        "calidad": "integrante"
       }
     },
     {
