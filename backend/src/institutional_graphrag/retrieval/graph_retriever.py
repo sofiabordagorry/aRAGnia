@@ -692,10 +692,6 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
                     values.append(f"{key}: {value}")
             context_parts.append(f"{idx}. {', '.join(values)}")
 
-            if idx >= 50:
-                context_parts.append(f"\n[Note: {len(records) - idx} more results omitted...]")
-                break
-
         return "\n".join(context_parts)
 
     def extract_chunks_and_entities_from_results(

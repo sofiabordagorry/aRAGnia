@@ -554,7 +554,7 @@
   {
     "id": 70,
     "categoria": "Consultas Estructurales Simples",
-    "pregunta": "¿Qué proyectos pertenecen al área basica?",
+    "pregunta": "¿Qué proyectos pertenecen al área básica?",
     "cypher_query": "MATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(a.valor) CONTAINS toLower('basica') RETURN DISTINCT p AS proyecto",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Espectroscopía de átomos alcalinos en medios porosos (Proyecto)\n2. proyecto: Aproximación al estudio del estado redox del tiol de la albúmina circulante (Proyecto)\n3. proyecto: Análisis y Visualización de Virus y su Evolución (Proyecto)\n4. proyecto: Señales estructurales en ARNm de Trypanosoma cruzi (Proyecto)\n5. proyecto: Rol de factores de iniciación de la traducción en la regulación general y selectiva de la síntesis proteica como mecanismo adaptativo al estrés hídrico en plantas. (Proyecto)\n6. proyecto: Alternativas simples de preparación de muestras asistidas con ondas de ultrasonido y ozono para la determinación de elementos traza esenciales y contaminantes en alimentos (Proyecto)",
     "answer": ""
@@ -586,7 +586,7 @@
   {
     "id": 74,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿En qué años se registran proyectos del área basica y cómo se distribuye su cantidad?",
+    "pregunta": "¿En qué años se registran proyectos del área básica y cómo se distribuye su cantidad?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:PERTENECE_A_AREA]->(ar:Area) WHERE toLower(ar.valor) CONTAINS toLower('basica') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 4\n2. anio: 2014, cantidad_proyectos: 1\n3. anio: 2016, cantidad_proyectos: 1",
     "answer": ""
@@ -634,7 +634,7 @@
   {
     "id": 80,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo mecanica computacional?",
+    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo Mecánica Computacional?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('mecanica computacional') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
     "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1\n2. anio: 2014, cantidad_proyectos: 1\n3. anio: 2016, cantidad_proyectos: 2",
     "answer": ""
