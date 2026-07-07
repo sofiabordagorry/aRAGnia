@@ -586,9 +586,9 @@
   {
     "id": 74,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿En qué años se registran proyectos del área tecnológica y cómo se distribuye su cantidad?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:PERTENECE_A_AREA]->(ar:Area) WHERE toLower(ar.valor) CONTAINS toLower('tecnologica') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 4\n2. anio: 2014, cantidad_proyectos: 3\n3. anio: 2016, cantidad_proyectos: 7\n4. anio: 2018, cantidad_proyectos: 6",
+    "pregunta": "¿En qué años se registran proyectos del área basica y cómo se distribuye su cantidad?",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:PERTENECE_A_AREA]->(ar:Area) WHERE toLower(ar.valor) CONTAINS toLower('basica') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 4\n2. anio: 2014, cantidad_proyectos: 1\n3. anio: 2016, cantidad_proyectos: 1",
     "answer": ""
   },
   {
@@ -634,9 +634,9 @@
   {
     "id": 80,
     "categoria": "Análisis Temporal",
-    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo Ingeniería Oceánica?",
-    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('ingenieria oceanica') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1\n2. anio: 2016, cantidad_proyectos: 3\n3. anio: 2018, cantidad_proyectos: 1",
+    "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo mecanica computacional?",
+    "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('mecanica computacional') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
+    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1\n2. anio: 2014, cantidad_proyectos: 1\n3. anio: 2016, cantidad_proyectos: 2",
     "answer": ""
   }
 ]

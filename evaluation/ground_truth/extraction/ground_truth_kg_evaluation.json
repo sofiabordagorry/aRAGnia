@@ -5485,7 +5485,7 @@
       "source_id": "uruguay_cedula_de_identidad_4275697_2",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -5501,7 +5501,7 @@
       "source_id": "uruguay_cedula_de_identidad_4401607_5",
       "target_id": "proy_2016_273",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -6587,7 +6587,7 @@
       "source_id": "uruguay_cedula_de_identidad_2574228_7",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
@@ -6595,7 +6595,7 @@
       "source_id": "uruguay_cedula_de_identidad_3492648_2",
       "target_id": "proy_2014_258",
       "properties": {
-        "calidad": "Otros"
+        "calidad": "otros"
       }
     },
     {
