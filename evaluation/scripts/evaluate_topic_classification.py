@@ -471,6 +471,28 @@ def _reference_config(configs: List[Dict[str, Any]]) -> Dict[str, Any]:
     return max(configs, key=lambda c: c["metrics"]["macro"]["f1_macro"])
 
 
+def _confusion_counts(per_project: Dict[str, Any]) -> Dict[str, int]:
+    """Matriz de confusión 2x2 agregada sobre las celdas proyecto×tópico.
+
+    El universo de tópicos es la unión de los esperados (GT) y predichos en todo el
+    corpus; el TN cuenta las celdas de ese universo correctamente no asignadas. Ojo:
+    el TN (y por ende la accuracy) queda inflado por lo esparso del espacio de etiquetas
+    —cada proyecto tiene pocos tópicos de los muchos posibles—, así que P/R/F1 siguen
+    siendo las métricas informativas, no la accuracy."""
+    universe: set = set()
+    for r in per_project.values():
+        universe |= set(r.get("predicted", [])) | set(r.get("expected", []))
+    tp = fp = fn = tn = 0
+    for r in per_project.values():
+        pred = set(r.get("predicted", []))
+        gold = set(r.get("expected", []))
+        tp += len(pred & gold)
+        fp += len(pred - gold)
+        fn += len(gold - pred)
+        tn += len(universe - (pred | gold))
+    return {"tp": tp, "fp": fp, "fn": fn, "tn": tn}
+
+
 def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
     """Gráficas representativas para el informe (no el barrido completo de 600+ configs).
 
@@ -551,6 +573,75 @@ def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str
         fig.savefig(p, dpi=150, bbox_inches="tight")
         plt.close(fig)
         paths["by_project"] = p
+
+    # 3) Matriz de confusión 2x2 (nivel tópico y, si está, subcampo) en el punto de
+    #    operación. Correctas (TP/TN) en verde, errores (FP/FN) en rojo; el número
+    #    grande es el conteo de celdas proyecto×tópico.
+    cm_levels = [("metrics", "Tópico")]
+    if ref.get("metrics_subfield", {}).get("per_project"):
+        cm_levels.append(("metrics_subfield", "Subcampo"))
+    fig, axarr = plt.subplots(1, len(cm_levels), figsize=(4.2 * len(cm_levels), 4.0), squeeze=False)
+    cell_color = np.array([["#27ae60", "#e74c3c"], ["#e74c3c", "#27ae60"]])  # TP FP / FN TN
+    cell_label = np.array([["TP", "FP"], ["FN", "TN"]])
+    for ax, (mk, title) in zip(axarr[0], cm_levels):
+        cm = _confusion_counts(ref[mk]["per_project"])
+        grid = np.array([[cm["tp"], cm["fp"]], [cm["fn"], cm["tn"]]])
+        for i in range(2):
+            for j in range(2):
+                ax.add_patch(plt.Rectangle((j, 1 - i), 1, 1, color=cell_color[i, j], alpha=0.18))
+                ax.text(j + 0.5, 1 - i + 0.60, cell_label[i, j], ha="center", va="center",
+                        fontsize=11, color=cell_color[i, j], fontweight="bold")
+                ax.text(j + 0.5, 1 - i + 0.34, f"{grid[i, j]:,}", ha="center", va="center",
+                        fontsize=16, color="#2c3e50")
+        ax.set_xlim(0, 2)
+        ax.set_ylim(0, 2)
+        ax.set_xticks([0.5, 1.5])
+        ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
+        ax.set_yticks([0.5, 1.5])
+        ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
+        ax.set_title(title, fontsize=11)
+        ax.set_aspect("equal")
+        for s in ax.spines.values():
+            s.set_visible(False)
+        ax.tick_params(length=0)
+    fig.suptitle(f"Matriz de confusión (celdas proyecto×tópico) — {ref['label']}", fontsize=12)
+    fig.tight_layout()
+    p = images_dir / "chart_topic_confusion.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths["confusion"] = p
+
+    # 4) Resumen Precisión / Recall / F1 (macro) en el punto de operación:
+    #    tópico vs subcampo, barras agrupadas.
+    prf_names = ["Precisión", "Recall", "F1"]
+    prf_keys = ("precision_macro", "recall_macro", "f1_macro")
+    groups = [("Tópico", [ref["metrics"]["macro"][k] for k in prf_keys], PALETTE[0])]
+    if ref.get("metrics_subfield", {}).get("macro"):
+        groups.append(
+            ("Subcampo", [ref["metrics_subfield"]["macro"][k] for k in prf_keys], PALETTE[2])
+        )
+    xpos = np.arange(len(prf_names))
+    bw = 0.8 / len(groups)
+    fig, ax = plt.subplots(figsize=(6.0, 4.0))
+    for gi, (gname, vals, color) in enumerate(groups):
+        offset = (gi - (len(groups) - 1) / 2) * bw
+        bars = ax.bar(xpos + offset, vals, bw, label=gname, color=color)
+        for b, v in zip(bars, vals):
+            ax.text(b.get_x() + b.get_width() / 2, v + 0.012, f"{v:.2f}",
+                    ha="center", va="bottom", fontsize=9)
+    ax.set_xticks(xpos)
+    ax.set_xticklabels(prf_names, fontsize=10)
+    ax.set_ylim(0, 1.0)
+    ax.set_ylabel("Score macro (0–1)")
+    ax.set_title(f"Precisión / Recall / F1 (macro) — {ref['label']}", fontsize=12)
+    ax.legend(fontsize=9, framealpha=0.9)
+    ax.grid(axis="y", linestyle=":", alpha=0.5)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    p = images_dir / "chart_topic_prf.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths["prf"] = p
 
     return paths
 
@@ -693,6 +784,21 @@ def render_report_cards(
         if "by_project" in chart_paths
         else ""
     )
+    img_prf_block = (
+        f'<div class="card"><h2>Precisión / Recall / F1 (punto de operación)</h2>'
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["prf"], rel_to)}" alt="P/R/F1"></div></div>'
+        if "prf" in chart_paths
+        else ""
+    )
+    img_confusion_block = (
+        f'<div class="card"><h2>Matriz de confusión (punto de operación)</h2>'
+        f'<p class="subtitle">Celdas proyecto×tópico sobre el universo de tópicos en juego '
+        f'(GT ∪ predichos). No se reporta accuracy: el TN domina el espacio esparso y la infla; '
+        f'mirá Precisión / Recall / F1.</p>'
+        f'<div class="chart-wrap"><img src="{_chart_src(chart_paths["confusion"], rel_to)}" alt="matriz de confusión"></div></div>'
+        if "confusion" in chart_paths
+        else ""
+    )
 
     return f"""
   <h1>Parámetros de clasificación de tópicos</h1>
@@ -781,7 +887,7 @@ def build_project_titles(gt_data: dict) -> Dict[str, str]:
             continue
         val = e.get("value")
         if isinstance(val, dict):
-            titles[e["id"]] = val.get("title", "") or ""
+            titles[e["id"]] = val.get("titulo", "") or ""
         elif isinstance(val, str):
             titles[e["id"]] = val
     return titles
