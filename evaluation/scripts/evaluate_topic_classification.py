@@ -46,6 +46,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 EVAL_DIR = SCRIPTS_DIR.parent
 REPO_ROOT = EVAL_DIR.parent
 
+from institutional_graphrag.config import CHUNK_MAX_TOKENS  # noqa: E402
 from institutional_graphrag.extraction.bert_extractor import (  # noqa: E402
     DEFAULT_CONFIDENCE_LOGIT_THRESHOLD,
     DEFAULT_COVERAGE_LOGIT_THRESHOLD,
@@ -74,10 +75,10 @@ PARAM_SHORT = {
     "chunk_size": "size",
 }
 
-CHUNKING_THRESHOLDS: List[float] = [0.02, 0.04, 0.06, 0.08]  # umbral etapa de chunking (score por chunk)
+CHUNKING_THRESHOLDS: List[float] = [DEFAULT_THRESHOLD]  # umbral etapa de chunking (score por chunk)
 COVERAGE_THRESHOLDS: List[float] = [DEFAULT_COVERAGE_LOGIT_THRESHOLD]      # umbral final: fracción de chunks (default 0.5)
 CONFIDENCE_THRESHOLDS: List[float] = [DEFAULT_CONFIDENCE_LOGIT_THRESHOLD]  # umbral final: logit promedio (default 8)
-CHUNK_SIZES: List[int] = [256, 300, 512]   # max_tokens por chunk
+CHUNK_SIZES: List[int] = [CHUNK_MAX_TOKENS]   # max_tokens por chunk
 
 # Opciones de corrida:
 MAX_PROJECTS: Optional[int] = None  # limitar numero de proyectos (None = todos)
@@ -457,7 +458,7 @@ OPERATING_POINT = {
     "chunking_threshold": DEFAULT_THRESHOLD,
     "coverage_threshold": DEFAULT_COVERAGE_LOGIT_THRESHOLD,
     "confidence_threshold": float(DEFAULT_CONFIDENCE_LOGIT_THRESHOLD),
-    "chunk_size": 512,
+    "chunk_size": CHUNK_MAX_TOKENS,
 }
 
 
