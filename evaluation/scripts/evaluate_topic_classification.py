@@ -54,7 +54,7 @@ from institutional_graphrag.extraction.bert_extractor import (  # noqa: E402
     BertTopicExtractor,
 )
 
-DEFAULT_GT_PATH = EVAL_DIR / "ground_truth" / "extraction" / "ground_truth_kg.json"
+DEFAULT_GT_PATH = EVAL_DIR / "ground_truth" / "extraction" / "ground_truth_kg_evaluation.json"
 DEFAULT_DOCLING_DIR = REPO_ROOT / "data" / "docling"
 RESULTS_DIR = EVAL_DIR / "results" / "topic_classification"
 CACHE_DIR = RESULTS_DIR / "cache"
