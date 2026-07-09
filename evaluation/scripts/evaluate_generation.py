@@ -55,7 +55,7 @@ from institutional_graphrag.llm.llm_provider import (  # noqa: E402
     OllamaClient,
 )
 
-DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "datasetQA_GT.json"
+DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "datasetQA_GT_evaluation.json"
 RESULTS_DIR = EVAL_DIR / "results" / "generation"
 
 DEFAULT_JUDGE_MODEL = "claude-opus-4-8"
@@ -63,12 +63,7 @@ ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
 
 MODELS: List[Dict[str, str]] = [
-    {"display": "Qwen3 4B (2507)", "backend": "huggingface", "model": "Qwen/Qwen3-4B-Instruct-2507"},
-    {"display": "Qwen2.5 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-7B-Instruct"},
-    {"display": "Llama 3.1 8B", "backend": "huggingface", "model": "meta-llama/Llama-3.1-8B-Instruct"},
-    {"display": "Falcon3 10B", "backend": "huggingface", "model": "tiiuae/Falcon3-10B-Instruct"},
     {"display": "Gemma 3 12B", "backend": "huggingface", "model": "google/gemma-3-12b-it"},
-    {"display": "Mistral Small 3 24B", "backend": "huggingface", "model": "mistralai/Mistral-Small-24B-Instruct-2501"},
 ]
 
 # Variantes de prompt: id -> builder(question, subgraph) -> messages.
@@ -134,10 +129,6 @@ def _prompt_grounded(question: str, subgraph: str) -> List[Dict[str, str]]:
 
 
 PROMPT_VARIANTS: Dict[str, Callable[[str, str], List[Dict[str, str]]]] = {
-    "baseline": gen.build_messages,
-    "concise": _prompt_concise,
-    "cot": _prompt_cot,
-    "structured": _prompt_structured,
     "grounded": _prompt_grounded,
 }
 
