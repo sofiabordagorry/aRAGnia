@@ -50,6 +50,7 @@ from institutional_graphrag.config import CHUNK_MAX_TOKENS  # noqa: E402
 from institutional_graphrag.extraction.bert_extractor import (  # noqa: E402
     DEFAULT_CONFIDENCE_LOGIT_THRESHOLD,
     DEFAULT_COVERAGE_LOGIT_THRESHOLD,
+    DEFAULT_MIN_TOPICS,
     DEFAULT_THRESHOLD,
     BertTopicExtractor,
 )
@@ -67,18 +68,21 @@ PARAM_DIMENSIONS = (
     "coverage_threshold",
     "confidence_threshold",
     "chunk_size",
+    "min_topics",
 )
 PARAM_SHORT = {
     "chunking_threshold": "ck",
     "coverage_threshold": "cov",
     "confidence_threshold": "conf",
     "chunk_size": "size",
+    "min_topics": "mt",
 }
 
 CHUNKING_THRESHOLDS: List[float] = [0.04, 0.06, 0.08, 0.1, 0.11, 0.12, 0.13, 0.15]  # umbral etapa de chunking (score por chunk)
 COVERAGE_THRESHOLDS: List[float] = [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.15, 0.2, 0.5]  # umbral final: fracción de chunks
 CONFIDENCE_THRESHOLDS: List[float] = [8, 9, 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, 16]  # umbral final: logit promedio
 CHUNK_SIZES: List[int] = [256, 300, 512]   # max_tokens por chunk
+MIN_TOPICS_VALUES: List[int] = [1, 2, 3, 5]   # piso de tópicos por proyecto (siempre fallback)
 
 # Opciones de corrida:
 MAX_PROJECTS: Optional[int] = None  # limitar numero de proyectos (None = todos)
@@ -282,6 +286,7 @@ def aggregate_predicted_topics(
     coverage_threshold: float,
     confidence_threshold: float,
     en_to_es: Dict[str, str],
+    min_topics: int = DEFAULT_MIN_TOPICS,
 ) -> Dict[str, set]:
     """Reproduce la lógica del pipeline (extract + aggregate_topics_for_project) a partir
     de las predicciones crudas, devolviendo project_id -> set de claves de tópico."""
@@ -302,14 +307,28 @@ def aggregate_predicted_topics(
                 topic_count[topic_en] = topic_count.get(topic_en, 0) + 1
                 topic_sum_logit[topic_en] = topic_sum_logit.get(topic_en, 0.0) + logit
 
-        keys: set = set()
-        for topic_en, count in topic_count.items():
-            coverage = count / total_chunks
-            confidence = topic_sum_logit[topic_en] / count
-            if coverage >= coverage_threshold and confidence >= confidence_threshold:
-                es_topic = en_to_es.get(topic_en, topic_en)
-                keys.add(normalize_topic_key(es_topic))
-        predicted[project_id] = keys
+        def coverage(topic_en: str) -> float:
+            return topic_count[topic_en] / total_chunks
+
+        def confidence(topic_en: str) -> float:
+            return topic_sum_logit[topic_en] / topic_count[topic_en]
+
+        passing = [
+            topic_en
+            for topic_en in topic_count
+            if coverage(topic_en) >= coverage_threshold
+            and confidence(topic_en) >= confidence_threshold
+        ]
+        selected = list(passing)
+        if len(selected) < min_topics:
+            fallback = sorted(
+                (t for t in topic_count if t not in passing),
+                key=lambda t: (coverage(t), confidence(t)),
+                reverse=True,
+            )
+            selected.extend(fallback[: min_topics - len(selected)])
+
+        predicted[project_id] = {normalize_topic_key(en_to_es.get(t, t)) for t in selected}
 
     return predicted
 
@@ -405,16 +424,18 @@ def build_param_grid(
     coverage: List[float],
     confidence: List[float],
     sizes: List[int],
+    min_topics: List[int],
 ) -> List[Dict[str, Any]]:
     """Producto cartesiano de las listas -> lista de combinaciones de parámetros."""
     combos: List[Dict[str, Any]] = []
-    for ck, cov, conf, size in itertools.product(chunking, coverage, confidence, sizes):
+    for ck, cov, conf, size, mt in itertools.product(chunking, coverage, confidence, sizes, min_topics):
         combos.append(
             {
                 "chunking_threshold": ck,
                 "coverage_threshold": cov,
                 "confidence_threshold": conf,
                 "chunk_size": size,
+                "min_topics": mt,
             }
         )
     return combos
@@ -435,6 +456,7 @@ def config_signature(params: Dict[str, Any]) -> str:
     return (
         f"ck{params['chunking_threshold']}_cov{params['coverage_threshold']}"
         f"_conf{params['confidence_threshold']}_size{params['chunk_size']}"
+        f"_mt{params['min_topics']}"
     )
 
 
@@ -453,12 +475,14 @@ PARAM_LABELS_FULL = {
     "coverage_threshold": "Umbral de cobertura",
     "confidence_threshold": "Umbral de confianza (logit)",
     "chunk_size": "Tamaño de chunk",
+    "min_topics": "Mínimo de tópicos (piso)",
 }
 OPERATING_POINT = {
     "chunking_threshold": DEFAULT_THRESHOLD,
     "coverage_threshold": DEFAULT_COVERAGE_LOGIT_THRESHOLD,
     "confidence_threshold": float(DEFAULT_CONFIDENCE_LOGIT_THRESHOLD),
     "chunk_size": CHUNK_MAX_TOKENS,
+    "min_topics": DEFAULT_MIN_TOPICS,
 }
 
 
@@ -708,6 +732,7 @@ def render_report_cards(
             f"<td>{p['coverage_threshold']}</td>"
             f"<td>{p['confidence_threshold']}</td>"
             f"<td>{p['chunk_size']}</td>"
+            f"<td>{p['min_topics']}</td>"
             f"<td>{c['metrics']['n_projects']}</td>"
             + mcell(macro["precision_macro"])
             + mcell(macro["recall_macro"])
@@ -820,14 +845,14 @@ def render_report_cards(
         <thead>
           <tr>
             <th rowspan="2">Config</th>
-            <th colspan="4" style="background:#1a252f;">Parámetros</th>
+            <th colspan="5" style="background:#1a252f;">Parámetros</th>
             <th rowspan="2">Proy.</th>
             <th colspan="3" style="background:#1a252f;">Macro</th>
             <th colspan="3" style="background:#1a252f;">Micro</th>
             <th colspan="3" style="background:#1a252f;">Conteo (micro)</th>
           </tr>
           <tr>
-            <th>chunk_thr</th><th>cov</th><th>conf</th><th>size</th>
+            <th>chunk_thr</th><th>cov</th><th>conf</th><th>size</th><th>mt</th>
             <th>P</th><th>R</th><th>F1</th>
             <th>P</th><th>R</th><th>F1</th>
             <th>TP</th><th>FP</th><th>FN</th>
@@ -974,6 +999,7 @@ def evaluate_combos(
             params["coverage_threshold"],
             params["confidence_threshold"],
             ctx["en_to_es"],
+            params["min_topics"],
         )
         metrics = score_config(predicted, ctx["gt_topics_by_project"])
         metrics_subfield = score_at_subfield(
@@ -1075,6 +1101,9 @@ def main() -> None:
     ap.add_argument("--chunk-sizes", default=None,
                     help="Lista (coma) de tamaños de chunk (max_tokens); 300 = prod. "
                          "Default: constante CHUNK_SIZES.")
+    ap.add_argument("--min-topics", default=None,
+                    help="Lista (coma) de pisos de tópicos por proyecto (0 = sin fallback). "
+                         "Default: constante MIN_TOPICS_VALUES.")
     ap.add_argument("--gt-file", type=Path, default=DEFAULT_GT_PATH)
     ap.add_argument("--docling-dir", type=Path, default=DEFAULT_DOCLING_DIR)
     ap.add_argument("--max-projects", type=int, default=MAX_PROJECTS)
@@ -1110,8 +1139,9 @@ def main() -> None:
     coverage = parse_float_list(args.coverage_thresholds, "coverage_threshold") if args.coverage_thresholds else list(COVERAGE_THRESHOLDS)
     confidence = parse_float_list(args.confidence_thresholds, "confidence_threshold") if args.confidence_thresholds else list(CONFIDENCE_THRESHOLDS)
     sizes = parse_size_list(args.chunk_sizes) if args.chunk_sizes else list(CHUNK_SIZES)
+    min_topics = [int(v) for v in args.min_topics.split(",") if v.strip()] if args.min_topics else list(MIN_TOPICS_VALUES)
 
-    combos = build_param_grid(chunking, coverage, confidence, sizes)
+    combos = build_param_grid(chunking, coverage, confidence, sizes, min_topics)
     validate_grid(combos)
 
     ctx = load_gt_context(args.gt_file, args.device)
@@ -1119,7 +1149,7 @@ def main() -> None:
         print("Aviso: el GT no tiene relaciones TIENE_TOPICO; no hay con qué comparar.")
     print(
         f"Grilla: {len(combos)} combinación(es) "
-        f"(chunking={chunking}, coverage={coverage}, confidence={confidence}, chunk_size={sizes})\n"
+        f"(chunking={chunking}, coverage={coverage}, confidence={confidence}, chunk_size={sizes}, min_topics={min_topics})\n"
         f"Proyectos en GT: {len(ctx['docs_by_project'])} · con tópicos GT: "
         f"{len(ctx['gt_topics_by_project'])}\n"
     )
