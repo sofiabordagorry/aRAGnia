@@ -387,7 +387,11 @@ class BertTopicExtractor:
             return topic_count_sum[topic_en] / total_chunks if total_chunks else 0.0
 
         def confidence(topic_en: str) -> float:
-            return topic_logit_sum[topic_en] / topic_count_sum[topic_en] if topic_count_sum[topic_en] else 0.0
+            return (
+                topic_logit_sum[topic_en] / topic_count_sum[topic_en]
+                if topic_count_sum[topic_en]
+                else 0.0
+            )
 
         passing = [
             topic_en

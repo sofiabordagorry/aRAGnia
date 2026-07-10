@@ -392,8 +392,12 @@ def test_aggregate_topics_for_project_fallback_by_coverage():
     }
 
     mentions = [
-        TopicMention(topic="Rare Topic", evidence="count=1 score=0.3000", chunk_id="chunk1", logit=0.4),
-        TopicMention(topic="Frequent Topic", evidence="count=3 score=0.3000", chunk_id="chunk2", logit=0.3),
+        TopicMention(
+            topic="Rare Topic", evidence="count=1 score=0.3000", chunk_id="chunk1", logit=0.4
+        ),
+        TopicMention(
+            topic="Frequent Topic", evidence="count=3 score=0.3000", chunk_id="chunk2", logit=0.3
+        ),
     ]
 
     relationships = bert_extractor.aggregate_topics_for_project(
