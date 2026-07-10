@@ -1,0 +1,50 @@
+{
+  "sweep": "configuración única",
+  "gt_file": "/Users/sofifacultad/Desktop/sofiabordagorry/institutional-graphrag/evaluation/ground_truth/extraction/ground_truth_kg_evaluation.json",
+  "generated_at": "2026-07-09 14:00 UTC",
+  "fixed_params": {
+    "chunking_threshold": 0.15,
+    "coverage_threshold": 0.08,
+    "confidence_threshold": 14,
+    "chunk_size": 512
+  },
+  "configs": [
+    {
+      "signature": "ck0.15_cov0.08_conf14_size512",
+      "label": "ck=0.15 cov=0.08 conf=14 size=512",
+      "params": {
+        "chunking_threshold": 0.15,
+        "coverage_threshold": 0.08,
+        "confidence_threshold": 14,
+        "chunk_size": 512
+      },
+      "n_projects": 32,
+      "macro": {
+        "precision_macro": 0.2643,
+        "recall_macro": 0.1045,
+        "f1_macro": 0.1225
+      },
+      "micro": {
+        "precision": 0.3158,
+        "recall": 0.0909,
+        "f1": 0.1412,
+        "tp": 12,
+        "fp": 26,
+        "fn": 120
+      },
+      "macro_subfield": {
+        "precision_macro": 0.2708,
+        "recall_macro": 0.1609,
+        "f1_macro": 0.1652
+      },
+      "micro_subfield": {
+        "precision": 0.3429,
+        "recall": 0.1333,
+        "f1": 0.192,
+        "tp": 12,
+        "fp": 23,
+        "fn": 78
+      }
+    }
+  ]
+}

@@ -1,0 +1,1091 @@
+{
+  "sweep": "configuración única",
+  "generated_at": "2026-07-09 14:00 UTC",
+  "configs": [
+    {
+      "signature": "ck0.15_cov0.08_conf14_size512",
+      "label": "ck=0.15 cov=0.08 conf=14 size=512",
+      "params": {
+        "chunking_threshold": 0.15,
+        "coverage_threshold": 0.08,
+        "confidence_threshold": 14,
+        "chunk_size": 512
+      },
+      "metrics": {
+        "n_projects": 32,
+        "macro": {
+          "precision_macro": 0.2643,
+          "recall_macro": 0.1045,
+          "f1_macro": 0.1225
+        },
+        "micro": {
+          "precision": 0.3158,
+          "recall": 0.0909,
+          "f1": 0.1412,
+          "tp": 12,
+          "fp": 26,
+          "fn": 120
+        },
+        "per_project": {
+          "proy_2012_266": {
+            "precision": 1.0,
+            "recall": 0.1429,
+            "f1": 0.25,
+            "tp": 1,
+            "fp": 0,
+            "fn": 6,
+            "predicted": [
+              "materiales_y_almacenamiento_de_hidrogeno"
+            ],
+            "expected": [
+              "analisis_y_aplicaciones_electroquimicas",
+              "comportamientos_de_fragilizacion_por_hidrogeno_y_corrosion_en_metales",
+              "difraccion_de_rayos_x_en_cristalografia",
+              "electrocatalizadores_para_la_conversion_de_energia",
+              "investigacion_en_ingenieria_y_ciencia_de_materiales",
+              "materiales_y_almacenamiento_de_hidrogeno",
+              "propiedades_y_aplicaciones_de_los_materiales"
+            ]
+          },
+          "proy_2012_304": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 4,
+            "fn": 6,
+            "predicted": [
+              "analisis_y_seguridad_de_residuos_de_pesticidas",
+              "ciencias_de_las_plantas_y_del_suelo",
+              "ciencias_del_suelo_y_gestion_ambiental",
+              "investigacion_de_insectos_y_pesticidas"
+            ],
+            "expected": [
+              "conservacion_y_gestion_ambiental",
+              "diversas_innovaciones_en_investigacion_interdisciplinaria",
+              "estudios_ambientales_de_pesticidas_y_herbicidas",
+              "metodos_y_aplicaciones_estadisticas",
+              "sistemas_y_practicas_agricolas",
+              "tecnicas_de_clasificacion_de_datos_desequilibradas"
+            ]
+          },
+          "proy_2012_491": {
+            "precision": 1.0,
+            "recall": 0.1667,
+            "f1": 0.2857,
+            "tp": 1,
+            "fp": 0,
+            "fn": 5,
+            "predicted": [
+              "fermentacion_y_analisis_sensorial"
+            ],
+            "expected": [
+              "analisis_sensorial_y_metodos_estadisticos",
+              "comportamiento_del_consumidor_en_alimentacion_y_salud",
+              "desarrollo_de_metodos_de_quimica_analitica",
+              "fermentacion_y_analisis_sensorial",
+              "quimica_analitica_y_cromatografia",
+              "quimica_de_los_alimentos_y_analisis_de_grasas"
+            ]
+          },
+          "proy_2012_588": {
+            "precision": 0.125,
+            "recall": 0.2,
+            "f1": 0.1538,
+            "tp": 1,
+            "fp": 7,
+            "fn": 4,
+            "predicted": [
+              "comercio_global_y_competitividad",
+              "comercio_y_economia_globales",
+              "desarrollo_regional_e_innovacion",
+              "estudios_de_empleo_trabajo_y_genero",
+              "estudios_juridicos_y_economicos_latinoamericanos",
+              "politica_fiscal_y_crecimiento_economico",
+              "relaciones_internacionales_en_america_latina",
+              "teoria_y_politica_economica"
+            ],
+            "expected": [
+              "analisis_y_politica_economica",
+              "crecimiento_economico_y_politicas_fiscales",
+              "politica_fiscal_y_crecimiento_economico",
+              "politicas_fiscales_y_economia_politica",
+              "sistemas_complejos_y_analisis_de_series_temporales"
+            ]
+          },
+          "proy_2012_616": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [],
+            "expected": [
+              "compuestos_de_azufre_en_biologia"
+            ]
+          },
+          "proy_2012_637": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 6,
+            "predicted": [],
+            "expected": [
+              "dinamica_de_fluidos_y_flujos_turbulentos",
+              "estudios_de_ingenieria_marina_y_offshore",
+              "ingenieria_y_estudios_ambientales",
+              "investigacion_aplicada_en_ingenieria",
+              "investigacion_marina_y_costera",
+              "navegacion_y_seguridad_maritima"
+            ]
+          },
+          "proy_2012_661": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 4,
+            "predicted": [
+              "investigacion_e_implicaciones_de_las_especies_de_trypanosoma"
+            ],
+            "expected": [
+              "bioinformatica_y_redes_genomicas",
+              "genetica_bioinformatica_e_investigacion_biomedica",
+              "mecanismos_de_sintesis_de_arn_y_proteinas",
+              "regulacion_del_arn_y_enfermedad"
+            ]
+          },
+          "proy_2014_91": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6667,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [
+              "analisis_sensorial_y_metodos_estadisticos"
+            ],
+            "expected": [
+              "analisis_sensorial_y_metodos_estadisticos",
+              "comportamiento_del_consumidor_en_alimentacion_y_salud"
+            ]
+          },
+          "proy_2014_151": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "desarrollo_de_metodos_de_quimica_analitica",
+              "espectroscopia_y_analisis_quimiometricos",
+              "metales_pesados_en_plantas"
+            ]
+          },
+          "proy_2014_248": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 2,
+            "predicted": [],
+            "expected": [
+              "aneurismas_intracraneales_tratamiento_y_complicaciones",
+              "respuesta_inmune_e_inflamacion"
+            ]
+          },
+          "proy_2014_276": {
+            "precision": 0.5,
+            "recall": 0.2,
+            "f1": 0.2857,
+            "tp": 1,
+            "fp": 1,
+            "fn": 4,
+            "predicted": [
+              "planificacion_y_optimizacion_del_transporte",
+              "sistemas_de_logistica_y_transporte"
+            ],
+            "expected": [
+              "analisis_de_sistemas_de_transporte_urbano",
+              "aplicaciones_de_simulacion_y_modelado",
+              "optimizacion_y_programacion_matematica",
+              "planificacion_y_optimizacion_del_transporte",
+              "sistemas_complejos_y_toma_de_decisiones"
+            ]
+          },
+          "proy_2014_402": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "metodos_numericos_avanzados_en_matematica_computacional",
+              "metodos_numericos_en_problemas_inversos",
+              "modelado_de_elasticidad_y_materiales"
+            ]
+          },
+          "proy_2014_407": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 4,
+            "predicted": [
+              "investigacion_de_insectos_y_pesticidas"
+            ],
+            "expected": [
+              "estudios_de_infecciones_por_virus_animales",
+              "nutricion_genetica_y_enfermedades",
+              "nutricion_y_fisiologia_animal",
+              "sanidad_animal_e_inmunologia"
+            ]
+          },
+          "proy_2016_57": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 4,
+            "predicted": [
+              "corrosion_y_durabilidad_del_hormigon"
+            ],
+            "expected": [
+              "analisis_de_integridad_y_confiabilidad_estructural",
+              "cadenas_de_markov_y_metodos_de_montecarlo",
+              "diagnostico_de_ingenieria_y_confiabilidad",
+              "tecnicas_de_pruebas_no_destructivas"
+            ]
+          },
+          "proy_2016_89": {
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [
+              "tecnicas_de_deteccion_de_imagenes_y_objetos"
+            ],
+            "expected": [
+              "atencion_visual_y_deteccion_de_prominencia",
+              "tecnicas_avanzadas_de_procesamiento_de_imagenes",
+              "tecnicas_de_deteccion_de_imagenes_y_objetos",
+              "tecnicas_de_procesamiento_de_imagenes_digitales",
+              "tecnicas_y_aplicaciones_de_procesamiento_de_imagenes"
+            ]
+          },
+          "proy_2016_160": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 2,
+            "fn": 8,
+            "predicted": [
+              "dinamica_costera_y_marina",
+              "gestion_y_calidad_de_los_recursos_hidricos"
+            ],
+            "expected": [
+              "dinamica_de_particulas_en_flujos_de_fluidos",
+              "erosion_del_suelo_y_transporte_de_sedimentos",
+              "estudios_marinos_y_ambientales",
+              "ingenieria_y_estudios_ambientales",
+              "investigacion_en_acustica_submarina",
+              "investigacion_marina_y_costera",
+              "procesos_de_hidrologia_y_transporte_de_sedimentos",
+              "procesos_oceanograficos_y_atmosfericos"
+            ]
+          },
+          "proy_2016_273": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [],
+            "expected": [
+              "computacion_paralela_y_tecnicas_de_optimizacion",
+              "simulaciones_e_interacciones_de_dinamica_de_fluidos",
+              "sistemas_de_energia_eolica_y_undimotriz",
+              "tecnicas_avanzadas_de_analisis_numerico"
+            ]
+          },
+          "proy_2016_442": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 5,
+            "predicted": [
+              "enfermedades_transmitidas_por_mosquitos_y_control"
+            ],
+            "expected": [
+              "analisis_de_datos_con_r",
+              "aprendizaje_automatico_en_bioinformatica",
+              "aprendizaje_automatico_y_clasificacion_de_datos",
+              "metodos_matematicos_y_computacionales",
+              "metodos_y_aplicaciones_estadisticas"
+            ]
+          },
+          "proy_2016_547": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 6,
+            "predicted": [],
+            "expected": [
+              "dinamica_de_fluidos_y_flujos_turbulentos",
+              "estudios_de_ingenieria_marina_y_offshore",
+              "ingenieria_y_estudios_ambientales",
+              "investigacion_aplicada_en_ingenieria",
+              "investigacion_marina_y_costera",
+              "navegacion_y_seguridad_maritima"
+            ]
+          },
+          "proy_2016_671": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "predicted": [],
+            "expected": [
+              "autoensamblaje_supramolecular_en_materiales",
+              "estudios_de_investigacion_de_acidos_bioquimicos",
+              "materiales_y_aplicaciones_2d",
+              "polimeros_conductores_y_aplicaciones",
+              "quimica_analitica_y_sensores"
+            ]
+          },
+          "proy_2018_112": {
+            "precision": 0.5,
+            "recall": 0.25,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 1,
+            "fn": 3,
+            "predicted": [
+              "catalisis_e_inmovilizacion_enzimatica",
+              "sintesis_y_propiedades_de_polimeros_biodegradables"
+            ],
+            "expected": [
+              "procesos_bioquimicos_y_bioquimicos",
+              "produccion_de_biocombustibles_y_bioconversion",
+              "produccion_y_caracterizacion_de_enzimas",
+              "sintesis_y_propiedades_de_polimeros_biodegradables"
+            ]
+          },
+          "proy_2018_256": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "predicted": [],
+            "expected": [
+              "aplicaciones_avanzadas_de_redes_neuronales",
+              "metodos_de_eliminacion_de_ruido_de_imagenes_y_senales",
+              "redes_neuronales_y_aplicaciones",
+              "tecnicas_y_aplicaciones_de_procesamiento_de_imagenes",
+              "vision_e_imagenes_avanzadas"
+            ]
+          },
+          "proy_2018_260": {
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [
+              "planificacion_y_optimizacion_del_transporte"
+            ],
+            "expected": [
+              "analisis_de_sistemas_de_transporte_urbano",
+              "aplicaciones_de_simulacion_y_modelado",
+              "optimizacion_y_programacion_matematica",
+              "planificacion_y_optimizacion_del_transporte",
+              "sistemas_complejos_y_toma_de_decisiones"
+            ]
+          },
+          "proy_2018_354": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 5,
+            "predicted": [
+              "ecosistemas_acuaticos_y_dinamica_del_fitoplancton"
+            ],
+            "expected": [
+              "estudios_acuaticos_y_ambientales",
+              "estudios_de_calidad_y_recursos_del_agua",
+              "estudios_de_hidrologia_y_manejo_de_cuencas",
+              "geografia_y_estudios_ambientales",
+              "gestion_del_agua_y_la_tierra"
+            ]
+          },
+          "proy_2018_413": {
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [
+              "teledeteccion_en_la_agricultura"
+            ],
+            "expected": [
+              "agricultura_inteligente_e_ia",
+              "analisis_y_pronostico_de_series_temporales",
+              "clasificacion_de_imagenes_de_teledeteccion",
+              "procesamiento_de_imagenes_satelitales_y_fotogrametria",
+              "teledeteccion_en_la_agricultura"
+            ]
+          },
+          "proy_2012_342": {
+            "precision": 0.3333,
+            "recall": 1.0,
+            "f1": 0.5,
+            "tp": 1,
+            "fp": 2,
+            "fn": 0,
+            "predicted": [
+              "analisis_del_discurso_cultural_y_politico",
+              "dinamica_politica_en_america_latina",
+              "politica_y_sociedad_en_america_latina"
+            ],
+            "expected": [
+              "politica_y_sociedad_en_america_latina"
+            ]
+          },
+          "proy_2012_457": {
+            "precision": 1.0,
+            "recall": 0.2857,
+            "f1": 0.4444,
+            "tp": 2,
+            "fp": 0,
+            "fn": 5,
+            "predicted": [
+              "analisis_economico_y_espacial_regional",
+              "desarrollo_regional_e_innovacion"
+            ],
+            "expected": [
+              "analisis_economico_y_espacial_regional",
+              "crecimiento_economico_y_productividad",
+              "desarrollo_regional_e_innovacion",
+              "estudios_historicos_economicos_y_sociales",
+              "geografia_historica_y_cartografia",
+              "gobernanza_local_y_desarrollo",
+              "teoria_e_instituciones_economicas"
+            ]
+          },
+          "proy_2014_258": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1,
+            "predicted": [
+              "nutricion_de_rumiantes_y_fisiologia_digestiva",
+              "sistemas_agroforestales_y_silvopastoriles",
+              "sostenibilidad_agricola_e_impacto_ambiental"
+            ],
+            "expected": [
+              "politicas_ambientales_y_emisiones"
+            ]
+          },
+          "proy_2018_51": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "estudios_de_mecanica_y_biomecanica",
+              "imagenes_y_analisis_medicos",
+              "metodos_numericos_en_problemas_inversos"
+            ]
+          },
+          "proy_2012_331": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [],
+            "expected": [
+              "investigacion_en_biologia_molecular_vegetal"
+            ]
+          },
+          "proy_2016_472": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 1,
+            "predicted": [
+              "catalisis_e_inmovilizacion_enzimatica"
+            ],
+            "expected": [
+              "produccion_y_caracterizacion_de_enzimas"
+            ]
+          },
+          "proy_2012_717": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "espectroscopia_y_estudios_de_quimica_cuantica",
+              "fisica_atomica_y_molecular",
+              "interacciones_y_aplicaciones_laser-materia"
+            ]
+          }
+        }
+      },
+      "metrics_subfield": {
+        "n_projects": 32,
+        "macro": {
+          "precision_macro": 0.2708,
+          "recall_macro": 0.1609,
+          "f1_macro": 0.1652
+        },
+        "micro": {
+          "precision": 0.3429,
+          "recall": 0.1333,
+          "f1": 0.192,
+          "tp": 12,
+          "fp": 23,
+          "fn": 78
+        },
+        "per_project": {
+          "proy_2012_266": {
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [
+              "quimica_de_materiales"
+            ],
+            "expected": [
+              "ciencias_de_los_materiales_generales",
+              "electroquimica",
+              "energia_renovable_sostenibilidad_y_medio_ambiente",
+              "metales_y_aleaciones",
+              "quimica_de_materiales"
+            ]
+          },
+          "proy_2012_304": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 4,
+            "fn": 6,
+            "predicted": [
+              "ciencias_agricolas_y_biologicas_generales",
+              "ciencias_de_los_alimentos",
+              "ciencias_del_suelo",
+              "entomologia"
+            ],
+            "expected": [
+              "ciencias_de_la_gestion_e_investigacion_operativa",
+              "contaminacion",
+              "ecologia_evolucion_comportamiento_y_sistematica",
+              "estadistica_y_probabilidad",
+              "gestion_monitoreo_politica_y_ley",
+              "inteligencia_artificial"
+            ]
+          },
+          "proy_2012_491": {
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1": 0.4,
+            "tp": 1,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [
+              "ciencias_de_los_alimentos"
+            ],
+            "expected": [
+              "ciencias_de_los_alimentos",
+              "espectroscopia",
+              "quimica_analitica",
+              "sociologia_y_ciencias_politicas"
+            ]
+          },
+          "proy_2012_588": {
+            "precision": 0.1667,
+            "recall": 1.0,
+            "f1": 0.2857,
+            "tp": 1,
+            "fp": 5,
+            "fn": 0,
+            "predicted": [
+              "ciencias_politicas_y_relaciones_internacionales",
+              "desarrollo",
+              "economia_econometria_y_finanzas_generales",
+              "economia_y_econometria",
+              "estrategia_y_gestion",
+              "investigacion_en_seguridad"
+            ],
+            "expected": [
+              "economia_y_econometria"
+            ]
+          },
+          "proy_2012_616": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [],
+            "expected": [
+              "bioquimica"
+            ]
+          },
+          "proy_2012_637": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "ingenieria_civil_y_estructural",
+              "ingenieria_oceanica",
+              "mecanica_computacional"
+            ]
+          },
+          "proy_2012_661": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 1,
+            "predicted": [
+              "epidemiologia"
+            ],
+            "expected": [
+              "biologia_molecular"
+            ]
+          },
+          "proy_2014_91": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6667,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [
+              "ciencias_de_los_alimentos"
+            ],
+            "expected": [
+              "ciencias_de_los_alimentos",
+              "sociologia_y_ciencias_politicas"
+            ]
+          },
+          "proy_2014_151": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 2,
+            "predicted": [],
+            "expected": [
+              "metales_pesados_en_plantas",
+              "quimica_analitica"
+            ]
+          },
+          "proy_2014_248": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 2,
+            "predicted": [],
+            "expected": [
+              "aneurismas_intracraneales_tratamiento_y_complicaciones",
+              "inmunologia"
+            ]
+          },
+          "proy_2014_276": {
+            "precision": 0.5,
+            "recall": 0.25,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 1,
+            "fn": 3,
+            "predicted": [
+              "sistemas_de_informacion_de_gestion",
+              "transporte"
+            ],
+            "expected": [
+              "ciencias_de_la_gestion_e_investigacion_operativa",
+              "ingenieria_civil_y_estructural",
+              "ingenieria_de_control_y_sistemas",
+              "transporte"
+            ]
+          },
+          "proy_2014_402": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "fisica_matematica",
+              "ingenieria_biomedica",
+              "mecanica_computacional"
+            ]
+          },
+          "proy_2014_407": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 3,
+            "predicted": [
+              "entomologia"
+            ],
+            "expected": [
+              "animales_pequeños",
+              "ciencias_animales_y_zoologia",
+              "genetica"
+            ]
+          },
+          "proy_2016_57": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 3,
+            "predicted": [
+              "ingenieria_civil_y_estructural"
+            ],
+            "expected": [
+              "estadistica_y_probabilidad",
+              "ingenieria_mecanica",
+              "mecanica_de_materiales"
+            ]
+          },
+          "proy_2016_89": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6667,
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [
+              "vision_por_computadora_y_reconocimiento_de_patrones"
+            ],
+            "expected": [
+              "tecnologia_de_medios",
+              "vision_por_computadora_y_reconocimiento_de_patrones"
+            ]
+          },
+          "proy_2016_160": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 2,
+            "fn": 4,
+            "predicted": [
+              "ciencias_del_agua_y_tecnologia",
+              "procesos_de_la_superficie_terrestre"
+            ],
+            "expected": [
+              "ciencias_del_suelo",
+              "ecologia",
+              "ingenieria_oceanica",
+              "oceanografia"
+            ]
+          },
+          "proy_2016_273": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "hardware_y_arquitectura",
+              "ingenieria_oceanica",
+              "mecanica_computacional"
+            ]
+          },
+          "proy_2016_442": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 4,
+            "predicted": [
+              "salud_publica_ambiental_y_ocupacional"
+            ],
+            "expected": [
+              "biologia_molecular",
+              "estadistica_y_probabilidad",
+              "inteligencia_artificial",
+              "modelado_y_simulacion"
+            ]
+          },
+          "proy_2016_547": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [],
+            "expected": [
+              "ingenieria_civil_y_estructural",
+              "ingenieria_oceanica",
+              "mecanica_computacional"
+            ]
+          },
+          "proy_2016_671": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "predicted": [],
+            "expected": [
+              "bioingenieria",
+              "biomateriales",
+              "bioquimica",
+              "polimeros_y_plasticos",
+              "quimica_de_materiales"
+            ]
+          },
+          "proy_2018_112": {
+            "precision": 0.5,
+            "recall": 0.3333,
+            "f1": 0.4,
+            "tp": 1,
+            "fp": 1,
+            "fn": 2,
+            "predicted": [
+              "biologia_molecular",
+              "biomateriales"
+            ],
+            "expected": [
+              "biomateriales",
+              "biotecnologia",
+              "ingenieria_biomedica"
+            ]
+          },
+          "proy_2018_256": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [],
+            "expected": [
+              "inteligencia_artificial",
+              "metodos_de_eliminacion_de_ruido_de_imagenes_y_senales",
+              "tecnologia_de_medios",
+              "vision_por_computadora_y_reconocimiento_de_patrones"
+            ]
+          },
+          "proy_2018_260": {
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1": 0.4,
+            "tp": 1,
+            "fp": 0,
+            "fn": 3,
+            "predicted": [
+              "transporte"
+            ],
+            "expected": [
+              "ciencias_de_la_gestion_e_investigacion_operativa",
+              "ingenieria_civil_y_estructural",
+              "ingenieria_de_control_y_sistemas",
+              "transporte"
+            ]
+          },
+          "proy_2018_354": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 3,
+            "predicted": [
+              "quimica_ambiental"
+            ],
+            "expected": [
+              "ciencias_del_agua_y_tecnologia",
+              "gestion_monitoreo_politica_y_ley",
+              "procesos_de_la_superficie_terrestre"
+            ]
+          },
+          "proy_2018_413": {
+            "precision": 1.0,
+            "recall": 0.2,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 0,
+            "fn": 4,
+            "predicted": [
+              "ecologia"
+            ],
+            "expected": [
+              "ciencias_de_las_plantas",
+              "ecologia",
+              "ingenieria_oceanica",
+              "procesamiento_de_senales",
+              "tecnologia_de_medios"
+            ]
+          },
+          "proy_2012_342": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6667,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "predicted": [
+              "ciencias_politicas_y_relaciones_internacionales",
+              "linguistica_y_lenguaje"
+            ],
+            "expected": [
+              "ciencias_politicas_y_relaciones_internacionales"
+            ]
+          },
+          "proy_2012_457": {
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [
+              "desarrollo",
+              "economia_y_econometria"
+            ],
+            "expected": [
+              "desarrollo",
+              "economia_y_econometria",
+              "geografia_planificacion_y_desarrollo"
+            ]
+          },
+          "proy_2014_258": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1,
+            "predicted": [
+              "agronomia_y_ciencias_de_cultivos",
+              "ecologia",
+              "silvicultura"
+            ],
+            "expected": [
+              "contaminacion"
+            ]
+          },
+          "proy_2018_51": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 2,
+            "predicted": [],
+            "expected": [
+              "fisica_matematica",
+              "ingenieria_biomedica"
+            ]
+          },
+          "proy_2012_331": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [],
+            "expected": [
+              "ciencias_de_las_plantas"
+            ]
+          },
+          "proy_2016_472": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 1,
+            "predicted": [
+              "biologia_molecular"
+            ],
+            "expected": [
+              "biotecnologia"
+            ]
+          },
+          "proy_2012_717": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "predicted": [],
+            "expected": [
+              "fisica_atomica_y_molecular_y_optica"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
