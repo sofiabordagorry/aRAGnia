@@ -357,6 +357,7 @@ def test_aggregate_topics_for_project_below_threshold_returns_no_relationships()
         threshold=0.5,
         confidence_logit_threshold=0.5,
         coverage_logit_threshold=0.5,
+        min_topics=0,
     )
     bert_extractor._en_to_es_topic = {"Machine Learning": "machine learning"}
 
@@ -376,6 +377,36 @@ def test_aggregate_topics_for_project_below_threshold_returns_no_relationships()
     )
 
     assert relationships == []
+
+
+def test_aggregate_topics_for_project_fallback_by_coverage():
+    bert_extractor = ie_mod.BertTopicExtractor(
+        threshold=0.5,
+        confidence_logit_threshold=0.5,
+        coverage_logit_threshold=0.5,
+        min_topics=1,
+    )
+    bert_extractor._en_to_es_topic = {
+        "Rare Topic": "rare topic",
+        "Frequent Topic": "frequent topic",
+    }
+
+    mentions = [
+        TopicMention(topic="Rare Topic", evidence="count=1 score=0.3000", chunk_id="chunk1", logit=0.4),
+        TopicMention(topic="Frequent Topic", evidence="count=3 score=0.3000", chunk_id="chunk2", logit=0.3),
+    ]
+
+    relationships = bert_extractor.aggregate_topics_for_project(
+        project_id="proy_2014_148",
+        project_bert_results=mentions,
+        total_chunks=4,
+    )
+
+    tiene_topico_rels = [r for r in relationships if r.type == "TIENE_TOPICO"]
+    assert len(tiene_topico_rels) == 1
+    rel = tiene_topico_rels[0]
+    assert rel.target_id == "frequent_topic"
+    assert rel.properties["fallback"] is True
 
 
 # -------------------------

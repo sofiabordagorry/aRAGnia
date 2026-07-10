@@ -31,6 +31,7 @@ TOPICS_ES_PATH = Path(__file__).parents[4] / "data" / "openalex_topics_es.json"
 DEFAULT_THRESHOLD = 0.15
 DEFAULT_CONFIDENCE_LOGIT_THRESHOLD = 14
 DEFAULT_COVERAGE_LOGIT_THRESHOLD = 0.08
+DEFAULT_MIN_TOPICS = 1
 
 
 @dataclass
@@ -60,6 +61,7 @@ class BertTopicExtractor:
         confidence_logit_threshold: float | None,
         coverage_logit_threshold: float | None,
         device: Optional[str] = None,
+        min_topics: int | None = None,
     ):
         self.threshold = threshold if threshold is not None else DEFAULT_THRESHOLD
         self.confidence_logit_threshold = (
@@ -72,6 +74,7 @@ class BertTopicExtractor:
             if coverage_logit_threshold is not None
             else DEFAULT_COVERAGE_LOGIT_THRESHOLD
         )
+        self.min_topics = min_topics if min_topics is not None else DEFAULT_MIN_TOPICS
         self._model: Optional[Any] = None
         self._tokenizer: Optional[Any] = None
         self._id2label: Dict[int, str] = {}
@@ -365,7 +368,8 @@ class BertTopicExtractor:
         project_bert_results: list,
         total_chunks: int,
     ) -> List[Relationship]:
-        """Suma logits por tópico a nivel proyecto y crea TIENE_TOPICO solo si supera el threshold."""
+        """Suma logits por tópico a nivel proyecto y crea TIENE_TOPICO para los que superan el
+        threshold; si quedan menos de min_topics, completa con los de mayor cobertura."""
         relationships: List[Relationship] = []
         if not project_bert_results:
             return relationships
@@ -379,27 +383,44 @@ class BertTopicExtractor:
             topic_count_sum[mention.topic] += count
             topic_chunks_info[mention.topic].append((mention.chunk_id, mention.evidence))
 
-        for topic_en, total_logit in topic_logit_sum.items():
-            mention_count = int(topic_count_sum[topic_en])
-            if (
-                (mention_count / total_chunks) >= self.coverage_logit_threshold
-                and total_logit / mention_count >= self.confidence_logit_threshold
-            ):
-                es_topic = self._en_to_es_topic.get(topic_en, topic_en)
-                topic_id = self._normalize_id(es_topic)
-                relationships.append(
-                    TIENE_TOPICO(
-                        project_id,
-                        topic_id,
-                        properties={
-                            "coverage_logit": float(mention_count / total_chunks),
-                            "confidence_logit": float(total_logit / mention_count),
-                            "mention_count": int(topic_count_sum[topic_en]),
-                        },
-                    )
+        def coverage(topic_en: str) -> float:
+            return topic_count_sum[topic_en] / total_chunks if total_chunks else 0.0
+
+        def confidence(topic_en: str) -> float:
+            return topic_logit_sum[topic_en] / topic_count_sum[topic_en] if topic_count_sum[topic_en] else 0.0
+
+        passing = [
+            topic_en
+            for topic_en in topic_logit_sum
+            if coverage(topic_en) >= self.coverage_logit_threshold
+            and confidence(topic_en) >= self.confidence_logit_threshold
+        ]
+        selected = list(passing)
+        if len(selected) < self.min_topics:
+            fallback = sorted(
+                (t for t in topic_logit_sum if t not in passing),
+                key=lambda t: (coverage(t), confidence(t)),
+                reverse=True,
+            )
+            selected.extend(fallback[: self.min_topics - len(selected)])
+
+        for topic_en in selected:
+            es_topic = self._en_to_es_topic.get(topic_en, topic_en)
+            topic_id = self._normalize_id(es_topic)
+            relationships.append(
+                TIENE_TOPICO(
+                    project_id,
+                    topic_id,
+                    properties={
+                        "coverage_logit": float(coverage(topic_en)),
+                        "confidence_logit": float(confidence(topic_en)),
+                        "mention_count": int(topic_count_sum[topic_en]),
+                        "fallback": topic_en not in passing,
+                    },
                 )
-                for chunk_id, evidence in topic_chunks_info[topic_en]:
-                    relationships.append(
-                        EXTRAIDO_DE(chunk_id, topic_id, properties={"texto_evidencia": evidence})
-                    )
+            )
+            for chunk_id, evidence in topic_chunks_info[topic_en]:
+                relationships.append(
+                    EXTRAIDO_DE(chunk_id, topic_id, properties={"texto_evidencia": evidence})
+                )
         return relationships
