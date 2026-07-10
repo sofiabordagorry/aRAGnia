@@ -1,0 +1,1261 @@
+[
+  {
+    "display": "Gemma 3 12B",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "grounded",
+    "label": "Gemma 3 12B / grounded",
+    "n_judged": 67,
+    "n_sentinel": 13,
+    "dim_means": {
+      "factual_correctness": 0.9851,
+      "completeness": 0.9328,
+      "faithfulness": 0.9888
+    },
+    "quality_overall": 0.9689,
+    "sentinel_accuracy": 1.0,
+    "by_category": {
+      "Análisis Temporal": 0.9965,
+      "Consultas Complejas": 0.8583,
+      "Consultas Estructurales Simples": 0.9735,
+      "Fuera de Alcance": 1.0,
+      "Lenguaje Natural Informal": 1.0
+    },
+    "latency": {
+      "mean": 16.91,
+      "median": 6.76,
+      "p95": 55.99,
+      "n": 67
+    },
+    "records": [
+      {
+        "id": 1,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Quién es el investigador responsable del proyecto Caracterización de astringencia de vino Tannat?",
+        "gt_answer": "El investigador responsable del proyecto 'Caracterización de astringencia de vino Tannat' es Gastón Ares.",
+        "candidate": "Gastón Ares (Investigador) es el investigador responsable del proyecto Caracterización de astringencia de vino Tannat.",
+        "latency_s": 7.90546340867877,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, identificando a Gastón Ares como investigador responsable."
+      },
+      {
+        "id": 2,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿En qué proyecto participó gabriela mordecki?",
+        "gt_answer": "Gabriela Mordecki participó en el proyecto 'Comercio exterior, Competitividad y Política Económica en Uruguay. Análisis y proyecciones.'.",
+        "candidate": "gabriela mordecki participó en el proyecto: Comercio exterior, Competitividad y Política Económica en Uruguay. Análisis y proyecciones.",
+        "latency_s": 2.5500242859125137,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, sin omitir ni inventar información."
+      },
+      {
+        "id": 3,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Cuáles son los tópicos principales a los que pertenece el proyecto sobre senales estructurales en arnm de trypanosoma cruzi?",
+        "gt_answer": "El proyecto sobre señales estructurales en ARNm de Trypanosoma cruzi pertenece a cuatro tópicos principales: regulación del ARN y enfermedad; genética bioinformática e investigación biomédica; mecanismos de síntesis de ARN y proteínas; y bioinformática y redes genómicas.",
+        "candidate": "Los tópicos principales a los que pertenece el proyecto son:\n\n1. regulacion del arn y enfermedad (Topico)\n2. genetica bioinformatica e investigacion biomedica (Topico)\n3. mecanismos de sintesis de arn y proteinas (Topico)\n4. bioinformatica y redes genomicas (Topico)",
+        "latency_s": 5.732582237571478,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista los cuatro tópicos correctos que coinciden exactamente con la referencia y los resultados del grafo, sin omisiones ni información inventada."
+      },
+      {
+        "id": 4,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿A qué subcampo general pertenece el tópico Optimización y programación matemática?",
+        "gt_answer": "El tópico 'Optimización y programación matemática' pertenece al subcampo de ingeniería de control y sistemas.",
+        "candidate": "El tópico Optimización y programación matemática pertenece al subcampo: ingenieria de control y sistemas (Subcampo).",
+        "latency_s": 1.8750339448451996,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, indicando el subcampo correcto sin inventar información."
+      },
+      {
+        "id": 5,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Qué investigadores conforman el equipo del proyecto Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata?",
+        "gt_answer": "El equipo del proyecto 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata' está conformado por Pablo Maximiliano Ezzatti Infante, Mónica Fossati, Ernesto Dufrechou, Pablo Esteban Santoro Rodríguez, Michelle Jackson, Martín Pedemonte y Sebastián Solari.",
+        "candidate": "El equipo del proyecto Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata está conformado por:\n\n*   Pablo Maximiliano Ezzatti Infante (Investigador)\n*   Mónica Fossati (Investigador)\n*   Ernesto Dufrechou (Investigador)\n*   Pablo Esteban Santoro Rodríguez (Investigador)\n*   Michelle Jackson (Investigador)\n*   Martín Pedemonte (Investigador)\n*   Sebastián Solari (Investigador)",
+        "latency_s": 8.99783419817686,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista exactamente los siete investigadores de los resultados del grafo, coincidiendo con la referencia sin omisiones ni información inventada."
+      },
+      {
+        "id": 6,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿En qué año inició oficialmente el proyecto de Diseño óptimo de redes de ciclovías?",
+        "gt_answer": "El proyecto 'Diseño óptimo de redes de ciclovías' inició oficialmente en el año 2018.",
+        "candidate": "2018 (Anio)",
+        "latency_s": 0.8994358330965042,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata indica correctamente el año 2018, coincidiendo con la referencia y los resultados del grafo."
+      },
+      {
+        "id": 7,
+        "category": "Consultas Estructurales Simples",
+        "question": "Nombra todos los proyectos que están asociados de alguna manera al subcampo ingenieria oceanica.",
+        "gt_answer": "Los proyectos asociados al subcampo ingeniería oceánica son: Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.; Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata; Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata; Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo; y Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas.",
+        "candidate": "Los proyectos asociados de alguna manera al subcampo ingeniería oceánica son:\n\n1. proyecto: Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.\n2. proyecto: Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata\n3. proyecto: Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata.",
+        "latency_s": 6.245781410485506,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 2,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "Los tres proyectos mencionados son correctos, pero omite dos proyectos esperados (NDVI y WRF/parques eólicos), por lo que la respuesta está incompleta."
+      },
+      {
+        "id": 8,
+        "category": "Consultas Estructurales Simples",
+        "question": "Lista todos los proyectos en los que figura la participación de Ernesto Dufrechou.",
+        "gt_answer": "Ernesto Dufrechou figura en los proyectos 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata', 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata' y 'Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama'.",
+        "candidate": "Ernesto Dufrechou figura en los siguientes proyectos:\n\n1. proyecto: Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata\n2. proyecto: Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata\n3. proyecto: Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama",
+        "latency_s": 6.760924149304628,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista exactamente los tres proyectos correctos que coinciden con la referencia y el grafo, sin omisiones ni información inventada."
+      },
+      {
+        "id": 9,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Cuáles son los tópicos específicos vinculados al proyecto liderado por Juan Pablo Tosar?",
+        "gt_answer": "El proyecto liderado por Juan Pablo Tosar está vinculado a cinco tópicos específicos: autoensamblaje supramolecular en materiales; estudios de investigación de ácidos bioquímicos; polímeros conductores y aplicaciones; química analítica y sensores; y materiales y aplicaciones 2D.",
+        "candidate": "Los tópicos específicos vinculados al proyecto liderado por Juan Pablo Tosar son:\n\n*   autoensamblaje supramolecular en materiales (Topico)\n*   estudios de investigacion de acidos bioquimicos (Topico)\n*   polimeros conductores y aplicaciones (Topico)\n*   quimica analitica y sensores (Topico)\n*   materiales y aplicaciones 2d (Topico)",
+        "latency_s": 7.232005786150694,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata incluye exactamente los cinco tópicos del grafo, coincidiendo con la referencia sin inventar información."
+      },
+      {
+        "id": 10,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Quiénes figuran como responsables directos del proyecto de Aprendizaje Profundo No Supevisado de Distribuciones a Priori para Problemas Inversos en Imágenes?",
+        "gt_answer": "Los responsables directos del proyecto 'Aprendizaje Profundo No Supevisado de Distribuciones a Priori para Problemas Inversos en Imágenes' son Mauricio Delbracio Bentancor y Pablo Musé Freire.",
+        "candidate": "Mauricio Delbracio Bentancor (Investigador) y Pablo Musé Freire (Investigador) figuran como responsables directos del proyecto.",
+        "latency_s": 2.6977565102279186,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata identifica correctamente a ambos responsables coincidiendo con la referencia y los resultados del grafo, sin omisiones ni información inventada."
+      },
+      {
+        "id": 11,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿A qué área pertenece el proyecto la estrategia de la polarizacion en america latina?",
+        "gt_answer": "El proyecto 'La Estrategia de la Polarización en América Latina' pertenece al área social y artística.",
+        "candidate": "El proyecto la estrategia de la polarizacion en america latina pertenece al área: social y artistica (Area).",
+        "latency_s": 1.8646328523755074,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los datos del grafo, indicando el área social y artística."
+      },
+      {
+        "id": 12,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Qué proyectos pertenecen al área agraria?",
+        "gt_answer": "Al área agraria pertenecen dos proyectos: 'Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas'; y 'Practicas de manejo para disminuir la huella de carbono de los sistemas pastoriles de producción de leche'.",
+        "candidate": "Los proyectos que pertenecen al área agraria son:\n\n1. proyecto: Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas (Proyecto)\n2. proyecto: Practicas de manejo para disminuir la huella de carbono de los sistemas pastoriles de producción de leche (Proyecto)",
+        "latency_s": 6.172336768358946,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo ambos proyectos sin inventar información."
+      },
+      {
+        "id": 13,
+        "category": "Análisis Temporal",
+        "question": "¿Cómo ha evolucionado la cantidad de proyectos en el subcampo de Ingeniería Oceánica?",
+        "gt_answer": "La cantidad de proyectos en el subcampo de Ingeniería Oceánica evolucionó de la siguiente manera: 1 proyecto en 2012, 3 proyectos en 2016 y 1 proyecto en 2018.",
+        "candidate": "La cantidad de proyectos en el subcampo de Ingeniería Oceánica ha evolucionado de la siguiente manera:\n\n*   anio: 2012, cantidad_proyectos: 1\n*   anio: 2016, cantidad_proyectos: 3\n*   anio: 2018, cantidad_proyectos: 1",
+        "latency_s": 5.571553003042936,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los datos del grafo y la referencia: 1 proyecto en 2012, 3 en 2016 y 1 en 2018."
+      },
+      {
+        "id": 14,
+        "category": "Análisis Temporal",
+        "question": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2016?",
+        "gt_answer": "Los tópicos de investigación nuevos que aparecieron en los proyectos iniciados a partir de 2016 respecto a los años anteriores son: cadenas de Markov y métodos de Montecarlo, diagnóstico de ingeniería y confiabilidad, análisis de integridad y confiabilidad estructural, técnicas de pruebas no destructivas, técnicas y aplicaciones de procesamiento de imágenes, atención visual y detección de prominencia, técnicas de detección de imágenes y objetos, técnicas avanzadas de procesamiento de imágenes, técnicas de procesamiento de imágenes digitales, métodos matemáticos y computacionales, aprendizaje automático y clasificación de datos, aprendizaje automático en bioinformática, análisis de datos con R, autoensamblaje supramolecular en materiales, estudios de investigación de ácidos bioquímicos, polímeros conductores y aplicaciones, química analítica y sensores, materiales y aplicaciones 2D, simulaciones e interacciones de dinámica de fluidos, técnicas avanzadas de análisis numérico, computación paralela y técnicas de optimización, sistemas de energía eólica y undimotriz, producción y caracterización de enzimas, procesos de hidrología y transporte de sedimentos, dinámica de partículas en flujos de fluidos, procesos oceanográficos y atmosféricos, investigación en acústica submarina, estudios marinos y ambientales, erosión del suelo y transporte de sedimentos, producción de biocombustibles y bioconversión, procesos bioquímicos y bioquímicos, síntesis y propiedades de polímeros biodegradables, estudios de mecánica y biomecánica, imágenes y análisis médicos, agricultura inteligente e ia, teledetección en la agricultura, clasificación de imágenes de teledetección, análisis y pronóstico de series temporales, procesamiento de imágenes satelitales y fotogrametría, redes neuronales y aplicaciones, visión e imágenes avanzadas, métodos de eliminación de ruido de imágenes y señales, aplicaciones avanzadas de redes neuronales, gestión del agua y la tierra, estudios acuáticos y ambientales, geografía y estudios ambientales, estudios de hidrología y manejo de cuencas, estudios de calidad y recursos del agua.",
+        "candidate": "Los nuevos tópicos de investigación que surgieron en los proyectos que iniciaron a partir del año 2016 son: cadenas de markov y metodos de montecarlo, diagnostico de ingenieria y confiabilidad, analisis de integridad y confiabilidad estructural, tecnicas de pruebas no destructivas, tecnicas y aplicaciones de procesamiento de imagenes, atencion visual y deteccion de prominencia, tecnicas de deteccion de imagenes y objetos, tecnicas avanzadas de procesamiento de imagenes, tecnicas de procesamiento de imagenes digitales, metodos matematicos y computacionales, aprendizaje automatico y clasificacion de datos, aprendizaje automatico en bioinformatica, analisis de datos con r, autoensamblaje supramolecular en materiales, estudios de investigacion de acidos bioquimicos, polimeros conductores y aplicaciones, quimica analitica y sensores, materiales y aplicaciones 2d, simulaciones e interacciones de dinamica de fluidos, tecnicas avanzadas de analisis numerico, computacion paralela y tecnicas de optimizacion, sistemas de energia eolica y undimotriz, produccion y caracterizacion de enzimas, procesos de hidrologia y transporte de sedimentos, dinamica de particulas en flujos de fluidos, procesos oceanograficos y atmosfericos, investigacion en acustica submarina, estudios marinos y ambientales, erosion del suelo y transporte de sedimentos, produccion de biocombustibles y bioconversion, procesos bioquimicos y bioquimicos, sintesis y propiedades de polimeros biodegradables, estudios de mecanica y biomecanica, imagenes y analisis medicos, agricultura inteligente e ia, teledeteccion en la agricultura, clasificacion de imagenes de teledeteccion, analisis y pronostico de series temporales, procesamiento de imagenes satelitales y fotogrametria, redes neuronales y aplicaciones, vision e imagenes avanzadas, metodos de eliminacion de ruido de imagenes y senales, aplicaciones avanzadas de redes neuronales, gestion del agua y la tierra, estudios acuaticos y ambientales, geografia y estudios ambientales, estudios de hidrologia y manejo de cuencas, estudios de calidad y recursos del agua.",
+        "latency_s": 35.330252800136805,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, listando todos los tópicos sin omisiones ni invenciones."
+      },
+      {
+        "id": 15,
+        "category": "Análisis Temporal",
+        "question": "¿Cuáles fueron los temas de investigación más frecuentes en los proyectos que tuvieron su inicio en 2016?",
+        "gt_answer": "Los temas de investigación más frecuentes en los proyectos iniciados en 2016 fueron ingeniería y estudios ambientales y investigación marina y costera, cada uno con 2 proyectos. El resto de los tópicos aparece con frecuencia 1: cadenas de Markov y métodos de Montecarlo, diagnóstico de ingeniería y confiabilidad, análisis de integridad y confiabilidad estructural, técnicas de pruebas no destructivas, técnicas y aplicaciones de procesamiento de imágenes, atención visual y detección de prominencia, técnicas de detección de imágenes y objetos, técnicas avanzadas de procesamiento de imágenes, técnicas de procesamiento de imágenes digitales, investigación aplicada en ingeniería, dinámica de fluidos y flujos turbulentos, navegación y seguridad marítima, estudios de ingeniería marina y offshore, métodos matemáticos y computacionales, métodos y aplicaciones estadísticas, aprendizaje automático y clasificación de datos, aprendizaje automático en bioinformática, análisis de datos con R, autoensamblaje supramolecular en materiales, estudios de investigación de ácidos bioquímicos, polímeros conductores y aplicaciones, química analítica y sensores, materiales y aplicaciones 2D, simulaciones e interacciones de dinámica de fluidos, técnicas avanzadas de análisis numérico, computación paralela y técnicas de optimización, sistemas de energía eólica y undimotriz, producción y caracterización de enzimas, procesos de hidrología y transporte de sedimentos, dinámica de partículas en flujos de fluidos, procesos oceanográficos y atmosféricos, investigación en acústica submarina, estudios marinos y ambientales y erosión del suelo y transporte de sedimentos.",
+        "candidate": "Los temas de investigación más frecuentes en los proyectos que tuvieron su inicio en 2016 fueron:\n\n*   ingenieria y estudios ambientales (Topico), frecuencia: 2\n*   investigacion marina y costera (Topico), frecuencia: 2\n\nAdemás, los siguientes temas aparecieron con una frecuencia de 1:\n\n*   cadenas de markov y metodos de montecarlo (Topico)\n*   diagnostico de ingenieria y confiabilidad (Topico)\n*   analisis de integridad y confiabilidad estructural (Topico)\n*   tecnicas de pruebas no destructivas (Topico)\n*   tecnicas y aplicaciones de procesamiento de imagenes (Topico)\n*   atencion visual y deteccion de prominencia (Topico)\n*   tecnicas de deteccion de imagenes y objetos (Topico)\n*   tecnicas avanzadas de procesamiento de imagenes (Topico)\n*   tecnicas de procesamiento de imagenes digitales (Topico)\n*   investigacion aplicada en ingenieria (Topico)\n*   dinamica de fluidos y flujos turbulentos (Topico)\n*   navegacion y seguridad maritima (Topico)\n*   estudios de ingenieria marina y offshore (Topico)\n*   metodos matematicos y computacionales (Topico)\n*   metodos y aplicaciones estadisticas (Topico)\n*   aprendizaje automatico y clasificacion de datos (Topico)\n*   aprendizaje automatico en bioinformatica (Topico)\n*   analisis de datos con r (Topico)\n*   autoensamblaje supramolecular en materiales (Topico)\n*   estudios de investigacion de acidos bioquimicos (Topico)\n*   polimeros conductores y aplicaciones (Topico)\n*   quimica analitica y sensores (Topico)\n*   materiales y aplicaciones 2d (Topico)\n*   simulaciones e interacciones de dinamica de fluidos (Topico)\n*   tecnicas avanzadas de analisis numerico (Topico)\n*   computacion paralela y tecnicas de optimizacion (Topico)\n*   sistemas de energia eolica y undimotriz (Topico)\n*   produccion y caracterizacion de enzimas (Topico)\n*   procesos de hidrologia y transporte de sedimentos (Topico)\n*   dinamica de particulas en flujos de fluidos (Topico)\n*   procesos oceanograficos y atmosfericos (Topico)\n*   investigacion en acustica submarina (Topico)\n*   estudios marinos y ambientales (Topico)\n*   erosion del suelo y transporte de sedimentos (Topico)",
+        "latency_s": 46.86480961740017,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo los dos tópicos con frecuencia 2 y todos los de frecuencia 1, sin inventar información."
+      },
+      {
+        "id": 16,
+        "category": "Análisis Temporal",
+        "question": "¿En qué años específicos comenzaron a desarrollarse proyectos relacionados con Optimización y programación matemática?",
+        "gt_answer": "Los proyectos relacionados con Optimización y programación matemática comenzaron a desarrollarse en los años 2014 y 2018: en 2014, 'Diseño de redes de transporte público para ciudades de tamaño mediano y grande'; y en 2018, 'Diseño óptimo de redes de ciclovías'.",
+        "candidate": "Los proyectos relacionados con Optimización y programación matemática comenzaron a desarrollarse en los años 2014 y 2018.\n\nEn 2014, el proyecto fue: [Diseño de redes de transporte público para ciudades de tamaño mediano y grande].\n\nEn 2018, el proyecto fue: [Diseño óptimo de redes de ciclovías].",
+        "latency_s": 6.231789384037256,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente en años y proyectos con la referencia y los resultados del grafo, sin omisiones ni información inventada."
+      },
+      {
+        "id": 17,
+        "category": "Análisis Temporal",
+        "question": "¿Se observa un cambio en los subcampos de investigación si se comparan los proyectos iniciados antes de 2014 con los de 2018?",
+        "gt_answer": "Al comparar los subcampos de investigación de los proyectos iniciados antes de 2014 con los de 2018 se observan cambios y continuidades. Antes de 2014: física atómica y molecular, y óptica, ciencias de los alimentos, química analítica, sociología y ciencias políticas, espectroscopía, química de materiales, metales y aleaciones, ciencias de los materiales generales, energía renovable sostenibilidad y medio ambiente, electroquímica, economía y econometría, geografía, planificación y desarrollo, desarrollo, estadística y probabilidad, ecología, evolución, comportamiento y sistemática, ciencias de la gestión e investigación operativa, contaminación, gestión monitoreo política y ley, inteligencia artificial, bioquímica, ciencias políticas y relaciones internacionales, ciencias de las plantas, biología molecular, ingeniería oceánica, mecánica computacional, ingeniería civil y estructural. En 2018: ingeniería biomédica, biotecnología, biomateriales, física matemática, ciencias de las plantas, ecología, tecnología de medios, procesamiento de señales, ingeniería oceánica, inteligencia artificial, visión por computadora y reconocimiento de patrones, ciencias de la gestión e investigación operativa, transporte, ingeniería civil y estructural, ingeniería de control y sistemas, gestión monitoreo política y ley, procesos de la superficie terrestre, ciencias del agua y tecnología. Los subcampos que aparecen como nuevos en 2018 son: ingeniería biomédica, biotecnología, biomateriales, física matemática, ecología, tecnología de medios, procesamiento de señales, visión por computadora y reconocimiento de patrones, transporte, ingeniería de control y sistemas, procesos de la superficie terrestre, ciencias del agua y tecnología. Los subcampos compartidos entre ambos periodos son: ciencias de la gestión e investigación operativa, gestión monitoreo política y ley, inteligencia artificial, ciencias de las plantas, ingeniería oceánica, ingeniería civil y estructural.",
+        "candidate": "Sí, se observa un cambio en los subcampos de investigación.\n\nLos subcampos de investigación en proyectos iniciados antes de 2014 son: [fisica atomica y molecular, y optica, ciencias de los alimentos, quimica analitica, sociologia y ciencias politicas, espectroscopia, quimica de materiales, metales y aleaciones, ciencias de los materiales generales, energia renovable sostenibilidad y medio ambiente, electroquimica, economia y econometria, geografia, planificacion y desarrollo, desarrollo, estadistica y probabilidad, ecologia, evolucion, comportamiento y sistematica, ciencias de la gestion e investigacion operativa, contaminacion, gestion monitoreo politica y ley, inteligencia artificial, bioquimica, ciencias politicas y relaciones internacionales, ciencias de las plantas, biologia molecular, ingenieria oceanica, mecanica computacional, ingenieria civil y estructural].\n\nLos subcampos de investigación en proyectos iniciados en 2018 son: [ingenieria biomedica, biotecnologia, biomateriales, fisica matematica, ciencias de las plantas, ecologia, tecnologia de medios, procesamiento de senales, ingenieria oceanica, inteligencia artificial, vision por computadora y reconocimiento de patrones, ciencias de la gestion e investigacion operativa, transporte, ingenieria civil y estructural, ingenieria de control y sistemas, gestion monitoreo politica y ley, procesos de la superficie terrestre, ciencias del agua y tecnologia].\n\nLos subcampos compartidos son: [ciencias de la gestion e investigacion operativa, gestion monitoreo politica y ley, inteligencia artificial, ciencias de las plantas, ingenieria oceanica, ingenieria civil y estructural].\n\nLos subcampos nuevos en 2018 son: [ingenieria biomedica, biotecnologia, biomateriales, fisica matematica, ecologia, tecnologia de medios, procesamiento de senales, vision por computadora y reconocimiento de patrones, transporte, ingenieria de control y sistemas, procesos de la superficie terrestre, ciencias del agua y tecnologia].\n\nLos subcampos solo presentes antes de 2014 son: [fisica atomica y molecular, y optica, ciencias de los alimentos, quimica analitica, sociologia y ciencias politicas, espectroscopia, quimica de materiales, metales y aleaciones, ciencias de los materiales generales, energia renovable sostenibilidad y medio ambiente, electroquimica, economia y econometria, geografia, planificacion y desarrollo, desarrollo, estadistica y probabilidad, ecologia, evolucion, comportamiento y sistematica, contaminacion, bioquimica, ciencias politicas y relaciones internacionales, biologia molecular, mecanica computacional].",
+        "latency_s": 43.54108642414212,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los datos del grafo y la referencia, incluyendo listas completas de ambos periodos, compartidos y nuevos, e incluso agrega los solo presentes antes de 2014 que también están en el grafo. No inventa información."
+      },
+      {
+        "id": 18,
+        "category": "Análisis Temporal",
+        "question": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto espectroscopia de atomos alcalinos en medios porosos?",
+        "gt_answer": "En el mismo año en que inició el proyecto espectroscopía de átomos alcalinos en medios porosos, también se estaban investigando los tópicos: análisis económico y espacial regional, análisis sensorial y métodos estadísticos, análisis y aplicaciones electroquímicas, análisis y política económica, bioinformática y redes genómicas, comportamiento del consumidor en alimentación y salud, comportamientos de fragilización por hidrógeno y corrosión en metales, compuestos de azufre en biología, conservación y gestión ambiental, crecimiento económico y políticas fiscales, crecimiento económico y productividad, desarrollo de métodos de química analítica, desarrollo regional e innovación, difracción de rayos x en cristalografía, dinámica de fluidos y flujos turbulentos, diversas innovaciones en investigación interdisciplinaria, electrocatalizadores para la conversión de energía, estudios ambientales de pesticidas y herbicidas, estudios de ingeniería marina y offshore, estudios históricos económicos y sociales, fermentación y análisis sensorial, genética bioinformática e investigación biomédica, geografía histórica y cartografía, gobernanza local y desarrollo, ingeniería y estudios ambientales, investigación aplicada en ingeniería, investigación en biología molecular vegetal, investigación en ingeniería y ciencia de materiales, investigación marina y costera, materiales y almacenamiento de hidrógeno, mecanismos de síntesis de ARN y proteínas, métodos y aplicaciones estadísticas, navegación y seguridad marítima, política fiscal y crecimiento económico, política y sociedad en américa latina, políticas fiscales y economía política, propiedades y aplicaciones de los materiales, química analítica y cromatografía, química de los alimentos y análisis de grasas, regulación del ARN y enfermedad, sistemas complejos y análisis de series temporales, sistemas y prácticas agrícolas, técnicas de clasificación de datos desequilibradas y teoría e instituciones económicas.",
+        "candidate": "En el mismo año en que inició el proyecto espectroscopia de atomos alcalinos en medios porosos, se estaban investigando los siguientes tópicos:\n\n1. analisis economico y espacial regional\n2. analisis sensorial y metodos estadisticos\n3. analisis y aplicaciones electroquimicas\n4. analisis y politica economica\n5. bioinformatica y redes genomicas\n6. comportamiento del consumidor en alimentacion y salud\n7. comportamientos de fragilizacion por hidrogeno y corrosion en metales\n8. compuestos de azufre en biologia\n9. conservacion y gestion ambiental\n10. crecimiento economico y politicas fiscales\n11. crecimiento economico y productividad\n12. desarrollo de metodos de quimica analitica\n13. desarrollo regional e innovacion\n14. difraccion de rayos x en cristalografia\n15. dinamica de fluidos y flujos turbulentos\n16. diversas innovaciones en investigacion interdisciplinaria\n17. electrocatalizadores para la conversion de energia\n18. estudios ambientales de pesticidas y herbicidas\n19. estudios de ingenieria marina y offshore\n20. estudios historicos economicos y sociales\n21. fermentacion y analisis sensorial\n22. genetica bioinformatica e investigacion biomedica\n23. geografia historica y cartografia\n24. gobernanza local y desarrollo\n25. ingenieria y estudios ambientales\n26. investigacion aplicada en ingenieria\n27. investigacion en biologia molecular vegetal\n28. investigacion en ingenieria y ciencia de materiales\n29. investigacion marina y costera\n30. materiales y almacenamiento de hidrogeno\n31. mecanismos de sintesis de arn y proteinas\n32. metodos y aplicaciones estadisticas\n33. navegacion y seguridad maritima\n34. politica fiscal y crecimiento economico\n35. politica y sociedad en america latina\n36. politicas fiscales y economia politica\n37. propiedades y aplicaciones de los materiales\n38. quimica analitica y cromatografia\n39. quimica de los alimentos y analisis de grasas\n40. regulacion del arn y enfermedad\n41. sistemas complejos y analisis de series temporales\n42. sistemas y practicas agricolas\n43. tecnicas de clasificacion de datos desequilibradas\n44. teoria e instituciones economicas",
+        "latency_s": 41.18589882925153,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista exactamente los 44 tópicos de los resultados del grafo, coincidiendo completamente con la referencia sin inventar información."
+      },
+      {
+        "id": 19,
+        "category": "Análisis Temporal",
+        "question": "¿Cuántos proyectos sobre Producción y caracterización de enzimas se iniciaron cada año según los datos disponibles?",
+        "gt_answer": "Según los datos disponibles, sobre Producción y caracterización de enzimas se inició un (1) proyecto en 2016 y un (1) proyecto en 2018.",
+        "candidate": "En el año 2016 se inició 1 proyecto sobre Producción y caracterización de enzimas. En el año 2018 se inició 1 proyecto sobre Producción y caracterización de enzimas.",
+        "latency_s": 3.5075981989502907,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo: 1 proyecto en 2016 y 1 en 2018, sin inventar información."
+      },
+      {
+        "id": 20,
+        "category": "Análisis Temporal",
+        "question": "Muestra la progresión cronológica de los proyectos en los que ha participado Ernesto Dufrechou.",
+        "gt_answer": "La progresión cronológica de los proyectos de Ernesto Dufrechou es la siguiente: en 2012 participó en 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata'; en 2016 participó en 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata'; y en 2018 participó en 'Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama'.",
+        "candidate": "Ernesto Dufrechou ha participado en los siguientes proyectos:\n\n*   anio: 2012, proyectos: [Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata]\n*   anio: 2016, proyectos: [Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata]\n*   anio: 2018, proyectos: [Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama]",
+        "latency_s": 9.419657673686743,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo los tres proyectos en orden cronológico correcto sin inventar información."
+      },
+      {
+        "id": 21,
+        "category": "Análisis Temporal",
+        "question": "¿Qué subcampo de investigación experimentó un mayor ingreso de proyectos nuevos en el año 2016?",
+        "gt_answer": "En 2016, el subcampo que experimentó un mayor ingreso de proyectos nuevos fue ingeniería oceánica, con 3 proyectos nuevos.",
+        "candidate": "El subcampo de investigación \"ingenieria oceanica\" experimentó un ingreso de \"3\" nuevos proyectos en el año 2016.",
+        "latency_s": 2.5390010066330433,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo: ingeniería oceánica con 3 proyectos nuevos en 2016."
+      },
+      {
+        "id": 22,
+        "category": "Análisis Temporal",
+        "question": "Compara los tópicos de los proyectos de 2014 con los de 2018. ¿Qué diferencias principales o nuevos enfoques se notan?",
+        "gt_answer": "Al comparar los tópicos de los proyectos de 2014 con los de 2018 se observan continuidades y cambios. Los tópicos compartidos entre ambos años (continuidades) son: métodos numéricos en problemas inversos, planificación y optimización del transporte, optimización y programación matemática, sistemas complejos y toma de decisiones, aplicaciones de simulación y modelado, análisis de sistemas de transporte urbano. Los tópicos presentes solo en 2014 son: respuesta inmune e inflamación, aneurismas intracraneales tratamiento y complicaciones, estudios de infecciones por virus animales, nutrición y fisiología animal, nutrición genética y enfermedades, sanidad animal e inmunología, metales pesados en plantas, espectroscopía y análisis quimiométricos, desarrollo de métodos de química analítica, políticas ambientales y emisiones, métodos numéricos avanzados en matemática computacional, modelado de elasticidad y materiales, análisis sensorial y métodos estadísticos, comportamiento del consumidor en alimentación y salud. Los tópicos que aparecen como nuevos en 2018 son: producción de biocombustibles y bioconversión, producción y caracterización de enzimas, procesos bioquímicos y bioquímicos, síntesis y propiedades de polímeros biodegradables, estudios de mecánica y biomecánica, imágenes y análisis médicos, agricultura inteligente e ia, teledetección en la agricultura, clasificación de imágenes de teledetección, análisis y pronóstico de series temporales, procesamiento de imágenes satelitales y fotogrametría, redes neuronales y aplicaciones, visión e imágenes avanzadas, técnicas y aplicaciones de procesamiento de imágenes, métodos de eliminación de ruido de imágenes y señales, aplicaciones avanzadas de redes neuronales, gestión del agua y la tierra, estudios acuáticos y ambientales, geografía y estudios ambientales, estudios de hidrología y manejo de cuencas, estudios de calidad y recursos del agua.",
+        "candidate": "Los tópicos de los proyectos de 2014 fueron: respuesta inmune e inflamacion, aneurismas intracraneales tratamiento y complicaciones, estudios de infecciones por virus animales, nutricion y fisiologia animal, nutricion genetica y enfermedades, sanidad animal e inmunologia, metales pesados en plantas, espectroscopia y analisis quimometricos, desarrollo de metodos de quimica analitica, politicas ambientales y emisiones, metodos numericos en problemas inversos, metodos numericos avanzados en matematica computacional, modelado de elasticidad y materiales, analisis sensorial y metodos estadisticos, comportamiento del consumidor en alimentacion y salud, planificacion y optimizacion del transporte, optimizacion y programacion matematica, sistemas complejos y toma de decisiones, aplicaciones de simulacion y modelado, analisis de sistemas de transporte urbano.\n\nLos tópicos de los proyectos de 2018 fueron: produccion de biocombustibles y bioconversion, produccion y caracterizacion de enzimas, procesos bioquimicos y bioquimicos, sintesis y propiedades de polimeros biodegradables, estudios de mecanica y biomecanica, imagenes y analisis medicos, metodos numericos en problemas inversos, agricultura inteligente e ia, teledeteccion en la agricultura, clasificacion de imagenes de teledeteccion, analisis y pronostico de series temporales, procesamiento de imagenes satelitales y fotogrametria, redes neuronales y aplicaciones, vision e imagenes avanzadas, tecnicas y aplicaciones de procesamiento de imagenes, metodos de eliminacion de ruido de imagenes y senales, aplicaciones avanzadas de redes neuronales, sistemas complejos y toma de decisiones, planificacion y optimizacion del transporte, analisis de sistemas de transporte urbano, optimizacion y programacion matematica, aplicaciones de simulacion y modelado, gestion del agua y la tierra, estudios acuaticos y ambientales, geografia y estudios ambientales, estudios de hidrologia y manejo de cuencas, estudios de calidad y recursos del agua.\n\nAlgunos tópicos se repiten entre ambos años: metodos numericos en problemas inversos, sistemas complejos y toma de decisiones, planificacion y optimizacion del transporte, optimizacion y programacion matematica, aplicaciones de simulacion y modelado, analisis de sistemas de transporte urbano.",
+        "latency_s": 36.62294040620327,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 4,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "Lista correctamente todos los tópicos de ambos años e identifica bien los compartidos. No explicita las diferencias/nuevos enfoques (tópicos exclusivos de cada año) que la pregunta solicita, limitándose a listar coincidencias, lo que reduce la completitud del análisis comparativo."
+      },
+      {
+        "id": 23,
+        "category": "Análisis Temporal",
+        "question": "¿Qué investigadores comenzaron proyectos nuevos dentro del subcampo Ciencias de la Gestión e Investigación Operativa durante el año 2014?",
+        "gt_answer": "Los investigadores que comenzaron proyectos nuevos en el subcampo Ciencias de la Gestión e Investigación Operativa durante 2014 son María Elizabeth Urquhart Pérez y Antonio Daniel Mauttone Vidales, en el proyecto 'Diseño de redes de transporte público para ciudades de tamaño mediano y grande'.",
+        "candidate": "Durante el año 2014, los investigadores que comenzaron proyectos nuevos dentro del subcampo Ciencias de la Gestión e Investigación Operativa fueron:\n\n*   María Elizabeth Urquhart Pérez (Investigador), proyecto: Diseño de redes de transporte público para ciudades de tamaño mediano y grande\n*   Antonio Daniel Mauttone Vidales (Investigador), proyecto: Diseño de redes de transporte público para ciudades de tamaño mediano y grande",
+        "latency_s": 7.002919729799032,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo ambos investigadores y el proyecto correcto sin inventar información."
+      },
+      {
+        "id": 24,
+        "category": "Análisis Temporal",
+        "question": "¿Cuál es el año o años que presentan la mayor diversidad de tópicos investigados simultáneamente?",
+        "gt_answer": "El año con mayor diversidad de tópicos investigados simultáneamente es 2012, con 47 tópicos distintos. En 2012 se investigaban: interacciones y aplicaciones láser-materia, espectroscopía y estudios de química cuántica, física atómica y molecular, análisis sensorial y métodos estadísticos, desarrollo de métodos de química analítica, comportamiento del consumidor en alimentación y salud, química de los alimentos y análisis de grasas, fermentación y análisis sensorial, química analítica y cromatografía, difracción de rayos x en cristalografía, materiales y almacenamiento de hidrógeno, comportamientos de fragilización por hidrógeno y corrosión en metales, investigación en ingeniería y ciencia de materiales, propiedades y aplicaciones de los materiales, electrocatalizadores para la conversión de energía, análisis y aplicaciones electroquímicas, análisis económico y espacial regional, gobernanza local y desarrollo, estudios históricos económicos y sociales, geografía histórica y cartografía, desarrollo regional e innovación, crecimiento económico y productividad, teoría e instituciones económicas, métodos y aplicaciones estadísticas, sistemas y prácticas agrícolas, diversas innovaciones en investigación interdisciplinaria, estudios ambientales de pesticidas y herbicidas, conservación y gestión ambiental, técnicas de clasificación de datos desequilibradas, compuestos de azufre en biología, análisis y política económica, sistemas complejos y análisis de series temporales, crecimiento económico y políticas fiscales, políticas fiscales y economía política, política fiscal y crecimiento económico, política y sociedad en américa latina, investigación en biología molecular vegetal, regulación del ARN y enfermedad, genética bioinformática e investigación biomédica, mecanismos de síntesis de ARN y proteínas, bioinformática y redes genómicas, estudios de ingeniería marina y offshore, navegación y seguridad marítima, investigación marina y costera, dinámica de fluidos y flujos turbulentos, ingeniería y estudios ambientales, investigación aplicada en ingeniería.",
+        "candidate": "El año que presenta la mayor diversidad de tópicos investigados simultáneamente es 2012, con una diversidad de tópicos de 47. Los tópicos investigados en ese año son: interacciones y aplicaciones laser-materia (Topico), espectroscopia y estudios de quimica cuantica (Topico), fisica atomica y molecular (Topico), analisis sensorial y metodos estadisticos (Topico), desarrollo de metodos de quimica analitica (Topico), comportamiento del consumidor en alimentacion y salud (Topico), quimica de los alimentos y analisis de grasas (Topico), fermentacion y analisis sensorial (Topico), quimica analitica y cromatografia (Topico), difraccion de rayos x en cristalografia (Topico), materiales y almacenamiento de hidrogeno (Topico), comportamientos de fragilizacion por hidrogeno y corrosion en metales (Topico), investigacion en ingenieria y ciencia de materiales (Topico), propiedades y aplicaciones de los materiales (Topico), electrocatalizadores para la conversion de energia (Topico), analisis y aplicaciones electroquimicas (Topico), analisis economico y espacial regional (Topico), gobernanza local y desarrollo (Topico), estudios historicos economicos y sociales (Topico), geografia historica y cartografia (Topico), desarrollo regional e innovacion (Topico), crecimiento economico y productividad (Topico), teoria e instituciones economicas (Topico), metodos y aplicaciones estadisticas (Topico), sistemas y practicas agricolas (Topico), diversas innovaciones en investigacion interdisciplinaria (Topico), estudios ambientales de pesticidas y herbicidas (Topico), conservacion y gestion ambiental (Topico), tecnicas de clasificacion de datos desequilibradas (Topico), compuestos de azufre en biologia (Topico), analisis y politica economica (Topico), sistemas complejos y analisis de series temporales (Topico), crecimiento economico y politicas fiscales (Topico), politicas fiscales y economia politica (Topico), politica fiscal y crecimiento economico (Topico), politica y sociedad en america latina (Topico), investigacion en biologia molecular vegetal (Topico), regulacion del arn y enfermedad (Topico), genetica bioinformatica e investigacion biomedica (Topico), mecanismos de sintesis de arn y proteinas (Topico), bioinformatica y redes genomicas (Topico), estudios de ingenieria marina y offshore (Topico), navegacion y seguridad maritima (Topico), investigacion marina y costera (Topico), dinamica de fluidos y flujos turbulentos (Topico), ingenieria y estudios ambientales (Topico), investigacion aplicada en ingenieria (Topico).",
+        "latency_s": 44.02383841574192,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata identifica correctamente 2012 con 47 tópicos y lista todos los tópicos coincidiendo exactamente con la referencia y los resultados del grafo."
+      },
+      {
+        "id": 25,
+        "category": "Análisis Temporal",
+        "question": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
+        "gt_answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+        "candidate": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 26,
+        "category": "Análisis Temporal",
+        "question": "¿Cómo ha cambiado el enfoque de investigación o los tópicos asociados a Pablo Maximiliano Ezzatti Infante a lo largo del tiempo?",
+        "gt_answer": "El enfoque de investigación de Pablo Maximiliano Ezzatti Infante cambió a lo largo del tiempo: en 2012 sus tópicos eran: estudios de ingeniería marina y offshore, navegación y seguridad marítima, investigación marina y costera, dinámica de fluidos y flujos turbulentos, ingeniería y estudios ambientales, investigación aplicada en ingeniería; y en 2016 sus tópicos eran: investigación aplicada en ingeniería, dinámica de fluidos y flujos turbulentos, navegación y seguridad marítima, ingeniería y estudios ambientales, estudios de ingeniería marina y offshore, investigación marina y costera, simulaciones e interacciones de dinámica de fluidos, técnicas avanzadas de análisis numérico, computación paralela y técnicas de optimización, sistemas de energía eólica y undimotriz.",
+        "candidate": "El enfoque de investigación o los tópicos asociados a Pablo Maximiliano Ezzatti Infante han cambiado a lo largo del tiempo.\n\nEn el año 2012, los tópicos fueron: [estudios de ingenieria marina y offshore (Topico), navegacion y seguridad maritima (Topico), investigacion marina y costera (Topico), dinamica de fluidos y flujos turbulentos (Topico), ingenieria y estudios ambientales (Topico), investigacion aplicada en ingenieria (Topico)].\n\nEn el año 2016, los tópicos fueron: [investigacion aplicada en ingenieria (Topico), dinamica de fluidos y flujos turbulentos (Topico), navegacion y seguridad maritima (Topico), ingenieria y estudios ambientales (Topico), estudios de ingenieria marina y offshore (Topico), investigacion marina y costera (Topico), simulaciones e interacciones de dinamica de fluidos (Topico), tecnicas avanzadas de analisis numerico (Topico), computacion paralela y tecnicas de optimizacion (Topico), sistemas de energia eolica y undimotriz (Topico)].",
+        "latency_s": 18.812834929674864,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata reproduce exactamente los tópicos de 2012 y 2016 según los resultados del grafo, sin omisiones ni invenciones."
+      },
+      {
+        "id": 27,
+        "category": "Análisis Temporal",
+        "question": "¿Cómo evolucionó por año la cantidad de proyectos del área tecnologica?",
+        "gt_answer": "La cantidad de proyectos del área tecnológica evolucionó de la siguiente manera: 4 proyectos en 2012, 3 proyectos en 2014, 7 proyectos en 2016 y 6 proyectos en 2018.",
+        "candidate": "La cantidad de proyectos del área tecnológica evolucionó por año de la siguiente manera:\n\n*   anio: 2012, cantidad_proyectos: 4\n*   anio: 2014, cantidad_proyectos: 3\n*   anio: 2016, cantidad_proyectos: 7\n*   anio: 2018, cantidad_proyectos: 6",
+        "latency_s": 6.745623875409365,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los datos del grafo y la referencia para los cuatro años."
+      },
+      {
+        "id": 28,
+        "category": "Consultas Complejas",
+        "question": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el subcampo Mecánica Computacional?",
+        "gt_answer": "Los investigadores que trabajan en proyectos del subcampo Mecánica Computacional son Alfredo Canelas Botta, Jorge Martín Pérez Zerpa, Pablo Castrillo Green, Fiorella Mondino Bittencourt, Alejandro Gutierrez, Pablo Maximiliano Ezzatti Infante, Rodrigo Bayá Crapuchett, Gabriel Cazes, Claudio Porrini, Ignacio Franco, Mónica Fossati, Ernesto Dufrechou, Pablo Esteban Santoro Rodríguez, Michelle Jackson, Martín Pedemonte, Sebastián Solari y Ismael Piedra-Cueva.",
+        "candidate": "Los investigadores que trabajan en proyectos que caen bajo el subcampo Mecánica Computacional son:\n\n*   Alfredo Canelas Botta (Investigador), proyectos: [Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas]\n*   Jorge Martín Pérez Zerpa (Investigador), proyectos: [Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas]\n*   Pablo Castrillo Green (Investigador), proyectos: [Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas]\n*   Fiorella Mondino Bittencourt (Investigador), proyectos: [Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas]",
+        "latency_s": 18.492411237210035,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 2,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La candidata es correcta y fiel pero solo lista 4 de los 17 investigadores esperados, omitiendo la mayoría."
+      },
+      {
+        "id": 29,
+        "category": "Consultas Complejas",
+        "question": "Lista únicamente a los responsables de proyectos que abarquen el tópico Optimización y programación matemática.",
+        "gt_answer": "El único responsable de proyectos que abarcan el tópico Optimización y programación matemática es Antonio Daniel Mauttone Vidales, en los proyectos Diseño de redes de transporte público para ciudades de tamaño mediano y grande, Diseño óptimo de redes de ciclovías.",
+        "candidate": "Antonio Daniel Mauttone Vidales (Investigador), proyectos: [Diseño de redes de transporte público para ciudades de tamaño mediano y grande, Diseño óptimo de redes de ciclovías]",
+        "latency_s": 3.293017242103815,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo el responsable y ambos proyectos, sin inventar información."
+      },
+      {
+        "id": 30,
+        "category": "Consultas Complejas",
+        "question": "¿Existen investigadores que participen en proyectos de subcampos completamente distintos entre sí? ¿Quiénes son?",
+        "gt_answer": "Sí, existen investigadores que participan en proyectos de subcampos completamente distintos entre sí: Rafael Grompone Larguero (proyectos 'Agrupamiento perceptual de puntos en 2D y 3D' y 'Análisis y Visualización de Virus y su Evolución'); Ernesto Dufrechou (proyectos 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata' y 'Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama'); y Ernesto Dufrechou (proyectos 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata' y 'Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama').",
+        "candidate": "Sí, existen investigadores que participan en proyectos de subcampos completamente distintos entre sí. Son:\n\n*   Rafael Grompone Larguero (Investigador), proyecto_A: Agrupamiento perceptual de puntos en 2D y 3D, proyecto_B: Análisis y Visualización de Virus y su Evolución\n*   Ernesto Dufrechou (Investigador), proyecto_A: Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata, proyecto_B: Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama\n*   Ernesto Dufrechou (Investigador), proyecto_A: Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata, proyecto_B: Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama",
+        "latency_s": 14.564724624156952,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia e incluye los tres resultados del grafo sin inventar información."
+      },
+      {
+        "id": 31,
+        "category": "Consultas Complejas",
+        "question": "¿Qué proyectos combinan simultáneamente tópicos de Investigación marina y costera, y Navegación y seguridad marítima?",
+        "gt_answer": "Los proyectos que combinan simultáneamente los tópicos Investigación marina y costera y Navegación y seguridad marítima son: 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata' y 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata'.",
+        "candidate": "Ninguno de los proyectos listados combina simultáneamente tópicos de Investigación marina y costera, y Navegación y seguridad marítima. Los proyectos son:\n\n1. proyecto: Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata\n2. proyecto: Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata",
+        "latency_s": 6.081679053604603,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 1,
+          "completeness": 2,
+          "faithfulness": 2
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata contradice los resultados del grafo al afirmar que ninguno de los proyectos combina ambos tópicos, cuando de hecho ambos proyectos listados son los que sí los combinan. Aunque menciona los proyectos correctos, la conclusión es errónea."
+      },
+      {
+        "id": 32,
+        "category": "Consultas Complejas",
+        "question": "Identifica a todos los investigadores asociados directa o indirectamente al tópico Cadenas de Markov y métodos de Montecarlo.",
+        "gt_answer": "Los investigadores asociados al tópico Cadenas de Markov y métodos de Montecarlo son Rodolfo Mussini Pérez y Héctor Cancela Bosi. Todos participan en el proyecto 'Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos', que se encuentra asociado a dicho tópico.",
+        "candidate": "Los investigadores asociados directa o indirectamente al tópico Cadenas de Markov y métodos de Montecarlo son:\n\n*   Rodolfo Mussini Pérez (Investigador), proyectos: [Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos]\n*   Héctor Cancela Bosi (Investigador), proyectos: [Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos]",
+        "latency_s": 8.087871447205544,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata identifica correctamente a ambos investigadores y sus proyectos, coincidiendo plenamente con la referencia y los resultados del grafo sin inventar información."
+      },
+      {
+        "id": 33,
+        "category": "Consultas Complejas",
+        "question": "¿Qué áreas o tópicos investigan en conjunto Gastón Ares y Ana Giménez?",
+        "gt_answer": "Gastón Ares y Ana Giménez investigan en conjunto dentro del área tecnologica, y comparten los tópicos: análisis sensorial y métodos estadísticos, comportamiento del consumidor en alimentación y salud, desarrollo de métodos de química analítica, química de los alimentos y análisis de grasas, fermentación y análisis sensorial, química analítica y cromatografía.",
+        "candidate": "Gastón Ares y Ana Giménez investigan en conjunto en el área tecnológica. Sus tópicos en común son: análisis sensorial y metodos estadisticos, comportamiento del consumidor en alimentacion y salud, desarrollo de metodos de quimica analitica, quimica de los alimentos y analisis de grasas, fermentacion y analisis sensorial, quimica analitica y cromatografia.",
+        "latency_s": 6.234087534248829,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia en el área y todos los tópicos, sin inventar información."
+      },
+      {
+        "id": 34,
+        "category": "Consultas Complejas",
+        "question": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos subcampos diferentes a la vez?",
+        "gt_answer": "Sí, hay diecinueve proyectos que abarcan más de dos subcampos diferentes: 'Uso de la colmena como monitor cuantitativo de residuos de pesticidas aplicados en soja y su influencia en la sustentabilidad del agroecosistema.' abarca 6 subcampos: ciencias de la gestión e investigación operativa, contaminación, estadística y probabilidad, gestión monitoreo política y ley, inteligencia artificial, ecología, evolución, comportamiento y sistemática; 'Biosensores para la detección descentralizada de exosomas y virus del Dengue' abarca 5 subcampos: bioingeniería, biomateriales, bioquímica, polímeros y plásticos, química de materiales; 'Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo' abarca 5 subcampos: ciencias de las plantas, ecología, ingeniería oceánica, procesamiento de señales, tecnología de medios; 'Almacenamiento electroquímico de hidrógeno: efecto del molibdeno en las aleaciones metálicas formadoras de hidruros tipo AB5.' abarca 5 subcampos: ciencias de los materiales generales, electroquímica, energía renovable sostenibilidad y medio ambiente, metales y aleaciones, química de materiales; 'Análisis y Visualización de Virus y su Evolución' abarca 4 subcampos: biología molecular, estadística y probabilidad, inteligencia artificial, modelado y simulación; 'Diseño óptimo de redes de ciclovías' abarca 4 subcampos: ciencias de la gestión e investigación operativa, ingeniería civil y estructural, ingeniería de control y sistemas, transporte; 'Diseño de redes de transporte público para ciudades de tamaño mediano y grande' abarca 4 subcampos: ciencias de la gestión e investigación operativa, ingeniería civil y estructural, ingeniería de control y sistemas, transporte; 'Caracterización de astringencia de vino Tannat' abarca 4 subcampos: ciencias de los alimentos, espectroscopía, química analítica, sociología y ciencias políticas; 'Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.' abarca 4 subcampos: ciencias del suelo, ecología, ingeniería oceánica, oceanografía; 'Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas' abarca 3 subcampos: animales pequeños, ciencias animales y zoología, genética; 'Producción de ácido poliláctico (PLA), mediante la polimerización con lipasas obtenidas a partir de microorganismos antárticos.' abarca 3 subcampos: biomateriales, biotecnología, ingeniería biomédica; 'Validación de índices para la detección remota de floraciones algales y evaluación del estado trófico de embalses de uso productivo en la región noreste del Uruguay.' abarca 3 subcampos: ciencias del agua y tecnología, gestión monitoreo política y ley, procesos de la superficie terrestre; 'PIB y desarrollo regional en Uruguay: 1900-2010' abarca 3 subcampos: economía y econometría, desarrollo, geografía, planificación y desarrollo; 'Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos' abarca 3 subcampos: estadística y probabilidad, ingeniería mecánica, mecánica de materiales; 'Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas' abarca 3 subcampos: física matemática, ingeniería biomédica, mecánica computacional; 'Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas' abarca 3 subcampos: hardware y arquitectura, ingeniería oceánica, mecánica computacional; 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata' abarca 3 subcampos: ingeniería civil y estructural, ingeniería oceánica, mecánica computacional; 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata' abarca 3 subcampos: ingeniería civil y estructural, ingeniería oceánica, mecánica computacional; y 'Aprendizaje Profundo No Supevisado de Distribuciones a Priori para Problemas Inversos en Imágenes' abarca 3 subcampos: inteligencia artificial, tecnología de medios, visión por computadora y reconocimiento de patrones.",
+        "candidate": "Sí, hay proyectos registrados que abarcan más de dos subcampos diferentes.\n\nEl proyecto \"Uso de la colmena como monitor cuantitativo de residuos de pesticidas aplicados en soja y su influencia en la sustentabilidad del agroecosistema\" abarca 6 subcampos: [ciencias de la gestion e investigacion operativa (Subcampo), contaminacion (Subcampo), estadistica y probabilidad (Subcampo), gestion monitoreo politica y ley (Subcampo), inteligencia artificial (Subcampo), ecologia, evolucion, comportamiento y sistematica (Subcampo)].\n\nEl proyecto \"Biosensores para la detección descentralizada de exosomas y virus del Dengue\" abarca 5 subcampos: [bioingenieria (Subcampo), biomateriales (Subcampo), bioquimica (Subcampo), polimeros y plasticos (Subcampo), quimica de materiales (Subcampo)].\n\nEl proyecto \"Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo\" abarca 5 subcampos: [ciencias de las plantas (Subcampo), ecologia (Subcampo), ingenieria oceanica (Subcampo), procesamiento de senales (Subcampo), tecnologia de medios (Subcampo)].\n\nEl proyecto \"Almacenamiento electroquímico de hidrógeno: efecto del molibdeno en las aleaciones metálicas formadoras de hidruros tipo AB5\" abarca 5 subcampos: [ciencias de los materiales generales (Subcampo), electroquimica (Subcampo), energia renovable sostenibilidad y medio ambiente (Subcampo), metales y aleaciones (Subcampo), quimica de materiales (Subcampo)].",
+        "latency_s": 27.574992176145315,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 3,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "Los hechos presentados son correctos y coinciden con el grafo, sin inventar información. Sin embargo, la respuesta candidata solo menciona 4 de los 19 proyectos que cumplen la condición, omitiendo 15 resultados válidos."
+      },
+      {
+        "id": 35,
+        "category": "Consultas Complejas",
+        "question": "¿Qué otros investigadores comparten los mismos subcampos de investigación que Juan Pablo Tosar?",
+        "gt_answer": "Los investigadores que comparten subcampos de investigación con Juan Pablo Tosar son: Beatriz Elida Castro (subcampos: química de materiales); Erika Teliz (subcampos: química de materiales); Fabricio Ruiz (subcampos: química de materiales); Jorge Thomas (subcampos: química de materiales); Ricardo Faccio (subcampos: química de materiales); Veronica Diaz Moreno (subcampos: química de materiales); Beatriz Alvarez (subcampos: bioquímica); Horacio Botti (subcampos: bioquímica); Leonor Thomson (subcampos: bioquímica); Lucía Turell (subcampos: bioquímica); Luis Núñez (subcampos: bioquímica); Alfonso Cayota Guzikovszky (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Eduardo Daniel Méndez Morales (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Julio Pablo Berbejillo Gerschenovich (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Justo Andrés Laíz Pichardo (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); María Belén Fernández Aristov (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); María del Pilar Moreno Karlen (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Pablo Martín Fagúndez Ferrón (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Álvaro Fajardo Rossi (subcampos: biomateriales, bioquímica, polímeros y plásticos, bioingeniería, química de materiales); Laura Camesasca (subcampos: biomateriales); Mairan Guigou (subcampos: biomateriales); Manuel Agustín Minteguiaga (subcampos: biomateriales); y María Eugenia Vila (subcampos: biomateriales).",
+        "candidate": "Los investigadores que comparten los mismos subcampos de investigación que Juan Pablo Tosar son: Beatriz Elida Castro, Erika Teliz, Fabricio Ruiz, Jorge Thomas, Ricardo Faccio, Veronica Diaz Moreno, Alfonso Cayota Guzikovszky, Eduardo Daniel Méndez Morales, Julio Pablo Berbejillo Gerschenovich, Justo Andrés Laíz Pichardo, María Belén Fernández Aristov, María del Pilar Moreno Karlen, Pablo Martín Fagúndez Ferrón, Álvaro Fajardo Rossi.",
+        "latency_s": 8.142544128000736,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 3,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "Los investigadores mencionados son correctos y no inventa información, pero omite a varios: Beatriz Alvarez, Horacio Botti, Leonor Thomson, Lucía Turell, Luis Núñez (bioquímica), y Laura Camesasca, Mairan Guigou, Manuel Agustín Minteguiaga, María Eugenia Vila (biomateriales). Tampoco detalla los subcampos compartidos."
+      },
+      {
+        "id": 36,
+        "category": "Consultas Complejas",
+        "question": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata.",
+        "gt_answer": "Los proyectos que comparten al menos un investigador con 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata' son: 'Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata' (investigadores en común: Pablo Maximiliano Ezzatti Infante, Mónica Fossati, Ernesto Dufrechou, Pablo Esteban Santoro Rodríguez, Martín Pedemonte); 'Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas' (investigadores en común: Pablo Maximiliano Ezzatti Infante); 'Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama' (investigadores en común: Ernesto Dufrechou); y 'Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.' (investigadores en común: Pablo Esteban Santoro Rodríguez).",
+        "candidate": "El proyecto de Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata comparte investigadores en común con los siguientes proyectos:\n\n*   Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata, investigadores_en_comun: [Pablo Maximiliano Ezzatti Infante, Mónica Fossati, Ernesto Dufrechou, Pablo Esteban Santoro Rodríguez, Martín Pedemonte]\n*   Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas, investigadores_en_comun: [Pablo Maximiliano Ezzatti Infante]\n*   Definición de estrategias para la aplicación de métodos de identificación de material al diagnóstico no invasivo de Cáncer de mama, investigadores_en_comun: [Ernesto Dufrechou]\n*   Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo., investigadores_en_comun: [Pablo Esteban Santoro Rodríguez]",
+        "latency_s": 16.926748737692833,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia en todos los proyectos e investigadores en común, sin omisiones ni información inventada."
+      },
+      {
+        "id": 37,
+        "category": "Consultas Complejas",
+        "question": "¿Cuál es el subcampo transversal más común entre todos los proyectos integrados en el sistema?",
+        "gt_answer": "El subcampo transversal más común entre todos los proyectos del sistema es ingeniería oceánica, presente en 5 proyectos.",
+        "candidate": "El subcampo transversal más común entre todos los proyectos integrados en el sistema es ingeniería oceanica, con una cantidad de proyectos de 5.",
+        "latency_s": 2.2709765508770943,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los datos del grafo: ingeniería oceánica con 5 proyectos."
+      },
+      {
+        "id": 38,
+        "category": "Fuera de Alcance",
+        "question": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 39,
+        "category": "Fuera de Alcance",
+        "question": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías en Diseño óptimo de redes de ciclovías?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 40,
+        "category": "Fuera de Alcance",
+        "question": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Gastón Ares?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 41,
+        "category": "Fuera de Alcance",
+        "question": "¿Cuál es la dirección de correo electrónico o teléfono de Ernesto Dufrechou para contactarlo?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 42,
+        "category": "Fuera de Alcance",
+        "question": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Estadística y Probabilidad?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 43,
+        "category": "Fuera de Alcance",
+        "question": "¿En qué universidad internacional realizó su doctorado Tormod Naes?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 44,
+        "category": "Fuera de Alcance",
+        "question": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 45,
+        "category": "Fuera de Alcance",
+        "question": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 46,
+        "category": "Fuera de Alcance",
+        "question": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Héctor Cancela Bosi?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 47,
+        "category": "Fuera de Alcance",
+        "question": "¿Qué institución internacional financió la compra de los biosensores mencionados en el proyecto de detección del virus del Dengue?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 48,
+        "category": "Fuera de Alcance",
+        "question": "¿Cuántas horas semanales dedica cada investigador en promedio a su respectivo proyecto?",
+        "gt_answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "candidate": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 49,
+        "category": "Lenguaje Natural Informal",
+        "question": "proyectos año 2016",
+        "gt_answer": "Los proyectos iniciados en el año 2016 son: 'Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas', 'Agrupamiento perceptual de puntos en 2D y 3D', 'Análisis y Visualización de Virus y su Evolución', 'Biosensores para la detección descentralizada de exosomas y virus del Dengue', 'Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.', 'Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos', 'Glicosidasas inmovilizadas sobre nanopartículas: Una herramienta biotecnológica aplicable al estudio de procesos biológicos mediados por glicanos.' y 'Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata'.",
+        "candidate": "Los proyectos son:\n\n1. proyecto: Aceleración del modelo WRF en arquitecturas multi- y many-cores:aplicación al desarrollo de un modelo operativo de desconexión de parques eólicos por ráfagas\n2. proyecto: Agrupamiento perceptual de puntos en 2D y 3D\n3. proyecto: Análisis y Visualización de Virus y su Evolución\n4. proyecto: Biosensores para la detección descentralizada de exosomas y virus del Dengue\n5. proyecto: Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.\n6. proyecto: Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos\n7. proyecto: Glicosidasas inmovilizadas sobre nanopartículas: Una herramienta biotecnológica aplicable al estudio de procesos biológicos mediados por glicanos.\n8. proyecto: Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata",
+        "latency_s": 15.708166215568781,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista los 8 proyectos exactamente igual que la referencia, sin omisiones ni invenciones."
+      },
+      {
+        "id": 50,
+        "category": "Lenguaje Natural Informal",
+        "question": "gaston ares temas",
+        "gt_answer": "Los temas de investigación de Gastón Ares son: análisis sensorial y métodos estadísticos; desarrollo de métodos de química analítica; comportamiento del consumidor en alimentación y salud; química de los alimentos y análisis de grasas; fermentación y análisis sensorial; y química analítica y cromatografía.",
+        "candidate": "Gastón Ares trabaja en los siguientes temas:\n\n*   análisis sensorial y metodos estadisticos (Topico), con los proyectos: [Caracterización de astringencia de vino Tannat, Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos]\n*   desarrollo de metodos de quimica analitica (Topico), con el proyecto: [Caracterización de astringencia de vino Tannat]\n*   comportamiento del consumidor en alimentacion y salud (Topico), con los proyectos: [Caracterización de astringencia de vino Tannat, Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos]\n*   quimica de los alimentos y analisis de grasas (Topico), con el proyecto: [Caracterización de astringencia de vino Tannat]\n*   fermentacion y analisis sensorial (Topico), con el proyecto: [Caracterización de astringencia de vino Tannat]\n*   quimica analitica y cromatografia (Topico), con el proyecto: [Caracterización de astringencia de vino Tannat]",
+        "latency_s": 17.25753792002797,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata incluye todos los temas de la referencia y agrega los proyectos asociados, todo consistente con los resultados del grafo sin inventar información."
+      },
+      {
+        "id": 51,
+        "category": "Lenguaje Natural Informal",
+        "question": "investigadores cadenas de markov y metodos de montecarlo",
+        "gt_answer": "Los investigadores vinculados al tópico cadenas de Markov y métodos de Montecarlo son: Rodolfo Mussini Pérez y Héctor Cancela Bosi.",
+        "candidate": "Los investigadores mencionados son:\n\n*   Rodolfo Mussini Pérez (Investigador), proyectos: [Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos]\n*   Héctor Cancela Bosi (Investigador), proyectos: [Evaluación de integridad estructural probabilística de tuberías utilizando simulación Monte Carlo: el rol de los ensayos no destructivos]",
+        "latency_s": 7.042339403182268,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "Identifica correctamente a ambos investigadores y añade los proyectos presentes en los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 52,
+        "category": "Lenguaje Natural Informal",
+        "question": "proyectos analisis sensorial y metodos estadisticos y optimizacion y programacion matematica",
+        "gt_answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+        "candidate": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+        "latency_s": null,
+        "is_sentinel": true,
+        "scores": null,
+        "sentinel_correct": true,
+        "justification": ""
+      },
+      {
+        "id": 53,
+        "category": "Lenguaje Natural Informal",
+        "question": "quien investiga el proyecto de redes de ciclovias",
+        "gt_answer": "El proyecto de redes de ciclovías es investigado por María Elizabeth Urquhart Pérez y Antonio Daniel Mauttone Vidales.",
+        "candidate": "El proyecto de redes de ciclovías es investigado por María Elizabeth Urquhart Pérez (Investigador) y Antonio Daniel Mauttone Vidales (Investigador).",
+        "latency_s": 2.9776596687734127,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, mencionando ambos investigadores sin inventar información."
+      },
+      {
+        "id": 54,
+        "category": "Lenguaje Natural Informal",
+        "question": "proyectos compartidos gaston ares y ana gimenez",
+        "gt_answer": "Los proyectos compartidos entre Gastón Ares y Ana Giménez son 'Caracterización de astringencia de vino Tannat' y 'Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos'.",
+        "candidate": "Los proyectos son:\n\n1. proyecto: Caracterización de astringencia de vino Tannat\n2. proyecto: Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos",
+        "latency_s": 3.2383141815662384,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los dos proyectos de la referencia y los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 55,
+        "category": "Lenguaje Natural Informal",
+        "question": "subcampos de investigacion 2012 vs 2016",
+        "gt_answer": "Al comparar los subcampos de investigación de los proyectos de 2012 con los de 2016 se observan continuidades y cambios. Los subcampos compartidos entre ambos años (continuidades) son: química de materiales, estadística y probabilidad, inteligencia artificial, bioquímica, biología molecular, ingeniería oceánica, mecánica computacional, ingeniería civil y estructural. Los subcampos presentes solo en 2012 son: física atómica y molecular, y óptica, ciencias de los alimentos, química analítica, sociología y ciencias políticas, espectroscopía, metales y aleaciones, ciencias de los materiales generales, energía renovable sostenibilidad y medio ambiente, electroquímica, economía y econometría, geografía, planificación y desarrollo, desarrollo, ecología, evolución, comportamiento y sistemática, ciencias de la gestión e investigación operativa, contaminación, gestión monitoreo política y ley, ciencias políticas y relaciones internacionales, ciencias de las plantas. Los subcampos que aparecen como nuevos en 2016 son: mecánica de materiales, ingeniería mecánica, tecnología de medios, visión por computadora y reconocimiento de patrones, modelado y simulación, biomateriales, polímeros y plásticos, bioingeniería, hardware y arquitectura, biotecnología, ecología, oceanografía, ciencias del suelo.",
+        "candidate": "Los subcampos de investigación en 2012 fueron: fisica atomica y molecular, y optica (Subcampo), ciencias de los alimentos (Subcampo), quimica analitica (Subcampo), sociologia y ciencias politicas (Subcampo), espectroscopia (Subcampo), quimica de materiales (Subcampo), metales y aleaciones (Subcampo), ciencias de los materiales generales (Subcampo), energia renovable sostenibilidad y medio ambiente (Subcampo), electroquimica (Subcampo), economia y econometria (Subcampo), geografia, planificacion y desarrollo (Subcampo), desarrollo (Subcampo), estadistica y probabilidad (Subcampo), ecologia, evolucion, comportamiento y sistematica (Subcampo), ciencias de la gestion e investigacion operativa (Subcampo), contaminacion (Subcampo), gestion monitoreo politica y ley (Subcampo), inteligencia artificial (Subcampo), bioquimica (Subcampo), ciencias politicas y relaciones internacionales (Subcampo), ciencias de las plantas (Subcampo), biologia molecular (Subcampo), ingenieria oceanica (Subcampo), mecanica computacional (Subcampo), ingenieria civil y estructural (Subcampo).\n\nLos subcampos de investigación en 2016 fueron: estadistica y probabilidad (Subcampo), mecanica de materiales (Subcampo), ingenieria mecanica (Subcampo), tecnologia de medios (Subcampo), vision por computadora y reconocimiento de patrones (Subcampo), ingenieria civil y estructural (Subcampo), mecanica computacional (Subcampo), ingenieria oceanica (Subcampo), modelado y simulacion (Subcampo), inteligencia artificial (Subcampo), biologia molecular (Subcampo), biomateriales (Subcampo), bioquimica (Subcampo), polimeros y plasticos (Subcampo), bioingenieria (Subcampo), quimica de materiales (Subcampo), hardware y arquitectura (Subcampo), biotecnologia (Subcampo), ecologia (Subcampo), oceanografia (Subcampo), ciencias del suelo (Subcampo).\n\nLos subcampos compartidos entre 2012 y 2016 fueron: quimica de materiales (Subcampo), estadistica y probabilidad (Subcampo), inteligencia artificial (Subcampo), bioquimica (Subcampo), biologia molecular (Subcampo), ingenieria oceanica (Subcampo), mecanica computacional (Subcampo), ingenieria civil y estructural (Subcampo).",
+        "latency_s": 40.31331370398402,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide plenamente con los datos del grafo; lista correctamente los subcampos de 2012, 2016 y los compartidos. Aunque no separa explícitamente solo_2012 y solo_2016, la información completa está presente y es fiel."
+      },
+      {
+        "id": 56,
+        "category": "Lenguaje Natural Informal",
+        "question": "de que habla el proyecto de astringencia de vino tannat",
+        "gt_answer": "El proyecto 'Caracterización de astringencia de vino Tannat' trata sobre los tópicos: análisis sensorial y métodos estadísticos, desarrollo de métodos de química analítica, comportamiento del consumidor en alimentación y salud, química de los alimentos y análisis de grasas, fermentación y análisis sensorial, química analítica y cromatografía.",
+        "candidate": "El proyecto habla de \"Caracterización de astringencia de vino Tannat\". Los tópicos relacionados son: [analisis sensorial y metodos estadisticos (Topico), desarrollo de metodos de quimica analitica (Topico), comportamiento del consumidor en alimentacion y salud (Topico), quimica de los alimentos y analisis de grasas (Topico), fermentacion y analisis sensorial (Topico), quimica analitica y cromatografia (Topico)].",
+        "latency_s": 7.983998157083988,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia, incluye todos los tópicos y no inventa información."
+      },
+      {
+        "id": 57,
+        "category": "Lenguaje Natural Informal",
+        "question": "mostrame nombre, sexo y pais de los investigadores que participaron en proyectos de optimizacion y programacion matematica",
+        "gt_answer": "Los investigadores que participaron en proyectos de optimización y programación matemática son: Antonio Daniel Mauttone Vidales (sexo masculino, Uruguay); y María Elizabeth Urquhart Pérez (sexo femenino, Uruguay).",
+        "candidate": "nombre: Antonio Daniel Mauttone Vidales, sexo: Masculino, pais: Uruguay\nnombre: María Elizabeth Urquhart Pérez, sexo: Femenino, pais: Uruguay",
+        "latency_s": 2.945702485740185,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los dos investigadores, sus sexos y países según los resultados del grafo y la referencia."
+      },
+      {
+        "id": 58,
+        "category": "Lenguaje Natural Informal",
+        "question": "cual es la cedula de los investigadores que comparten al menos un proyecto en comun?",
+        "gt_answer": "Las cédulas de algunos investigadores que comparten al menos un proyecto en común son: Erika Teliz (4370245-5), Ricardo Faccio (2779683-2), Beatriz Elida Castro (DNI:13888318), Jorge Thomas (DNI29.241.579), Fabricio Ruiz (DNI:23859299), Veronica Diaz Moreno (2598942-9), Horacio Heinzen (2923660-4), Verónica Cesio (3789990-3), María Silvina Niell Menegazzi (3599141-2), Nicolás Leonardo Pérez Álvarez (1663502-7) y Héctor Cancela Bosi (1539915-9), entre otros.",
+        "candidate": "Los investigadores que comparten al menos un proyecto en común son:\n\n*   Erika Teliz (4370245-5) y Ricardo Faccio (2779683-2)\n*   Beatriz Elida Castro (DNI:13888318) y Ricardo Faccio (2779683-2)\n*   Jorge Thomas (DNI29.241.579) y Ricardo Faccio (2779683-2)\n*   Fabricio Ruiz (DNI:23859299) y Ricardo Faccio (2779683-2)\n*   Erika Teliz (4370245-5) y Beatriz Elida Castro (DNI:13888318)\n*   Veronica Diaz Moreno (2598942-9) y Ricardo Faccio (2779683-2)\n*   Erika Teliz (4370245-5) y Veronica Diaz Moreno (2598942-9)\n*   Beatriz Elida Castro (DNI:13888318) y Veronica Diaz Moreno (2598942-9)\n*   Jorge Thomas (DNI29.241.579) y Veronica Diaz Moreno (2598942-9)\n*   Fabricio Ruiz (DNI:23859299) y Veronica Diaz Moreno (2598942-9)\n*   Erika Teliz (4370245-5) y Jorge Thomas (DNI29.241.579)\n*   Beatriz Elida Castro (DNI:13888318) y Jorge Thomas (DNI29.241.579)\n*   Fabricio Ruiz (DNI:23859299) y Jorge Thomas (DNI29.241.579)\n*   Erika Teliz (4370245-5) y Fabricio Ruiz (DNI:23859299)\n*   Beatriz Elida Castro (DNI:13888318) y Fabricio Ruiz (DNI:23859299)\n*   Horacio Heinzen (2923660-4) y Verónica Cesio (3789990-3)\n*   María Silvina Niell Menegazzi (3599141-2) y Verónica Cesio (3789990-3)\n*   Nicolás Leonardo Pérez Álvarez (1663502-7) y Verónica Cesio (3789990-3)\n*   Héctor Cancela Bosi (1539915-9) y Verónica Cesio (3789990-3)\n*   Horacio Heinzen (2923660-4) y Héctor Cancela Bosi (1539915-9)\n*   María Silvina Niell Menegazzi (3599141-2) y Héctor Cancela Bosi (1539915-9)\n*   Nicolás Leonardo Pérez Álvarez (1663502-7) y Héctor Cancela Bosi (1539915-9)\n*   Ana Giménez (1424495-7) y Karina Medina (3014045-6)\n*   Alejandra Rodríguez (1419558-4) y Karina Medina (3014045-6)\n*   Caterina Rufo (1784387-3) y Karina Medina (3014045-6)\n*   Gastón Ares (3061396-0) y Karina Medina (3014045-6)\n*   Eduardo Boido (1392517) y Karina Medina (3014045-6)\n*   Alejandra Rodríguez (1419558-4) y Ana Giménez (1424495-7)\n*   Ana Giménez (1424495-7) y Caterina Rufo (1784387-3)\n*   Alejandra Rodríguez (1419558-4) y Caterina Rufo (1784387-3)\n*   Ana Giménez (1424495-7) y Gastón Ares (3061396-0)\n*   Alejandra Rodríguez (1419558-4) y Gastón Ares (3061396-0)\n*   Caterina Rufo (1784387-3) y Gastón Ares (3061396-0)\n*   Eduardo Boido (1392517) y Gastón Ares (3061396-0)\n*   Ana Giménez (1424495-7) y Eduardo Boido (1392517)\n*   Alejandra Rodríguez (1419558-4) y Eduardo Boido (1392517)\n*   Caterina Rufo (1784387-3) y Eduardo Boido (1392517)\n*   Cecilia Oreiro Fariña (2994165-1) y María Sylvina Porras Arena (1309556-9)\n*   Gabriela Mordecki Pupko (1484878-9) y María Sylvina Porras Arena (1309556-9)\n*   Marco Andrés Colafranceschi Sebé (3072800-6) y María Sylvina Porras Arena (1309556-9)\n*   Leonel Muinelo Gallo (1737889-4) y María Sylvina Porras Arena (1309556-9)\n*   Cecilia Oreiro Fariña (2994165-1) y Gabriela Mordecki Pupko (1484878-9)\n*   Cecilia Oreiro Fariña (2994165-1) y Marco Andrés Colafranceschi Sebé (3072800-6)\n*   Gabriela Mordecki Pupko (1484878-9) y Marco Andrés Colafranceschi Sebé (3072800-6)\n*   Leonel Muinelo Gallo (1737889-4) y Marco Andrés Colafranceschi Sebé (3072800-6)\n*   Cecilia Oreiro Fariña (2994165-1) y Leonel Muinelo Gallo (1737889-4)\n*   Gabriela Mordecki Pupko (1484878-9) y Leonel Muinelo Gallo (1737889-4)\n*   Cecilia Oreiro Fariña (2994165-1) y Sandra García (1475208-7)\n*   María Sylvina Porras Arena (1309556-9) y Sandra García (1475208-7)\n*   Gabriela Mordecki Pupko (1484878-9) y Sandra García (1475208-7)\n*   Marco Andrés Colafranceschi Sebé (3072800-6) y Sandra García (1475208-7)\n*   Leonel Muinelo Gallo (1737889-4) y Sandra García (1475208-7)\n*   Beatriz Alvarez (1906431-8) y Leonor Thomson (1381747-8)\n*   Horacio Botti (3537962-6) y Leonor Thomson (1381747-8)\n*   Lucía Turell (4507229-4) y Leonor Thomson (1381747-8)\n*   Beatriz Alvarez (1906431-8) y Lucía Turell (4507229-4)\n*   Horacio Botti (3537962-6) y Lucía Turell (4507229-4)\n*   Luis Núñez (3159445-6) y Leonor Thomson (1381747-8)\n*   Lucía Turell (450",
+        "latency_s": 227.10276190936565,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata reproduce fielmente los pares de investigadores con sus cédulas exactamente como aparecen en los resultados del grafo, sin inventar datos. Cubre más detalle que la referencia (que solo daba ejemplos), incluyendo múltiples proyectos. Aunque la respuesta parece cortarse al final, los datos presentados son correctos y completos respecto a lo esperado."
+      },
+      {
+        "id": 59,
+        "category": "Lenguaje Natural Informal",
+        "question": "que mujeres trabajan en el area tecnologica?",
+        "gt_answer": "Las mujeres que trabajan en el área tecnológica son: Daniela Martinez Remersaro, María Elizabeth Urquhart Pérez, Laura Camesasca, María Eugenia Vila, Mairan Guigou, Karina Medina, Ana Giménez, Alejandra Rodríguez, Caterina Rufo, Paula Carasi, Cecilia Inés Giacomini Veira, Teresa Inés Freire Gard, Verónica Noya, Mónica Fossati, Erika Teliz, Beatriz Elida Castro, Veronica Diaz Moreno, Verónica Cesio, María Silvina Niell Menegazzi, Michelle Jackson, María Belén Fernández Aristov, María del Pilar Moreno Karlen, Fiorella Mondino Bittencourt, Lucía Antúnez, Paula Varela Tomasco y Leticia Vidal.",
+        "candidate": "Las mujeres que trabajan en el área tecnológica, según los resultados, son:\n\n*   Daniela Martinez Remersaro (Investigador)\n*   María Elizabeth Urquhart Pérez (Investigador)\n*   Laura Camesasca (Investigador)\n*   María Eugenia Vila (Investigador)\n*   Mairan Guigou (Investigador)\n*   Karina Medina (Investigador)\n*   Ana Giménez (Investigador)\n*   Alejandra Rodríguez (Investigador)\n*   Caterina Rufo (Investigador)\n*   Paula Carasi (Investigador)\n*   Cecilia Inés Giacomini Veira (Investigador)\n*   Teresa Inés Freire Gard (Investigador)\n*   Verónica Noya (Investigador)\n*   Mónica Fossati (Investigador)\n*   Erika Teliz (Investigador)\n*   Beatriz Elida Castro (Investigador)\n*   Veronica Diaz Moreno (Investigador)\n*   Verónica Cesio (Investigador)\n*   María Silvina Niell Menegazzi (Investigador)\n*   Michelle Jackson (Investigador)\n*   María Belén Fernández Aristov (Investigador)\n*   María del Pilar Moreno Karlen (Investigador)\n*   Fiorella Mondino Bittencourt (Investigador)\n*   Lucía Antúnez (Investigador)\n*   Paula Varela Tomasco (Investigador)\n*   Leticia Vidal (Investigador)\n\nSus proyectos incluyen: [Estudio de la dinámica de sedimentos cohesivos frente a la costa de Montevideo.], [Diseño de redes de transporte público para ciudades de tamaño mediano y grande, Diseño óptimo de redes de ciclovías], [Producción de ácido poliláctico (PLA), mediante la polimerización con lipasas obtenidas a partir de microorganismos antárticos.], [Caracterización de astringencia de vino Tannat], [Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos], [Glicosidasas inmovilizadas sobre nanopartículas: Una herramienta biotecnológica aplicable al estudio de procesos biológicos mediados por glicanos.], [Desarrollo de un sistema de simulación de largo alcance temporal de la dinámica del Río de la Plata, Sistema de pronóstico en tiempo real de corrientes y mareas en el Río de la Plata], [Almacenamiento electroquímico de hidrógeno: efecto del molibdeno en las aleaciones metálicas formadoras de hidruros tipo AB5.], [Uso de la colmena como monitor cuantitativo de residuos de pesticidas aplicados en soja y su influencia en la sustentabilidad del agroecosistema.], [Biosensores para la detección descentralizada de exosomas y virus del Dengue], [Extensión de una herramienta nuḿerica para el modelado viscoelástico de tejidos biológicos y análisis de algoritmos para caracterización de propiedades viscoelásticas], [Almacenamiento electroquímico de hidrógeno: efecto del molibdeno en las aleaciones metálicas formadoras de hidruros tipo AB5.]",
+        "latency_s": 54.29869508370757,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La candidata lista exactamente las 26 investigadoras de la referencia y añade los proyectos derivados de los resultados del grafo, sin inventar datos."
+      },
+      {
+        "id": 60,
+        "category": "Lenguaje Natural Informal",
+        "question": "que investigadores de uruguay trabajaron en el topico de agricultura inteligente e ia?",
+        "gt_answer": "Los investigadores de Uruguay que trabajaron en el tópico agricultura inteligente e ia son: Pablo Alejandro Rodríguez Bocca y Andrés Berger Ricca.",
+        "candidate": "Los investigadores de Uruguay que trabajaron en el tópico de agricultura inteligente e IA son:\n\n*   Pablo Alejandro Rodríguez Bocca (Investigador), proyectos: [Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo]\n*   Andrés Berger Ricca (Investigador), proyectos: [Predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo]",
+        "latency_s": 6.4687196649611,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata identifica correctamente a ambos investigadores y añade detalles del proyecto presentes en los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 61,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Quién es el investigador responsable del proyecto Espectroscopía de átomos alcalinos en medios porosos?",
+        "gt_answer": "El investigador responsable del proyecto 'Espectroscopía de átomos alcalinos en medios porosos' es Horacio Failache Estellano.",
+        "candidate": "Horacio Failache Estellano (Investigador) es el investigador responsable del proyecto Espectroscopía de átomos alcalinos en medios porosos.",
+        "latency_s": 2.7302476167678833,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, identificando correctamente a Horacio Failache Estellano sin inventar información."
+      },
+      {
+        "id": 62,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿A qué área pertenece el proyecto PIB y desarrollo regional en Uruguay: 1900-2010?",
+        "gt_answer": "El proyecto 'PIB y desarrollo regional en Uruguay: 1900-2010' pertenece al área social y artística.",
+        "candidate": "area: social y artistica (Area)",
+        "latency_s": 0.9241863265633583,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con el resultado del grafo y la referencia, indicando el área social y artística."
+      },
+      {
+        "id": 63,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Cuáles son los tópicos a los que pertenece el proyecto Agrupamiento perceptual de puntos en 2D y 3D?",
+        "gt_answer": "El proyecto 'Agrupamiento perceptual de puntos en 2D y 3D' pertenece a cinco tópicos principales: técnicas y aplicaciones de procesamiento de imágenes; atención visual y detección de prominencia; técnicas de detección de imágenes y objetos; técnicas avanzadas de procesamiento de imágenes; y técnicas de procesamiento de imágenes digitales.",
+        "candidate": "El proyecto Agrupamiento perceptual de puntos en 2D y 3D pertenece a los siguientes tópicos:\n\n1. tecnicas y aplicaciones de procesamiento de imagenes (Topico)\n2. atencion visual y deteccion de prominencia (Topico)\n3. tecnicas de deteccion de imagenes y objetos (Topico)\n4. tecnicas avanzadas de procesamiento de imagenes (Topico)\n5. tecnicas de procesamiento de imagenes digitales (Topico)",
+        "latency_s": 7.921069163829088,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los cinco tópicos de la referencia y del grafo, sin omitir ni inventar información."
+      },
+      {
+        "id": 64,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Qué investigadores participaron en el proyecto Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas?",
+        "gt_answer": "En el proyecto 'Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas' participaron Karina Antúnez, Belén Branchiccela, Yamandú Mendoza, Estela Santos, Loreley Castelli y Ciro Invernizzi.",
+        "candidate": "Los investigadores que participaron en el proyecto Efecto de la nutrición en la infección por Nosema ceranae, Crithidia mellificae y virus ARN en las abejas melíferas fueron:\n\nKarina Antúnez (Investigador)\nBelén Branchiccela (Investigador)\nYamandú Mendoza (Investigador)\nEstela Santos (Investigador)\nLoreley Castelli (Investigador)\nCiro Invernizzi (Investigador)",
+        "latency_s": 8.172474078834057,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista exactamente los seis investigadores presentes en los resultados del grafo y coincide plenamente con la referencia, sin agregar información inventada."
+      },
+      {
+        "id": 65,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿A qué subcampo general pertenece el tópico Cadenas de Markov y métodos de Montecarlo?",
+        "gt_answer": "El tópico 'Cadenas de Markov y métodos de Montecarlo' pertenece al subcampo de estadística y probabilidad.",
+        "candidate": "El tópico Cadenas de Markov y métodos de Montecarlo pertenece al subcampo: estadística y probabilidad (Subcampo).",
+        "latency_s": 1.989242561161518,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, indicando el subcampo de estadística y probabilidad sin inventar información."
+      },
+      {
+        "id": 66,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿En qué año inició oficialmente el proyecto Análisis y Visualización de Virus y su Evolución?",
+        "gt_answer": "El proyecto 'Análisis y Visualización de Virus y su Evolución' inició oficialmente en el año 2016.",
+        "candidate": "2016 (Anio)",
+        "latency_s": 0.8377154842019081,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata indica correctamente el año 2016, coincidiendo con la referencia y los resultados del grafo. Es escueta pero factualmente correcta y completa."
+      },
+      {
+        "id": 67,
+        "category": "Consultas Estructurales Simples",
+        "question": "Nombra todos los proyectos que están asociados al subcampo inteligencia artificial.",
+        "gt_answer": "Los proyectos asociados al subcampo inteligencia artificial son: Análisis y Visualización de Virus y su Evolución; Aprendizaje Profundo No Supevisado de Distribuciones a Priori para Problemas Inversos en Imágenes; y Uso de la colmena como monitor cuantitativo de residuos de pesticidas aplicados en soja y su influencia en la sustentabilidad del agroecosistema..",
+        "candidate": "proyecto: Aprendizaje Profundo No Supevisado de Distribuciones a Priori para Problemas Inversos en Imágenes",
+        "latency_s": 2.006514187902212,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 2,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "El proyecto mencionado es correcto y está en los resultados, pero omite dos de los tres proyectos esperados, por lo que la completitud es baja."
+      },
+      {
+        "id": 68,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Quiénes figuran como responsables directos del proyecto Biomarcadores, Neuroinflamación e Inflamación Sistémica en HSA Aneurismática Aguda?",
+        "gt_answer": "La responsable directa del proyecto 'Biomarcadores, Neuroinflamación e Inflamación Sistémica en HSA Aneurismática Aguda' es Sofia Grille Montauban.",
+        "candidate": "Sofia Grille Montauban (Investigador) figura como responsable directo del proyecto Biomarcadores, Neuroinflamación e Inflamación Sistémica en HSA Aneurismática Aguda.",
+        "latency_s": 3.1019533276557922,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata identifica correctamente a Sofia Grille Montauban como responsable directa, coincidiendo con la referencia y los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 69,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿En qué proyecto participó Tormod Naes?",
+        "gt_answer": "Tormod Naes participó en el proyecto 'Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos'.",
+        "candidate": "Tormod Naes participó en el proyecto: Nuevos desarrollos en metodologías rápidas de caracterización sensorial de alimentos.",
+        "latency_s": 2.127801101654768,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 70,
+        "category": "Consultas Estructurales Simples",
+        "question": "¿Qué proyectos pertenecen al área básica?",
+        "gt_answer": "Al área básica pertenecen seis proyectos: 'Espectroscopía de átomos alcalinos en medios porosos'; 'Aproximación al estudio del estado redox del tiol de la albúmina circulante'; 'Análisis y Visualización de Virus y su Evolución'; 'Señales estructurales en ARNm de Trypanosoma cruzi'; 'Rol de factores de iniciación de la traducción en la regulación general y selectiva de la síntesis proteica como mecanismo adaptativo al estrés hídrico en plantas.'; y 'Alternativas simples de preparación de muestras asistidas con ondas de ultrasonido y ozono para la determinación de elementos traza esenciales y contaminantes en alimentos'.",
+        "candidate": "Los proyectos que pertenecen al área básica son:\n\n1. proyecto: Espectroscopía de átomos alcalinos en medios porosos (Proyecto)\n2. proyecto: Aproximación al estudio del estado redox del tiol de la albúmina circulante (Proyecto)\n3. proyecto: Análisis y Visualización de Virus y su Evolución (Proyecto)\n4. proyecto: Señales estructurales en ARNm de Trypanosoma cruzi (Proyecto)\n5. proyecto: Rol de factores de iniciación de la traducción en la regulación general y selectiva de la síntesis proteica como mecanismo adaptativo al estrés hídrico en plantas. (Proyecto)",
+        "latency_s": 10.218123577535152,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 4,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista correctamente 5 de los 6 proyectos, omitiendo el proyecto sobre preparación de muestras con ultrasonido y ozono. Los hechos son correctos y no inventa información."
+      },
+      {
+        "id": 71,
+        "category": "Análisis Temporal",
+        "question": "¿Cómo ha evolucionado la cantidad de proyectos en el subcampo de Ingeniería Civil y Estructural a lo largo de los años?",
+        "gt_answer": "Según los datos disponibles, la cantidad de proyectos en el subcampo de Ingeniería Civil y Estructural se mantuvo constante en los años registrados: un proyecto en 2012, un proyecto en 2014, un proyecto en 2016 y un proyecto en 2018. No se observa un aumento ni una disminución, sino una presencia estable de un proyecto por año registrado.",
+        "candidate": "La cantidad de proyectos en el subcampo de Ingeniería Civil y Estructural ha evolucionado de la siguiente manera:\n\n*   anio: 2012, cantidad_proyectos: 1\n*   anio: 2014, cantidad_proyectos: 1\n*   anio: 2016, cantidad_proyectos: 1\n*   anio: 2018, cantidad_proyectos: 1",
+        "latency_s": 7.09299548342824,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata reporta correctamente los cuatro años con un proyecto cada uno, coincidiendo con la referencia y los datos del grafo. Aunque no añade interpretación narrativa, presenta todos los datos fielmente."
+      },
+      {
+        "id": 72,
+        "category": "Análisis Temporal",
+        "question": "¿Cuántos proyectos se iniciaron en cada año según los datos disponibles?",
+        "gt_answer": "Según los datos disponibles, la cantidad de proyectos iniciados por año fue: 11 en 2012, 7 en 2014, 8 en 2016 y 6 en 2018.",
+        "candidate": "En el año 2012 se iniciaron 11 proyectos. En el año 2014 se iniciaron 7 proyectos. En el año 2016 se iniciaron 8 proyectos. En el año 2018 se iniciaron 6 proyectos.",
+        "latency_s": 4.692151069641113,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con los datos del grafo y la referencia, incluyendo los cuatro años con sus cantidades correctas."
+      },
+      {
+        "id": 73,
+        "category": "Análisis Temporal",
+        "question": "¿Qué tópicos de investigación nuevos aparecieron en los proyectos iniciados en 2018 respecto a los años anteriores?",
+        "gt_answer": "Los tópicos de investigación nuevos que aparecieron en los proyectos iniciados en 2018 respecto a los años anteriores son: producción de biocombustibles y bioconversión, procesos bioquímicos y bioquímicos, síntesis y propiedades de polímeros biodegradables, estudios de mecánica y biomecánica, imágenes y análisis médicos, agricultura inteligente e ia, teledetección en la agricultura, clasificación de imágenes de teledetección, análisis y pronóstico de series temporales, procesamiento de imágenes satelitales y fotogrametría, redes neuronales y aplicaciones, visión e imágenes avanzadas, métodos de eliminación de ruido de imágenes y señales, aplicaciones avanzadas de redes neuronales, gestión del agua y la tierra, estudios acuáticos y ambientales, geografía y estudios ambientales, estudios de hidrología y manejo de cuencas, estudios de calidad y recursos del agua.",
+        "candidate": "Los tópicos de investigación nuevos que aparecieron en los proyectos iniciados en 2018 son: producción de biocombustibles y bioconversion, procesos bioquimicos y bioquimicos, sintesis y propiedades de polimeros biodegradables, estudios de mecanica y biomecanica, imagenes y analisis medicos, agricultura inteligente e ia, teledeteccion en la agricultura, clasificacion de imagenes de teledeteccion, analisis y pronostico de series temporales, procesamiento de imagenes satelitales y fotogrametria, redes neuronales y aplicaciones, vision e imagenes avanzadas, metodos de eliminacion de ruido de imagenes y senales, aplicaciones avanzadas de redes neuronales, gestion del agua y la tierra, estudios acuaticos y ambientales, geografia y estudios ambientales, estudios de hidrologia y manejo de cuencas, estudios de calidad y recursos del agua.",
+        "latency_s": 13.46005204692483,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, listando los 19 tópicos sin omisiones ni invenciones."
+      },
+      {
+        "id": 74,
+        "category": "Análisis Temporal",
+        "question": "¿En qué años se registran proyectos del área básica y cómo se distribuye su cantidad?",
+        "gt_answer": "Los proyectos del área básica se registran en 2012, 2014 y 2016, distribuidos de la siguiente manera: 4 proyectos en 2012, 1 proyecto en 2014 y 1 proyecto en 2016.",
+        "candidate": "Se registran proyectos del área básica en los años 2012, 2014 y 2016.\n\n*   anio: 2012, cantidad_proyectos: 4\n*   anio: 2014, cantidad_proyectos: 1\n*   anio: 2016, cantidad_proyectos: 1",
+        "latency_s": 6.2768740728497505,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo todos los años y cantidades sin inventar información."
+      },
+      {
+        "id": 75,
+        "category": "Análisis Temporal",
+        "question": "¿Cuáles fueron los temas de investigación de los proyectos que tuvieron su inicio en 2012?",
+        "gt_answer": "Los temas de investigación de los proyectos que iniciaron en 2012 fueron: análisis económico y espacial regional, análisis sensorial y métodos estadísticos, análisis y aplicaciones electroquímicas, análisis y política económica, bioinformática y redes genómicas, comportamiento del consumidor en alimentación y salud, comportamientos de fragilización por hidrógeno y corrosión en metales, compuestos de azufre en biología, conservación y gestión ambiental, crecimiento económico y políticas fiscales, crecimiento económico y productividad, desarrollo de métodos de química analítica, desarrollo regional e innovación, difracción de rayos x en cristalografía, dinámica de fluidos y flujos turbulentos, diversas innovaciones en investigación interdisciplinaria, electrocatalizadores para la conversión de energía, espectroscopía y estudios de química cuántica, estudios ambientales de pesticidas y herbicidas, estudios de ingeniería marina y offshore, estudios históricos económicos y sociales, fermentación y análisis sensorial, física atómica y molecular, genética bioinformática e investigación biomédica, geografía histórica y cartografía, gobernanza local y desarrollo, ingeniería y estudios ambientales, interacciones y aplicaciones láser-materia, investigación aplicada en ingeniería, investigación en biología molecular vegetal, investigación en ingeniería y ciencia de materiales, investigación marina y costera, materiales y almacenamiento de hidrógeno, mecanismos de síntesis de ARN y proteínas, métodos y aplicaciones estadísticas, navegación y seguridad marítima, política fiscal y crecimiento económico, política y sociedad en américa latina, políticas fiscales y economía política, propiedades y aplicaciones de los materiales, química analítica y cromatografía, química de los alimentos y análisis de grasas, regulación del ARN y enfermedad, sistemas complejos y análisis de series temporales, sistemas y prácticas agrícolas, técnicas de clasificación de datos desequilibradas y teoría e instituciones económicas.",
+        "candidate": "Los temas de investigación de los proyectos que tuvieron su inicio en 2012 fueron:\n\n*   análisis económico y espacial regional (Topico)\n*   análisis sensorial y metodos estadisticos (Topico)\n*   análisis y aplicaciones electroquimicas (Topico)\n*   análisis y politica economica (Topico)\n*   bioinformatica y redes genomicas (Topico)\n*   comportamiento del consumidor en alimentacion y salud (Topico)\n*   comportamientos de fragilizacion por hidrogeno y corrosion en metales (Topico)\n*   compuestos de azufre en biologia (Topico)\n*   conservacion y gestion ambiental (Topico)\n*   crecimiento economico y politicas fiscales (Topico)\n*   crecimiento economico y productividad (Topico)\n*   desarrollo de metodos de quimica analitica (Topico)\n*   desarrollo regional e innovacion (Topico)\n*   difraccion de rayos x en cristalografia (Topico)\n*   dinamica de fluidos y flujos turbulentos (Topico)\n*   diversas innovaciones en investigacion interdisciplinaria (Topico)\n*   electrocatalizadores para la conversion de energia (Topico)\n*   espectroscopia y estudios de quimica cuantica (Topico)\n*   estudios ambientales de pesticidas y herbicidas (Topico)\n*   estudios de ingenieria marina y offshore (Topico)\n*   estudios historicos economicos y sociales (Topico)\n*   fermentacion y analisis sensorial (Topico)\n*   fisica atomica y molecular (Topico)\n*   genetica bioinformatica e investigacion biomedica (Topico)\n*   geografia historica y cartografia (Topico)\n*   gobernanza local y desarrollo (Topico)\n*   ingenieria y estudios ambientales (Topico)\n*   interacciones y aplicaciones laser-materia (Topico)\n*   investigacion aplicada en ingenieria (Topico)\n*   investigacion en biologia molecular vegetal (Topico)\n*   investigacion en ingenieria y ciencia de materiales (Topico)\n*   investigacion marina y costera (Topico)\n*   materiales y almacenamiento de hidrogeno (Topico)\n*   mecanismos de sintesis de arn y proteinas (Topico)\n*   metodos y aplicaciones estadisticas (Topico)\n*   navegacion y seguridad maritima (Topico)\n*   politica fiscal y crecimiento economico (Topico)\n*   politica y sociedad en america latina (Topico)\n*   politicas fiscales y economia politica (Topico)\n*   propiedades y aplicaciones de los materiales (Topico)\n*   quimica analitica y cromatografia (Topico)\n*   quimica de los alimentos y analisis de grasas (Topico)\n*   regulacion del arn y enfermedad (Topico)\n*   sistemas complejos y analisis de series temporales (Topico)\n*   sistemas y practicas agricolas (Topico)\n*   tecnica de clasificacion de datos desequilibradas (Topico)\n*   teoria e instituciones economicas (Topico)",
+        "latency_s": 56.71648205816746,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista los 47 tópicos de forma completa y exacta, coincidiendo con la referencia y los resultados del grafo, sin inventar información."
+      },
+      {
+        "id": 76,
+        "category": "Análisis Temporal",
+        "question": "Muestra la progresión cronológica de los proyectos en los que ha participado Antonio Daniel Mauttone Vidales.",
+        "gt_answer": "La progresión cronológica de los proyectos de Antonio Daniel Mauttone Vidales es la siguiente: en 2014 participó en 'Diseño de redes de transporte público para ciudades de tamaño mediano y grande'; y en 2018 participó en 'Diseño óptimo de redes de ciclovías'.",
+        "candidate": "Antonio Daniel Mauttone Vidales ha participado en los siguientes proyectos:\n\n*   anio: 2014, proyectos: [Diseño de redes de transporte público para ciudades de tamaño mediano y grande]\n*   anio: 2018, proyectos: [Diseño óptimo de redes de ciclovías]",
+        "latency_s": 5.322788830846548,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, incluyendo ambos proyectos con sus años correctos en orden cronológico."
+      },
+      {
+        "id": 77,
+        "category": "Análisis Temporal",
+        "question": "¿Qué subcampos de investigación estuvieron presentes en proyectos de más de un año distinto?",
+        "gt_answer": "Los subcampos de investigación presentes en proyectos de más de un año distinto son: ingeniería civil y estructural (2012, 2014, 2016, 2018); ciencias de la gestión e investigación operativa (2012, 2014, 2018); ingeniería oceánica (2012, 2016, 2018); inteligencia artificial (2012, 2016, 2018); mecánica computacional (2012, 2014, 2016); biología molecular (2012, 2016); biomateriales (2016, 2018); bioquímica (2012, 2016); biotecnología (2016, 2018); ciencias de las plantas (2012, 2018); ciencias de los alimentos (2012, 2014); contaminación (2012, 2014); ecología (2016, 2018); estadística y probabilidad (2012, 2016); física matemática (2014, 2018); gestión monitoreo política y ley (2012, 2018); ingeniería biomédica (2014, 2018); ingeniería de control y sistemas (2014, 2018); química analítica (2012, 2014); química de materiales (2012, 2016); sociología y ciencias políticas (2012, 2014); tecnología de medios (2016, 2018); transporte (2014, 2018); y visión por computadora y reconocimiento de patrones (2016, 2018).",
+        "candidate": "Los subcampos de investigación que estuvieron presentes en proyectos de más de un año distinto son:\n\n*   ingenieria civil y estructural (Subcampo), anios: [2012, 2014, 2016, 2018], cantidad_anios: 4\n*   ciencias de la gestion e investigacion operativa (Subcampo), anios: [2012, 2014, 2018], cantidad_anios: 3\n*   ingenieria oceanica (Subcampo), anios: [2012, 2016, 2018], cantidad_anios: 3\n*   inteligencia artificial (Subcampo), anios: [2012, 2016, 2018], cantidad_anios: 3\n*   mecanica computacional (Subcampo), anios: [2012, 2014, 2016], cantidad_anios: 3\n*   biologia molecular (Subcampo), anios: [2012, 2016], cantidad_anios: 2\n*   biomateriales (Subcampo), anios: [2016, 2018], cantidad_anios: 2\n*   bioquimica (Subcampo), anios: [2012, 2016], cantidad_anios: 2\n*   biotecnologia (Subcampo), anios: [2016, 2018], cantidad_anios: 2\n*   ciencias de las plantas (Subcampo), anios: [2012, 2018], cantidad_anios: 2\n*   ciencias de los alimentos (Subcampo), anios: [2012, 2014], cantidad_anios: 2\n*   contaminacion (Subcampo), anios: [2012, 2014], cantidad_anios: 2\n*   ecologia (Subcampo), anios: [2016, 2018], cantidad_anios: 2\n*   estadistica y probabilidad (Subcampo), anios: [2012, 2016], cantidad_anios: 2\n*   fisica matematica (Subcampo), anios: [2014, 2018], cantidad_anios: 2\n*   gestion monitoreo politica y ley (Subcampo), anios: [2012, 2018], cantidad_anios: 2\n*   ingenieria biomedica (Subcampo), anios: [2014, 2018], cantidad_anios: 2\n*   ingenieria de control y sistemas (Subcampo), anios: [2014, 2018], cantidad_anios: 2\n*   quimica analitica (Subcampo), anios: [2012, 2014], cantidad_anios: 2\n*   quimica de materiales (Subcampo), anios: [2012, 2016], cantidad_anios: 2\n*   sociologia y ciencias politicas (Subcampo), anios: [2012, 2014], cantidad_anios: 2\n*   tecnologia de medios (Subcampo), anios: [2016, 2018], cantidad_anios: 2\n*   transporte (Subcampo), anios: [2014, 2018], cantidad_anios: 2\n*   vision por computadora y reconocimiento de patrones (Subcampo), anios: [2016, 2018], cantidad_anios: 2",
+        "latency_s": 65.02768698707223,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata incluye los 24 subcampos con sus años exactos, coincidiendo completamente con la referencia y los resultados del grafo."
+      },
+      {
+        "id": 78,
+        "category": "Análisis Temporal",
+        "question": "Compara los tópicos de los proyectos de 2012 con los de 2016. ¿Qué cambios o continuidades se observan?",
+        "gt_answer": "Al comparar los tópicos de los proyectos de 2012 con los de 2016 se observan continuidades y cambios. Los tópicos compartidos entre ambos años (continuidades) son: métodos y aplicaciones estadísticas, estudios de ingeniería marina y offshore, navegación y seguridad marítima, investigación marina y costera, dinámica de fluidos y flujos turbulentos, ingeniería y estudios ambientales, investigación aplicada en ingeniería. Los tópicos presentes solo en 2012 son: interacciones y aplicaciones láser-materia, espectroscopía y estudios de química cuántica, física atómica y molecular, análisis sensorial y métodos estadísticos, desarrollo de métodos de química analítica, comportamiento del consumidor en alimentación y salud, química de los alimentos y análisis de grasas, fermentación y análisis sensorial, química analítica y cromatografía, difracción de rayos x en cristalografía, materiales y almacenamiento de hidrógeno, comportamientos de fragilización por hidrógeno y corrosión en metales, investigación en ingeniería y ciencia de materiales, propiedades y aplicaciones de los materiales, electrocatalizadores para la conversión de energía, análisis y aplicaciones electroquímicas, análisis económico y espacial regional, gobernanza local y desarrollo, estudios históricos económicos y sociales, geografía histórica y cartografía, desarrollo regional e innovación, crecimiento económico y productividad, teoría e instituciones económicas, sistemas y prácticas agrícolas, diversas innovaciones en investigación interdisciplinaria, estudios ambientales de pesticidas y herbicidas, conservación y gestión ambiental, técnicas de clasificación de datos desequilibradas, compuestos de azufre en biología, análisis y política económica, sistemas complejos y análisis de series temporales, crecimiento económico y políticas fiscales, políticas fiscales y economía política, política fiscal y crecimiento económico, política y sociedad en américa latina, investigación en biología molecular vegetal, regulación del ARN y enfermedad, genética bioinformática e investigación biomédica, mecanismos de síntesis de ARN y proteínas, bioinformática y redes genómicas. Los tópicos que aparecen como nuevos en 2016 son: cadenas de Markov y métodos de Montecarlo, diagnóstico de ingeniería y confiabilidad, análisis de integridad y confiabilidad estructural, técnicas de pruebas no destructivas, técnicas y aplicaciones de procesamiento de imágenes, atención visual y detección de prominencia, técnicas de detección de imágenes y objetos, técnicas avanzadas de procesamiento de imágenes, técnicas de procesamiento de imágenes digitales, métodos matemáticos y computacionales, aprendizaje automático y clasificación de datos, aprendizaje automático en bioinformática, análisis de datos con R, autoensamblaje supramolecular en materiales, estudios de investigación de ácidos bioquímicos, polímeros conductores y aplicaciones, química analítica y sensores, materiales y aplicaciones 2D, simulaciones e interacciones de dinámica de fluidos, técnicas avanzadas de análisis numérico, computación paralela y técnicas de optimización, sistemas de energía eólica y undimotriz, producción y caracterización de enzimas, procesos de hidrología y transporte de sedimentos, dinámica de partículas en flujos de fluidos, procesos oceanográficos y atmosféricos, investigación en acústica submarina, estudios marinos y ambientales, erosión del suelo y transporte de sedimentos.",
+        "candidate": "Los tópicos de los proyectos en 2012 incluyeron: interacciones y aplicaciones laser-materia, espectroscopia y estudios de quimica cuantica, fisica atomica y molecular, analisis sensorial y metodos estadisticos, desarrollo de metodos de quimica analitica, comportamiento del consumidor en alimentacion y salud, quimica de los alimentos y analisis de grasas, fermentacion y analisis sensorial, quimica analitica y cromatografia, difraccion de rayos x en cristalografia, materiales y almacenamiento de hidrogeno, comportamientos de fragilizacion por hidrogeno y corrosion en metales, investigacion en ingenieria y ciencia de materiales, propiedades y aplicaciones de los materiales, electrocatalizadores para la conversion de energia, analisis y aplicaciones electroquimicas, analisis economico y espacial regional, gobernanza local y desarrollo, estudios historicos economicos y sociales, geografia historica y cartografia, desarrollo regional e innovacion, crecimiento economico y productividad, teoria e instituciones economicas, sistemas y practicas agricolas, diversas innovaciones en investigacion interdisciplinaria, estudios ambientales de pesticidas y herbicidas, conservacion y gestion ambiental, tecnicas de clasificacion de datos desequilibradas, compuestos de azufre en biologia, analisis y politica economica, sistemas complejos y analisis de series temporales, crecimiento economico y politicas fiscales, politicas fiscales y economia politica, politica fiscal y crecimiento economico, politica y sociedad en america latina, investigacion en biologia molecular vegetal, regulacion del arn y enfermedad, genetica bioinformatica e investigacion biomedica, mecanismos de sintesis de arn y proteinas, bioinformatica y redes genomicas, estudios de ingenieria marina y offshore, navegacion y seguridad maritima, investigacion marina y costera, dinamica de fluidos y flujos turbulentos, ingenieria y estudios ambientales, investigacion aplicada en ingenieria.\n\nLos tópicos de los proyectos en 2016 incluyeron: cadenas de markov y metodos de montecarlo, diagnostico de ingenieria y confiabilidad, analisis de integridad y confiabilidad estructural, tecnicas de pruebas no destructivas, tecnicas y aplicaciones de procesamiento de imagenes, atencion visual y deteccion de prominencia, tecnicas de deteccion de imagenes y objetos, tecnicas avanzadas de procesamiento de imagenes, tecnicas de procesamiento de imagenes digitales, investigacion aplicada en ingenieria, dinamica de fluidos y flujos turbulentos, navegacion y seguridad maritima, ingenieria y estudios ambientales, estudios de ingenieria marina y offshore, investigacion marina y costera, metodos matematicos y computacionales, metodos y aplicaciones estadisticas, aprendizaje automatico y clasificacion de datos, aprendizaje automatico en bioinformatica, analisis de datos con r, autoensamblaje supramolecular en materiales, estudios de investigacion de acidos bioquimicos, polimeros conductores y aplicaciones, quimica analitica y sensores, materiales y aplicaciones 2d, simulaciones e interacciones de dinamica de fluidos, tecnicas avanzadas de analisis numerico, computacion paralela y tecnicas de optimizacion, sistemas de energia eolica y undimotriz, produccion y caracterizacion de enzimas, procesos de hidrologia y transporte de sedimentos, dinamica de particulas en flujos de fluidos, procesos oceanograficos y atmosfericos, investigacion en acustica submarina, estudios marinos y ambientales, erosion del suelo y transporte de sedimentos.\n\nLos tópicos compartidos entre 2012 y 2016 fueron: metodos y aplicaciones estadisticas, estudios de ingenieria marina y offshore, navegacion y seguridad maritima, investigacion marina y costera, dinamica de fluidos y flujos turbulentos, ingenieria y estudios ambientales, investigacion aplicada en ingenieria.",
+        "latency_s": 62.80668666213751,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata lista correctamente todos los tópicos de 2012, 2016 y los compartidos, coincidiendo con los datos del grafo. Aunque no explicita etiquetas de 'solo 2012' o 'nuevos 2016', presenta las listas completas y los compartidos de forma precisa y sin inventar información."
+      },
+      {
+        "id": 79,
+        "category": "Análisis Temporal",
+        "question": "¿En qué año se inició el mayor número de proyectos según los datos disponibles?",
+        "gt_answer": "El año en que se inició el mayor número de proyectos fue 2012, con 11 proyectos.",
+        "candidate": "El año en el que se inició el mayor número de proyectos es 2012, con una cantidad de proyectos de 11.",
+        "latency_s": 2.392697338014841,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los datos del grafo: 2012 con 11 proyectos."
+      },
+      {
+        "id": 80,
+        "category": "Análisis Temporal",
+        "question": "¿Cómo evolucionó por año la cantidad de proyectos asociados al subcampo Mecánica Computacional?",
+        "gt_answer": "La cantidad de proyectos asociados al subcampo Mecánica Computacional evolucionó de la siguiente manera: 1 proyecto en 2012, 1 proyecto en 2014 y 2 proyectos en 2016.",
+        "candidate": "La cantidad de proyectos asociados al subcampo Mecánica Computacional evolucionó por año de la siguiente manera:\n\n*   anio: 2012, cantidad_proyectos: 1\n*   anio: 2014, cantidad_proyectos: 1\n*   anio: 2016, cantidad_proyectos: 2",
+        "latency_s": 5.707895882427692,
+        "is_sentinel": false,
+        "scores": {
+          "factual_correctness": 5,
+          "completeness": 5,
+          "faithfulness": 5
+        },
+        "sentinel_correct": null,
+        "justification": "La respuesta candidata coincide exactamente con la referencia y los resultados del grafo, sin omitir ni inventar datos."
+      }
+    ]
+  }
+]
