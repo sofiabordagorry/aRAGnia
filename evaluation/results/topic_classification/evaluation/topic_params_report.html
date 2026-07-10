@@ -31,15 +31,15 @@
   <h1>Parámetros de clasificación de tópicos</h1>
   <p class="subtitle">Variando: <strong>configuración única</strong> ·
     1 combinación(es) · GT: ground_truth_kg_evaluation.json ·
-    generado 2026-07-09 14:00 UTC</p>
+    generado 2026-07-10 13:50 UTC</p>
 
   <div class="card">
     <h2>Análisis</h2>
     <ul class="analysis">
-      <li>La mejor configuración por F1 macro (nivel tópico) es <strong>ck=0.15 cov=0.08 conf=14 size=512</strong> (F1=0.122, P=0.264, R=0.104).</li>
-<li>A <strong>nivel subcampo</strong> (colapsando tópico → subcampo) la mejor es <strong>ck=0.15 cov=0.08 conf=14 size=512</strong> (F1=0.165, P=0.271, R=0.161). Suele ser bastante más alta: BERT acierta el subcampo aunque erre el tópico exacto.</li>
+      <li>La mejor configuración por F1 macro (nivel tópico) es <strong>ck=0.08 cov=0.02 conf=13.5 size=300 mt=1</strong> (F1=0.115, P=0.170, R=0.128).</li>
+<li>A <strong>nivel subcampo</strong> (colapsando tópico → subcampo) la mejor es <strong>ck=0.08 cov=0.02 conf=13.5 size=300 mt=1</strong> (F1=0.218, P=0.275, R=0.252). Suele ser bastante más alta: BERT acierta el subcampo aunque erre el tópico exacto.</li>
 <li>Parámetros que varían: <strong>configuración única</strong> · 1 combinación(es).</li>
-<li>Parámetros fijos: <strong>ck=0.15, cov=0.08, conf=14, size=512</strong>.</li>
+<li>Parámetros fijos: <strong>ck=0.08, cov=0.02, conf=13.5, size=300, mt=1</strong>.</li>
 <li>El GT de tópicos está <strong>pendiente de actualización con los valores de los profes</strong>: las métricas son provisionales y sirven para comparar parámetros entre sí, no como score absoluto.</li>
     </ul>
   </div>
@@ -51,21 +51,21 @@
         <thead>
           <tr>
             <th rowspan="2">Config</th>
-            <th colspan="4" style="background:#1a252f;">Parámetros</th>
+            <th colspan="5" style="background:#1a252f;">Parámetros</th>
             <th rowspan="2">Proy.</th>
             <th colspan="3" style="background:#1a252f;">Macro</th>
             <th colspan="3" style="background:#1a252f;">Micro</th>
             <th colspan="3" style="background:#1a252f;">Conteo (micro)</th>
           </tr>
           <tr>
-            <th>chunk_thr</th><th>cov</th><th>conf</th><th>size</th>
+            <th>chunk_thr</th><th>cov</th><th>conf</th><th>size</th><th>mt</th>
             <th>P</th><th>R</th><th>F1</th>
             <th>P</th><th>R</th><th>F1</th>
             <th>TP</th><th>FP</th><th>FN</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td class='cfg'>ck=0.15 cov=0.08 conf=14 size=512</td><td>0.15</td><td>0.08</td><td>14</td><td>512</td><td>32</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.264</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.104</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.122</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.316</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.091</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.141</td><td>12</td><td>26</td><td>120</td></tr>
+          <tr><td class='cfg'>ck=0.08 cov=0.02 conf=13.5 size=300 mt=1</td><td>0.08</td><td>0.02</td><td>13.5</td><td>300</td><td>1</td><td>32</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.170</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.128</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.115</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.180</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.121</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.145</td><td>16</td><td>73</td><td>116</td></tr>
         </tbody>
       </table>
     </div>
@@ -75,15 +75,15 @@
     <h2>F1 por proyecto y configuración</h2>
     <div class="overflow-x">
       <table>
-        <thead><tr><th>Proyecto</th><th>ck=0.15 cov=0.08 conf=14 size=512</th></tr></thead>
+        <thead><tr><th>Proyecto</th><th>ck=0.08 cov=0.02 conf=13.5 size=300 mt=1</th></tr></thead>
         <tbody>
           <tr><td class='cfg'>proy_2012_266</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.250</td></tr>
-<tr><td class='cfg'>proy_2012_304</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
+<tr><td class='cfg'>proy_2012_304</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.200</td></tr>
 <tr><td class='cfg'>proy_2012_331</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
-<tr><td class='cfg'>proy_2012_342</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.500</td></tr>
-<tr><td class='cfg'>proy_2012_457</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.444</td></tr>
-<tr><td class='cfg'>proy_2012_491</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.286</td></tr>
-<tr><td class='cfg'>proy_2012_588</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.154</td></tr>
+<tr><td class='cfg'>proy_2012_342</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.250</td></tr>
+<tr><td class='cfg'>proy_2012_457</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.250</td></tr>
+<tr><td class='cfg'>proy_2012_491</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.222</td></tr>
+<tr><td class='cfg'>proy_2012_588</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.105</td></tr>
 <tr><td class='cfg'>proy_2012_616</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2012_637</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2012_661</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
@@ -91,21 +91,21 @@
 <tr><td class='cfg'>proy_2014_151</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2014_248</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2014_258</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
-<tr><td class='cfg'>proy_2014_276</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.286</td></tr>
+<tr><td class='cfg'>proy_2014_276</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.222</td></tr>
 <tr><td class='cfg'>proy_2014_402</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2014_407</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
-<tr><td class='cfg'>proy_2014_91</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.667</td></tr>
-<tr><td class='cfg'>proy_2016_160</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
+<tr><td class='cfg'>proy_2014_91</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.400</td></tr>
+<tr><td class='cfg'>proy_2016_160</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.143</td></tr>
 <tr><td class='cfg'>proy_2016_273</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2016_442</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2016_472</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2016_547</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2016_57</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2016_671</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
-<tr><td class='cfg'>proy_2016_89</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.333</td></tr>
-<tr><td class='cfg'>proy_2018_112</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.333</td></tr>
-<tr><td class='cfg'>proy_2018_256</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
-<tr><td class='cfg'>proy_2018_260</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.333</td></tr>
+<tr><td class='cfg'>proy_2016_89</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.250</td></tr>
+<tr><td class='cfg'>proy_2018_112</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.571</td></tr>
+<tr><td class='cfg'>proy_2018_256</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.182</td></tr>
+<tr><td class='cfg'>proy_2018_260</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.286</td></tr>
 <tr><td class='cfg'>proy_2018_354</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>
 <tr><td class='cfg'>proy_2018_413</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.333</td></tr>
 <tr><td class='cfg'>proy_2018_51</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td></tr>

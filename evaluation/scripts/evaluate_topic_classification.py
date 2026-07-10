@@ -78,11 +78,11 @@ PARAM_SHORT = {
     "min_topics": "mt",
 }
 
-CHUNKING_THRESHOLDS: List[float] = [0.04, 0.06, 0.08, 0.1, 0.11, 0.12, 0.13, 0.15]  # umbral etapa de chunking (score por chunk)
-COVERAGE_THRESHOLDS: List[float] = [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.15, 0.2, 0.5]  # umbral final: fracción de chunks
-CONFIDENCE_THRESHOLDS: List[float] = [8, 9, 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, 16]  # umbral final: logit promedio
-CHUNK_SIZES: List[int] = [256, 300, 512]   # max_tokens por chunk
-MIN_TOPICS_VALUES: List[int] = [1, 2, 3, 5]   # piso de tópicos por proyecto (siempre fallback)
+CHUNKING_THRESHOLDS: List[float] = [0.08]  # umbral etapa de chunking (score por chunk)
+COVERAGE_THRESHOLDS: List[float] = [0.02]  # umbral final: fracción de chunks
+CONFIDENCE_THRESHOLDS: List[float] = [13.5]  # umbral final: logit promedio
+CHUNK_SIZES: List[int] = [300]   # max_tokens por chunk
+MIN_TOPICS_VALUES: List[int] = [1]   # piso de tópicos por proyecto (siempre fallback)
 
 # Opciones de corrida:
 MAX_PROJECTS: Optional[int] = None  # limitar numero de proyectos (None = todos)
