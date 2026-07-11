@@ -8,7 +8,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
@@ -428,34 +428,39 @@ CRITICAL SYNTAX:
 
         # Una relación puede admitir más de una combinación de etiquetas.
         correct_directions: Dict[str, List[Tuple[str, str]]] = {
-            "PARTICIPO_EN": [("Investigador", "Proyecto"),("Investigador", "Grupo")],
-            "TIENE_TOPICO": [("Proyecto", "Topico"),("Grupo", "Topico")],
+            "PARTICIPO_EN": [("Investigador", "Proyecto"), ("Investigador", "Grupo")],
+            "TIENE_TOPICO": [("Proyecto", "Topico"), ("Grupo", "Topico")],
             "PERTENECE_A_SUBCAMPO": [("Topico", "Subcampo")],
-            "ES_DESCRITO_POR": [("Proyecto", "Documento"),("Grupo", "Documento")],
-            "INICIO_EN": [("Proyecto", "Anio"),("Grupo", "Anio")],
-            "PERTENECE_A_AREA": [("Proyecto", "Area"),("Grupo", "Area")],
+            "ES_DESCRITO_POR": [("Proyecto", "Documento"), ("Grupo", "Documento")],
+            "INICIO_EN": [("Proyecto", "Anio"), ("Grupo", "Anio")],
+            "PERTENECE_A_AREA": [("Proyecto", "Area"), ("Grupo", "Area")],
             "PRIMER_CHUNK": [("Documento", "Chunk")],
             "SIGUIENTE_CHUNK": [("Chunk", "Chunk")],
             "DE_DOCUMENTO": [("Chunk", "Documento")],
-            "EXTRAIDO_DE": [("Chunk", "Investigador"),("Chunk", "Topico")],
-            "TITULO_EXTRAIDO_DE": [("Proyecto", "Chunk"),("Grupo", "Chunk")],
+            "EXTRAIDO_DE": [("Chunk", "Investigador"), ("Chunk", "Topico")],
+            "TITULO_EXTRAIDO_DE": [("Proyecto", "Chunk"), ("Grupo", "Chunk")],
         }
 
         var_types: Dict[str, str] = {}
 
-        node_declaration_pattern = re.compile(r"""\(\s*(?P<var>[A-Za-z_]\w*)\s*:\s*(?P<label>[A-Za-z_]\w*)""",re.IGNORECASE | re.VERBOSE,)
+        node_declaration_pattern = re.compile(
+            r"""\(\s*(?P<var>[A-Za-z_]\w*)\s*:\s*(?P<label>[A-Za-z_]\w*)""",
+            re.IGNORECASE | re.VERBOSE,
+        )
 
         for match in node_declaration_pattern.finditer(query):
             variable = match.group("var")
             label = match.group("label")
             var_types.setdefault(variable, label)
 
-
         node_properties = r"""(?:\s*\{(?:[^{}]|\{[^{}]*\})*\})?"""
         left_node = rf"""(?P<left_node>\(\s*(?:(?P<left>[A-Za-z_]\w*)\s*)?(?::\s*(?P<left_label>[A-Za-z_]\w*)(?:\s*:\s*[A-Za-z_]\w*)*)?{node_properties}\s*\))"""
         right_node = rf"""(?P<right_node>\(\s*(?:(?P<right>[A-Za-z_]\w*)\s*)?(?::\s*(?P<right_label>[A-Za-z_]\w*)(?:\s*:\s*[A-Za-z_]\w*)*)?{node_properties}\s*\))"""
         relationship = r"""(?P<relationship>\[\s*(?:(?P<rel_var>[A-Za-z_]\w*)\s*)?:\s*(?P<rel_type>[A-Za-z_]\w*)[^\]]*\])"""
-        edge_pattern = re.compile(rf"""(?={left_node}\s*(?P<left_arrow><-|-)\s*{relationship}\s*(?P<right_arrow>->|-)\s*{right_node})""",re.IGNORECASE | re.VERBOSE)
+        edge_pattern = re.compile(
+            rf"""(?={left_node}\s*(?P<left_arrow><-|-)\s*{relationship}\s*(?P<right_arrow>->|-)\s*{right_node})""",
+            re.IGNORECASE | re.VERBOSE,
+        )
 
         edits: List[Tuple[int, int, str]] = []
         corrections_made: List[str] = []
@@ -465,7 +470,7 @@ CRITICAL SYNTAX:
             left_arrow = match.group("left_arrow")
             right_arrow = match.group("right_arrow")
 
-            if (left_arrow, right_arrow) not in {("-", "->"),("<-", "-")}:
+            if (left_arrow, right_arrow) not in {("-", "->"), ("<-", "-")}:
                 continue
 
             rel_type_original = match.group("rel_type")
@@ -490,8 +495,7 @@ CRITICAL SYNTAX:
                 continue
 
             expected_normalized = {
-                (source.casefold(), target.casefold())
-                for source, target in expected_pairs
+                (source.casefold(), target.casefold()) for source, target in expected_pairs
             }
 
             if (left_arrow, right_arrow) == ("-", "->"):
@@ -513,7 +517,7 @@ CRITICAL SYNTAX:
                 actual_pair[1],
                 actual_pair[0],
             )
-            
+
             if reversed_pair not in expected_normalized:
                 continue
 
@@ -524,8 +528,16 @@ CRITICAL SYNTAX:
                 new_left_arrow = "-"
                 new_right_arrow = "->"
 
-            left_edit = (match.start("left_arrow"), match.end("left_arrow"), new_left_arrow,)
-            right_edit = (match.start("right_arrow"), match.end("right_arrow"), new_right_arrow,)
+            left_edit = (
+                match.start("left_arrow"),
+                match.end("left_arrow"),
+                new_left_arrow,
+            )
+            right_edit = (
+                match.start("right_arrow"),
+                match.end("right_arrow"),
+                new_right_arrow,
+            )
 
             if left_edit not in registered_edits:
                 edits.append(left_edit)
@@ -535,15 +547,22 @@ CRITICAL SYNTAX:
                 edits.append(right_edit)
                 registered_edits.add(right_edit)
 
-            corrections_made.append("{actual_source}-[:{rel_type_original}]->{actual_target} "f"se corrigió a "f"{actual_target}-[:{rel_type_original}]->{actual_source}")
+            corrections_made.append(
+                "{actual_source}-[:{rel_type_original}]->{actual_target} "
+                f"se corrigió a "
+                f"{actual_target}-[:{rel_type_original}]->{actual_source}"
+            )
 
         fixed = query
 
-        for start, end, replacement in sorted(edits,key=lambda edit: edit[0],reverse=True):
+        for start, end, replacement in sorted(edits, key=lambda edit: edit[0], reverse=True):
             fixed = fixed[:start] + replacement + fixed[end:]
 
         if corrections_made:
-            logger.info("Direcciones corregidas automáticamente: %s"," | ".join(corrections_made),)
+            logger.info(
+                "Direcciones corregidas automáticamente: %s",
+                " | ".join(corrections_made),
+            )
 
         return fixed
 

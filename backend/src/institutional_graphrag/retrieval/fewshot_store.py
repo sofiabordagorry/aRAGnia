@@ -53,7 +53,6 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
         "qué proyectos hay de biotecnología?",
         "MATCH (t:Topico)\nWHERE t.valor = 'biotecnologia'\nMATCH (p:Proyecto)-[:TIENE_TOPICO]->(t)\nMATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN DISTINCT p, COLLECT(DISTINCT c) AS chunks",
     ),
-    
     (
         "quiénes participaron en el proyecto co-simulacion en sistemas ciber fisicos?",
         "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)\nWHERE toLower(p.titulo) CONTAINS 'co-simulacion en sistemas ciber fisicos'\nOPTIONAL MATCH (c:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT c) AS chunks",
@@ -120,7 +119,6 @@ DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
         "en qué año inició el proyecto proy_2020_513?",
         "MATCH (p:Proyecto {id: 'proy_2020_513'})\nOPTIONAL MATCH (p)-[:INICIO_EN]->(a:Anio)\nRETURN a.anio AS año, a",
     ),
-
     # TEMPORAL
     (
         "¿Qué subcampos aparecieron en proyectos iniciados a partir de 2016 y no estaban presentes antes de ese año?",
