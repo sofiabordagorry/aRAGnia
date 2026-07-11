@@ -53,14 +53,14 @@ def main() -> None:
             if records:
                 context = retriever._build_aggregation_context(records)
             else:
-                context = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
+                context = "La consulta no puede responderse con la información del grafo."
 
 
             item["retrieved_subgraph"] = context
 
         except Exception as e:
             print(f"Error en pregunta {question_id}: {e}")
-            item["retrieved_subgraph"] = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
+            item["retrieved_subgraph"] = "La consulta no puede responderse con la información del grafo."
 
     retriever.close()
     with GT_PATH.open("w", encoding="utf-8") as f:

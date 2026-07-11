@@ -196,7 +196,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
     "cypher_query": "MATCH (a:Anio) WITH collect(DISTINCT toInteger(a.anio)) AS todos_los_anios MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH t, count(DISTINCT a.anio) AS cantidad_anios_topico, todos_los_anios WHERE cantidad_anios_topico = size(todos_los_anios) RETURN todos_los_anios, collect(DISTINCT t) AS topicos",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -236,7 +236,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Existen investigadores que participen en proyectos de subcampos completamente distintos entre sí? ¿Quiénes son?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH i, p, collect(DISTINCT s) AS subfields WITH i, collect({p: p, s: subfields}) AS profiles UNWIND profiles AS pair1 UNWIND profiles AS pair2 WITH i, pair1.p AS p1, pair2.p AS p2, pair1.s AS s1, pair2.s AS s2 WHERE elementId(p1) < elementId(p2) AND none(x IN s1 WHERE x IN s2) RETURN i AS investigador, p1.titulo_de_despliegue AS proyecto_A, p2.titulo_de_despliegue AS proyecto_B",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -244,7 +244,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Aplicaciones Web y Gestión de Datos, y Optimización y programación matemática?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t1.valor) CONTAINS toLower('Aplicaciones Web y Gestion de Datos') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t2.valor) CONTAINS toLower('Optimizacion y programacion matematica') RETURN DISTINCT p.titulo_de_despliegue",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -284,7 +284,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos.",
     "cypher_query": "MATCH (p0:Proyecto)<-[:PARTICIPO_EN]-(i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p0.titulo) CONTAINS toLower('Aplicaciones de la Teoria de la Informacion al procesamiento de datos de secuenciacion de genomas por nanoporos') AND p <> p0 RETURN DISTINCT p.titulo_de_despliegue AS proyecto_relacionado, collect(DISTINCT i) AS investigadores_en_comun",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -412,7 +412,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos tecnicas de ingenieria de software basadas en modelos y cadenas de markov y metodos de montecarlo",
     "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.valor) CONTAINS toLower('cadenas de markov y metodos de montecarlo') AND toLower(t1.valor) CONTAINS toLower('tecnicas de ingenieria de software basadas en modelos') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
