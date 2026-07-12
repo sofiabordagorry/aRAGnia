@@ -53,13 +53,13 @@ Guía rápida de los scripts en esta carpeta.
     - `python evaluation/scripts/evaluate_cypher.py evaluation/ground_truth/datasetQA_GT.json`
 
 - `generate_gt_answers.py`
-  - Genera respuestas en lenguaje natural a partir de un subgrafo recuperado.
-  - Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en lenguaje natural) y `retrieved_subgraph` (subgrafo recuperado del grafo) y, para cada uno, genera/completa el campo `answer`.
+  - Genera respuestas en lenguaje natural a partir de la información recuperada.
+  - Toma un JSON cualquiera cuyos items tengan los campos `pregunta` (pregunta en lenguaje natural) y `cypher_result` (información recuperada del grafo) y, para cada uno, genera/completa el campo `answer`.
   - Reutiliza la misma lógica de generación de respuestas del pipeline GraphRAG (`answer_llm_client`), sin necesidad de conectarse a Neo4j. Funciona con Ollama o HuggingFace según la variable de entorno `LLM_BACKEND`.
   - Los mensajes centinela (`fuera de alcance`, `no se encontró información`) se resuelven directamente, sin invocar al LLM.
 
   - Entrada:
-    - Un archivo JSON (lista de objetos, o un objeto con la clave `questions`) donde cada item tenga al menos `pregunta` y `retrieved_subgraph` (por ejemplo, la salida de `result_cypher_GT.py`).
+    - Un archivo JSON (lista de objetos, o un objeto con la clave `questions`) donde cada item tenga al menos `pregunta` y `cypher_result` (por ejemplo, la salida de `result_cypher_GT.py`).
 
   - Salida:
     - Escribe en `<nombre_entrada>_answers.json` (no modifica el archivo de entrada), agregando/completando el campo `answer` en cada item.
@@ -72,7 +72,7 @@ Guía rápida de los scripts en esta carpeta.
 - `evaluate_generation.py`
   - Evalúa la **generación** de respuestas en lenguaje natural sobre el GT de validación (`datasetQA_GT.json`): responde qué combinación de LLM y prompt genera mejores respuestas y mide los tiempos de espera.
   - Para cada combinación de modelo × variante de prompt:
-    - Genera la respuesta desde `pregunta` + `retrieved_subgraph`, midiendo la latencia de cada generación.
+    - Genera la respuesta desde `pregunta` + `cypher_result`, midiendo la latencia de cada generación.
     - Juzga la respuesta contra el `answer` de referencia con LLM-as-a-judge vía API de Anthropic (correctitud factual, completitud, fidelidad; escala 1-5 normalizada a 0-1).
     - Los items centinela (fuera de alcance / sin info) se evalúan de forma determinística (exact-match), sin invocar al juez.
   - Configuración: editar las constantes `MODELS` (lista de `{display, backend, model}`) y `PROMPT_VARIANTS` en el script, o pasar `--models-file`.
@@ -125,24 +125,24 @@ Guía rápida de los scripts en esta carpeta.
 
 - `result_cypher_GT.py`
   - Ejecuta queries Cypher almacenadas en un archivo JSON.
-  - Recupera el subgrafo asociado a cada consulta y lo guarda en el mismo JSON.
+  - Guarda la información recuperada en el mismo JSON.
   - Genera contexto agregado a partir de los resultados recuperados.
 
   - Entrada:
     - `datasetQA_GT.json`
 
   - Salida:
-    - Actualiza el mismo archivo JSON agregando datos en el campo `retrieved_subgraph`.
+    - Actualiza el mismo archivo JSON agregando datos en el campo `cypher_result`.
 
   - Uso:
     - `python evaluation/scripts/result_cypher_GT.py`
 
 - `evaluate_retrieval.py`
-  - Evalúa la **recuperación (retrieval)** del pipeline GraphRAG sobre el GT de validación (`datasetQA_GT.json`): responde qué combinación de LLM y prompt recupera el mejor subgrafo para cada pregunta.
+  - Evalúa la **recuperación (retrieval)** del pipeline GraphRAG sobre el GT de validación (`datasetQA_GT.json`): responde qué combinación de LLM y prompt recupera la información más relevante para cada pregunta.
   - Para cada combinación de modelo × variante de prompt:
     - Genera automáticamente la consulta Cypher a partir de la pregunta.
-    - Ejecuta la consulta en Neo4j y recupera el subgrafo correspondiente.
-    - Compara el subgrafo recuperado contra el subgrafo de referencia (`retrieved_subgraph`) mediante un **LLM-as-a-judge**, evaluando:
+    - Ejecuta la consulta en Neo4j y recupera la información correspondiente.
+    - Compara la información recuperada contra la información de referencia (`cypher_result`) mediante un **LLM-as-a-judge**, evaluando:
       - **Recall:** qué tan completa es la información recuperada.
       - **Precision:** qué tan relevante es el contexto recuperado (evitando ruido).
   - Configuración:

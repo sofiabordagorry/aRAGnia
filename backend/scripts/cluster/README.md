@@ -332,7 +332,7 @@ token, OOM, etc.) el script **sigue con los demás** y al final lista los que fa
 
 ## Evaluacion de recuperacion (Neo4j con Singularity)
 
-Para evaluar la etapa de *Retrieval* (qué tan bien el sistema genera queries Cypher y recupera subgrafos), el script necesita consultar una base de datos Neo4j viva. Como los nodos de ClusterUY no pueden acceder a tu entorno local (Docker Desktop), usamos **Singularity** (Apptainer) para levantar una base de datos efímera dentro del mismo nodo de cómputo asignado por SLURM.
+Para evaluar la etapa de *Retrieval* (qué tan bien el sistema genera queries Cypher y recupera la información relevante), el script necesita consultar una base de datos Neo4j viva. Como los nodos de ClusterUY no pueden acceder a tu entorno local (Docker Desktop), usamos **Singularity** (Apptainer) para levantar una base de datos efímera dentro del mismo nodo de cómputo asignado por SLURM.
 
 Esta arquitectura garantiza latencia cero, ya que la base de datos, el LLM y el evaluador comparten la misma RAM y CPU/GPU durante el job, destruyéndose de forma segura al finalizar.
 

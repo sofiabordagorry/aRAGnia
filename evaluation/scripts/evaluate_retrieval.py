@@ -5,8 +5,8 @@ Evalúa la RECUPERACIÓN (Cypher + Contexto) sobre el ground truth de validació
 
 Para cada modelo evaluado:
   1. Actúa como el motor de generación Cypher.
-  2. Ejecuta la query en Neo4j y extrae el subgrafo (`retrieved_subgraph`).
-  3. Compara el subgrafo recuperado contra el subgrafo de referencia (GT) usando
+  2. Ejecuta la query en Neo4j y extrae la información relevante (`cypher_result`).
+  3. Compara la información recuperada contra la información de referencia (GT) usando
      un LLM-as-a-judge (API de Anthropic), evaluando Recall y Precision.
   4. Calcula F1-score a partir de Precision y Recall.
   5. Mide latencias y la tasa de acierto en casos centinela.
@@ -76,8 +76,8 @@ PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6", "#34495e"]
 def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "")).strip().lower()
 
-def is_sentinel(gt_subgraph: str) -> bool:
-    return _norm(gt_subgraph) in {_norm(SENTINEL_NOT_IN_SCHEMA), _norm(SENTINEL_NO_INFO), _norm(SENTINEL_NOT_RESULT),""}
+def is_sentinel(gt_cypher_result: str) -> bool:
+    return _norm(gt_cypher_result) in {_norm(SENTINEL_NOT_IN_SCHEMA), _norm(SENTINEL_NO_INFO), _norm(SENTINEL_NOT_RESULT),""}
 
 def sentinel_matches(candidate: str, expected: str) -> bool:
     return _norm(candidate) == _norm(expected)
@@ -114,8 +114,8 @@ def _extract_json(text: str) -> Dict[str, Any]:
     if not match: raise ValueError(f"El juez no devolvió JSON: {text[:100]}...")
     return dict(json.loads(match.group(0)))
 
-def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_subgraph: str, candidate_subgraph: str, retries: int = 3) -> Dict[str, Any]:
-    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_subgraph}\n\nCONTEXTO RECUPERADO:\n{candidate_subgraph}\n\nDevolvé el JSON con los scores."
+def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_cypher_result: str, candidate_cypher_result: str, retries: int = 3) -> Dict[str, Any]:
+    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé el JSON con los scores."
     payload = {"model": model, "max_tokens": 512, "system": JUDGE_SYSTEM, "messages": [{"role": "user", "content": user}]}
     headers = {"x-api-key": api_key, "anthropic-version": ANTHROPIC_VERSION, "content-type": "application/json"}
 
@@ -133,10 +133,10 @@ def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_subgra
             if attempt == retries - 1: raise RuntimeError(f"El juez falló: {exc}")
             time.sleep(2 * (attempt + 1))
 
-def judge_retrieval_local(model: str, question: str, gt_subgraph: str, candidate_subgraph: str) -> Dict[str, Any]:
+def judge_retrieval_local(model: str, question: str, gt_cypher_result: str, candidate_cypher_result: str) -> Dict[str, Any]:
     """Usa un modelo de Ollama local como juez."""
     client = OllamaClient(model=model)
-    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_subgraph}\n\nCONTEXTO RECUPERADO:\n{candidate_subgraph}\n\nDevolvé el JSON con los scores del 1 al 5."
+    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé el JSON con los scores del 1 al 5."
     messages = [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": user}]
     
     response = client.generate(messages=messages, temperature=0.0, max_tokens=512)
@@ -178,7 +178,7 @@ def evaluate_combo(
 
     retriever.cypher_llm_client = client
     retriever._build_cypher_generation_prompt = lambda q: fill_placeholders(retriever, prompt_template, q)
-    candidate_subgraph = "Placeholder"
+    candidate_cypher_result = "Placeholder"
 
     original_classify = retriever._classify_query_intent
     def tracking_classify(q):
@@ -192,9 +192,9 @@ def evaluate_combo(
         for item in items:
             question = (item.get("pregunta") or item.get("question", "")).strip()
             if not question: continue
-            gt_subgraph = item.get("retrieved_subgraph", "")
+            gt_cypher_result = item.get("cypher_result", "")
             qid = item.get("id", "?")
-            sentinel = is_sentinel(gt_subgraph)
+            sentinel = is_sentinel(gt_cypher_result)
             cypher_query = ""
 
             logger.info(f"Procesando pregunta: [{qid}]")
@@ -203,10 +203,10 @@ def evaluate_combo(
             try:         
                 result_obj, neo_records, cypher_query = retriever.generate_cypher_query_result(user_query=question)
                 if result_obj.answer == SENTINEL_NOT_IN_SCHEMA:
-                    candidate_subgraph = SENTINEL_NOT_IN_SCHEMA
+                    candidate_cypher_result = SENTINEL_NOT_IN_SCHEMA
                 elif neo_records == []:
                     logger.warning(result_obj.answer)
-                    candidate_subgraph = result_obj.answer
+                    candidate_cypher_result = result_obj.answer
                 else:
                     chunks, evidence_entities, chunk_to_entities = (
                         retriever.extract_chunks_and_entities_from_results(neo_records)
@@ -215,24 +215,24 @@ def evaluate_combo(
                         logger.warning("No se encontraron chunks en los resultados del grafo")
                         if neo_records:
                             logger.info("Sin chunks pero con resultados del grafo, procesando...")
-                            candidate_subgraph = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
+                            candidate_cypher_result = retriever._build_aggregation_context(neo_records) if neo_records else SENTINEL_NO_INFO
                         else:
-                            candidate_subgraph = SENTINEL_NO_INFO
+                            candidate_cypher_result = SENTINEL_NO_INFO
                     else:
                         if evidence_entities:
-                            candidate_subgraph = retriever.build_entity_context(evidence_entities, chunk_to_entities)
+                            candidate_cypher_result = retriever.build_entity_context(evidence_entities, chunk_to_entities)
                         else:
-                            candidate_subgraph = retriever._build_aggregation_context(neo_records)    
+                            candidate_cypher_result = retriever._build_aggregation_context(neo_records)    
             except Exception as e:
                 logger.warning(f"[{qid}] Excepción no controlada: {e}")
-                candidate_subgraph = SENTINEL_NO_INFO
+                candidate_cypher_result = SENTINEL_NO_INFO
                     
             latency = time.perf_counter() - t0
             logger.info(f"[{qid}] Generación y recuperación finalizada en {latency:.2f}s")
 
             rec = {
                 "id": qid, "category": item.get("categoria", item.get("category", "")),
-                "question": question, "gt_subgraph": gt_subgraph, "generated query": cypher_query, "candidate_subgraph": candidate_subgraph,
+                "question": question, "gt_cypher_result": gt_cypher_result, "generated query": cypher_query, "candidate_cypher_result": candidate_cypher_result,
                 "latency_s": latency, "is_sentinel": sentinel, "scores": None, "sentinel_correct": None, "justification": "",
             }
 
@@ -246,12 +246,12 @@ def evaluate_combo(
                 continue
 
             if sentinel:
-                rec["sentinel_correct"] = sentinel_matches(candidate_subgraph, gt_subgraph)
+                rec["sentinel_correct"] = sentinel_matches(candidate_cypher_result, gt_cypher_result)
                 print(f"  [{qid}] centinela -> {'OK' if rec['sentinel_correct'] else 'FAIL'} ({latency:.1f}s)", flush=True)
             elif local_judge:
                 try:
                     logger.info(f"[{qid}] Enviando candidato al juez local ({local_judge})...")
-                    scores = judge_retrieval_local(local_judge, question, gt_subgraph, candidate_subgraph)
+                    scores = judge_retrieval_local(local_judge, question, gt_cypher_result, candidate_cypher_result)
                     rec["scores"] = scores
                     rec["justification"] = scores["justification"]
                     avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
@@ -259,7 +259,7 @@ def evaluate_combo(
                 except Exception as e:
                     print(f"  [{qid}] Falló el juez local: {e}", flush=True)
             elif api_key:
-                scores = judge_retrieval_anthropic(api_key, judge_model, question, gt_subgraph, candidate_subgraph)
+                scores = judge_retrieval_anthropic(api_key, judge_model, question, gt_cypher_result, candidate_cypher_result)
                 rec["scores"] = scores
                 rec["justification"] = scores["justification"]
                 avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])

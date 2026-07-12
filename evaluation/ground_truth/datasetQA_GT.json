@@ -4,7 +4,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto) WHERE toLower(p.titulo) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno') RETURN DISTINCT i AS investigador_responsable",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador_responsable: Adriana Alejandra Marotta Llambí (Investigador)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador_responsable: Adriana Alejandra Marotta Llambí (Investigador)",
     "answer": "La investigadora responsable del proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad' es Adriana Alejandra Marotta Llambí."
   },
   {
@@ -12,7 +12,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿En qué proyecto participó fernando carpani?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.nombre) CONTAINS toLower('fernando carpani') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
     "answer": "Fernando Carpani participó en el proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad'."
   },
   {
@@ -20,7 +20,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Cuáles son los tópicos principales a los que pertenece el proyecto sobre aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(p.titulo) CONTAINS toLower('aplicaciones de la teoria de la informacion al procesamiento de datos de secuenciacion de genomas por nanoporos') RETURN DISTINCT t AS topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
     "answer": "El proyecto sobre aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos pertenece a dos tópicos principales: investigación científica y tecnología; algoritmos y compresión de datos."
   },
   {
@@ -28,7 +28,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿A qué subcampo general pertenece el tópico Aplicaciones Web y Gestión de Datos?",
     "cypher_query": "MATCH (t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(t.valor) CONTAINS toLower('Aplicaciones Web y Gestion de Datos') RETURN DISTINCT s AS subcampo",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion (Subcampo)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion (Subcampo)",
     "answer": "El tópico 'Aplicaciones Web y Gestión de Datos' pertenece al subcampo de sistemas de información."
   },
   {
@@ -36,7 +36,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Qué investigadores conforman el equipo del proyecto Minería de procesos y datos para la mejora de procesos en las organizaciones?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.titulo) CONTAINS toLower('Mineria de procesos y datos para la mejora de procesos en las organizaciones') RETURN DISTINCT i AS investigador",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Adriana Alejandra Marotta Llambí (Investigador)\n2. investigador: José Lisandro Aguilar Castro (Investigador)\n3. investigador: Libertad Tansini Mercader (Investigador)\n4. investigador: Daniel Calegari García (Investigador)\n5. investigador: María Laura González López (Investigador)\n6. investigador: Andrea Verónica Delgado Cavaliere (Investigador)\n7. investigador: Ricardo Pérez del Castillo (Investigador)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Adriana Alejandra Marotta Llambí (Investigador)\n2. investigador: José Lisandro Aguilar Castro (Investigador)\n3. investigador: Libertad Tansini Mercader (Investigador)\n4. investigador: Daniel Calegari García (Investigador)\n5. investigador: María Laura González López (Investigador)\n6. investigador: Andrea Verónica Delgado Cavaliere (Investigador)\n7. investigador: Ricardo Pérez del Castillo (Investigador)",
     "answer": "El equipo del proyecto 'Minería de procesos y datos para la mejora de procesos en las organizaciones' está conformado por Adriana Alejandra Marotta Llambí, José Lisandro Aguilar Castro, Libertad Tansini Mercader, Daniel Calegari García, María Laura González López, Andrea Verónica Delgado Cavaliere y Ricardo Pérez del Castillo."
   },
   {
@@ -44,7 +44,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿En qué año inició oficialmente el proyecto de Generación automática de variantes en familias de procesos de negocio?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p.titulo) CONTAINS toLower('Generacion automatica de variantes en familias de procesos de negocio') RETURN DISTINCT a AS anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016 (Anio)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2016 (Anio)",
     "answer": "El proyecto de Generación automática de variantes en familias de procesos de negocio inició oficialmente en el año 2016."
   },
   {
@@ -52,7 +52,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "Nombra todos los proyectos que están asociados de alguna manera al subcampo sistemas de informacion.",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('sistemas de informacion') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Generación automática de variantes en familias de procesos de negocio\n2. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n3. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Generación automática de variantes en familias de procesos de negocio\n2. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n3. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
     "answer": "Los proyectos asociados al subcampo sistemas de información son: Generación automática de variantes en familias de procesos de negocio; Minería de procesos y datos para la mejora de procesos en las organizaciones; y Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad."
   },
   {
@@ -60,7 +60,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "Lista todos los proyectos en los que figura la participación de Hector Cancela Bosi.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.nombre) CONTAINS toLower('hector cancela bosi') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos",
     "answer": "Héctor Cancela Bosi figura en el proyecto 'Sistemas binarios estocásticos dinámicos'."
   },
   {
@@ -68,7 +68,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Cuáles son los tópicos específicos vinculados al proyecto liderado por Álvaro Martín?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.nombre) CONTAINS toLower('alvaro Martin') RETURN DISTINCT t AS topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
     "answer": "El proyecto liderado por Álvaro Martín está vinculado a dos tópicos específicos: investigación científica y tecnología; y algoritmos y compresión de datos."
   },
   {
@@ -76,7 +76,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Quiénes figuran como responsables directos del proyecto de Minería de procesos y datos para la mejora de procesos en las organizaciones?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto) WHERE toLower(p.titulo) CONTAINS toLower('Mineria de procesos y datos para la mejora de procesos en las organizaciones') RETURN DISTINCT i AS responsable",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. responsable: Andrea Verónica Delgado Cavaliere (Investigador)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. responsable: Andrea Verónica Delgado Cavaliere (Investigador)",
     "answer": "El responsable directo del proyecto 'Minería de procesos y datos para la mejora de procesos en las organizaciones' es Andrea Verónica Delgado Cavaliere."
   },
   {
@@ -84,7 +84,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿A qué área pertenece el proyecto sistemas binarios estocasticos dinamicos?",
     "cypher_query": "MATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(p.titulo) CONTAINS toLower('sistemas binarios estocasticos dinamicos') RETURN DISTINCT a AS area",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. area: tecnologica (Area)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. area: tecnologica (Area)",
     "answer": "El proyecto 'Sistemas binarios estocásticos dinámicos' pertenece al área tecnológica."
   },
   {
@@ -92,7 +92,7 @@
     "categoria": "Consultas Estructurales Simples",
     "pregunta": "¿Qué proyectos pertenecen al área tecnologica?",
     "cypher_query": "MATCH (p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(a.valor) CONTAINS toLower('tecnologica') RETURN DISTINCT p AS proyecto",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos (Proyecto)\n2. proyecto: Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos (Proyecto)\n3. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad (Proyecto)\n4. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones (Proyecto)\n5. proyecto: Generación automática de variantes en familias de procesos de negocio (Proyecto)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos (Proyecto)\n2. proyecto: Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos (Proyecto)\n3. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad (Proyecto)\n4. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones (Proyecto)\n5. proyecto: Generación automática de variantes en familias de procesos de negocio (Proyecto)",
     "answer": "Al área tecnológica pertenecen cinco proyectos: 'Sistemas binarios estocásticos dinámicos'; 'Minería de procesos y datos para la mejora de procesos en las organizaciones'; 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad'; 'Generación automática de variantes en familias de procesos de negocio'; y 'Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos'."
   },
   {
@@ -100,7 +100,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo ha evolucionado la cantidad de proyectos en el subcampo de Sistemas de Información",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('Sistemas de Informacion') RETURN a AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018 (Anio), cantidad_proyectos: 1\n2. anio: 2012 (Anio), cantidad_proyectos: 1\n3. anio: 2016 (Anio), cantidad_proyectos: 1",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2018 (Anio), cantidad_proyectos: 1\n2. anio: 2012 (Anio), cantidad_proyectos: 1\n3. anio: 2016 (Anio), cantidad_proyectos: 1",
     "answer": "Según los datos disponibles, la cantidad de proyectos en el subcampo de Sistemas de Información se mantuvo constante en los años registrados. Hay un proyecto en 2012, un proyecto en 2016 y un proyecto en 2018. Por lo tanto, no se observa un aumento ni una disminución, sino una presencia estable de un proyecto por año registrado."
   },
   {
@@ -108,7 +108,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué nuevos tópicos de investigación surgieron en los proyectos que iniciaron a partir del año 2018?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.anio) >= 2018 WITH collect(DISTINCT t.valor) AS t1 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.anio) < 2018 WITH t1, collect(DISTINCT t.valor) AS t2 RETURN [x IN t1 WHERE NOT x IN t2] AS topicos_nuevos_post_2018",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [algoritmos y aplicaciones de mineria de datos]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topicos_nuevos_post_2018: [algoritmos y aplicaciones de mineria de datos]",
     "answer": "El único tópico de investigación que surgió en los proyectos iniciados a partir del año 2018 es: algoritmos y aplicaciones de minería de datos."
   },
   {
@@ -116,7 +116,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuáles fueron los temas de investigación más frecuentes en los proyectos que tuvieron su inicio en 2018?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.anio) = 2018 RETURN t AS topico, count(DISTINCT p) AS frecuencia ORDER BY frecuencia DESC",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: algoritmos y aplicaciones de mineria de datos (Topico), frecuencia: 1\n2. topico: tecnicas de ingenieria de software basadas en modelos (Topico), frecuencia: 1\n3. topico: modelado y análisis de procesos de negocio (Topico), frecuencia: 1",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topico: algoritmos y aplicaciones de mineria de datos (Topico), frecuencia: 1\n2. topico: tecnicas de ingenieria de software basadas en modelos (Topico), frecuencia: 1\n3. topico: modelado y análisis de procesos de negocio (Topico), frecuencia: 1",
     "answer": "Los temas de investigación más frecuentes en los proyectos iniciados en 2018 fueron: algoritmos y aplicaciones de minería de datos, técnicas de ingeniería de software basadas en modelos, y modelado y análisis de procesos de negocio. Todos aparecen con la misma frecuencia: 1 proyecto cada uno."
   },
   {
@@ -124,7 +124,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿En qué años específicos comenzaron a desarrollarse proyectos relacionados con Algoritmos y aplicaciones de minería de datos?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('Algoritmos y aplicaciones de mineria de datos') RETURN DISTINCT toInteger(a.anio) AS anio, collect(DISTINCT p.titulo_de_despliegue) AS proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2018, proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2018, proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]",
     "answer": "Los proyectos relacionados con algoritmos y aplicaciones de minería de datos comenzaron a desarrollarse en el año 2018, con el proyecto 'Minería de procesos y datos para la mejora de procesos en las organizaciones'."
   },
   {
@@ -132,7 +132,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se observa un cambio en los subcampos de investigación si se comparan los proyectos iniciados antes de 2016 con los de 2018?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.anio) < 2016 WITH collect(DISTINCT s.valor) AS subcampos_antes_2016 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.anio) = 2018 WITH subcampos_antes_2016, collect(DISTINCT s.valor) AS subcampos_2018 RETURN subcampos_antes_2016, subcampos_2018, [x IN subcampos_antes_2016 WHERE NOT x IN subcampos_2018] AS solo_antes_2016, [x IN subcampos_2018 WHERE NOT x IN subcampos_antes_2016] AS nuevos_en_2018, [x IN subcampos_antes_2016 WHERE x IN subcampos_2018] AS compartidos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. subcampos_antes_2016: [sistemas de informacion], subcampos_2018: [sistemas de informacion, software, sistemas de informacion de gestion], solo_antes_2016: [], nuevos_en_2018: [software, sistemas de informacion de gestion], compartidos: [sistemas de informacion]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. subcampos_antes_2016: [sistemas de informacion], subcampos_2018: [sistemas de informacion, software, sistemas de informacion de gestion], solo_antes_2016: [], nuevos_en_2018: [software, sistemas de informacion de gestion], compartidos: [sistemas de informacion]",
     "answer": "Sí, se observa un cambio entre ambos periodos: hay un subcampo compartido y aparecen nuevos subcampos en 2018. Los proyectos iniciados antes de 2016 se concentraban en sistemas de información. En 2018, en cambio, además de sistemas de información, aparecen subcampos nuevos: software y sistemas de información de gestión."
   },
   {
@@ -140,7 +140,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué otros tópicos se estaban investigando en el ecosistema en el mismo año en que inició el proyecto sistemas binarios estocasticos dinamicos?",
     "cypher_query": "MATCH (p0:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(p0.titulo) CONTAINS toLower('sistemas binarios estocasticos dinamicos') WITH DISTINCT a, p0 MATCH (p:Proyecto)-[:INICIO_EN]->(a), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE p <> p0 RETURN DISTINCT t.valor AS topico ORDER BY topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: algoritmos y compresion de datos\n2. topico: investigacion cientifica y tecnologia\n3. topico: modelado y análisis de procesos de negocio\n4. topico: tecnicas de ingenieria de software basadas en modelos",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topico: algoritmos y compresion de datos\n2. topico: investigacion cientifica y tecnologia\n3. topico: modelado y análisis de procesos de negocio\n4. topico: tecnicas de ingenieria de software basadas en modelos",
     "answer": "En el mismo año en que inició el proyecto 'Sistemas binarios estocásticos dinámicos', también se investigaban los tópicos: algoritmos y compresión de datos; investigación científica y tecnología; modelado y análisis de procesos de negocio; y técnicas de ingeniería de software basadas en modelos."
   },
   {
@@ -148,7 +148,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuántos proyectos sobre Algoritmos y compresión de datos se iniciaron cada año según los datos disponibles?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('Algoritmos y compresion de datos') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, cantidad_proyectos: 1",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2016, cantidad_proyectos: 1",
     "answer": "Según los datos disponibles, en el año 2016 se inició un (1) proyecto sobre Algoritmos y compresión de datos. No se registran proyectos de este tópico en otros años."
   },
   {
@@ -156,7 +156,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "Muestra la progresión cronológica de los proyectos en los que ha participado Flavia Serra Sosa.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toLower(i.nombre) CONTAINS toLower('Flavia Serra Sosa') RETURN toInteger(a.anio) AS anio, collect(DISTINCT p.titulo_de_despliegue) AS proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2012, proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
     "answer": "Flavia Serra Sosa registra un único proyecto: en 2012 participó en 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad'."
   },
   {
@@ -164,7 +164,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué subcampo de investigación experimentó un mayor ingreso de proyectos nuevos en el año 2018?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.anio) = 2018 WITH s, count(DISTINCT p) AS nuevos_proyectos WITH nuevos_proyectos, collect(s) AS subcampos ORDER BY nuevos_proyectos DESC LIMIT 1 UNWIND subcampos AS subcampo RETURN subcampo, nuevos_proyectos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion (Subcampo), nuevos_proyectos: 1\n2. subcampo: software (Subcampo), nuevos_proyectos: 1\n3. subcampo: sistemas de informacion de gestion (Subcampo), nuevos_proyectos: 1",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion (Subcampo), nuevos_proyectos: 1\n2. subcampo: software (Subcampo), nuevos_proyectos: 1\n3. subcampo: sistemas de informacion de gestion (Subcampo), nuevos_proyectos: 1",
     "answer": "En 2018 no hubo un único subcampo destacado: tres subcampos recibieron un proyecto nuevo cada uno, quedando empatados en primer lugar: sistemas de información, software y sistemas de información de gestión."
   },
   {
@@ -172,7 +172,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "Compara los tópicos de los proyectos de 2016 con los de 2018. ¿Qué diferencias principales o nuevos enfoques se notan?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.anio) = 2016 WITH COLLECT(DISTINCT t) AS topicos_2016 MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toInteger(a.anio) = 2018  WITH topicos_2016, COLLECT(DISTINCT t) AS topicos_2018 RETURN topicos_2016, topicos_2018",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topicos_2016: [modelado y análisis de procesos de negocio (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), investigacion cientifica y tecnologia (Topico), algoritmos y compresion de datos (Topico), investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)], topicos_2018: [algoritmos y aplicaciones de mineria de datos (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), modelado y análisis de procesos de negocio (Topico)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topicos_2016: [modelado y análisis de procesos de negocio (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), investigacion cientifica y tecnologia (Topico), algoritmos y compresion de datos (Topico), investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)], topicos_2018: [algoritmos y aplicaciones de mineria de datos (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), modelado y análisis de procesos de negocio (Topico)]",
     "answer": "Hay un cambio de enfoque parcial entre 2016 y 2018, con algunos tópicos en común. En 2016 los tópicos eran: modelado y análisis de procesos de negocio; técnicas de ingeniería de software basadas en modelos; investigación científica y tecnología; algoritmos y compresión de datos; investigación avanzada en teoría de grafos; modelado, simulación y optimización; cadenas de Markov y métodos de Montecarlo; y optimización y programación matemática. En 2018, en cambio, los proyectos giran hacia: algoritmos y aplicaciones de minería de datos; técnicas de ingeniería de software basadas en modelos; y modelado y análisis de procesos de negocio."
   },
   {
@@ -180,7 +180,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Qué investigadores comenzaron proyectos nuevos dentro del subcampo Estadística y Probabilidad durante el año 2016?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.anio) = 2016 AND toLower(s.valor) CONTAINS toLower('Estadistica y Probabilidad') RETURN DISTINCT i AS investigador, p.titulo_de_despliegue AS proyecto ORDER BY p.titulo_de_despliegue",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n3. investigador: Franco Rafael Robledo Amoza (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador), proyecto: Sistemas binarios estocásticos dinámicos",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n3. investigador: Franco Rafael Robledo Amoza (Investigador), proyecto: Sistemas binarios estocásticos dinámicos\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador), proyecto: Sistemas binarios estocásticos dinámicos",
     "answer": "Los investigadores que comenzaron proyectos nuevos en el subcampo Estadística y Probabilidad durante 2016 son Héctor Cancela Bosi, Pablo Gabriel Romero Rodríguez, Franco Rafael Robledo Amoza y Gustavo Ricardo Guerberoff Aguirregomezcorta, todos en el proyecto 'Sistemas binarios estocásticos dinámicos'."
   },
   {
@@ -188,7 +188,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cuál es el año o años que presentan la mayor diversidad de tópicos investigados simultáneamente?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH toInteger(a.anio) AS anio, count(DISTINCT t) AS diversidad_topicos, collect(DISTINCT t) AS topicos WITH diversidad_topicos, collect({anio: anio, topicos: topicos}) AS resultados ORDER BY diversidad_topicos DESC LIMIT 1 UNWIND resultados AS r RETURN r.anio AS anio, diversidad_topicos, r.topicos AS topicos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, diversidad_topicos: 8, topicos: [modelado y análisis de procesos de negocio (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), investigacion cientifica y tecnologia (Topico), algoritmos y compresion de datos (Topico), investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2016, diversidad_topicos: 8, topicos: [modelado y análisis de procesos de negocio (Topico), tecnicas de ingenieria de software basadas en modelos (Topico), investigacion cientifica y tecnologia (Topico), algoritmos y compresion de datos (Topico), investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)]",
     "answer": "El año con mayor diversidad de tópicos investigados simultáneamente es 2016, con 8 tópicos distintos. En 2016: modelado y análisis de procesos de negocio, técnicas de ingeniería de software basadas en modelos, investigación científica y tecnología, algoritmos y compresión de datos, investigación avanzada en teoría de grafos, modelado, simulación y optimización, cadenas de Markov y métodos de Montecarlo, y optimización y programación matemática."
   },
   {
@@ -196,7 +196,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
     "cypher_query": "MATCH (a:Anio) WITH collect(DISTINCT toInteger(a.anio)) AS todos_los_anios MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH t, count(DISTINCT a.anio) AS cantidad_anios_topico, todos_los_anios WHERE cantidad_anios_topico = size(todos_los_anios) RETURN todos_los_anios, collect(DISTINCT t) AS topicos",
-    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
+    "cypher_result": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -204,7 +204,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo ha cambiado el enfoque de investigación o los tópicos asociados a Pablo Gabriel Romero Rodriguez a lo largo del tiempo?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.nombre) CONTAINS toLower('Pablo Gabriel Romero Rodriguez') RETURN toInteger(a.anio) AS anio, collect(DISTINCT t) AS topicos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, topicos: [investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2016, topicos: [investigacion avanzada en teoria de grafos (Topico), modelado, simulacion y optimizacion (Topico), cadenas de markov y metodos de montecarlo (Topico), optimizacion y programacion matematica (Topico)]",
     "answer": "Según los datos disponibles, Pablo Gabriel Romero Rodríguez registra actividad únicamente en 2016, con los tópicos: investigación avanzada en teoría de grafos; modelado, simulación y optimización; cadenas de Markov y métodos de Montecarlo; y optimización y programación matemática. Al haber un solo año registrado, no es posible observar un cambio de enfoque a lo largo del tiempo."
   },
   {
@@ -212,7 +212,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Cómo evolucionó por año la cantidad de proyectos del área tecnologica?",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:PERTENECE_A_AREA]->(ar:Area) WHERE toLower(ar.valor) CONTAINS toLower('tecnologica') RETURN toInteger(a.anio) AS anio, count(DISTINCT p) AS cantidad_proyectos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1\n2. anio: 2016, cantidad_proyectos: 3\n3. anio: 2018, cantidad_proyectos: 1",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2012, cantidad_proyectos: 1\n2. anio: 2016, cantidad_proyectos: 3\n3. anio: 2018, cantidad_proyectos: 1",
     "answer": "La cantidad de proyectos del área tecnológica evolucionó de la siguiente manera: 1 proyecto en 2012, 3 proyectos en 2016 y 1 proyecto en 2018."
   },
   {
@@ -220,7 +220,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué investigadores trabajan actualmente en proyectos que caen bajo el subcampo Sistemas de Información?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(s.valor) CONTAINS toLower('Sistemas de Informacion') RETURN DISTINCT i AS investigador, collect(DISTINCT p.titulo_de_despliegue) AS proyectos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Félix oscar garcía rubio (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n2. investigador: Barbara Weber (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n3. investigador: Andrea Verónica Delgado Cavaliere (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio, Minería de procesos y datos para la mejora de procesos en las organizaciones]\n4. investigador: Hajo Reijers (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n5. investigador: Daniel Calegari García (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio, Minería de procesos y datos para la mejora de procesos en las organizaciones]\n6. investigador: Adriana Alejandra Marotta Llambí (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n7. investigador: José Lisandro Aguilar Castro (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n8. investigador: Libertad Tansini Mercader (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n9. investigador: María Laura González López (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n10. investigador: Ricardo Pérez del Castillo (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n11. investigador: Raúl Ruggia Frick (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n12. investigador: Lorena Etcheverry Venturini (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n13. investigador: Fernando Carpani Fernández (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n14. investigador: Daniel Callejas Cánepa (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n15. investigador: Flavia Serra Sosa (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Félix oscar garcía rubio (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n2. investigador: Barbara Weber (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n3. investigador: Andrea Verónica Delgado Cavaliere (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio, Minería de procesos y datos para la mejora de procesos en las organizaciones]\n4. investigador: Hajo Reijers (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio]\n5. investigador: Daniel Calegari García (Investigador), proyectos: [Generación automática de variantes en familias de procesos de negocio, Minería de procesos y datos para la mejora de procesos en las organizaciones]\n6. investigador: Adriana Alejandra Marotta Llambí (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n7. investigador: José Lisandro Aguilar Castro (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n8. investigador: Libertad Tansini Mercader (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n9. investigador: María Laura González López (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n10. investigador: Ricardo Pérez del Castillo (Investigador), proyectos: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n11. investigador: Raúl Ruggia Frick (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n12. investigador: Lorena Etcheverry Venturini (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n13. investigador: Fernando Carpani Fernández (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n14. investigador: Daniel Callejas Cánepa (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n15. investigador: Flavia Serra Sosa (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
     "answer": "Los investigadores que trabajan en proyectos del subcampo Sistemas de Información son Félix Oscar García Rubio, Barbara Weber, Andrea Verónica Delgado Cavaliere, Hajo Reijers, Daniel Calegari García, Adriana Alejandra Marotta Llambí, José Lisandro Aguilar Castro, Libertad Tansini Mercader, María Laura González López, Ricardo Pérez del Castillo, Raúl Ruggia Frick, Lorena Etcheverry Venturini, Fernando Carpani Fernández, Daniel Callejas Cánepa y Flavia Serra Sosa."
   },
   {
@@ -228,7 +228,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Lista únicamente a los responsables de proyectos que abarquen el tópico Aplicaciones Web y Gestión de Datos.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('Aplicaciones Web y Gestion de Datos') RETURN DISTINCT i AS responsable, collect(DISTINCT p.titulo_de_despliegue) AS proyectos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. responsable: Adriana Alejandra Marotta Llambí (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. responsable: Adriana Alejandra Marotta Llambí (Investigador), proyectos: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]",
     "answer": "La única responsable de un proyecto que abarca el tópico Aplicaciones Web y Gestión de Datos es Adriana Alejandra Marotta Llambí, en el proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad'."
   },
   {
@@ -236,7 +236,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Existen investigadores que participen en proyectos de subcampos completamente distintos entre sí? ¿Quiénes son?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH i, p, collect(DISTINCT s) AS subfields WITH i, collect({p: p, s: subfields}) AS profiles UNWIND profiles AS pair1 UNWIND profiles AS pair2 WITH i, pair1.p AS p1, pair2.p AS p2, pair1.s AS s1, pair2.s AS s2 WHERE elementId(p1) < elementId(p2) AND none(x IN s1 WHERE x IN s2) RETURN i AS investigador, p1.titulo_de_despliegue AS proyecto_A, p2.titulo_de_despliegue AS proyecto_B",
-    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
+    "cypher_result": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -244,7 +244,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué proyectos combinan simultáneamente tópicos de Aplicaciones Web y Gestión de Datos, y Optimización y programación matemática?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t1.valor) CONTAINS toLower('Aplicaciones Web y Gestion de Datos') WITH DISTINCT p MATCH (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t2.valor) CONTAINS toLower('Optimizacion y programacion matematica') RETURN DISTINCT p.titulo_de_despliegue",
-    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
+    "cypher_result": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -252,7 +252,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Identifica a todos los investigadores asociados directa o indirectamente al tópico Optimización y programación matemática.",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('Optimizacion y programacion matematica') RETURN DISTINCT i AS investigador, collect(DISTINCT p.titulo_de_despliegue) AS proyectos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n3. investigador: Franco Rafael Robledo Amoza (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n3. investigador: Franco Rafael Robledo Amoza (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador), proyectos: [Sistemas binarios estocásticos dinámicos]",
     "answer": "Los investigadores asociados al tópico optimización y programación matemática son Héctor Cancela Bosi, Pablo Gabriel Romero Rodríguez, Franco Rafael Robledo Amoza y Gustavo Ricardo Guerberoff Aguirregomezcorta. Todos participan en el proyecto 'Sistemas binarios estocásticos dinámicos', que se encuentra asociado a dicho tópico."
   },
   {
@@ -260,7 +260,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué áreas o tópicos investigan en conjunto Álvaro Martín Menoni y Jose Roberto Sotelo Silveira?",
     "cypher_query": "MATCH (i1:Investigador) WHERE toLower(i1.nombre) CONTAINS toLower('Alvaro Martin Menoni') MATCH (i2:Investigador) WHERE toLower(i2.nombre) CONTAINS toLower('Jose Roberto Sotelo Silveira') CALL (i1, i2) { MATCH (i1)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) MATCH (i2)-[:PARTICIPO_EN]->(:Proyecto)-[:PERTENECE_A_AREA]->(a) RETURN collect(DISTINCT a.valor) AS areas_en_comun } CALL (i1, i2) { MATCH (i1)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t:Topico) MATCH (i2)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(t) RETURN collect(DISTINCT t.valor) AS topicos_en_comun } RETURN areas_en_comun, topicos_en_comun",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. areas_en_comun: [tecnologica], topicos_en_comun: [investigacion cientifica y tecnologia, algoritmos y compresion de datos]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. areas_en_comun: [tecnologica], topicos_en_comun: [investigacion cientifica y tecnologia, algoritmos y compresion de datos]",
     "answer": "Álvaro Martín Menoni y José Roberto Sotelo Silveira investigan en conjunto dentro del área tecnológica, y comparten dos tópicos: investigación científica y tecnología; y algoritmos y compresión de datos."
   },
   {
@@ -268,7 +268,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Hay algún proyecto registrado que por su naturaleza abarque más de dos subcampos diferentes a la vez?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH p, collect(DISTINCT s) AS subcampos WHERE size(subcampos) > 2 RETURN p.titulo_de_despliegue AS proyecto, subcampos, size(subcampos) AS cantidad_subcampos ORDER BY cantidad_subcampos DESC",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos, subcampos: [estadistica y probabilidad (Subcampo), matematicas discretas y combinatoria (Subcampo), teoria computacional y matematicas (Subcampo), ingenieria de control y sistemas (Subcampo)], cantidad_subcampos: 4\n2. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones, subcampos: [sistemas de informacion de gestion (Subcampo), software (Subcampo), sistemas de informacion (Subcampo)], cantidad_subcampos: 3",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Sistemas binarios estocásticos dinámicos, subcampos: [estadistica y probabilidad (Subcampo), matematicas discretas y combinatoria (Subcampo), teoria computacional y matematicas (Subcampo), ingenieria de control y sistemas (Subcampo)], cantidad_subcampos: 4\n2. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones, subcampos: [sistemas de informacion de gestion (Subcampo), software (Subcampo), sistemas de informacion (Subcampo)], cantidad_subcampos: 3",
     "answer": "Sí, hay dos proyectos que abarcan más de dos subcampos. 'Sistemas binarios estocásticos dinámicos' abarca cuatro subcampos: estadística y probabilidad; matemáticas discretas y combinatoria; teoría computacional y matemáticas; e ingeniería de control y sistemas. Por su parte, 'Minería de procesos y datos para la mejora de procesos en las organizaciones' abarca tres subcampos: sistemas de información de gestión; software; y sistemas de información."
   },
   {
@@ -276,7 +276,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Qué otros investigadores comparten los mismos subcampos de investigación que Gadiel Seroussi?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toLower(i.nombre) CONTAINS toLower('Gadiel Seroussi') WITH collect(DISTINCT s) AS subcampos_gadiel MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE s IN subcampos_gadiel AND NOT toLower(i.nombre) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT i AS investigador, collect(DISTINCT s) AS subcampos_compartidos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Álvaro Martín Menoni (Investigador), subcampos_compartidos: [aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo)]\n2. investigador: Jose Roberto Sotelo Silveira (Investigador), subcampos_compartidos: [aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Álvaro Martín Menoni (Investigador), subcampos_compartidos: [aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo)]\n2. investigador: Jose Roberto Sotelo Silveira (Investigador), subcampos_compartidos: [aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo)]",
     "answer": "Los investigadores que comparten subcampos de investigación con Gadiel Seroussi son Álvaro Martín Menoni y José Roberto Sotelo Silveira, ambos en los subcampos de aplicaciones de ciencias de la Computación e inteligencia artificial."
   },
   {
@@ -284,7 +284,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "Encuentra qué otros proyectos comparten al menos un investigador en común con el proyecto de Aplicaciones de la Teoría de la Información al procesamiento de datos de secuenciación de genomas por nanoporos.",
     "cypher_query": "MATCH (p0:Proyecto)<-[:PARTICIPO_EN]-(i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p0.titulo) CONTAINS toLower('Aplicaciones de la Teoria de la Informacion al procesamiento de datos de secuenciacion de genomas por nanoporos') AND p <> p0 RETURN DISTINCT p.titulo_de_despliegue AS proyecto_relacionado, collect(DISTINCT i) AS investigadores_en_comun",
-    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
+    "cypher_result": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -292,7 +292,7 @@
     "categoria": "Consultas Complejas",
     "pregunta": "¿Cuál es el subcampo transversal más común entre todos los proyectos integrados en el sistema?",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WITH s, count(DISTINCT p) AS cantidad_proyectos WITH cantidad_proyectos, collect(DISTINCT s) AS subcampos ORDER BY cantidad_proyectos DESC LIMIT 1 UNWIND subcampos AS subcampo RETURN subcampo, cantidad_proyectos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion de gestion (Subcampo), cantidad_proyectos: 2\n2. subcampo: software (Subcampo), cantidad_proyectos: 2\n3. subcampo: sistemas de informacion (Subcampo), cantidad_proyectos: 2",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. subcampo: sistemas de informacion de gestion (Subcampo), cantidad_proyectos: 2\n2. subcampo: software (Subcampo), cantidad_proyectos: 2\n3. subcampo: sistemas de informacion (Subcampo), cantidad_proyectos: 2",
     "answer": "No existe un único subcampo claramente transversal: tres subcampos aparecen empatados como los más comunes, con dos proyectos cada uno: sistemas de información de gestión, software y sistemas de información."
   },
   {
@@ -300,7 +300,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál fue el presupuesto total en dólares asignado al proyecto sobre predicción de NDVI dentro de parcelas de cultivos agrícolas mediante técnicas de aprendizaje profundo?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -308,7 +308,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué metodología de recolección de datos en campo se usó exactamente para trazar las ciclovías en Diseño óptimo de redes de ciclovías?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -316,7 +316,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuántas publicaciones científicas arbitradas derivaron finalmente del proyecto liderado por Adriana Marotta?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -324,7 +324,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál es la dirección de correo electrónico o teléfono de Álvaro Martín para contactarlo?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -332,7 +332,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué software estadístico comercial utilizaron para el procesamiento de datos en los proyectos de Sistemas de Información?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -340,7 +340,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿En qué universidad internacional realizó su doctorado Gadiel Seroussi?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -348,7 +348,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuál es el índice h o el volumen de citaciones de los investigadores que trabajan en Inteligencia Artificial?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -356,7 +356,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿A qué hora y en qué salón se defienden habitualmente las tesis de grado asociadas a estos proyectos?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -364,7 +364,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué opiniones o calificaciones tienen los estudiantes sobre los cursos dictados por Javier Baliosian?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -372,7 +372,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Qué institución internacional financió la compra de los secuenciadores MinION mencionados en el proyecto de genética?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -380,7 +380,7 @@
     "categoria": "Fuera de Alcance",
     "pregunta": "¿Cuántas horas semanales dedica cada investigador en promedio a su respectivo proyecto?",
     "cypher_query": "",
-    "retrieved_subgraph": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
+    "cypher_result": "La consulta solicitada está fuera del alcance del esquema actual del grafo.",
     "answer": "La consulta solicitada está fuera del alcance del esquema actual del grafo."
   },
   {
@@ -388,7 +388,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos año 2018",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio) WHERE toInteger(a.anio) = 2018 RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones",
     "answer": "El proyecto iniciado en el año 2018 es 'Minería de procesos y datos para la mejora de procesos en las organizaciones'."
   },
   {
@@ -396,7 +396,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "gadiel seroussi temas",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.nombre) CONTAINS toLower('gadiel seroussi') RETURN DISTINCT t AS topico",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. topico: investigacion cientifica y tecnologia (Topico)\n2. topico: algoritmos y compresion de datos (Topico)",
     "answer": "Los temas de investigación de Gadiel Seroussi son: investigación científica y tecnología; y algoritmos y compresión de datos."
   },
   {
@@ -404,7 +404,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "investigadores cadenas de markov y metodos de montecarlo",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('cadenas de markov y metodos de montecarlo') RETURN DISTINCT i AS investigador",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador)\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador)\n3. investigador: Franco Rafael Robledo Amoza (Investigador)\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Héctor Cancela Bosi (Investigador)\n2. investigador: Pablo Gabriel Romero Rodríguez (Investigador)\n3. investigador: Franco Rafael Robledo Amoza (Investigador)\n4. investigador: Gustavo Ricardo Guerberoff Aguirregomezcorta (Investigador)",
     "answer": "Los investigadores vinculados al tópico cadenas de Markov y métodos de Montecarlo son: Héctor Cancela Bosi, Pablo Gabriel Romero Rodríguez, Franco Rafael Robledo Amoza y Gustavo Ricardo Guerberoff Aguirregomezcorta."
   },
   {
@@ -412,7 +412,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos tecnicas de ingenieria de software basadas en modelos y cadenas de markov y metodos de montecarlo",
     "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico) WHERE toLower(t.valor) CONTAINS toLower('cadenas de markov y metodos de montecarlo') AND toLower(t1.valor) CONTAINS toLower('tecnicas de ingenieria de software basadas en modelos') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
+    "cypher_result": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -420,7 +420,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "quien investiga el proyecto de mineria de procesos",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(p.titulo) CONTAINS toLower('mineria de procesos') RETURN DISTINCT i AS investigador, p.titulo_de_despliegue AS proyecto ORDER BY p.titulo_de_despliegue",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador: Adriana Alejandra Marotta Llambí (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n2. investigador: José Lisandro Aguilar Castro (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n3. investigador: Libertad Tansini Mercader (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n4. investigador: Daniel Calegari García (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n5. investigador: María Laura González López (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n6. investigador: Andrea Verónica Delgado Cavaliere (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n7. investigador: Ricardo Pérez del Castillo (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador: Adriana Alejandra Marotta Llambí (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n2. investigador: José Lisandro Aguilar Castro (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n3. investigador: Libertad Tansini Mercader (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n4. investigador: Daniel Calegari García (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n5. investigador: María Laura González López (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n6. investigador: Andrea Verónica Delgado Cavaliere (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones\n7. investigador: Ricardo Pérez del Castillo (Investigador), proyecto: Minería de procesos y datos para la mejora de procesos en las organizaciones",
     "answer": "El proyecto 'Minería de procesos y datos para la mejora de procesos en las organizaciones' es investigado por Adriana Alejandra Marotta Llambí, José Lisandro Aguilar Castro, Libertad Tansini Mercader, Daniel Calegari García, María Laura González López, Andrea Verónica Delgado Cavaliere y Ricardo Pérez del Castillo."
   },
   {
@@ -428,7 +428,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos compartidos alvaro martin y gadiel seroussi",
     "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE toLower(i1.nombre) CONTAINS toLower('alvaro Martin') AND toLower(i2.nombre) CONTAINS toLower('Gadiel Seroussi') RETURN DISTINCT p.titulo_de_despliegue AS proyecto_compartido",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto_compartido: Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto_compartido: Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos",
     "answer": "El proyecto compartido entre Álvaro Martín y Gadiel Seroussi es 'Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos'."
   },
   {
@@ -436,7 +436,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "subcampos de investigacion 2016 vs 2018",
     "cypher_query": "MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo) WHERE toInteger(a.anio) IN [2016, 2018] RETURN toInteger(a.anio) AS anio, collect(DISTINCT s) AS subcampos ORDER BY anio",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. anio: 2016, subcampos: [sistemas de informacion de gestion (Subcampo), software (Subcampo), aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo), teoria computacional y matematicas (Subcampo), matematicas discretas y combinatoria (Subcampo), estadistica y probabilidad (Subcampo), ingenieria de control y sistemas (Subcampo)]\n2. anio: 2018, subcampos: [sistemas de informacion (Subcampo), software (Subcampo), sistemas de informacion de gestion (Subcampo)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. anio: 2016, subcampos: [sistemas de informacion de gestion (Subcampo), software (Subcampo), aplicaciones de ciencias de la Computacion (Subcampo), inteligencia artificial (Subcampo), teoria computacional y matematicas (Subcampo), matematicas discretas y combinatoria (Subcampo), estadistica y probabilidad (Subcampo), ingenieria de control y sistemas (Subcampo)]\n2. anio: 2018, subcampos: [sistemas de informacion (Subcampo), software (Subcampo), sistemas de informacion de gestion (Subcampo)]",
     "answer": "Los subcampos de investigación difieren parcialmente entre ambos años. En 2016: sistemas de información de gestión; software; aplicaciones de ciencias de la Computación; inteligencia artificial; teoría computacional y matemáticas; matemáticas discretas y combinatoria; estadística y probabilidad; e ingeniería de control y sistemas. En 2018: sistemas de información; software; y sistemas de información de gestión."
   },
   {
@@ -444,7 +444,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "de que habla el proyecto de web warehouse de datos abiertos ",
     "cypher_query": "MATCH (p:Proyecto)-[:TIENE_TOPICO]->(t:Topico)-[:PERTENECE_A_SUBCAMPO]->(:Subcampo) WHERE toLower(p.titulo) CONTAINS toLower('web warehouse de datos abiertos ') RETURN p.titulo_de_despliegue AS proyecto, collect(DISTINCT t) AS topicos",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad, topicos: [aplicaciones web y gestion de datos (Topico), arquitectura orientada a servicios y servicios web (Topico)]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad, topicos: [aplicaciones web y gestion de datos (Topico), arquitectura orientada a servicios y servicios web (Topico)]",
     "answer": "El proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad' trata sobre los tópicos: aplicaciones web y gestión de datos; y arquitectura orientada a servicios y servicios web."
   },
   {
@@ -452,7 +452,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "mostrame nombre, sexo y pais de los investigadores que participaron en proyectos de aplicaciones web y gestion de datos",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(t.valor) CONTAINS toLower('aplicaciones web y gestion de datos') RETURN DISTINCT i.nombre_de_despliegue AS nombre, i.sexo AS sexo, i.pais_documento AS pais ORDER BY nombre",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. nombre: Adriana Alejandra Marotta Llambí, sexo: Femenino, pais: Uruguay\n2. nombre: Daniel Callejas Cánepa, sexo: Masculino, pais: Uruguay\n3. nombre: Fernando Carpani Fernández, sexo: Masculino, pais: Uruguay\n4. nombre: Flavia Serra Sosa, sexo: Femenino, pais: Uruguay\n5. nombre: Lorena Etcheverry Venturini, sexo: Femenino, pais: Uruguay\n6. nombre: María Laura González López, sexo: Femenino, pais: Uruguay\n7. nombre: Raúl Ruggia Frick, sexo: Masculino, pais: Uruguay",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. nombre: Adriana Alejandra Marotta Llambí, sexo: Femenino, pais: Uruguay\n2. nombre: Daniel Callejas Cánepa, sexo: Masculino, pais: Uruguay\n3. nombre: Fernando Carpani Fernández, sexo: Masculino, pais: Uruguay\n4. nombre: Flavia Serra Sosa, sexo: Femenino, pais: Uruguay\n5. nombre: Lorena Etcheverry Venturini, sexo: Femenino, pais: Uruguay\n6. nombre: María Laura González López, sexo: Femenino, pais: Uruguay\n7. nombre: Raúl Ruggia Frick, sexo: Masculino, pais: Uruguay",
     "answer": "Los investigadores que participaron en proyectos del tópico aplicaciones web y gestión de datos son: Adriana Alejandra Marotta Llambí (sexo femenino, Uruguay); Daniel Callejas Cánepa (sexo masculino, Uruguay); Fernando Carpani Fernández (sexo masculino, Uruguay); Flavia Serra Sosa (sexo femenino, Uruguay); Lorena Etcheverry Venturini (sexo femenino, Uruguay); María Laura González López (sexo femenino, Uruguay); y Raúl Ruggia Frick (sexo masculino, Uruguay)."
   },
   {
@@ -460,7 +460,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "cual es la cedula de los investigadores que comparten al menos un proyecto en comun?",
     "cypher_query": "MATCH (i1:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)<-[:PARTICIPO_EN]-(i2:Investigador) WHERE i1.id < i2.id RETURN DISTINCT i1.nombre AS investigador_1, i1.documento AS cedula_1, i2.nombre AS investigador_2, i2.documento AS cedula_2, collect(DISTINCT p.titulo_de_despliegue) AS proyectos_en_comun ORDER BY size(proyectos_en_comun) DESC, investigador_1, investigador_2",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n2. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Generación automática de variantes en familias de procesos de negocio]\n3. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n4. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n5. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n6. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n7. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n8. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n9. investigador_1: hajo reijers, cedula_1: NWHD9DL44, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n10. investigador_1: hajo reijers, cedula_1: NWHD9DL44, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n11. investigador_1: alvaro martin menoni, cedula_1: 1884198-9, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n12. investigador_1: andrea veronica delgado cavaliere, cedula_1: 3255489-7, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n13. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: hajo reijers, cedula_2: NWHD9DL44, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n14. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n15. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n16. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: felix oscar garcia rubio, cedula_2: 03882548X, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n17. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n18. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n19. investigador_1: daniel callejas canepa, cedula_1: 3642724-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n20. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: hajo reijers, cedula_2: NWHD9DL44, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n21. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n22. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n23. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n24. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n25. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n26. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n27. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n28. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n29. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n30. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n31. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n32. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: alvaro martin menoni, cedula_2: 1884198-9, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n33. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n34. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: franco rafael robledo amoza, cedula_2: 3645500-3, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n35. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n36. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n37. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n38. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n39. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n40. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n41. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n42. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n43. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n44. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n45. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n46. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n47. investigador_1: pablo gabriel romero rodriguez, cedula_1: 3702465-5, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n48. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n49. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n50. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: fernando carpani fernandez, cedula_2: 1908216-2, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n\n[Note: 9 more results omitted...]",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n2. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones, Generación automática de variantes en familias de procesos de negocio]\n3. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n4. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n5. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n6. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n7. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n8. investigador_1: adriana alejandra marotta llambi, cedula_1: 2760527-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n9. investigador_1: hajo reijers, cedula_1: NWHD9DL44, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n10. investigador_1: hajo reijers, cedula_1: NWHD9DL44, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n11. investigador_1: alvaro martin menoni, cedula_1: 1884198-9, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n12. investigador_1: andrea veronica delgado cavaliere, cedula_1: 3255489-7, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n13. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: hajo reijers, cedula_2: NWHD9DL44, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n14. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n15. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n16. investigador_1: barbara weber, cedula_1: L01073430, investigador_2: felix oscar garcia rubio, cedula_2: 03882548X, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n17. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n18. investigador_1: daniel calegari garcia, cedula_1: 2765408-4, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n19. investigador_1: daniel callejas canepa, cedula_1: 3642724-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n20. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: hajo reijers, cedula_2: NWHD9DL44, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n21. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n22. investigador_1: felix oscar garcia rubio, cedula_1: 03882548X, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Generación automática de variantes en familias de procesos de negocio]\n23. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n24. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n25. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n26. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n27. investigador_1: fernando carpani fernandez, cedula_1: 1908216-2, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n28. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n29. investigador_1: flavia serra sosa, cedula_1: 2915995-1, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n30. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n31. investigador_1: franco rafael robledo amoza, cedula_1: 3645500-3, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n32. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: alvaro martin menoni, cedula_2: 1884198-9, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n33. investigador_1: gadiel seroussi blusztein, cedula_1: 1320065-7, investigador_2: jose roberto sotelo silveira, cedula_2: 3246827-0, proyectos_en_comun: [Aplicaciones de la teoría de la información al procesamiento de datos de secuenciación de genomas por nanoporos]\n34. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: franco rafael robledo amoza, cedula_2: 3645500-3, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n35. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n36. investigador_1: hector cancela bosi, cedula_1: 1539915-9, investigador_2: pablo gabriel romero rodriguez, cedula_2: 3702465-5, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n37. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n38. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n39. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: daniel calegari garcia, cedula_2: 2765408-4, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n40. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n41. investigador_1: libertad tansini mercader, cedula_1: 1831699-6, investigador_2: maria laura gonzalez lopez, cedula_2: 2839112-0, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n42. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: andrea veronica delgado cavaliere, cedula_2: 3255489-7, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n43. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n44. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: flavia serra sosa, cedula_2: 2915995-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n45. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: jose lisandro aguilar castro, cedula_2: 8033498, proyectos_en_comun: [Minería de procesos y datos para la mejora de procesos en las organizaciones]\n46. investigador_1: maria laura gonzalez lopez, cedula_1: 2839112-0, investigador_2: lorena etcheverry venturini, cedula_2: 4168464-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n47. investigador_1: pablo gabriel romero rodriguez, cedula_1: 3702465-5, investigador_2: gustavo ricardo guerberoff aguirregomezcorta, cedula_2: 5294489-8, proyectos_en_comun: [Sistemas binarios estocásticos dinámicos]\n48. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: adriana alejandra marotta llambi, cedula_2: 2760527-1, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n49. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: daniel callejas canepa, cedula_2: 3642724-0, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n50. investigador_1: raul ruggia frick, cedula_1: 1676959-1, investigador_2: fernando carpani fernandez, cedula_2: 1908216-2, proyectos_en_comun: [Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad]\n\n[Note: 9 more results omitted...]",
     "answer": "Las cédulas de algunos investigadores que comparten al menos un proyecto en común son: Adriana Alejandra Marotta Llambí (2760527-1), María Laura González López (2839112-0), Daniel Calegari García (2765408-4), Andrea Verónica Delgado Cavaliere (3255489-7), Álvaro Martín Menoni (1884198-9), José Roberto Sotelo Silveira (3246827-0), Gadiel Seroussi Blusztein (1320065-7), Héctor Cancela Bosi (1539915-9), Pablo Gabriel Romero Rodríguez (3702465-5), Franco Rafael Robledo Amoza (3645500-3) y Gustavo Ricardo Guerberoff Aguirregomezcorta (5294489-8), entre otros."
   },
   {
@@ -468,7 +468,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "que mujeres trabajan en el area tecnologica?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:PERTENECE_A_AREA]->(a:Area) WHERE toLower(a.valor) CONTAINS toLower('tecnologica') AND toLower(i.sexo) CONTAINS toLower('f') RETURN DISTINCT i.nombre_de_despliegue AS nombre",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. nombre: María Laura González López\n2. nombre: Lorena Etcheverry Venturini\n3. nombre: Adriana Alejandra Marotta Llambí\n4. nombre: Flavia Serra Sosa\n5. nombre: Libertad Tansini Mercader\n6. nombre: Andrea Verónica Delgado Cavaliere\n7. nombre: Barbara Weber",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. nombre: María Laura González López\n2. nombre: Lorena Etcheverry Venturini\n3. nombre: Adriana Alejandra Marotta Llambí\n4. nombre: Flavia Serra Sosa\n5. nombre: Libertad Tansini Mercader\n6. nombre: Andrea Verónica Delgado Cavaliere\n7. nombre: Barbara Weber",
     "answer": "Las mujeres que trabajan en el área tecnológica son: María Laura González López, Lorena Etcheverry Venturini, Adriana Alejandra Marotta Llambí, Flavia Serra Sosa, Libertad Tansini Mercader, Andrea Verónica Delgado Cavaliere y Barbara Weber."
   },
   {
@@ -476,7 +476,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "que investigadores de uruguay trabajaron en el topico  de aplicaciones web y gestion de datos?",
     "cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto)-[:TIENE_TOPICO]->(t:Topico) WHERE toLower(i.pais_documento) CONTAINS toLower('uruguay') AND (toLower(t.valor) CONTAINS toLower('aplicaciones web y gestion de datos')) RETURN DISTINCT i",
-    "retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. i: Raúl Ruggia Frick (Investigador)\n2. i: María Laura González López (Investigador)\n3. i: Lorena Etcheverry Venturini (Investigador)\n4. i: Fernando Carpani Fernández (Investigador)\n5. i: Daniel Callejas Cánepa (Investigador)\n6. i: Adriana Alejandra Marotta Llambí (Investigador)\n7. i: Flavia Serra Sosa (Investigador)",
+    "cypher_result": "=== QUERY RESULTS ===\n\n1. i: Raúl Ruggia Frick (Investigador)\n2. i: María Laura González López (Investigador)\n3. i: Lorena Etcheverry Venturini (Investigador)\n4. i: Fernando Carpani Fernández (Investigador)\n5. i: Daniel Callejas Cánepa (Investigador)\n6. i: Adriana Alejandra Marotta Llambí (Investigador)\n7. i: Flavia Serra Sosa (Investigador)",
     "answer": "Los investigadores de Uruguay que trabajaron en el tópico aplicaciones web y gestión de datos son: Raúl Ruggia Frick, María Laura González López, Lorena Etcheverry Venturini, Fernando Carpani Fernández, Daniel Callejas Cánepa, Adriana Alejandra Marotta Llambí y Flavia Serra Sosa."
   }
 ]

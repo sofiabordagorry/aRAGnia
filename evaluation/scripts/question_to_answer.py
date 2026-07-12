@@ -101,7 +101,7 @@ def _build_debug_payload(response_data: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "cypher_query": response_data.get("cypher_query", ""),
-        "retrieved_subgraph": {
+        "cypher_result": {
             "chunk_to_entities": chunk_to_entities,
             "chunks": response_data.get("chunks", []),
         },
@@ -175,7 +175,7 @@ def write_answers_jsonl(path: Path, results: list[dict[str, Any]]) -> None:
         debug = row.get("debug") if isinstance(row.get("debug"), dict) else {}
         if debug:
             out["cypher_query"] = debug.get("cypher_query", "")
-            out["retrieved_subgraph"] = debug.get("retrieved_subgraph", "")
+            out["cypher_result"] = debug.get("cypher_result", "")
 
         lines.append(
             json.dumps(out, ensure_ascii=False)
