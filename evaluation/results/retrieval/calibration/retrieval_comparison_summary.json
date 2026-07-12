@@ -1,0 +1,582 @@
+[
+  {
+    "display": "Gemma 3 12B Instruct",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "baseline",
+    "label": "Gemma 3 12B Instruct / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0227,
+      "precision": 0.0284
+    },
+    "f1_score": 0.0252,
+    "quality_overall": 0.0854,
+    "sentinel_accuracy": 0.25,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.3636,
+      "Lenguaje Natural Informal": 0.1023
+    },
+    "latency": {
+      "mean": 18.13,
+      "median": 14.67,
+      "p95": 32.34,
+      "n": 60
+    }
+  },
+  {
+    "display": "Gemma 3 12B Instruct",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "concise",
+    "label": "Gemma 3 12B Instruct / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.2159,
+      "precision": 0.2159
+    },
+    "f1_score": 0.2159,
+    "quality_overall": 0.225,
+    "sentinel_accuracy": 0.25,
+    "by_category": {
+      "Análisis Temporal": 0.1071,
+      "Consultas Complejas": 0.1429,
+      "Consultas Estructurales Simples": 0.4167,
+      "Fuera de Alcance": 0.3636,
+      "Lenguaje Natural Informal": 0.1818
+    },
+    "latency": {
+      "mean": 15.36,
+      "median": 13.33,
+      "p95": 37.66,
+      "n": 60
+    }
+  },
+  {
+    "display": "Gemma 3 12B Instruct",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "structured",
+    "label": "Gemma 3 12B Instruct / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.3807,
+      "precision": 0.392
+    },
+    "f1_score": 0.3863,
+    "quality_overall": 0.4,
+    "sentinel_accuracy": 0.4375,
+    "by_category": {
+      "Análisis Temporal": 0.2321,
+      "Consultas Complejas": 0.4821,
+      "Consultas Estructurales Simples": 0.5833,
+      "Fuera de Alcance": 0.5455,
+      "Lenguaje Natural Informal": 0.3068
+    },
+    "latency": {
+      "mean": 15.83,
+      "median": 13.62,
+      "p95": 28.67,
+      "n": 60
+    }
+  },
+  {
+    "display": "Gemma 3 12B Instruct",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "chain_of_thought",
+    "label": "Gemma 3 12B Instruct / chain_of_thought",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.4375,
+      "precision": 0.3977
+    },
+    "f1_score": 0.4167,
+    "quality_overall": 0.4229,
+    "sentinel_accuracy": 0.4375,
+    "by_category": {
+      "Análisis Temporal": 0.2768,
+      "Consultas Complejas": 0.3214,
+      "Consultas Estructurales Simples": 0.7188,
+      "Fuera de Alcance": 0.5455,
+      "Lenguaje Natural Informal": 0.3295
+    },
+    "latency": {
+      "mean": 14.9,
+      "median": 12.87,
+      "p95": 37.59,
+      "n": 60
+    }
+  },
+  {
+    "display": "Gemma 3 12B Instruct",
+    "backend": "huggingface",
+    "model": "google/gemma-3-12b-it",
+    "prompt": "retrieval_emphasis",
+    "label": "Gemma 3 12B Instruct / retrieval_emphasis",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 16.94,
+      "median": 15.26,
+      "p95": 33.49,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-14B-Instruct",
+    "prompt": "baseline",
+    "label": "Qwen2.5 14B / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.4148,
+      "precision": 0.392
+    },
+    "f1_score": 0.4031,
+    "quality_overall": 0.4125,
+    "sentinel_accuracy": 0.4375,
+    "by_category": {
+      "Análisis Temporal": 0.3125,
+      "Consultas Complejas": 0.3929,
+      "Consultas Estructurales Simples": 0.625,
+      "Fuera de Alcance": 0.4545,
+      "Lenguaje Natural Informal": 0.2841
+    },
+    "latency": {
+      "mean": 11.28,
+      "median": 9.08,
+      "p95": 22.63,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-14B-Instruct",
+    "prompt": "concise",
+    "label": "Qwen2.5 14B / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.4773,
+      "precision": 0.5
+    },
+    "f1_score": 0.4884,
+    "quality_overall": 0.525,
+    "sentinel_accuracy": 0.625,
+    "by_category": {
+      "Análisis Temporal": 0.5179,
+      "Consultas Complejas": 0.5536,
+      "Consultas Estructurales Simples": 0.5729,
+      "Fuera de Alcance": 0.5455,
+      "Lenguaje Natural Informal": 0.3182
+    },
+    "latency": {
+      "mean": 8.72,
+      "median": 7.29,
+      "p95": 18.27,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-14B-Instruct",
+    "prompt": "structured",
+    "label": "Qwen2.5 14B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.6648,
+      "precision": 0.6307
+    },
+    "f1_score": 0.6473,
+    "quality_overall": 0.6083,
+    "sentinel_accuracy": 0.5,
+    "by_category": {
+      "Análisis Temporal": 0.6696,
+      "Consultas Complejas": 0.5357,
+      "Consultas Estructurales Simples": 0.8125,
+      "Fuera de Alcance": 0.4545,
+      "Lenguaje Natural Informal": 0.5114
+    },
+    "latency": {
+      "mean": 8.6,
+      "median": 6.34,
+      "p95": 23.38,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-14B-Instruct",
+    "prompt": "chain_of_thought",
+    "label": "Qwen2.5 14B / chain_of_thought",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.5398,
+      "precision": 0.5341
+    },
+    "f1_score": 0.5369,
+    "quality_overall": 0.5271,
+    "sentinel_accuracy": 0.5,
+    "by_category": {
+      "Análisis Temporal": 0.6518,
+      "Consultas Complejas": 0.5,
+      "Consultas Estructurales Simples": 0.5729,
+      "Fuera de Alcance": 0.4545,
+      "Lenguaje Natural Informal": 0.375
+    },
+    "latency": {
+      "mean": 8.88,
+      "median": 6.43,
+      "p95": 27.88,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-14B-Instruct",
+    "prompt": "retrieval_emphasis",
+    "label": "Qwen2.5 14B / retrieval_emphasis",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.5682,
+      "precision": 0.5568
+    },
+    "f1_score": 0.5624,
+    "quality_overall": 0.4958,
+    "sentinel_accuracy": 0.3125,
+    "by_category": {
+      "Análisis Temporal": 0.6786,
+      "Consultas Complejas": 0.6071,
+      "Consultas Estructurales Simples": 0.5729,
+      "Fuera de Alcance": 0.0909,
+      "Lenguaje Natural Informal": 0.375
+    },
+    "latency": {
+      "mean": 11.4,
+      "median": 8.07,
+      "p95": 23.13,
+      "n": 60
+    }
+  },
+  {
+    "display": "StarCoder2 15B Instruct",
+    "backend": "huggingface",
+    "model": "bigcode/starcoder2-15b-instruct-v0.1",
+    "prompt": "baseline",
+    "label": "StarCoder2 15B Instruct / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 1.37,
+      "median": 1.21,
+      "p95": 1.51,
+      "n": 60
+    }
+  },
+  {
+    "display": "StarCoder2 15B Instruct",
+    "backend": "huggingface",
+    "model": "bigcode/starcoder2-15b-instruct-v0.1",
+    "prompt": "concise",
+    "label": "StarCoder2 15B Instruct / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 1.24,
+      "median": 1.21,
+      "p95": 1.47,
+      "n": 60
+    }
+  },
+  {
+    "display": "StarCoder2 15B Instruct",
+    "backend": "huggingface",
+    "model": "bigcode/starcoder2-15b-instruct-v0.1",
+    "prompt": "structured",
+    "label": "StarCoder2 15B Instruct / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 1.21,
+      "median": 1.21,
+      "p95": 1.37,
+      "n": 60
+    }
+  },
+  {
+    "display": "StarCoder2 15B Instruct",
+    "backend": "huggingface",
+    "model": "bigcode/starcoder2-15b-instruct-v0.1",
+    "prompt": "chain_of_thought",
+    "label": "StarCoder2 15B Instruct / chain_of_thought",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 1.21,
+      "median": 1.18,
+      "p95": 1.36,
+      "n": 60
+    }
+  },
+  {
+    "display": "StarCoder2 15B Instruct",
+    "backend": "huggingface",
+    "model": "bigcode/starcoder2-15b-instruct-v0.1",
+    "prompt": "retrieval_emphasis",
+    "label": "StarCoder2 15B Instruct / retrieval_emphasis",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.0,
+      "precision": 0.0
+    },
+    "f1_score": 0.0,
+    "quality_overall": 0.0,
+    "sentinel_accuracy": 0.0,
+    "by_category": {
+      "Análisis Temporal": 0.0,
+      "Consultas Complejas": 0.0,
+      "Consultas Estructurales Simples": 0.0,
+      "Fuera de Alcance": 0.0,
+      "Lenguaje Natural Informal": 0.0
+    },
+    "latency": {
+      "mean": 1.22,
+      "median": 1.2,
+      "p95": 1.4,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "baseline",
+    "label": "Qwen2.5 Coder 14B / baseline",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.4318,
+      "precision": 0.4545
+    },
+    "f1_score": 0.4429,
+    "quality_overall": 0.4917,
+    "sentinel_accuracy": 0.625,
+    "by_category": {
+      "Análisis Temporal": 0.3482,
+      "Consultas Complejas": 0.4643,
+      "Consultas Estructurales Simples": 0.6562,
+      "Fuera de Alcance": 0.5455,
+      "Lenguaje Natural Informal": 0.3182
+    },
+    "latency": {
+      "mean": 7.06,
+      "median": 6.47,
+      "p95": 15.81,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "concise",
+    "label": "Qwen2.5 Coder 14B / concise",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.6534,
+      "precision": 0.6932
+    },
+    "f1_score": 0.6727,
+    "quality_overall": 0.6604,
+    "sentinel_accuracy": 0.625,
+    "by_category": {
+      "Análisis Temporal": 0.8125,
+      "Consultas Complejas": 0.5,
+      "Consultas Estructurales Simples": 0.8125,
+      "Fuera de Alcance": 0.5455,
+      "Lenguaje Natural Informal": 0.4545
+    },
+    "latency": {
+      "mean": 7.56,
+      "median": 6.15,
+      "p95": 18.02,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "structured",
+    "label": "Qwen2.5 Coder 14B / structured",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.7216,
+      "precision": 0.7443
+    },
+    "f1_score": 0.7328,
+    "quality_overall": 0.7042,
+    "sentinel_accuracy": 0.625,
+    "by_category": {
+      "Análisis Temporal": 0.7321,
+      "Consultas Complejas": 0.8036,
+      "Consultas Estructurales Simples": 0.8125,
+      "Fuera de Alcance": 0.7273,
+      "Lenguaje Natural Informal": 0.6023
+    },
+    "latency": {
+      "mean": 7.02,
+      "median": 6.22,
+      "p95": 14.38,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "chain_of_thought",
+    "label": "Qwen2.5 Coder 14B / chain_of_thought",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.6136,
+      "precision": 0.6193
+    },
+    "f1_score": 0.6164,
+    "quality_overall": 0.6521,
+    "sentinel_accuracy": 0.75,
+    "by_category": {
+      "Análisis Temporal": 0.7054,
+      "Consultas Complejas": 0.5893,
+      "Consultas Estructurales Simples": 0.7708,
+      "Fuera de Alcance": 0.9091,
+      "Lenguaje Natural Informal": 0.3523
+    },
+    "latency": {
+      "mean": 6.09,
+      "median": 5.73,
+      "p95": 16.24,
+      "n": 60
+    }
+  },
+  {
+    "display": "Qwen2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "retrieval_emphasis",
+    "label": "Qwen2.5 Coder 14B / retrieval_emphasis",
+    "n_judged": 44,
+    "n_sentinel": 16,
+    "dim_means": {
+      "recall": 0.7102,
+      "precision": 0.75
+    },
+    "f1_score": 0.7296,
+    "quality_overall": 0.6687,
+    "sentinel_accuracy": 0.5,
+    "by_category": {
+      "Análisis Temporal": 0.7946,
+      "Consultas Complejas": 0.7857,
+      "Consultas Estructurales Simples": 0.8229,
+      "Fuera de Alcance": 0.3636,
+      "Lenguaje Natural Informal": 0.5114
+    },
+    "latency": {
+      "mean": 9.41,
+      "median": 7.63,
+      "p95": 20.87,
+      "n": 60
+    }
+  }
+]

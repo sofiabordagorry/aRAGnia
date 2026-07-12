@@ -59,7 +59,7 @@ ANTHROPIC_VERSION = "2023-06-01"
 
 SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
-
+SENTINEL_NOT_RESULT = ("La consulta no puede responderse con la información del grafo.")
 MODELS: List[Dict[str, str]] = [
      {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
     #{"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
@@ -77,7 +77,7 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "")).strip().lower()
 
 def is_sentinel(gt_subgraph: str) -> bool:
-    return _norm(gt_subgraph) in {_norm(SENTINEL_NOT_IN_SCHEMA), _norm(SENTINEL_NO_INFO), ""}
+    return _norm(gt_subgraph) in {_norm(SENTINEL_NOT_IN_SCHEMA), _norm(SENTINEL_NO_INFO), _norm(SENTINEL_NOT_RESULT),""}
 
 def sentinel_matches(candidate: str, expected: str) -> bool:
     return _norm(candidate) == _norm(expected)
@@ -283,8 +283,13 @@ def aggregate_combo(
         d: mean([norm_score(r["scores"][d]) for r in judged]) for d in JUDGE_DIMS
     }
     f1_score = compute_f1_score(dim_means.get("precision", 0.0), dim_means.get("recall", 0.0))
-    quality_overall = mean([norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in judged])
-    sentinel_acc = mean([1.0 if r["sentinel_correct"] else 0.0 for r in sentinels])
+    
+    quality_scores = [norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in judged]
+    sentinel_quality_scores = [1.0 if r["sentinel_correct"] else 0.0 for r in sentinels]
+    all_quality_scores = (quality_scores + sentinel_quality_scores)
+    
+    quality_overall = (mean(all_quality_scores) if all_quality_scores else 0.0)
+    sentinel_acc = mean(sentinel_quality_scores)
 
     by_cat: Dict[str, float] = {}
     cats = sorted({r["category"] for r in records})
