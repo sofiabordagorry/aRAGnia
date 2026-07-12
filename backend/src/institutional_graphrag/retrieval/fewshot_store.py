@@ -10,7 +10,6 @@ from institutional_graphrag.retrieval.vector_store import VectorStore
 COLLECTION_NAME = "cypher_fewshot_examples"
 EMBEDDING_DIM = 1024  # e5-large-v2
 
-
 DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     # COUNT queries
     (
