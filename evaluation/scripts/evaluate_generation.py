@@ -5,7 +5,7 @@ Evalúa la GENERACIÓN de respuestas en lenguaje natural sobre el ground truth d
 validación (`datasetQA_GT.json`).
 
 Para cada combinación de modelo × variante de prompt:
-  1. Genera la respuesta a partir de `question` + `retrieved_subgraph`
+  1. Genera la respuesta a partir de `question` + `cypher_result`
      (HuggingFace u Ollama, según el backend de cada modelo), midiendo la latencia.
   2. Juzga la respuesta contra el `answer` de referencia del GT usando un
      LLM-as-a-judge vía la API de Anthropic (factual / completitud / fidelidad).
@@ -66,19 +66,19 @@ MODELS: List[Dict[str, str]] = [
     {"display": "Gemma 3 12B", "backend": "huggingface", "model": "google/gemma-3-12b-it"},
 ]
 
-# Variantes de prompt: id -> builder(question, subgraph) -> messages.
+# Variantes de prompt: id -> builder(question, cypher_result) -> messages.
 # "baseline" es el que esta en el sistema
-def _prompt_concise(question: str, subgraph: str) -> List[Dict[str, str]]:
+def _prompt_concise(question: str, cypher_result: str) -> List[Dict[str, str]]:
     """Variante más corta y estricta, sin la rama de conteo."""
     system = (
         "Eres un asistente académico. Respondé en ESPAÑOL usando SOLO los resultados "
         "del grafo. Listá TODOS los resultados, sin inventar ni interpretar. Sé conciso."
     )
-    user = f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\nRESPUESTA:"
+    user = f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{cypher_result}\n\nRESPUESTA:"
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
-def _prompt_cot(question: str, subgraph: str) -> List[Dict[str, str]]:
+def _prompt_cot(question: str, cypher_result: str) -> List[Dict[str, str]]:
     """Razonamiento paso a paso antes de la respuesta final (chain-of-thought)."""
     system = (
         "Eres un asistente de investigación académica. Respondé en ESPAÑOL usando "
@@ -87,7 +87,7 @@ def _prompt_cot(question: str, subgraph: str) -> List[Dict[str, str]]:
         "la respuesta final completa, sin omitir ninguno."
     )
     user = (
-        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{cypher_result}\n\n"
         "Pensá paso a paso qué resultados responden la pregunta y, al final, escribí "
         "una línea que empiece exactamente con 'RESPUESTA:' seguida de la respuesta "
         "completa con TODOS los resultados."
@@ -95,7 +95,7 @@ def _prompt_cot(question: str, subgraph: str) -> List[Dict[str, str]]:
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
-def _prompt_structured(question: str, subgraph: str) -> List[Dict[str, str]]:
+def _prompt_structured(question: str, cypher_result: str) -> List[Dict[str, str]]:
     """Fuerza una salida estructurada en lista (viñetas/numerada)."""
     system = (
         "Eres un asistente académico. Respondé en ESPAÑOL basándote EXACTAMENTE en "
@@ -104,14 +104,14 @@ def _prompt_structured(question: str, subgraph: str) -> List[Dict[str, str]]:
         "No inventes datos ni agregues interpretaciones."
     )
     user = (
-        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{cypher_result}\n\n"
         "Formato: una frase introductoria + lista con viñetas. Incluí TODOS los "
         "resultados, sin omitir ninguno."
     )
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
-def _prompt_grounded(question: str, subgraph: str) -> List[Dict[str, str]]:
+def _prompt_grounded(question: str, cypher_result: str) -> List[Dict[str, str]]:
     """Anti-alucinación fuerte: cita textualmente los valores de los resultados."""
     system = (
         "Eres un asistente académico riguroso. Respondé en ESPAÑOL usando ÚNICAMENTE "
@@ -121,7 +121,7 @@ def _prompt_grounded(question: str, subgraph: str) -> List[Dict[str, str]]:
         "está en los resultados, no lo menciones."
     )
     user = (
-        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{subgraph}\n\n"
+        f"PREGUNTA: {question}\n\nRESULTADOS DEL GRAFO:\n{cypher_result}\n\n"
         "Respondé usando solo los valores que aparecen arriba, copiándolos literalmente. "
         "No agregues nada que no esté en los resultados."
     )
@@ -148,7 +148,7 @@ def _norm(text: str) -> str:
 
 def is_sentinel(item: Dict[str, Any]) -> bool:
     """Item cuya respuesta esperada es un mensaje centinela (fuera de alcance / sin info)."""
-    subg = _norm(item.get("retrieved_subgraph", ""))
+    subg = _norm(item.get("cypher_result", ""))
     ans = _norm(item.get("answer", ""))
     sentinels = {_norm(gen.OUT_OF_SCOPE), _norm(gen.NO_INFO), ""}
     return subg in sentinels or ans in sentinels
@@ -190,16 +190,16 @@ def generate_with_latency(
     client: Any,
     builder: Callable[[str, str], List[Dict[str, str]]],
     question: str,
-    subgraph: str,
+    cypher_result: str,
 ) -> tuple[str, Optional[float]]:
     """Genera la respuesta y devuelve (respuesta, latencia_segundos | None si centinela)."""
-    subgraph = (subgraph or "").strip()
-    if not subgraph or subgraph == gen.NO_INFO:
+    cypher_result = (cypher_result or "").strip()
+    if not cypher_result or cypher_result == gen.NO_INFO:
         return gen.NO_INFO, None
-    if subgraph == gen.OUT_OF_SCOPE:
+    if cypher_result == gen.OUT_OF_SCOPE:
         return gen.OUT_OF_SCOPE, None
 
-    messages = builder(question, subgraph)
+    messages = builder(question, cypher_result)
     t0 = time.perf_counter()
     answer = client.generate(messages=messages, temperature=0.1, max_tokens=2048)
     latency = time.perf_counter() - t0
@@ -229,7 +229,7 @@ def judge_answer(
     api_key: str,
     model: str,
     question: str,
-    subgraph: str,
+    cypher_result: str,
     gt_answer: str,
     candidate: str,
     retries: int = 3,
@@ -237,7 +237,7 @@ def judge_answer(
     """Llama a la API de Anthropic y devuelve los scores 1-5 + justificación."""
     user = (
         f"PREGUNTA:\n{question}\n\n"
-        f"RESULTADOS DEL GRAFO (fuente de verdad):\n{subgraph}\n\n"
+        f"RESULTADOS DEL GRAFO (fuente de verdad):\n{cypher_result}\n\n"
         f"RESPUESTA DE REFERENCIA:\n{gt_answer}\n\n"
         f"RESPUESTA CANDIDATA:\n{candidate}\n\n"
         "Devolvé el JSON con los scores."
@@ -298,12 +298,12 @@ def evaluate_combo(
         question = (item.get("pregunta") or "").strip()
         if not question:
             continue
-        subgraph = item.get("retrieved_subgraph", "")
+        cypher_result = item.get("cypher_result", "")
         gt_answer = item.get("answer", "")
         qid = item.get("id", "?")
         sentinel = is_sentinel(item)
 
-        candidate, latency = generate_with_latency(client, builder, question, subgraph)
+        candidate, latency = generate_with_latency(client, builder, question, cypher_result)
 
         rec: Dict[str, Any] = {
             "id": qid,
@@ -322,7 +322,7 @@ def evaluate_combo(
             rec["sentinel_correct"] = sentinel_matches(candidate, gt_answer)
             print(f"  [{qid}] centinela -> {'OK' if rec['sentinel_correct'] else 'FAIL'}", flush=True)
         elif api_key:
-            scores = judge_answer(api_key, judge_model, question, subgraph, gt_answer, candidate)
+            scores = judge_answer(api_key, judge_model, question, cypher_result, gt_answer, candidate)
             rec["scores"] = {d: scores[d] for d in JUDGE_DIMS}
             rec["justification"] = scores["justification"]
             avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])

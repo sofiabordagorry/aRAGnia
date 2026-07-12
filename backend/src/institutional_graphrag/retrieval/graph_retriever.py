@@ -74,7 +74,7 @@ class CypherQueryValidator:
 
 
 class GraphRAGRetriever:
-    """Retriever que usa queries Cypher para obtener subgrafos."""
+    """Retriever que usa queries Cypher para obtener la información relevante."""
 
     def __init__(
         self,

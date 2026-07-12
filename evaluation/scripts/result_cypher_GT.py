@@ -1,4 +1,4 @@
-# scripts/run_queries_and_save_subgraphs.py
+# scripts/run_queries_and_save_cypher_results.py
 
 import json
 from pathlib import Path
@@ -45,7 +45,7 @@ def main() -> None:
         print(f"Ejecutando pregunta {question_id}...")
         if not query:
             print(f"No hay query")
-            item["retrieved_subgraph"] = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
+            item["cypher_result"] = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
             continue
 
         try:
@@ -56,11 +56,11 @@ def main() -> None:
                 context = "La consulta no puede responderse con la información del grafo."
 
 
-            item["retrieved_subgraph"] = context
+            item["cypher_result"] = context
 
         except Exception as e:
             print(f"Error en pregunta {question_id}: {e}")
-            item["retrieved_subgraph"] = "La consulta no puede responderse con la información del grafo."
+            item["cypher_result"] = "La consulta no puede responderse con la información del grafo."
 
     retriever.close()
     with GT_PATH.open("w", encoding="utf-8") as f:
