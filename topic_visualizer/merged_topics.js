@@ -2,11 +2,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/22",
     "nameEn": "Engineering",
-    "nameEs": "Ingenieria",
+    "nameEs": "Ingeniería",
     "subfields": [
       {
         "nameEn": "General Engineering",
-        "nameEs": "Ingenieria General",
+        "nameEs": "Ingeniería General",
         "topics": [
           {
             "en": "Civil and Geotechnical Engineering Research",
@@ -16,7 +16,7 @@ const mergedData = [
       },
       {
         "nameEn": "Aerospace Engineering",
-        "nameEs": "Ingenieria Aeroespacial",
+        "nameEs": "Ingeniería Aeroespacial",
         "topics": [
           {
             "en": "Military Technology and Strategies",
@@ -198,7 +198,7 @@ const mergedData = [
       },
       {
         "nameEn": "Automotive Engineering",
-        "nameEs": "Ingenieria Automotriz",
+        "nameEs": "Ingeniería Automotriz",
         "topics": [
           {
             "en": "Advanced Battery Technologies Research",
@@ -252,7 +252,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biomedical Engineering",
-        "nameEs": "Ingenieria Biomedica",
+        "nameEs": "Ingeniería Biomédica",
         "topics": [
           {
             "en": "Superconducting Materials and Applications",
@@ -546,7 +546,7 @@ const mergedData = [
       },
       {
         "nameEn": "Civil and Structural Engineering",
-        "nameEs": "Ingenieria Civil y Estructural",
+        "nameEs": "Ingeniería Civil y Estructural",
         "topics": [
           {
             "en": "Civil and Structural Engineering Research",
@@ -720,7 +720,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computational Mechanics",
-        "nameEs": "Mecanica Computacional",
+        "nameEs": "Mecánica Computacional",
         "topics": [
           {
             "en": "Physics and Engineering Research Articles",
@@ -846,7 +846,7 @@ const mergedData = [
       },
       {
         "nameEn": "Control and Systems Engineering",
-        "nameEs": "Ingenieria de Control y Sistemas",
+        "nameEs": "Ingeniería de Control y Sistemas",
         "topics": [
           {
             "en": "Thermal Analysis in Power Transmission",
@@ -1028,7 +1028,7 @@ const mergedData = [
       },
       {
         "nameEn": "Electrical and Electronic Engineering",
-        "nameEs": "Ingenieria Electrica y Electronica",
+        "nameEs": "Ingeniería Eléctrica y Electrónica",
         "topics": [
           {
             "en": "Magnetic Field Sensors Techniques",
@@ -1502,7 +1502,7 @@ const mergedData = [
       },
       {
         "nameEn": "Industrial and Manufacturing Engineering",
-        "nameEs": "Ingenieria Industrial y de Manufactura",
+        "nameEs": "Ingeniería Industrial y de Manufactura",
         "topics": [
           {
             "en": "Manufacturing Process and Optimization",
@@ -1576,7 +1576,7 @@ const mergedData = [
       },
       {
         "nameEn": "Mechanical Engineering",
-        "nameEs": "Ingenieria Mecanica",
+        "nameEs": "Ingeniería Mecánica",
         "topics": [
           {
             "en": "Advanced Measurement and Metrology Techniques",
@@ -1898,7 +1898,7 @@ const mergedData = [
       },
       {
         "nameEn": "Mechanics of Materials",
-        "nameEs": "Mecanica de Materiales",
+        "nameEs": "Mecánica de Materiales",
         "topics": [
           {
             "en": "Hydrocarbon exploration and reservoir analysis",
@@ -2020,7 +2020,7 @@ const mergedData = [
       },
       {
         "nameEn": "Ocean Engineering",
-        "nameEs": "Ingenieria Oceanica",
+        "nameEs": "Ingeniería Oceánica",
         "topics": [
           {
             "en": "Satellite Image Processing and Photogrammetry",
@@ -2172,7 +2172,7 @@ const mergedData = [
       },
       {
         "nameEn": "Media Technology",
-        "nameEs": "Tecnologia de Medios",
+        "nameEs": "Tecnología de Medios",
         "topics": [
           {
             "en": "ICT Impact and Policies",
@@ -2226,7 +2226,7 @@ const mergedData = [
       },
       {
         "nameEn": "Building and Construction",
-        "nameEs": "Construccion y Edificacion",
+        "nameEs": "Construcción y Edificación",
         "topics": [
           {
             "en": "BIM and Construction Integration",
@@ -2419,7 +2419,7 @@ const mergedData = [
       },
       {
         "nameEn": "Archeology",
-        "nameEs": "Arqueologia",
+        "nameEs": "Arqueología",
         "topics": [
           {
             "en": "Metallurgy and Cultural Artifacts",
@@ -2471,7 +2471,7 @@ const mergedData = [
       },
       {
         "nameEn": "Education",
-        "nameEs": "Educacion",
+        "nameEs": "Educación",
         "topics": [
           {
             "en": "Education, Innovation and Language Studies",
@@ -3025,7 +3025,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geography, Planning and Development",
-        "nameEs": "Geografia, Planificacion y Desarrollo",
+        "nameEs": "Geografía, Planificación y Desarrollo",
         "topics": [
           {
             "en": "Hungarian Social, Economic and Educational Studies",
@@ -3153,7 +3153,7 @@ const mergedData = [
       },
       {
         "nameEn": "Human Factors and Ergonomics",
-        "nameEs": "Factores Humanos y Ergonomia",
+        "nameEs": "Factores Humanos y Ergonomía",
         "topics": [
           {
             "en": "Employee Performance and Management",
@@ -3337,7 +3337,7 @@ const mergedData = [
       },
       {
         "nameEn": "Library and Information Sciences",
-        "nameEs": "Bibliotecologia y Ciencias de la Informacion",
+        "nameEs": "Bibliotecología y Ciencias de la Información",
         "topics": [
           {
             "en": "Library Science and Administration",
@@ -3351,7 +3351,7 @@ const mergedData = [
       },
       {
         "nameEn": "Linguistics and Language",
-        "nameEs": "Linguistica y Lenguaje",
+        "nameEs": "Lingüística y Lenguaje",
         "topics": [
           {
             "en": "Multilingual Education and Policy",
@@ -3381,7 +3381,7 @@ const mergedData = [
       },
       {
         "nameEn": "Safety Research",
-        "nameEs": "Investigacion en Seguridad",
+        "nameEs": "Investigación en Seguridad",
         "topics": [
           {
             "en": "Employment, Labor, and Gender Studies",
@@ -3463,7 +3463,7 @@ const mergedData = [
       },
       {
         "nameEn": "Sociology and Political Science",
-        "nameEs": "Sociologia y Ciencias Politicas",
+        "nameEs": "Sociología y Ciencias Políticas",
         "topics": [
           {
             "en": "French Urban and Social Studies",
@@ -4407,7 +4407,7 @@ const mergedData = [
       },
       {
         "nameEn": "Anthropology",
-        "nameEs": "Antropologia",
+        "nameEs": "Antropología",
         "topics": [
           {
             "en": "Classical Antiquity Studies",
@@ -4513,7 +4513,7 @@ const mergedData = [
       },
       {
         "nameEn": "Communication",
-        "nameEs": "Comunicacion",
+        "nameEs": "Comunicación",
         "topics": [
           {
             "en": "Media Studies and Communication",
@@ -4741,7 +4741,7 @@ const mergedData = [
       },
       {
         "nameEn": "Demography",
-        "nameEs": "Demografia",
+        "nameEs": "Demografía",
         "topics": [
           {
             "en": "SMEs Development and Digital Marketing",
@@ -4855,7 +4855,7 @@ const mergedData = [
       },
       {
         "nameEn": "Gender Studies",
-        "nameEs": "Estudios de Genero",
+        "nameEs": "Estudios de Género",
         "topics": [
           {
             "en": "Sports, Gender, and Society",
@@ -4959,7 +4959,7 @@ const mergedData = [
       },
       {
         "nameEn": "Political Science and International Relations",
-        "nameEs": "Ciencias Politicas y Relaciones Internacionales",
+        "nameEs": "Ciencias Políticas y Relaciones Internacionales",
         "topics": [
           {
             "en": "American Constitutional Law and Politics",
@@ -5437,7 +5437,7 @@ const mergedData = [
       },
       {
         "nameEn": "Public Administration",
-        "nameEs": "Administracion Publica",
+        "nameEs": "Administración Pública",
         "topics": [
           {
             "en": "Labor Movements and Unions",
@@ -5544,7 +5544,7 @@ const mergedData = [
     "subfields": [
       {
         "nameEn": "Anatomy",
-        "nameEs": "Anatomia",
+        "nameEs": "Anatomía",
         "topics": [
           {
             "en": "Medical and Biological Sciences",
@@ -5554,7 +5554,7 @@ const mergedData = [
       },
       {
         "nameEn": "Anesthesiology and Pain Medicine",
-        "nameEs": "Anestesiologia y Medicina del Dolor",
+        "nameEs": "Anestesiología y Medicina del Dolor",
         "topics": [
           {
             "en": "Airway Management and Intubation Techniques",
@@ -5576,7 +5576,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biochemistry",
-        "nameEs": "Bioquimica",
+        "nameEs": "Bioquímica",
         "topics": [
           {
             "en": "Phytochemicals and Antioxidant Activities",
@@ -5594,7 +5594,7 @@ const mergedData = [
       },
       {
         "nameEn": "Cardiology and Cardiovascular Medicine",
-        "nameEs": "Cardiologia y Medicina Cardiovascular",
+        "nameEs": "Cardiología y Medicina Cardiovascular",
         "topics": [
           {
             "en": "Cardiac, Anesthesia and Surgical Outcomes",
@@ -5716,7 +5716,7 @@ const mergedData = [
       },
       {
         "nameEn": "Critical Care and Intensive Care Medicine",
-        "nameEs": "Cuidados Criticos y Medicina Intensiva",
+        "nameEs": "Cuidados Críticos y Medicina Intensiva",
         "topics": [
           {
             "en": "Intensive Care Unit Cognitive Disorders",
@@ -5828,7 +5828,7 @@ const mergedData = [
       },
       {
         "nameEn": "Dermatology",
-        "nameEs": "Dermatologia",
+        "nameEs": "Dermatología",
         "topics": [
           {
             "en": "Medicine and Dermatology Studies History",
@@ -5936,7 +5936,7 @@ const mergedData = [
       },
       {
         "nameEn": "Endocrinology, Diabetes and Metabolism",
-        "nameEs": "Endocrinologia, Diabetes y Metabolismo",
+        "nameEs": "Endocrinología, Diabetes y Metabolismo",
         "topics": [
           {
             "en": "Thyroid Disorders and Treatments",
@@ -6014,7 +6014,7 @@ const mergedData = [
       },
       {
         "nameEn": "Epidemiology",
-        "nameEs": "Epidemiologia",
+        "nameEs": "Epidemiología",
         "topics": [
           {
             "en": "Liver Disease Diagnosis and Treatment",
@@ -6202,7 +6202,7 @@ const mergedData = [
       },
       {
         "nameEn": "Gastroenterology",
-        "nameEs": "Gastroenterologia",
+        "nameEs": "Gastroenterología",
         "topics": [
           {
             "en": "Gastrointestinal motility and disorders",
@@ -6228,7 +6228,7 @@ const mergedData = [
       },
       {
         "nameEn": "Genetics",
-        "nameEs": "Genetica",
+        "nameEs": "Genética",
         "topics": [
           {
             "en": "Glioma Diagnosis and Treatment",
@@ -6270,7 +6270,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geriatrics and Gerontology",
-        "nameEs": "Geriatria y Gerontologia",
+        "nameEs": "Geriatría y Gerontología",
         "topics": [
           {
             "en": "Pharmaceutical Practices and Patient Outcomes",
@@ -6288,7 +6288,7 @@ const mergedData = [
       },
       {
         "nameEn": "Health Informatics",
-        "nameEs": "Informatica en Salud",
+        "nameEs": "Informática en Salud",
         "topics": [
           {
             "en": "Artificial Intelligence in Healthcare and Education",
@@ -6298,7 +6298,7 @@ const mergedData = [
       },
       {
         "nameEn": "Hematology",
-        "nameEs": "Hematologia",
+        "nameEs": "Hematología",
         "topics": [
           {
             "en": "Acute Myeloid Leukemia Research",
@@ -6352,7 +6352,7 @@ const mergedData = [
       },
       {
         "nameEn": "Hepatology",
-        "nameEs": "Hepatologia",
+        "nameEs": "Hepatología",
         "topics": [
           {
             "en": "Hepatitis C virus research",
@@ -6382,7 +6382,7 @@ const mergedData = [
       },
       {
         "nameEn": "Immunology and Allergy",
-        "nameEs": "Inmunologia y Alergologia",
+        "nameEs": "Inmunología y Alergología",
         "topics": [
           {
             "en": "Cell Adhesion Molecules Research",
@@ -6500,7 +6500,7 @@ const mergedData = [
       },
       {
         "nameEn": "Microbiology",
-        "nameEs": "Microbiologia",
+        "nameEs": "Microbiología",
         "topics": [
           {
             "en": "Actinomycetales infections and treatment",
@@ -6510,7 +6510,7 @@ const mergedData = [
       },
       {
         "nameEn": "Nephrology",
-        "nameEs": "Nefrologia",
+        "nameEs": "Nefrología",
         "topics": [
           {
             "en": "Dialysis and Renal Disease Management",
@@ -6544,7 +6544,7 @@ const mergedData = [
       },
       {
         "nameEn": "Neurology",
-        "nameEs": "Neurologia",
+        "nameEs": "Neurología",
         "topics": [
           {
             "en": "History of Medical Practice",
@@ -6638,7 +6638,7 @@ const mergedData = [
       },
       {
         "nameEn": "Obstetrics and Gynecology",
-        "nameEs": "Obstetricia y Ginecologia",
+        "nameEs": "Obstetricia y Ginecología",
         "topics": [
           {
             "en": "Pregnancy and preeclampsia studies",
@@ -6676,7 +6676,7 @@ const mergedData = [
       },
       {
         "nameEn": "Oncology",
-        "nameEs": "Oncologia",
+        "nameEs": "Oncología",
         "topics": [
           {
             "en": "Cancer Treatment and Pharmacology",
@@ -6818,7 +6818,7 @@ const mergedData = [
       },
       {
         "nameEn": "Ophthalmology",
-        "nameEs": "Oftalmologia",
+        "nameEs": "Oftalmología",
         "topics": [
           {
             "en": "Glaucoma and retinal disorders",
@@ -6906,7 +6906,7 @@ const mergedData = [
       },
       {
         "nameEn": "Otorhinolaryngology",
-        "nameEs": "Otorrinolaringologia",
+        "nameEs": "Otorrinolaringología",
         "topics": [
           {
             "en": "Head and Neck Cancer Studies",
@@ -6924,7 +6924,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pathology and Forensic Medicine",
-        "nameEs": "Patologia y Medicina Forense",
+        "nameEs": "Patología y Medicina Forense",
         "topics": [
           {
             "en": "Spine and Intervertebral Disc Pathology",
@@ -7022,7 +7022,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pediatrics, Perinatology and Child Health",
-        "nameEs": "Pediatria, Perinatologia y Salud Infantil",
+        "nameEs": "Pediatría, Perinatología y Salud Infantil",
         "topics": [
           {
             "en": "Prenatal Screening and Diagnostics",
@@ -7108,7 +7108,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pharmacology",
-        "nameEs": "Farmacologia",
+        "nameEs": "Farmacología",
         "topics": [
           {
             "en": "Microbial Natural Products and Biosynthesis",
@@ -7202,7 +7202,7 @@ const mergedData = [
       },
       {
         "nameEn": "Physiology",
-        "nameEs": "Fisiologia",
+        "nameEs": "Fisiología",
         "topics": [
           {
             "en": "Diet and metabolism studies",
@@ -7328,7 +7328,7 @@ const mergedData = [
       },
       {
         "nameEn": "Psychiatry and Mental health",
-        "nameEs": "Psiquiatria y Salud Mental",
+        "nameEs": "Psiquiatría y Salud Mental",
         "topics": [
           {
             "en": "Epilepsy research and treatment",
@@ -7398,7 +7398,7 @@ const mergedData = [
       },
       {
         "nameEn": "Public Health, Environmental and Occupational Health",
-        "nameEs": "Salud Publica, Ambiental y Ocupacional",
+        "nameEs": "Salud Pública, Ambiental y Ocupacional",
         "topics": [
           {
             "en": "Medical and Health Sciences Research",
@@ -7834,7 +7834,7 @@ const mergedData = [
       },
       {
         "nameEn": "Radiology, Nuclear Medicine and Imaging",
-        "nameEs": "Radiologia, Medicina Nuclear e Imagen",
+        "nameEs": "Radiología, Medicina Nuclear e Imagen",
         "topics": [
           {
             "en": "Medical Imaging Techniques and Applications",
@@ -7960,7 +7960,7 @@ const mergedData = [
       },
       {
         "nameEn": "Rehabilitation",
-        "nameEs": "Rehabilitacion",
+        "nameEs": "Rehabilitación",
         "topics": [
           {
             "en": "Stroke Rehabilitation and Recovery",
@@ -8032,7 +8032,7 @@ const mergedData = [
       },
       {
         "nameEn": "Rheumatology",
-        "nameEs": "Reumatologia",
+        "nameEs": "Reumatología",
         "topics": [
           {
             "en": "Pelvic floor disorders treatments",
@@ -8134,7 +8134,7 @@ const mergedData = [
       },
       {
         "nameEn": "Surgery",
-        "nameEs": "Cirugia",
+        "nameEs": "Cirugía",
         "topics": [
           {
             "en": "Biomedical and Chemical Research",
@@ -8538,7 +8538,7 @@ const mergedData = [
       },
       {
         "nameEn": "Urology",
-        "nameEs": "Urologia",
+        "nameEs": "Urología",
         "topics": [
           {
             "en": "Urological Disorders and Treatments",
@@ -8775,7 +8775,7 @@ const mergedData = [
       },
       {
         "nameEn": "Language and Linguistics",
-        "nameEs": "Lengua y Linguistica",
+        "nameEs": "Lengua y Lingüística",
         "topics": [
           {
             "en": "Linguistics and language evolution",
@@ -8861,7 +8861,7 @@ const mergedData = [
       },
       {
         "nameEn": "Archeology",
-        "nameEs": "Arqueologia",
+        "nameEs": "Arqueología",
         "topics": [
           {
             "en": "Archaeology and Historical Studies",
@@ -8947,7 +8947,7 @@ const mergedData = [
       },
       {
         "nameEn": "Classics",
-        "nameEs": "Clasicos",
+        "nameEs": "Clásicos",
         "topics": [
           {
             "en": "Historical, Literary, and Cultural Studies",
@@ -8973,7 +8973,7 @@ const mergedData = [
       },
       {
         "nameEn": "Conservation",
-        "nameEs": "Conservacion",
+        "nameEs": "Conservación",
         "topics": [
           {
             "en": "Historical Art and Architecture Studies",
@@ -9003,7 +9003,7 @@ const mergedData = [
       },
       {
         "nameEn": "History and Philosophy of Science",
-        "nameEs": "Historia y Filosofia de la Ciencia",
+        "nameEs": "Historia y Filosofía de la Ciencia",
         "topics": [
           {
             "en": "Historical Studies and Socio-cultural Analysis",
@@ -9085,7 +9085,7 @@ const mergedData = [
       },
       {
         "nameEn": "Literature and Literary Theory",
-        "nameEs": "Literatura y Teoria Literaria",
+        "nameEs": "Literatura y Teoría Literaria",
         "topics": [
           {
             "en": "German Literature and Culture Studies",
@@ -9303,7 +9303,7 @@ const mergedData = [
       },
       {
         "nameEn": "Museology",
-        "nameEs": "Museologia",
+        "nameEs": "Museología",
         "topics": [
           {
             "en": "Libraries and Information Services",
@@ -9345,7 +9345,7 @@ const mergedData = [
       },
       {
         "nameEn": "Music",
-        "nameEs": "Musica",
+        "nameEs": "Música",
         "topics": [
           {
             "en": "Musicology and Musical Analysis",
@@ -9371,7 +9371,7 @@ const mergedData = [
       },
       {
         "nameEn": "Philosophy",
-        "nameEs": "Filosofia",
+        "nameEs": "Filosofía",
         "topics": [
           {
             "en": "Hermeneutics and Narrative Identity",
@@ -9639,7 +9639,7 @@ const mergedData = [
       },
       {
         "nameEn": "Visual Arts and Performing Arts",
-        "nameEs": "Artes Visuales y Escenicas",
+        "nameEs": "Artes Visuales y Escénicas",
         "topics": [
           {
             "en": "Art, Politics, and Modernism",
@@ -9716,11 +9716,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/31",
     "nameEn": "Physics and Astronomy",
-    "nameEs": "Fisica y Astronomia",
+    "nameEs": "Física y Astronomía",
     "subfields": [
       {
         "nameEn": "Acoustics and Ultrasonics",
-        "nameEs": "Acustica y Ultrasonidos",
+        "nameEs": "Acústica y Ultrasonidos",
         "topics": [
           {
             "en": "Random lasers and scattering media",
@@ -9730,7 +9730,7 @@ const mergedData = [
       },
       {
         "nameEn": "Astronomy and Astrophysics",
-        "nameEs": "Astronomia y Astrofisica",
+        "nameEs": "Astronomía y Astrofísica",
         "topics": [
           {
             "en": "Superconducting and THz Device Technology",
@@ -9820,7 +9820,7 @@ const mergedData = [
       },
       {
         "nameEn": "Condensed Matter Physics",
-        "nameEs": "Fisica de la Materia Condensada",
+        "nameEs": "Física de la Materia Condensada",
         "topics": [
           {
             "en": "Theoretical and Computational Physics",
@@ -9858,7 +9858,7 @@ const mergedData = [
       },
       {
         "nameEn": "Instrumentation",
-        "nameEs": "Instrumentacion",
+        "nameEs": "Instrumentación",
         "topics": [
           {
             "en": "Astronomy and Astrophysical Research",
@@ -9872,7 +9872,7 @@ const mergedData = [
       },
       {
         "nameEn": "Nuclear and High Energy Physics",
-        "nameEs": "Fisica Nuclear y de Altas Energias",
+        "nameEs": "Física Nuclear y de Altas Energías",
         "topics": [
           {
             "en": "Magnetic confinement fusion research",
@@ -9930,7 +9930,7 @@ const mergedData = [
       },
       {
         "nameEn": "Atomic and Molecular Physics, and Optics",
-        "nameEs": "Fisica Atomica y Molecular, y Optica",
+        "nameEs": "Física Atómica y Molecular, y Óptica",
         "topics": [
           {
             "en": "Gyrotron and Vacuum Electronics Research",
@@ -10084,7 +10084,7 @@ const mergedData = [
       },
       {
         "nameEn": "Radiation",
-        "nameEs": "Radiacion",
+        "nameEs": "Radiación",
         "topics": [
           {
             "en": "Nuclear Physics and Applications",
@@ -10114,7 +10114,7 @@ const mergedData = [
       },
       {
         "nameEn": "Statistical and Nonlinear Physics",
-        "nameEs": "Fisica Estadistica y No Lineal",
+        "nameEs": "Física Estadística y No Lineal",
         "topics": [
           {
             "en": "Advanced Thermodynamics and Statistical Mechanics",
@@ -10187,7 +10187,7 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/17",
     "nameEn": "Computer Science",
-    "nameEs": "Ciencias de la Computacion",
+    "nameEs": "Ciencias de la Computación",
     "subfields": [
       {
         "nameEn": "Artificial Intelligence",
@@ -10505,7 +10505,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computational Theory and Mathematics",
-        "nameEs": "Teoria Computacional y Matematicas",
+        "nameEs": "Teoría Computacional y Matemáticas",
         "topics": [
           {
             "en": "Computational Drug Discovery Methods",
@@ -10607,7 +10607,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computer Graphics and Computer-Aided Design",
-        "nameEs": "Graficos por Computadora y Diseno Asistido por Computadora",
+        "nameEs": "Gráficos por Computadora y Diseño Asistido por Computadora",
         "topics": [
           {
             "en": "Digital Media and Visual Art",
@@ -10807,7 +10807,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computer Science Applications",
-        "nameEs": "Aplicaciones de Ciencias de la Computacion",
+        "nameEs": "Aplicaciones de Ciencias de la Computación",
         "topics": [
           {
             "en": "History of Computing Technologies",
@@ -10853,7 +10853,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computer Vision and Pattern Recognition",
-        "nameEs": "Vision por Computadora y Reconocimiento de Patrones",
+        "nameEs": "Visión por Computadora y Reconocimiento de Patrones",
         "topics": [
           {
             "en": "Image Processing and 3D Reconstruction",
@@ -11037,7 +11037,7 @@ const mergedData = [
       },
       {
         "nameEn": "Human-Computer Interaction",
-        "nameEs": "Interaccion Humano-Computadora",
+        "nameEs": "Interacción Humano-Computadora",
         "topics": [
           {
             "en": "Virtual Reality Applications and Impacts",
@@ -11075,7 +11075,7 @@ const mergedData = [
       },
       {
         "nameEn": "Information Systems",
-        "nameEs": "Sistemas de Informacion",
+        "nameEs": "Sistemas de Información",
         "topics": [
           {
             "en": "Research Data Management Practices",
@@ -11393,7 +11393,7 @@ const mergedData = [
       },
       {
         "nameEn": "Signal Processing",
-        "nameEs": "Procesamiento de Senales",
+        "nameEs": "Procesamiento de Señales",
         "topics": [
           {
             "en": "Speech and Audio Processing",
@@ -11468,11 +11468,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/11",
     "nameEn": "Agricultural and Biological Sciences",
-    "nameEs": "Ciencias Agricolas y Biologicas",
+    "nameEs": "Ciencias Agrícolas y Biológicas",
     "subfields": [
       {
         "nameEn": "General Agricultural and Biological Sciences",
-        "nameEs": "Ciencias Agricolas y Biologicas Generales",
+        "nameEs": "Ciencias Agrícolas y Biológicas Generales",
         "topics": [
           {
             "en": "Diverse Educational Innovations Studies",
@@ -11558,7 +11558,7 @@ const mergedData = [
       },
       {
         "nameEn": "Agronomy and Crop Science",
-        "nameEs": "Agronomia y Ciencias de Cultivos",
+        "nameEs": "Agronomía y Ciencias de Cultivos",
         "topics": [
           {
             "en": "Ruminant Nutrition and Digestive Physiology",
@@ -11608,7 +11608,7 @@ const mergedData = [
       },
       {
         "nameEn": "Animal Science and Zoology",
-        "nameEs": "Ciencias Animales y Zoologia",
+        "nameEs": "Ciencias Animales y Zoología",
         "topics": [
           {
             "en": "Animal Nutrition and Physiology",
@@ -11646,7 +11646,7 @@ const mergedData = [
       },
       {
         "nameEn": "Aquatic Science",
-        "nameEs": "Ciencias Acuaticas",
+        "nameEs": "Ciencias Acuáticas",
         "topics": [
           {
             "en": "Fish Biology and Ecology Studies",
@@ -11680,7 +11680,7 @@ const mergedData = [
       },
       {
         "nameEn": "Ecology, Evolution, Behavior and Systematics",
-        "nameEs": "Ecologia, Evolucion, Comportamiento y Sistematica",
+        "nameEs": "Ecología, Evolución, Comportamiento y Sistemática",
         "topics": [
           {
             "en": "Agriculture and Rural Development Research",
@@ -11996,7 +11996,7 @@ const mergedData = [
       },
       {
         "nameEn": "Insect Science",
-        "nameEs": "Entomologia",
+        "nameEs": "Entomología",
         "topics": [
           {
             "en": "Forest Ecology and Biodiversity Studies",
@@ -12481,7 +12481,7 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/13",
     "nameEn": "Biochemistry, Genetics and Molecular Biology",
-    "nameEs": "Bioquimica, Genetica y Biologia Molecular",
+    "nameEs": "Bioquímica, Genética y Biología Molecular",
     "subfields": [
       {
         "nameEn": "Aging",
@@ -12495,7 +12495,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biochemistry",
-        "nameEs": "Bioquimica",
+        "nameEs": "Bioquímica",
         "topics": [
           {
             "en": "Environmental Science and Technology",
@@ -12529,7 +12529,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biophysics",
-        "nameEs": "Biofisica",
+        "nameEs": "Biofísica",
         "topics": [
           {
             "en": "Cell Image Analysis Techniques",
@@ -12559,7 +12559,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biotechnology",
-        "nameEs": "Biotecnologia",
+        "nameEs": "Biotecnología",
         "topics": [
           {
             "en": "Enzyme Production and Characterization",
@@ -12597,7 +12597,7 @@ const mergedData = [
       },
       {
         "nameEn": "Cancer Research",
-        "nameEs": "Investigacion en Cancer",
+        "nameEs": "Investigación en Cáncer",
         "topics": [
           {
             "en": "MicroRNA in disease regulation",
@@ -12655,7 +12655,7 @@ const mergedData = [
       },
       {
         "nameEn": "Cell Biology",
-        "nameEs": "Biologia Celular",
+        "nameEs": "Biología Celular",
         "topics": [
           {
             "en": "Plant Pathogens and Fungal Diseases",
@@ -12729,7 +12729,7 @@ const mergedData = [
       },
       {
         "nameEn": "Clinical Biochemistry",
-        "nameEs": "Bioquimica Clinica",
+        "nameEs": "Bioquímica Clínica",
         "topics": [
           {
             "en": "Metabolism and Genetic Disorders",
@@ -12751,7 +12751,7 @@ const mergedData = [
       },
       {
         "nameEn": "Developmental Biology",
-        "nameEs": "Biologia del Desarrollo",
+        "nameEs": "Biología del Desarrollo",
         "topics": [
           {
             "en": "Animal Vocal Communication and Behavior",
@@ -12765,7 +12765,7 @@ const mergedData = [
       },
       {
         "nameEn": "Endocrinology",
-        "nameEs": "Endocrinologia",
+        "nameEs": "Endocrinología",
         "topics": [
           {
             "en": "Escherichia coli research studies",
@@ -12799,7 +12799,7 @@ const mergedData = [
       },
       {
         "nameEn": "Genetics",
-        "nameEs": "Genetica",
+        "nameEs": "Genética",
         "topics": [
           {
             "en": "Lepidoptera: Biology and Taxonomy",
@@ -12965,7 +12965,7 @@ const mergedData = [
       },
       {
         "nameEn": "Molecular Biology",
-        "nameEs": "Biologia Molecular",
+        "nameEs": "Biología Molecular",
         "topics": [
           {
             "en": "Genomics and Phylogenetic Studies",
@@ -13529,7 +13529,7 @@ const mergedData = [
       },
       {
         "nameEn": "Physiology",
-        "nameEs": "Fisiologia",
+        "nameEs": "Fisiología",
         "topics": [
           {
             "en": "Reproductive biology and impacts on aquatic species",
@@ -13551,7 +13551,7 @@ const mergedData = [
       },
       {
         "nameEn": "Structural Biology",
-        "nameEs": "Biologia Estructural",
+        "nameEs": "Biología Estructural",
         "topics": [
           {
             "en": "Advanced Electron Microscopy Techniques and Applications",
@@ -13568,7 +13568,7 @@ const mergedData = [
     "subfields": [
       {
         "nameEn": "Ecological Modeling",
-        "nameEs": "Modelado Ecologico",
+        "nameEs": "Modelado Ecológico",
         "topics": [
           {
             "en": "Species Distribution and Climate Change",
@@ -13586,7 +13586,7 @@ const mergedData = [
       },
       {
         "nameEn": "Ecology",
-        "nameEs": "Ecologia",
+        "nameEs": "Ecología",
         "topics": [
           {
             "en": "Parasite Biology and Host Interactions",
@@ -13724,7 +13724,7 @@ const mergedData = [
       },
       {
         "nameEn": "Environmental Chemistry",
-        "nameEs": "Quimica Ambiental",
+        "nameEs": "Química Ambiental",
         "topics": [
           {
             "en": "Methane Hydrates and Related Phenomena",
@@ -13774,7 +13774,7 @@ const mergedData = [
       },
       {
         "nameEn": "Environmental Engineering",
-        "nameEs": "Ingenieria Ambiental",
+        "nameEs": "Ingeniería Ambiental",
         "topics": [
           {
             "en": "Soil Moisture and Remote Sensing",
@@ -13982,7 +13982,7 @@ const mergedData = [
       },
       {
         "nameEn": "Health, Toxicology and Mutagenesis",
-        "nameEs": "Salud, Toxicologia y Mutagenesis",
+        "nameEs": "Salud, Toxicología y Mutagénesis",
         "topics": [
           {
             "en": "Air Quality and Health Impacts",
@@ -14052,7 +14052,7 @@ const mergedData = [
       },
       {
         "nameEn": "Management, Monitoring, Policy and Law",
-        "nameEs": "Gestion, Monitoreo, Politica y Ley",
+        "nameEs": "Gestión, Monitoreo, Política y Ley",
         "topics": [
           {
             "en": "American Environmental and Regional History",
@@ -14194,7 +14194,7 @@ const mergedData = [
       },
       {
         "nameEn": "Nature and Landscape Conservation",
-        "nameEs": "Conservacion de la Naturaleza y el Paisaje",
+        "nameEs": "Conservación de la Naturaleza y el Paisaje",
         "topics": [
           {
             "en": "Ecology, Conservation, and Geographical Studies",
@@ -14248,7 +14248,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pollution",
-        "nameEs": "Contaminacion",
+        "nameEs": "Contaminación",
         "topics": [
           {
             "en": "Heavy metals in environment",
@@ -14298,7 +14298,7 @@ const mergedData = [
       },
       {
         "nameEn": "Industrial and Manufacturing Engineering",
-        "nameEs": "Ingenieria Industrial y de Manufactura",
+        "nameEs": "Ingeniería Industrial y de Manufactura",
         "topics": [
           {
             "en": "Water Quality Monitoring and Analysis",
@@ -14340,7 +14340,7 @@ const mergedData = [
       },
       {
         "nameEn": "Water Science and Technology",
-        "nameEs": "Ciencias del Agua y Tecnologia",
+        "nameEs": "Ciencias del Agua y Tecnología",
         "topics": [
           {
             "en": "Water Quality and Resources Studies",
@@ -14445,11 +14445,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/20",
     "nameEn": "Economics, Econometrics and Finance",
-    "nameEs": "Economia, Econometria y Finanzas",
+    "nameEs": "Economía, Econometría y Finanzas",
     "subfields": [
       {
         "nameEn": "General Economics, Econometrics and Finance",
-        "nameEs": "Economia, Econometria y Finanzas Generales",
+        "nameEs": "Economía, Econometría y Finanzas Generales",
         "topics": [
           {
             "en": "Global trade and economics",
@@ -14503,7 +14503,7 @@ const mergedData = [
       },
       {
         "nameEn": "Economics and Econometrics",
-        "nameEs": "Economia y Econometria",
+        "nameEs": "Economía y Econometría",
         "topics": [
           {
             "en": "Diverse Scientific and Economic Studies",
@@ -14978,7 +14978,7 @@ const mergedData = [
       },
       {
         "nameEn": "Ceramics and Composites",
-        "nameEs": "Ceramica y Compuestos",
+        "nameEs": "Cerámica y Compuestos",
         "topics": [
           {
             "en": "Advanced ceramic materials synthesis",
@@ -14992,7 +14992,7 @@ const mergedData = [
       },
       {
         "nameEn": "Electronic, Optical and Magnetic Materials",
-        "nameEs": "Materiales Electronicos, Opticos y Magneticos",
+        "nameEs": "Materiales Electrónicos, Ópticos y Magnéticos",
         "topics": [
           {
             "en": "Supercapacitor Materials and Fabrication",
@@ -15066,7 +15066,7 @@ const mergedData = [
       },
       {
         "nameEn": "Materials Chemistry",
-        "nameEs": "Quimica de Materiales",
+        "nameEs": "Química de Materiales",
         "topics": [
           {
             "en": "Crystallization and Solubility Studies",
@@ -15358,7 +15358,7 @@ const mergedData = [
       },
       {
         "nameEn": "Polymers and Plastics",
-        "nameEs": "Polimeros y Plasticos",
+        "nameEs": "Polímeros y Plásticos",
         "topics": [
           {
             "en": "Textile materials and evaluations",
@@ -15420,7 +15420,7 @@ const mergedData = [
       },
       {
         "nameEn": "Surfaces, Coatings and Films",
-        "nameEs": "Superficies, Recubrimientos y Peliculas",
+        "nameEs": "Superficies, Recubrimientos y Películas",
         "topics": [
           {
             "en": "Electron and X-Ray Spectroscopy Techniques",
@@ -15445,7 +15445,7 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/14",
     "nameEn": "Business, Management and Accounting",
-    "nameEs": "Negocios, Gestion y Contabilidad",
+    "nameEs": "Negocios, Gestión y Contabilidad",
     "subfields": [
       {
         "nameEn": "Accounting",
@@ -15543,7 +15543,7 @@ const mergedData = [
       },
       {
         "nameEn": "Business and International Management",
-        "nameEs": "Negocios y Gestion Internacional",
+        "nameEs": "Negocios y Gestión Internacional",
         "topics": [
           {
             "en": "Innovation and Socioeconomic Development",
@@ -15557,7 +15557,7 @@ const mergedData = [
       },
       {
         "nameEn": "Management Information Systems",
-        "nameEs": "Sistemas de Informacion de Gestion",
+        "nameEs": "Sistemas de Información de Gestión",
         "topics": [
           {
             "en": "Big Data and Business Intelligence",
@@ -15627,7 +15627,7 @@ const mergedData = [
       },
       {
         "nameEn": "Management of Technology and Innovation",
-        "nameEs": "Gestion de Tecnologia e Innovacion",
+        "nameEs": "Gestión de Tecnología e Innovación",
         "topics": [
           {
             "en": "Entrepreneurship Studies and Influences",
@@ -15763,7 +15763,7 @@ const mergedData = [
       },
       {
         "nameEn": "Organizational Behavior and Human Resource Management",
-        "nameEs": "Comportamiento Organizacional y Gestion de Recursos Humanos",
+        "nameEs": "Comportamiento Organizacional y Gestión de Recursos Humanos",
         "topics": [
           {
             "en": "Organizational Management and Innovation",
@@ -15889,7 +15889,7 @@ const mergedData = [
       },
       {
         "nameEn": "Strategy and Management",
-        "nameEs": "Estrategia y Gestion",
+        "nameEs": "Estrategia y Gestión",
         "topics": [
           {
             "en": "Corporate Governance and Law",
@@ -16063,7 +16063,7 @@ const mergedData = [
       },
       {
         "nameEn": "Tourism, Leisure and Hospitality Management",
-        "nameEs": "Gestion del Turismo, Ocio y Hospitalidad",
+        "nameEs": "Gestión del Turismo, Ocio y Hospitalidad",
         "topics": [
           {
             "en": "Wine Industry and Tourism",
@@ -16090,11 +16090,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/32",
     "nameEn": "Psychology",
-    "nameEs": "Psicologia",
+    "nameEs": "Psicología",
     "subfields": [
       {
         "nameEn": "General Psychology",
-        "nameEs": "Psicologia General",
+        "nameEs": "Psicología General",
         "topics": [
           {
             "en": "Academic and Historical Perspectives in Psychology",
@@ -16104,7 +16104,7 @@ const mergedData = [
       },
       {
         "nameEn": "Applied Psychology",
-        "nameEs": "Psicologia Aplicada",
+        "nameEs": "Psicología Aplicada",
         "topics": [
           {
             "en": "Digital Mental Health Interventions",
@@ -16138,7 +16138,7 @@ const mergedData = [
       },
       {
         "nameEn": "Clinical Psychology",
-        "nameEs": "Psicologia Clinica",
+        "nameEs": "Psicología Clínica",
         "topics": [
           {
             "en": "Psychoanalysis and Psychopathology Research",
@@ -16296,7 +16296,7 @@ const mergedData = [
       },
       {
         "nameEn": "Developmental and Educational Psychology",
-        "nameEs": "Psicologia del Desarrollo y Educativa",
+        "nameEs": "Psicología del Desarrollo y Educativa",
         "topics": [
           {
             "en": "Innovative Teaching and Learning Methods",
@@ -16382,7 +16382,7 @@ const mergedData = [
       },
       {
         "nameEn": "Experimental and Cognitive Psychology",
-        "nameEs": "Psicologia Experimental y Cognitiva",
+        "nameEs": "Psicología Experimental y Cognitiva",
         "topics": [
           {
             "en": "Phonetics and Phonology Research",
@@ -16484,7 +16484,7 @@ const mergedData = [
       },
       {
         "nameEn": "Neuropsychology and Physiological Psychology",
-        "nameEs": "Neuropsicologia y Psicologia Fisiologica",
+        "nameEs": "Neuropsicología y Psicología Fisiológica",
         "topics": [
           {
             "en": "Developmental and Educational Neuropsychology",
@@ -16498,7 +16498,7 @@ const mergedData = [
       },
       {
         "nameEn": "Social Psychology",
-        "nameEs": "Psicologia Social",
+        "nameEs": "Psicología Social",
         "topics": [
           {
             "en": "Psychology, Coaching, and Therapy",
@@ -16939,7 +16939,7 @@ const mergedData = [
       },
       {
         "nameEn": "Emergency Medical Services",
-        "nameEs": "Servicios Medicos de Emergencia",
+        "nameEs": "Servicios Médicos de Emergencia",
         "topics": [
           {
             "en": "Disaster Response and Management",
@@ -16973,7 +16973,7 @@ const mergedData = [
       },
       {
         "nameEn": "Health Information Management",
-        "nameEs": "Gestion de Informacion en Salud",
+        "nameEs": "Gestión de Información en Salud",
         "topics": [
           {
             "en": "Electronic Health Records Systems",
@@ -17027,7 +17027,7 @@ const mergedData = [
       },
       {
         "nameEn": "Medical Laboratory Technology",
-        "nameEs": "Tecnologia de Laboratorio Medico",
+        "nameEs": "Tecnología de Laboratorio Médico",
         "topics": [
           {
             "en": "Quality and Safety in Healthcare",
@@ -17041,7 +17041,7 @@ const mergedData = [
       },
       {
         "nameEn": "Medical Terminology",
-        "nameEs": "Terminologia Medica",
+        "nameEs": "Terminología Médica",
         "topics": [
           {
             "en": "Medical Research and Practices",
@@ -17115,7 +17115,7 @@ const mergedData = [
       },
       {
         "nameEn": "Physical Therapy, Sports Therapy and Rehabilitation",
-        "nameEs": "Fisioterapia, Terapia Deportiva y Rehabilitacion",
+        "nameEs": "Fisioterapia, Terapia Deportiva y Rehabilitación",
         "topics": [
           {
             "en": "Sports and Physical Education Research",
@@ -17149,7 +17149,7 @@ const mergedData = [
       },
       {
         "nameEn": "Radiological and Ultrasound Technology",
-        "nameEs": "Tecnologia Radiologica y Ultrasonido",
+        "nameEs": "Tecnología Radiológica y Ultrasonido",
         "topics": [
           {
             "en": "Occupational Health and Safety Research",
@@ -17167,7 +17167,7 @@ const mergedData = [
       },
       {
         "nameEn": "Speech and Hearing",
-        "nameEs": "Fonoaudiologia y Audicion",
+        "nameEs": "Fonoaudiología y Audición",
         "topics": [
           {
             "en": "School Health and Nursing Education",
@@ -17220,7 +17220,7 @@ const mergedData = [
     "subfields": [
       {
         "nameEn": "Atmospheric Science",
-        "nameEs": "Ciencias Atmosfericas",
+        "nameEs": "Ciencias Atmosféricas",
         "topics": [
           {
             "en": "Geology and Paleoclimatology Research",
@@ -17308,7 +17308,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geochemistry and Petrology",
-        "nameEs": "Geoquimica y Petrologia",
+        "nameEs": "Geoquímica y Petrología",
         "topics": [
           {
             "en": "Mineralogy and Gemology Studies",
@@ -17338,7 +17338,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geology",
-        "nameEs": "Geologia",
+        "nameEs": "Geología",
         "topics": [
           {
             "en": "Geological Studies and Exploration",
@@ -17364,7 +17364,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geophysics",
-        "nameEs": "Geofisica",
+        "nameEs": "Geofísica",
         "topics": [
           {
             "en": "Geological and Geochemical Analysis",
@@ -17410,7 +17410,7 @@ const mergedData = [
       },
       {
         "nameEn": "Oceanography",
-        "nameEs": "Oceanografia",
+        "nameEs": "Oceanografía",
         "topics": [
           {
             "en": "Geophysics and Gravity Measurements",
@@ -17452,7 +17452,7 @@ const mergedData = [
       },
       {
         "nameEn": "Paleontology",
-        "nameEs": "Paleontologia",
+        "nameEs": "Paleontología",
         "topics": [
           {
             "en": "Subterranean biodiversity and taxonomy",
@@ -17499,11 +17499,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/16",
     "nameEn": "Chemistry",
-    "nameEs": "Quimica",
+    "nameEs": "Química",
     "subfields": [
       {
         "nameEn": "Analytical Chemistry",
-        "nameEs": "Quimica Analitica",
+        "nameEs": "Química Analítica",
         "topics": [
           {
             "en": "Analytical chemistry methods development",
@@ -17537,7 +17537,7 @@ const mergedData = [
       },
       {
         "nameEn": "Electrochemistry",
-        "nameEs": "Electroquimica",
+        "nameEs": "Electroquímica",
         "topics": [
           {
             "en": "Electrochemical Analysis and Applications",
@@ -17547,7 +17547,7 @@ const mergedData = [
       },
       {
         "nameEn": "Inorganic Chemistry",
-        "nameEs": "Quimica Inorganica",
+        "nameEs": "Química Inorgánica",
         "topics": [
           {
             "en": "Radioactive element chemistry and processing",
@@ -17601,7 +17601,7 @@ const mergedData = [
       },
       {
         "nameEn": "Organic Chemistry",
-        "nameEs": "Quimica Organica",
+        "nameEs": "Química Orgánica",
         "topics": [
           {
             "en": "Chemistry and Stereochemistry Studies",
@@ -17851,7 +17851,7 @@ const mergedData = [
       },
       {
         "nameEn": "Physical and Theoretical Chemistry",
-        "nameEs": "Quimica Fisica y Teorica",
+        "nameEs": "Química Física y Teórica",
         "topics": [
           {
             "en": "History and advancements in chemistry",
@@ -17946,11 +17946,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/26",
     "nameEn": "Mathematics",
-    "nameEs": "Matematicas",
+    "nameEs": "Matemáticas",
     "subfields": [
       {
         "nameEn": "Algebra and Number Theory",
-        "nameEs": "Algebra y Teoria de Numeros",
+        "nameEs": "Álgebra y Teoría de Números",
         "topics": [
           {
             "en": "Advanced Topics in Algebra",
@@ -17976,7 +17976,7 @@ const mergedData = [
       },
       {
         "nameEn": "Applied Mathematics",
-        "nameEs": "Matematicas Aplicadas",
+        "nameEs": "Matemáticas Aplicadas",
         "topics": [
           {
             "en": "Mathematics Education and Pedagogy",
@@ -18050,7 +18050,7 @@ const mergedData = [
       },
       {
         "nameEn": "Computational Mathematics",
-        "nameEs": "Matematicas Computacionales",
+        "nameEs": "Matemáticas Computacionales",
         "topics": [
           {
             "en": "Tensor decomposition and applications",
@@ -18060,7 +18060,7 @@ const mergedData = [
       },
       {
         "nameEn": "Discrete Mathematics and Combinatorics",
-        "nameEs": "Matematicas Discretas y Combinatoria",
+        "nameEs": "Matemáticas Discretas y Combinatoria",
         "topics": [
           {
             "en": "Finite Group Theory Research",
@@ -18082,7 +18082,7 @@ const mergedData = [
       },
       {
         "nameEn": "Geometry and Topology",
-        "nameEs": "Geometria y Topologia",
+        "nameEs": "Geometría y Topología",
         "topics": [
           {
             "en": "Mathematics and Applications",
@@ -18132,7 +18132,7 @@ const mergedData = [
       },
       {
         "nameEn": "Mathematical Physics",
-        "nameEs": "Fisica Matematica",
+        "nameEs": "Física Matemática",
         "topics": [
           {
             "en": "Mathematical Dynamics and Fractals",
@@ -18186,7 +18186,7 @@ const mergedData = [
       },
       {
         "nameEn": "Modeling and Simulation",
-        "nameEs": "Modelado y Simulacion",
+        "nameEs": "Modelado y Simulación",
         "topics": [
           {
             "en": "COVID-19 epidemiological studies",
@@ -18216,7 +18216,7 @@ const mergedData = [
       },
       {
         "nameEn": "Numerical Analysis",
-        "nameEs": "Analisis Numerico",
+        "nameEs": "Análisis Numérico",
         "topics": [
           {
             "en": "Numerical methods for differential equations",
@@ -18242,7 +18242,7 @@ const mergedData = [
       },
       {
         "nameEn": "Statistics and Probability",
-        "nameEs": "Estadistica y Probabilidad",
+        "nameEs": "Estadística y Probabilidad",
         "topics": [
           {
             "en": "Probability and Statistical Research",
@@ -18328,7 +18328,7 @@ const mergedData = [
       },
       {
         "nameEn": "Theoretical Computer Science",
-        "nameEs": "Ciencias de la Computacion Teoricas",
+        "nameEs": "Ciencias de la Computación Teóricas",
         "topics": [
           {
             "en": "History and Theory of Mathematics",
@@ -18355,7 +18355,7 @@ const mergedData = [
       },
       {
         "nameEn": "Biological Psychiatry",
-        "nameEs": "Psiquiatria Biologica",
+        "nameEs": "Psiquiatría Biológica",
         "topics": [
           {
             "en": "Tryptophan and brain disorders",
@@ -18559,7 +18559,7 @@ const mergedData = [
       },
       {
         "nameEn": "Endocrine and Autonomic Systems",
-        "nameEs": "Sistemas Endocrinos y Autonomos",
+        "nameEs": "Sistemas Endocrinos y Autónomos",
         "topics": [
           {
             "en": "Circadian rhythm and melatonin",
@@ -18577,7 +18577,7 @@ const mergedData = [
       },
       {
         "nameEn": "Neurology",
-        "nameEs": "Neurologia",
+        "nameEs": "Neurología",
         "topics": [
           {
             "en": "Neurology and Historical Studies",
@@ -18644,11 +18644,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/18",
     "nameEn": "Decision Sciences",
-    "nameEs": "Ciencias de la Decision",
+    "nameEs": "Ciencias de la Decisión",
     "subfields": [
       {
         "nameEn": "General Decision Sciences",
-        "nameEs": "Ciencias de la Decision Generales",
+        "nameEs": "Ciencias de la Decisión Generales",
         "topics": [
           {
             "en": "Decision-Making and Behavioral Economics",
@@ -18662,7 +18662,7 @@ const mergedData = [
       },
       {
         "nameEn": "Information Systems and Management",
-        "nameEs": "Sistemas de Informacion y Gestion",
+        "nameEs": "Sistemas de Información y Gestión",
         "topics": [
           {
             "en": "Scientific Computing and Data Management",
@@ -18728,7 +18728,7 @@ const mergedData = [
       },
       {
         "nameEn": "Management Science and Operations Research",
-        "nameEs": "Ciencias de la Gestion e Investigacion Operativa",
+        "nameEs": "Ciencias de la Gestión e Investigación Operativa",
         "topics": [
           {
             "en": "Complex Systems and Decision Making",
@@ -18870,7 +18870,7 @@ const mergedData = [
       },
       {
         "nameEn": "Statistics, Probability and Uncertainty",
-        "nameEs": "Estadistica, Probabilidad e Incertidumbre",
+        "nameEs": "Estadística, Probabilidad e Incertidumbre",
         "topics": [
           {
             "en": "Scientific Measurement and Uncertainty Evaluation",
@@ -18915,11 +18915,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/24",
     "nameEn": "Immunology and Microbiology",
-    "nameEs": "Inmunologia y Microbiologia",
+    "nameEs": "Inmunología y Microbiología",
     "subfields": [
       {
         "nameEn": "Applied Microbiology and Biotechnology",
-        "nameEs": "Microbiologia Aplicada y Biotecnologia",
+        "nameEs": "Microbiología Aplicada y Biotecnología",
         "topics": [
           {
             "en": "Antibiotic Use and Resistance",
@@ -18933,7 +18933,7 @@ const mergedData = [
       },
       {
         "nameEn": "Immunology",
-        "nameEs": "Inmunologia",
+        "nameEs": "Inmunología",
         "topics": [
           {
             "en": "Immune Cell Function and Interaction",
@@ -19043,7 +19043,7 @@ const mergedData = [
       },
       {
         "nameEn": "Microbiology",
-        "nameEs": "Microbiologia",
+        "nameEs": "Microbiología",
         "topics": [
           {
             "en": "Reproductive tract infections research",
@@ -19073,7 +19073,7 @@ const mergedData = [
       },
       {
         "nameEn": "Parasitology",
-        "nameEs": "Parasitologia",
+        "nameEs": "Parasitología",
         "topics": [
           {
             "en": "Vector-borne infectious diseases",
@@ -19107,7 +19107,7 @@ const mergedData = [
       },
       {
         "nameEn": "Virology",
-        "nameEs": "Virologia",
+        "nameEs": "Virología",
         "topics": [
           {
             "en": "HIV Research and Treatment",
@@ -19128,11 +19128,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/21",
     "nameEn": "Energy",
-    "nameEs": "Energia",
+    "nameEs": "Energía",
     "subfields": [
       {
         "nameEn": "General Energy",
-        "nameEs": "Energia General",
+        "nameEs": "Energía General",
         "topics": [
           {
             "en": "Global Energy Security and Policy",
@@ -19142,7 +19142,7 @@ const mergedData = [
       },
       {
         "nameEn": "Energy Engineering and Power Technology",
-        "nameEs": "Ingenieria de Energia y Tecnologia de Potencia",
+        "nameEs": "Ingeniería de Energía y Tecnología de Potencia",
         "topics": [
           {
             "en": "Hybrid Renewable Energy Systems",
@@ -19156,7 +19156,7 @@ const mergedData = [
       },
       {
         "nameEn": "Fuel Technology",
-        "nameEs": "Tecnologia de Combustibles",
+        "nameEs": "Tecnología de Combustibles",
         "topics": [
           {
             "en": "Coal and Coke Industries Research",
@@ -19166,7 +19166,7 @@ const mergedData = [
       },
       {
         "nameEn": "Nuclear Energy and Engineering",
-        "nameEs": "Energia Nuclear e Ingenieria",
+        "nameEs": "Energía Nuclear e Ingeniería",
         "topics": [
           {
             "en": "Advanced Energy Technologies and Civil Engineering Innovations",
@@ -19176,7 +19176,7 @@ const mergedData = [
       },
       {
         "nameEn": "Renewable Energy, Sustainability and the Environment",
-        "nameEs": "Energia Renovable, Sostenibilidad y Medio Ambiente",
+        "nameEs": "Energía Renovable, Sostenibilidad y Medio Ambiente",
         "topics": [
           {
             "en": "Global Energy and Sustainability Research",
@@ -19273,11 +19273,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/29",
     "nameEn": "Nursing",
-    "nameEs": "Enfermeria",
+    "nameEs": "Enfermería",
     "subfields": [
       {
         "nameEn": "Issues, ethics and legal aspects",
-        "nameEs": "Cuestiones, Etica y Aspectos Legales",
+        "nameEs": "Cuestiones, Ética y Aspectos Legales",
         "topics": [
           {
             "en": "Nursing Education, Practice, and Leadership",
@@ -19291,7 +19291,7 @@ const mergedData = [
       },
       {
         "nameEn": "Leadership and Management",
-        "nameEs": "Liderazgo y Gestion",
+        "nameEs": "Liderazgo y Gestión",
         "topics": [
           {
             "en": "Healthcare Education and Workforce Issues",
@@ -19301,7 +19301,7 @@ const mergedData = [
       },
       {
         "nameEn": "Nutrition and Dietetics",
-        "nameEs": "Nutricion y Dietetica",
+        "nameEs": "Nutrición y Dietética",
         "topics": [
           {
             "en": "Child Nutrition and Water Access",
@@ -19375,7 +19375,7 @@ const mergedData = [
       },
       {
         "nameEn": "Research and Theory",
-        "nameEs": "Investigacion y Teoria",
+        "nameEs": "Investigación y Teoría",
         "topics": [
           {
             "en": "Nursing education and management",
@@ -19388,11 +19388,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/30",
     "nameEn": "Pharmacology, Toxicology and Pharmaceutics",
-    "nameEs": "Farmacologia, Toxicologia y Farmacia",
+    "nameEs": "Farmacología, Toxicología y Farmacia",
     "subfields": [
       {
         "nameEn": "Drug Discovery",
-        "nameEs": "Descubrimiento de Farmacos",
+        "nameEs": "Descubrimiento de Fármacos",
         "topics": [
           {
             "en": "Pharmacology and Nanomedicine Research",
@@ -19402,7 +19402,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pharmaceutical Science",
-        "nameEs": "Ciencias Farmaceuticas",
+        "nameEs": "Ciencias Farmacéuticas",
         "topics": [
           {
             "en": "Fluorine in Organic Chemistry",
@@ -19428,7 +19428,7 @@ const mergedData = [
       },
       {
         "nameEn": "Pharmacology",
-        "nameEs": "Farmacologia",
+        "nameEs": "Farmacología",
         "topics": [
           {
             "en": "Pharmacy and Medical Practices",
@@ -19494,7 +19494,7 @@ const mergedData = [
       },
       {
         "nameEn": "Toxicology",
-        "nameEs": "Toxicologia",
+        "nameEs": "Toxicología",
         "topics": [
           {
             "en": "Forensic Toxicology and Drug Analysis",
@@ -19519,11 +19519,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/35",
     "nameEn": "Dentistry",
-    "nameEs": "Odontologia",
+    "nameEs": "Odontología",
     "subfields": [
       {
         "nameEn": "General Dentistry",
-        "nameEs": "Odontologia General",
+        "nameEs": "Odontología General",
         "topics": [
           {
             "en": "Dental Research and COVID-19",
@@ -19533,7 +19533,7 @@ const mergedData = [
       },
       {
         "nameEn": "Oral Surgery",
-        "nameEs": "Cirugia Oral",
+        "nameEs": "Cirugía Oral",
         "topics": [
           {
             "en": "Dental Implant Techniques and Outcomes",
@@ -19602,11 +19602,11 @@ const mergedData = [
   {
     "id": "https://openalex.org/fields/15",
     "nameEn": "Chemical Engineering",
-    "nameEs": "Ingenieria Quimica",
+    "nameEs": "Ingeniería Química",
     "subfields": [
       {
         "nameEn": "Bioengineering",
-        "nameEs": "Bioingenieria",
+        "nameEs": "Bioingeniería",
         "topics": [
           {
             "en": "Analytical Chemistry and Sensors",
@@ -19616,7 +19616,7 @@ const mergedData = [
       },
       {
         "nameEn": "Catalysis",
-        "nameEs": "Catalisis",
+        "nameEs": "Catálisis",
         "topics": [
           {
             "en": "Catalysis and Oxidation Reactions",
@@ -19638,7 +19638,7 @@ const mergedData = [
       },
       {
         "nameEn": "Chemical Health and Safety",
-        "nameEs": "Salud y Seguridad Quimica",
+        "nameEs": "Salud y Seguridad Química",
         "topics": [
           {
             "en": "Chemical Safety and Risk Management",
@@ -19648,7 +19648,7 @@ const mergedData = [
       },
       {
         "nameEn": "Filtration and Separation",
-        "nameEs": "Filtracion y Separacion",
+        "nameEs": "Filtración y Separación",
         "topics": [
           {
             "en": "Chemical and Physical Properties in Aqueous Solutions",
@@ -19680,7 +19680,7 @@ const mergedData = [
       },
       {
         "nameEn": "Process Chemistry and Technology",
-        "nameEs": "Quimica de Procesos y Tecnologia",
+        "nameEs": "Química de Procesos y Tecnología",
         "topics": [
           {
             "en": "Carbon dioxide utilization in catalysis",
