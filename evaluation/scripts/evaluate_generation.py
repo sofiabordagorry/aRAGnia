@@ -353,14 +353,11 @@ def aggregate_combo(
     for cat in cats:
         cat_judged = [r for r in judged if r["category"] == cat]
         cat_sent = [r for r in sentinels if r["category"] == cat]
-        if cat_judged:
-            by_cat[cat] = mean(
-                [norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged]
-            )
-        elif cat_sent:
-            by_cat[cat] = mean([1.0 if r["sentinel_correct"] else 0.0 for r in cat_sent])
-        else:
-            by_cat[cat] = 0.0
+        cat_scores = [
+            norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged
+        ] + [1.0 if r["sentinel_correct"] else 0.0 for r in cat_sent]
+        if cat_scores:
+            by_cat[cat] = mean(cat_scores)
 
     lat_stats = {
         "mean": round(statistics.mean(latencies), 2) if latencies else 0.0,
