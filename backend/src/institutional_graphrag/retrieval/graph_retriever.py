@@ -8,7 +8,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
@@ -401,114 +401,168 @@ CRITICAL SYNTAX:
 
     def _fix_relationship_directions(self, query: str) -> str:
         """
-        Corrige las direcciones de las relaciones cuando el LLM las genera al revés.
-        Schema correcto:
-        - (Investigador)-[:PARTICIPO_EN {calidad: 'responsable'|'integrante'|'otros'}]->(Proyecto|Grupo)
+        Corrige relaciones dirigidas cuando fueron generadas al revés.
+        La corrección cambia únicamente las flechas y conserva:
+        - El orden de los nodos.
+        - Las variables.
+        - Las etiquetas.
+        - Las propiedades de ambos nodos.
+        - La variable y las propiedades de la relación.
+        - Las relaciones encadenadas dentro de un mismo MATCH.
+
+        Esquema correcto:
+        - (Investigador)-[:PARTICIPO_EN]->(Proyecto|Grupo)
         - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
+        - (Topico)-[:PERTENECE_A_SUBCAMPO]->(Subcampo)
         - (Proyecto|Grupo)-[:ES_DESCRITO_POR]->(Documento)
         - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
         - (Proyecto|Grupo)-[:PERTENECE_A_AREA]->(Area)
         - (Documento)-[:PRIMER_CHUNK]->(Chunk)
         - (Chunk)-[:SIGUIENTE_CHUNK]->(Chunk)
         - (Chunk)-[:DE_DOCUMENTO]->(Documento)
-        - (Investigador|Topico)-[:EXTRAIDO_DE]->(Chunk)
+        - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
         - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
         """
-        # Definir las relaciones correctas: (source_type, rel_type, target_type)
-        correct_directions = [
-            ("Investigador", "PARTICIPO_EN", "Proyecto"),
-            ("Investigador", "PARTICIPO_EN", "Grupo"),
-            ("Proyecto", "TIENE_TOPICO", "Topico"),
-            ("Grupo", "TIENE_TOPICO", "Topico"),
-            ("Topico", "PERTENECE_A_SUBCAMPO", "Subcampo"),
-            ("Proyecto", "ES_DESCRITO_POR", "Documento"),
-            ("Grupo", "ES_DESCRITO_POR", "Documento"),
-            ("Proyecto", "INICIO_EN", "Anio"),
-            ("Grupo", "INICIO_EN", "Anio"),
-            ("Proyecto", "PERTENECE_A_AREA", "Area"),
-            ("Grupo", "PERTENECE_A_AREA", "Area"),
-            ("Documento", "PRIMER_CHUNK", "Chunk"),
-            ("Chunk", "SIGUIENTE_CHUNK", "Chunk"),
-            ("Chunk", "DE_DOCUMENTO", "Documento"),
-            ("Investigador", "EXTRAIDO_DE", "Chunk"),
-            ("Topico", "EXTRAIDO_DE", "Chunk"),
-            ("Proyecto", "TITULO_EXTRAIDO_DE", "Chunk"),
-            ("Grupo", "TITULO_EXTRAIDO_DE", "Chunk"),
-        ]
+        if not query or not query.strip():
+            return query
+
+        # Una relación puede admitir más de una combinación de etiquetas.
+        correct_directions: Dict[str, List[Tuple[str, str]]] = {
+            "PARTICIPO_EN": [("Investigador", "Proyecto"), ("Investigador", "Grupo")],
+            "TIENE_TOPICO": [("Proyecto", "Topico"), ("Grupo", "Topico")],
+            "PERTENECE_A_SUBCAMPO": [("Topico", "Subcampo")],
+            "ES_DESCRITO_POR": [("Proyecto", "Documento"), ("Grupo", "Documento")],
+            "INICIO_EN": [("Proyecto", "Anio"), ("Grupo", "Anio")],
+            "PERTENECE_A_AREA": [("Proyecto", "Area"), ("Grupo", "Area")],
+            "PRIMER_CHUNK": [("Documento", "Chunk")],
+            "SIGUIENTE_CHUNK": [("Chunk", "Chunk")],
+            "DE_DOCUMENTO": [("Chunk", "Documento")],
+            "EXTRAIDO_DE": [("Chunk", "Investigador"), ("Chunk", "Topico")],
+            "TITULO_EXTRAIDO_DE": [("Proyecto", "Chunk"), ("Grupo", "Chunk")],
+        }
+
+        var_types: Dict[str, str] = {}
+
+        node_declaration_pattern = re.compile(
+            r"""\(\s*(?P<var>[A-Za-z_]\w*)\s*:\s*(?P<label>[A-Za-z_]\w*)""",
+            re.IGNORECASE | re.VERBOSE,
+        )
+
+        for match in node_declaration_pattern.finditer(query):
+            variable = match.group("var")
+            label = match.group("label")
+            var_types.setdefault(variable, label)
+
+        node_properties = r"""(?:\s*\{(?:[^{}]|\{[^{}]*\})*\})?"""
+        left_node = rf"""(?P<left_node>\(\s*(?:(?P<left>[A-Za-z_]\w*)\s*)?(?::\s*(?P<left_label>[A-Za-z_]\w*)(?:\s*:\s*[A-Za-z_]\w*)*)?{node_properties}\s*\))"""
+        right_node = rf"""(?P<right_node>\(\s*(?:(?P<right>[A-Za-z_]\w*)\s*)?(?::\s*(?P<right_label>[A-Za-z_]\w*)(?:\s*:\s*[A-Za-z_]\w*)*)?{node_properties}\s*\))"""
+        relationship = r"""(?P<relationship>\[\s*(?:(?P<rel_var>[A-Za-z_]\w*)\s*)?:\s*(?P<rel_type>[A-Za-z_]\w*)[^\]]*\])"""
+        edge_pattern = re.compile(
+            rf"""(?={left_node}\s*(?P<left_arrow><-|-)\s*{relationship}\s*(?P<right_arrow>->|-)\s*{right_node})""",
+            re.IGNORECASE | re.VERBOSE,
+        )
+
+        edits: List[Tuple[int, int, str]] = []
+        corrections_made: List[str] = []
+        registered_edits: Set[Tuple[int, int, str]] = set()
+
+        for match in edge_pattern.finditer(query):
+            left_arrow = match.group("left_arrow")
+            right_arrow = match.group("right_arrow")
+
+            if (left_arrow, right_arrow) not in {("-", "->"), ("<-", "-")}:
+                continue
+
+            rel_type_original = match.group("rel_type")
+            rel_type = rel_type_original.upper()
+
+            expected_pairs = correct_directions.get(rel_type)
+            if not expected_pairs:
+                continue
+
+            left_variable = match.group("left")
+            right_variable = match.group("right")
+
+            left_type = match.group("left_label")
+            if left_type is None and left_variable is not None:
+                left_type = var_types.get(left_variable)
+
+            right_type = match.group("right_label")
+            if right_type is None and right_variable is not None:
+                right_type = var_types.get(right_variable)
+
+            if left_type is None or right_type is None:
+                continue
+
+            expected_normalized = {
+                (source.casefold(), target.casefold()) for source, target in expected_pairs
+            }
+
+            if (left_arrow, right_arrow) == ("-", "->"):
+                actual_source = left_type
+                actual_target = right_type
+            else:
+                actual_source = right_type
+                actual_target = left_type
+
+            actual_pair = (
+                actual_source.casefold(),
+                actual_target.casefold(),
+            )
+
+            if actual_pair in expected_normalized:
+                continue
+
+            reversed_pair = (
+                actual_pair[1],
+                actual_pair[0],
+            )
+
+            if reversed_pair not in expected_normalized:
+                continue
+
+            if (left_arrow, right_arrow) == ("-", "->"):
+                new_left_arrow = "<-"
+                new_right_arrow = "-"
+            else:
+                new_left_arrow = "-"
+                new_right_arrow = "->"
+
+            left_edit = (
+                match.start("left_arrow"),
+                match.end("left_arrow"),
+                new_left_arrow,
+            )
+            right_edit = (
+                match.start("right_arrow"),
+                match.end("right_arrow"),
+                new_right_arrow,
+            )
+
+            if left_edit not in registered_edits:
+                edits.append(left_edit)
+                registered_edits.add(left_edit)
+
+            if right_edit not in registered_edits:
+                edits.append(right_edit)
+                registered_edits.add(right_edit)
+
+            corrections_made.append(
+                "{actual_source}-[:{rel_type_original}]->{actual_target} "
+                f"se corrigió a "
+                f"{actual_target}-[:{rel_type_original}]->{actual_source}"
+            )
+
         fixed = query
-        corrections_made = []
-        var_types = dict(re.findall(r"\((\w+)\s*:\s*(\w+)", fixed))
 
-        for source_type, rel_type, target_type in correct_directions:
-            # Patrón para detectar la dirección invertida
-            pattern = re.compile(
-                rf"""
-                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
-                \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
-                \s*-\s*
-                \[(?:(?P<rel_var>\w+)?:){re.escape(rel_type)}\]
-                \s*->\s*
-                \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
-                """,
-                re.IGNORECASE | re.VERBOSE,
-            )
-            pattern_left_arrow = re.compile(
-                rf"""
-                (?P<match_type>OPTIONAL\s+MATCH|MATCH)\s+
-                \(\s*(?P<left>\w+)\s*(?::\s*(?P<left_label>\w+))?\s*\)
-                \s*<-\s*
-                \[(?:(?P<rel_var>\w+)?:)?{re.escape(rel_type)}\]
-                \s*-\s*
-                \(\s*(?P<right>\w+)\s*(?::\s*(?P<right_label>\w+))?\s*\)
-                """,
-                re.IGNORECASE | re.VERBOSE,
-            )
-
-            def repl(m: re.Match[str]) -> str:
-                left = m.group("left")
-                right = m.group("right")
-
-                left_type = m.group("left_label") or var_types.get(left)
-                right_type = m.group("right_label") or var_types.get(right)
-                # Si está invertida: target -> source
-                if left_type == target_type and right_type == source_type:
-                    return (
-                        f"{m.group('match_type')} "
-                        f"({right}:{source_type})-[:{rel_type}]->({left}:{target_type})"
-                    )
-
-                return str(m.group(0))
-
-            def repl_left_arrow(m: re.Match[str]) -> str:
-                left = m.group("left")
-                right = m.group("right")
-
-                left_type = m.group("left_label") or var_types.get(left)
-                right_type = m.group("right_label") or var_types.get(right)
-
-                # Esto representa: right -[:REL]-> left
-                # Si right es target y left es source, está invertida
-                if left_type == source_type and right_type == target_type:
-                    return (
-                        f"{m.group('match_type')} "
-                        f"({left}:{source_type})-[:{rel_type}]->({right}:{target_type})"
-                    )
-
-                return str(m.group(0))
-
-            new_fixed = pattern.sub(repl, fixed)
-
-            if new_fixed != fixed:
-                corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
-                fixed = new_fixed
-
-            new_fixed = pattern_left_arrow.sub(repl_left_arrow, fixed)
-            if new_fixed != fixed:
-                corrections_made.append(f"{target_type}-[:{rel_type}]->{source_type}")
-                fixed = new_fixed
+        for start, end, replacement in sorted(edits, key=lambda edit: edit[0], reverse=True):
+            fixed = fixed[:start] + replacement + fixed[end:]
 
         if corrections_made:
-            logger.info(f"Direcciones corregidas automáticamente: {', '.join(corrections_made)}")
+            logger.info(
+                "Direcciones corregidas automáticamente: %s",
+                " | ".join(corrections_made),
+            )
 
         return fixed
 

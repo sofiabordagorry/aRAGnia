@@ -196,7 +196,7 @@
     "categoria": "Análisis Temporal",
     "pregunta": "¿Se registran tópicos que hayan sido investigados de forma ininterrumpida año tras año?",
     "cypher_query": "MATCH (a:Anio) WITH collect(DISTINCT toInteger(a.anio)) AS todos_los_anios MATCH (p:Proyecto)-[:INICIO_EN]->(a:Anio), (p)-[:TIENE_TOPICO]->(t:Topico) WITH t, count(DISTINCT toInteger(a.anio)) AS cantidad_anios_topico, todos_los_anios WHERE cantidad_anios_topico = size(todos_los_anios) RETURN todos_los_anios, collect(DISTINCT t) AS topicos",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
@@ -412,7 +412,7 @@
     "categoria": "Lenguaje Natural Informal",
     "pregunta": "proyectos analisis sensorial y metodos estadisticos y optimizacion y programacion matematica",
     "cypher_query": "MATCH (t:Topico)<-[:TIENE_TOPICO]-(p:Proyecto)-[:TIENE_TOPICO]->(t1:Topico), (p)-[:TIENE_TOPICO]->(t2:Topico) WHERE toLower(t.valor) CONTAINS toLower('analisis sensorial') AND toLower(t1.valor) CONTAINS toLower('metodos estadisticos') AND toLower(t2.valor) CONTAINS toLower('optimizacion y programacion matematica') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
-    "retrieved_subgraph": "No se encontró ningún elemento que cumpla con los criterios de la consulta.",
+    "retrieved_subgraph": "La consulta no puede responderse con la información del grafo.",
     "answer": "No se encontró ningún elemento que cumpla con los criterios de la consulta."
   },
   {
