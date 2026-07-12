@@ -10,10 +10,7 @@ from institutional_graphrag.retrieval.vector_store import VectorStore
 COLLECTION_NAME = "cypher_fewshot_examples"
 EMBEDDING_DIM = 1024  # e5-large-v2
 
-# NOTE: titulo / nombre / valor are stored normalized (lowercase, no accents).
-# All example queries MUST search with toLower(...) CONTAINS '<lowercase fragment>'
-# or valor = '<lowercase value>'. Never use capitalized literals or exact `=` on
-# titles/names, or the query will return zero rows and teach a broken pattern.
+
 DEFAULT_EXAMPLES: List[Tuple[str, str]] = [
     # COUNT queries
     (
