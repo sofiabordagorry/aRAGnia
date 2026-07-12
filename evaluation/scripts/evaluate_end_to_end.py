@@ -366,7 +366,7 @@ def result_field(result: Any, name: str, default: Any = None) -> Any:
 
 def is_sentinel(item: Dict[str, Any]) -> bool:
     """Item cuya respuesta esperada es un mensaje centinela (fuera de alcance / sin info)."""
-    subg = _norm(item.get("retrieved_subgraph", ""))
+    subg = _norm(item.get("cypher_result", ""))
     ans = _norm(item.get("answer", ""))
     sentinels = {_norm(gen.OUT_OF_SCOPE), _norm(gen.NO_INFO), ""}
     return subg in sentinels or ans in sentinels
@@ -462,7 +462,7 @@ def run_qa_evaluation(
                 continue
 
             gt_answer = str(item.get("answer", "") or "")
-            gt_subgraph = str(item.get("retrieved_subgraph", "") or "")
+            gt_subgraph = str(item.get("cypher_result", "") or "")
             sentinel = is_sentinel(item)
 
             log.info("[%s/%s] Pregunta id=%s", index, len(items), qid)
@@ -492,7 +492,7 @@ def run_qa_evaluation(
                 "question": question,
                 "gt_answer": gt_answer,
                 "gt_cypher_query": item.get("cypher_query", ""),
-                "gt_retrieved_subgraph": gt_subgraph,
+                "gt_cypher_result": gt_subgraph,
                 "candidate": candidate,
                 "generated_cypher_query": generated_cypher,
                 "latency_s": round(latency, 4),
@@ -931,7 +931,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "qa_dataset",
         type=Path,
-        help="Dataset JSON obligatorio con preguntas, retrieved_subgraph y answer.",
+        help="Dataset JSON obligatorio con preguntas, cypher_result y answer.",
     )
     parser.add_argument(
         "--judge-model",
