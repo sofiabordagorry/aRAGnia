@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación de Recuperación – GraphRAG</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 2rem 3rem; background: #f0f2f5; color: #2c3e50; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.2rem; color: #34495e; border-left: 4px solid #3498db; padding-left: 10px; margin-top: 2rem; }
+    p.subtitle { color: #666; margin-top: 0; }
+    .card { background: white; border-radius: 10px; padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin: 1rem 0; }
+    .overflow-x { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+    th { background: #2c3e50; color: white; padding: 7px 10px; text-align: center; white-space: nowrap; font-size: 0.78rem; }
+    th:first-child { text-align: left; }
+    td { padding: 7px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+    td.llm-name { text-align: left; font-weight: 600; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+    .chart-wrap { max-width: 900px; }
+    .chart-wrap img { width: 100%; height: auto; border-radius: 6px; }
+    ul.analysis { line-height: 1.9; }
+  </style>
+</head>
+<body>
+  <h1>Evaluación de Recuperación – Comparación de LLMs y Prompts</h1>
+  <p class="subtitle">1 combinaciones modelo×prompt evaluadas sobre el GT de validación. Juez: <code>claude-opus-4-8</code>. Scores normalizados 0-1.</p>
+
+  <div class="card">
+    <h2>Mini Análisis</h2>
+    <ul class="analysis">
+      <li><strong>Qwen 2.5 Coder 14B / structured</strong> logra la mejor calidad global (0.786).</li>
+<li>El modelo <strong>Qwen 2.5 Coder 14B</strong> es el de mayor calidad pico (0.786).</li>
+<li>El prompt <strong>structured</strong> es el mejor en promedio (0.786).</li>
+<li><strong>Qwen 2.5 Coder 14B / structured</strong> maneja mejor los centinelas (accuracy 0.769).</li>
+<li><strong>Qwen 2.5 Coder 14B / structured</strong> es el más rápido (latencia media 9.2s, p95 19.6s).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Resumen Global</h2>
+    <div class="overflow-x">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Modelo / Prompt</th>
+            <th colspan="2" style="background:#1a252f;">Calidad (juez)</th>
+            <th rowspan="2">F1</th>
+            <th rowspan="2">Calidad global</th>
+            <th rowspan="2">Centinelas</th>
+            <th colspan="3" style="background:#1a252f;">Latencia</th>
+          </tr>
+          <tr><th>Recall</th><th>Precision</th><th>media</th><th>mediana</th><th>p95</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.795</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.784</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.789</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.786</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.769</td><td>9.2s</td><td>6.6s</td><td>19.6s</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Score por Categoría</h2>
+    <div class="overflow-x">
+      <table>
+        <thead><tr><th>Modelo / Prompt</th><th>Análisis Temporal</th><th>Consultas Complejas</th><th>Consultas Estructurales Simples</th><th>Fuera de Alcance</th><th>Lenguaje Natural Informal</th></tr></thead>
+        <tbody><tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.953</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.562</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.767</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.727</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.682</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Calidad global y centinelas</h2>
+    <div class="chart-wrap"><img src="images/chart_overall.png" alt="Calidad global"></div>
+  </div>
+  <div class="card">
+    <h2>Score por dimensión</h2>
+    <div class="chart-wrap"><img src="images/chart_dimensions.png" alt="Score por dimensión"></div>
+  </div>
+  <div class="card">
+    <h2>Distribución de scores del juez (1-5)</h2>
+    <div class="chart-wrap"><img src="images/chart_score_distribution.png" alt="Distribución de scores"></div>
+  </div>
+  <div class="card">
+    <h2>Score por categoría</h2>
+    <div class="chart-wrap"><img src="images/chart_categories.png" alt="Score por categoría"></div>
+  </div>
+  <div class="card">
+    <h2>Latencia de recuperación </h2>
+    <div class="chart-wrap"><img src="images/chart_latency.png" alt="Latencia"></div>
+  </div>
+</body>
+</html>

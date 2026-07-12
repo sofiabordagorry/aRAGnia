@@ -1,0 +1,31 @@
+[
+  {
+    "display": "Qwen 2.5 Coder 14B",
+    "backend": "huggingface",
+    "model": "Qwen/Qwen2.5-Coder-14B-Instruct",
+    "prompt": "structured",
+    "label": "Qwen 2.5 Coder 14B / structured",
+    "n_judged": 67,
+    "n_sentinel": 13,
+    "dim_means": {
+      "recall": 0.7948,
+      "precision": 0.7836
+    },
+    "f1_score": 0.7892,
+    "quality_overall": 0.7859,
+    "sentinel_accuracy": 0.7692,
+    "by_category": {
+      "Análisis Temporal": 0.9531,
+      "Consultas Complejas": 0.5625,
+      "Consultas Estructurales Simples": 0.767,
+      "Fuera de Alcance": 0.7273,
+      "Lenguaje Natural Informal": 0.6818
+    },
+    "latency": {
+      "mean": 9.25,
+      "median": 6.62,
+      "p95": 19.61,
+      "n": 80
+    }
+  }
+]

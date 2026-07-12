@@ -334,69 +334,88 @@ Si te preguntan qué puedes hacer, explica que puedes buscar información sobre 
 SCHEMA:
 {schema}
 
-SCHEMA NOTES:
-- Anio uses property "anio" (NOT "valor" or "id"): Anio.anio = '2014'
-- Investigador.id follows '{{pais}}_{{tipo_documento}}_{{documento}}'; search by Investigador.nombre (lowercase, no accents)
-- PARTICIPO_EN has a required property "calidad" with values: 'responsable', 'integrante', 'otros'. ONLY filter by calidad when the question asks for a specific role (e.g. "responsable de", "integrantes del proyecto X"): -[:PARTICIPO_EN {{calidad: 'responsable'}}]->. For general "who participated / quiénes participaron" questions, use plain -[:PARTICIPO_EN]-> WITHOUT filtering.
-- Proyecto.titulo contains the project title; Proyecto.id follows 'proy_2020_513'
-- Grupo.titulo contains the group title; Grupo.id follows 'gi_2014_133'
-- Use Proyecto label for project entities (proy_* IDs) and Grupo label for group entities (gi_* IDs)
-- Topico.valor, Subcampo.valor and Area.valor are in Spanish, lowercase, no accents: 'biotecnologia', 'ciencias naturales'
-- Documento.tipo is one of: 'informe', 'propuesta', 'resumen', 'tabla'
-
-RULES:
-
-1. Read-only (MATCH, OPTIONAL MATCH, WHERE, RETURN)
-2. Return chunks (c:Chunk) when listing or describing entities — they contain the actual text evidence. For COUNT queries, omit chunks and return only the aggregation result.
-3. Connect patterns: every MATCH must use variables defined in previous MATCHes
-4. Use [:EXTRAIDO_DE] for investigators/topics, [:TITULO_EXTRAIDO_DE] for projects to navigate to their evidence chunks
-6. Only add LIMIT when the question explicitly asks for a specific number of results (e.g. "los 10 tópicos con más proyectos" → LIMIT 10). Otherwise, omit LIMIT entirely.
-7. NEVER define relationship variables — use anonymous patterns only: -[:TYPE]-> NOT -[r:TYPE]->
-8. Node variables must be unique and never reused for a different type
-9. Generate EXACTLY ONE Cypher query — never split the answer into multiple separate queries
-10. Every variable used in WITH or RETURN must have been defined in a preceding MATCH/OPTIONAL MATCH
-11. If the information requested does NOT exist in the schema, respond with: <QUERY>NOT_IN_SCHEMA</QUERY>
-12. If the question cannot be answered with a single query but IS related to the schema, respond with: <QUERY>UNSUPPORTED</QUERY>
-12. When the question asks "how many" / "cuántos" / "qué cantidad", use count() aggregation (e.g., RETURN count(p) AS total). Do NOT return individual entities unless the question explicitly asks to list them.
-13. ALWAYS filter values using WHERE.
-14. ALWAYS normalize text values: lowercase, no accents, never translate.
-15. Topics are stored in Spanish, lowercase and without accents: 'biotecnologia', 'ingenieria', 'medicina', etc.
-16. Subfields are stored in Spanish, lowercase and without accents.
-17 Search project titles/names with toLower(p.titulo) CONTAINS.
-18. Convert Anio.anio with toInteger() for numeric comparisons.
-
+FEW-SHOT EXAMPLES:
 {fewshot_block}
 
+OUTPUT CONTRACT:
+- Return only one query wrapped exactly as <QUERY>...</QUERY>.
+- Do not write explanations, markdown, comments, or multiple alternatives.
+- If the requested information is not represented in the schema, return <QUERY>NOT_IN_SCHEMA</QUERY>.
+- If it is related to the schema but cannot be answered with one Cypher query, return <QUERY>UNSUPPORTED</QUERY>.
+
+GRAPH FACTS THAT MUST BE FOLLOWED:
+- Relationship directions:
+  - (Investigador)-[:PARTICIPO_EN]->(Proyecto|Grupo)
+  - (Proyecto|Grupo)-[:TIENE_TOPICO]->(Topico)
+  - (Topico)-[:PERTENECE_A_SUBCAMPO]->(Subcampo)
+  - (Proyecto|Grupo)-[:PERTENECE_A_AREA]->(Area)
+  - (Proyecto|Grupo)-[:INICIO_EN]->(Anio)
+  - (Proyecto|Grupo)-[:TITULO_EXTRAIDO_DE]->(Chunk)
+  - (Chunk)-[:EXTRAIDO_DE]->(Investigador|Topico)
+  - (Chunk)-[:DE_DOCUMENTO]->(Documento)
+- Never reverse these directions.
+- Never invent relationships between Chunk and Proyecto except (Proyecto)-[:TITULO_EXTRAIDO_DE]->(Chunk).
+- Never use (c:Chunk)-[:EXTRAIDO_DE]->(p:Proyecto): EXTRAIDO_DE is only for Investigador or Topico.
+- Never write COLLECT(c:Chunk), COLLECT(c)-[:REL]->(), or any pattern inside RETURN. MATCH/OPTIONAL MATCH first, then RETURN COLLECT(DISTINCT c).
+- Anio.anio is a string. Use a.anio = '2018'. For ranges use toInteger(a.anio) >= 2018.
+- Proyecto.titulo, Investigador.nombre, Topico.valor, Subcampo.valor and Area.valor are already normalized: lowercase, no accents.
+- Search project titles with WHERE toLower(p.titulo) CONTAINS 'normalized title fragment'. Prefer p.titulo over c.texto.
+- Search researchers with WHERE toLower(i.nombre) CONTAINS 'normalized name fragment'. Prefer partial names over exact equality.
+- Search Topico/Subcampo/Area by valor using normalized Spanish values.
+- PARTICIPO_EN.calidad values: 'responsable', 'integrante', 'otros'. Add {{calidad: 'responsable'}} only when the question asks for responsables/liderado/responsable/directos. For general equipo/participaron/figura, do not filter by calidad.
+
+INTENT RULES:
+- "cuántos", "cuántas", "qué cantidad" => RETURN count(...) AS total; do not return chunks unless explicitly requested.
+- "quién/quiénes" => return Investigador nodes or names.
+- "qué proyectos/lista/muestra/nombra" => return Proyecto nodes.
+- "qué tópicos/temas" => return Topico values or nodes.
+- "qué subcampo" => return Subcampo.
+- "qué área" => return Area.
+- "en qué año" => return a.anio AS año.
+
+RETRIEVAL-FIRST PATTERNS:
+- Project by title:
+  MATCH (p:Proyecto)
+  WHERE toLower(p.titulo) CONTAINS 'fragmento normalizado'
+- Then extend from p using the schema:
+  responsables: MATCH (i:Investigador)-[:PARTICIPO_EN {{calidad: 'responsable'}}]->(p)
+  equipo/participantes: MATCH (i:Investigador)-[:PARTICIPO_EN]->(p)
+  año: MATCH (p)-[:INICIO_EN]->(a:Anio)
+  tópicos: MATCH (p)-[:TIENE_TOPICO]->(t:Topico)
+  subcampo: MATCH (p)-[:TIENE_TOPICO]->(:Topico)-[:PERTENECE_A_SUBCAMPO]->(s:Subcampo)
+  área: MATCH (p)-[:PERTENECE_A_AREA]->(a:Area)
+- Evidence chunks are optional:
+  OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(pc:Chunk)
+  OPTIONAL MATCH (ic:Chunk)-[:EXTRAIDO_DE]->(i)
+  OPTIONAL MATCH (tc:Chunk)-[:EXTRAIDO_DE]->(t)
+- Return chunks only after matching them:
+  RETURN ..., COLLECT(DISTINCT pc) + COLLECT(DISTINCT ic) + COLLECT(DISTINCT tc) AS chunks
+
+SAFETY AGAINST COMMON FAILURES:
+- Do not filter project title on c.texto when p.titulo exists.
+- Do not add extra filters on p.descripcion unless the question explicitly asks about the description text.
+- Do not use full long titles if a shorter distinctive fragment is enough; long exact fragments often over-filter.
+- Use CONTAINS, not equality, for names and project titles.
+- Use WHERE after the MATCH whose variables are already defined.
+- Avoid disconnected comma patterns that create cartesian products. Use sequential MATCH clauses.
+- Every variable in RETURN/WITH must already be bound.
+- Use DISTINCT when listing entities.
+
 QUESTION: {user_query}
-
-CRITICAL DECISION - COUNT vs LIST:
-- If question asks "cuántos", "cuántas", "how many", "qué cantidad" → USE count() and RETURN count(x) AS total (NO chunks needed)
-- If question asks "cuáles", "qué proyectos", "quiénes", "list", "muéstrame" → RETURN entities + COLLECT(c) AS chunks
-- If question asks "quién/quiénes" (WHO) → RETURN investigators (i), NOT projects
-- If question asks "qué año" (WHAT year) → RETURN year value directly (a.anio or a)
-- Analyze the question intent carefully before generating the query
-RETURN RULES:
-- "¿Quiénes participaron?" → RETURN investigadores (i), NOT proyecto (p)
-- "¿En qué año?" → RETURN año (a.anio AS año) or (a) with OPTIONAL MATCH for chunks
-- "¿Cuántos proyectos?" → RETURN count(p) AS total
-- "¿Qué investigadores con más proyectos?" → RETURN i.nombre, count(p) ORDER BY count(p) DESC LIMIT N
-- NEVER return p.id unless the user explicitly asks for the project identifier
-
-
-CRITICAL SYNTAX:
-- Wrap your query in <QUERY> and </QUERY> tags
-- Every variable in WITH/RETURN must be defined in a previous MATCH
-- Use [:EXTRAIDO_DE]->(entity) for investigators/topics, [:TITULO_EXTRAIDO_DE]->(chunk) for projects
-- Topico uses {{valor: '...'}}, Anio uses {{anio: '...'}}, all others use {{id: '...'}}
-- NEVER name a relationship variable (never write -[r:TYPE]-> or -[rel:TYPE]->), always use -[:TYPE]->
-- NEVER use a variable as both a relationship and a node
-- NEVER generate paths like (a)-[:REL]->(b)-[:REL2]->(c).
-- ALWAYS use WHERE for filtering
-- ALWAYS use toLower(p.titulo) CONTAINS 'normalized project text' for project titles/names
-- If the user asks for information not represented in the schema
-  (for example salaries, emails if not stored, countries, universities, budgets, etc.),
-  respond with <QUERY>NOT_IN_SCHEMA</QUERY>
 <QUERY>
+
+QUERY DESIGN CHECKLIST TO APPLY INTERNALLY BEFORE OUTPUT:
+1. Identify target entity: Investigador / Proyecto / Topico / Subcampo / Area / Anio / count.
+2. Identify anchor entity from the user question:
+   - project title => anchor on Proyecto.titulo
+   - researcher name => anchor on Investigador.nombre
+   - topic/subfield/area => anchor on valor
+   - year => anchor on Anio.anio
+3. Build the shortest valid path using only schema directions.
+4. Add role filter only if requested.
+5. Add optional evidence chunks only after the main result is matched.
+6. Verify no reversed relationship, no undefined variable, no pattern in RETURN, no over-specific c.texto filter.
+7. Output the final query only.
 """
 
     def _fix_relationship_directions(self, query: str) -> str:
