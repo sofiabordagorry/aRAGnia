@@ -88,7 +88,7 @@ class GraphRAGRetriever:
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
         cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
-        answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
+        answer_model = os.getenv("HF_GENERATION_MODEL")
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
         self.cypher_llm_client = get_llm_client(model=cypher_model)
         self.answer_llm_client = get_llm_client(model=answer_model)
@@ -947,30 +947,22 @@ Return ONLY the fixed query wrapped in <QUERY> and </QUERY> tags.
     ) -> List[Dict[str, str]]:
         """
         Construir mensajes para el LLM usando SOLO entidades y relaciones del grafo.
+        Usa el prompt "grounded" seleccionado en la calibración.
         El texto de los chunks va al frontend, no aqui.
         """
-        system_prompt = """Eres un asistente de investigación académica especializado en presentar resultados de búsquedas en grafos de conocimiento.
+        system_prompt = (
+            "Eres un asistente académico riguroso. Respondé en ESPAÑOL usando ÚNICAMENTE "
+            "los datos presentes en los resultados del grafo. Está PROHIBIDO inventar, "
+            "inferir o completar información que no aparezca literalmente. Citá los valores "
+            "tal como figuran en los resultados e incluí TODOS sin excepción. Si un dato no "
+            "está en los resultados, no lo menciones."
+        )
 
-REGLAS ESTRICTAS:
-1. Debes responder en ESPAÑOL
-2. Debes incluir TODOS los elementos que aparecen en la sección RESULTADOS - no omitas ninguno
-3. Formato: Lista completa de resultados
-4. NO inventes información - solo usa lo que está en RESULTADOS
-5. NO agregues análisis ni interpretaciones
-6. Si hay una lista, reprodúcela COMPLETA
-
-Ejemplo:
-Si RESULTADOS muestra 5 proyectos, tu respuesta debe listar los 5 proyectos."""
-
-        user_prompt = f"""CONSULTA DEL USUARIO:
-{user_query}
-
-RESULTADOS ENCONTRADOS EN EL GRAFO:
-{entity_context}
-
-IMPORTANTE: Usa TODOS los resultados mostrados arriba para generar tu respuesta. No omitas ningún elemento de la lista.
-
-Tu respuesta (frase introductoria + lista completa):"""
+        user_prompt = (
+            f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{entity_context}\n\n"
+            "Respondé usando solo los valores que aparecen arriba, copiándolos literalmente. "
+            "No agregues nada que no esté en los resultados."
+        )
 
         return [
             {"role": "system", "content": system_prompt},
@@ -1097,37 +1089,9 @@ Tu respuesta (frase introductoria + lista completa):"""
                 context = self._build_aggregation_context(records)
                 logger.info(f"Contexto construido ({len(context)} chars)")
 
-                # Detectar si es una query de conteo simple
-                is_count = any(
-                    key.lower() in ["total", "count", "cantidad"]
-                    for record in records
-                    for key in record.keys()
-                )
-
-                if is_count:
-                    # Para queries de conteo, ser muy explícito
-                    messages = [
-                        {
-                            "role": "system",
-                            "content": "Respondé en español de forma DIRECTA y NUMÉRICA. Si los resultados muestran un número, respondé ese número exacto. No digas 'no se puede determinar' si el número está ahí.",
-                        },
-                        {
-                            "role": "user",
-                            "content": f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{context}\n\nRESPONDE con el número exacto que aparece en los resultados. Ejemplo: Si los resultados muestran 'total: 3', respondé '3 proyectos iniciaron en ese año.'",
-                        },
-                    ]
-                else:
-                    # Para otros resultados sin chunks (años, nombres, etc.)
-                    messages = [
-                        {
-                            "role": "system",
-                            "content": "Respondé en español basado EXACTAMENTE en los resultados mostrados. Incluí TODOS los resultados sin omitir ninguno. Sé directo y completo.",
-                        },
-                        {
-                            "role": "user",
-                            "content": f"PREGUNTA: {user_query}\n\nRESULTADOS DEL GRAFO:\n{context}\n\nIMPORTANTE: Los resultados arriba contienen la respuesta. Úsalos TODOS. Si ves un valor de año, ese es el año. Si ves nombres, esos son los nombres. No digas que no hay información si los resultados muestran datos.",
-                        },
-                    ]
+                # Se usa el prompt "grounded" seleccionado en la calibración,
+                # igual que para las respuestas sobre entidades.
+                messages = self.build_messages_for_answer(user_query, context)
 
                 answer = self.answer_llm_client.generate(
                     messages=messages,
