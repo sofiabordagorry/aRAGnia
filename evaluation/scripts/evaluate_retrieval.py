@@ -115,8 +115,10 @@ JUDGE_SYSTEM = (
 )
 
 def validate_judge_response(text: str) -> Dict[str, List[str]]:
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match: raise ValueError(f"El juez no devolvió JSON: {text[:100]}...")
     try:
-        data = json.loads(text.strip())
+        data = json.loads(match.group(0))
     except json.JSONDecodeError as exc:
         raise ValueError(f"El juez no devolvió un JSON válido: {exc}") from exc
 
@@ -198,8 +200,7 @@ def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_cypher
             response = requests.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
             response.raise_for_status()
             data = validate_judge_response(response.json()["content"][0]["text"])
-            print("RESPUESTA:", data)
-            logger.info("RESPUESTA:", data)
+            logger.info("RESPUESTA: %s", data)
             return _parse_judgment(data)
         except Exception as exc:
             if attempt == retries - 1: raise RuntimeError(f"El juez falló: {exc}")
@@ -216,7 +217,6 @@ def judge_retrieval_local(model: str, question: str, gt_cypher_result: str, cand
     return _parse_judgment(data)
 
 
-def norm_score(score_1_5: float) -> float: return (score_1_5 - 1.0) / 4.0
 def mean(values: List[float]) -> float: return round(sum(values) / len(values), 4) if values else 0.0
 
 def compute_f1_score(precision: float, recall: float) -> float:
@@ -408,7 +408,7 @@ def aggregate_combo(
         cat_judged = [r for r in judged if r["category"] == cat]
         cat_sent = [r for r in sentinels if r["category"] == cat]
         cat_scores = [
-            norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged
+            mean([r["scores"][d] for d in JUDGE_DIMS]) for r in cat_judged
         ] + [1.0 if r["sentinel_correct"] else 0.0 for r in cat_sent]
         if cat_scores:
             by_cat[cat] = mean(cat_scores)
