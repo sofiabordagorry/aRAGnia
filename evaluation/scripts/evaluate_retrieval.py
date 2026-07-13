@@ -7,8 +7,8 @@ Para cada modelo evaluado:
   1. Actúa como el motor de generación Cypher.
   2. Ejecuta la query en Neo4j y extrae la información relevante (`cypher_result`).
   3. Compara la información recuperada contra la información de referencia (GT) usando
-     un LLM-as-a-judge (API de Anthropic), evaluando Recall y Precision.
-  4. Calcula F1-score a partir de Precision y Recall.
+     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (TN) o adicionales incorrectos (FP)
+  4. Calcula Precision, Recall y F1-score a partir de la clasificacion.
   5. Mide latencias y la tasa de acierto en casos centinela.
 
 Salidas (en evaluation/results/retrieval/):

@@ -142,9 +142,11 @@ Guía rápida de los scripts en esta carpeta.
   - Para cada combinación de modelo × variante de prompt:
     - Genera automáticamente la consulta Cypher a partir de la pregunta.
     - Ejecuta la consulta en Neo4j y recupera la información correspondiente.
-    - Compara la información recuperada contra la información de referencia (`cypher_result`) mediante un **LLM-as-a-judge**, evaluando:
-      - **Recall:** qué tan completa es la información recuperada.
-      - **Precision:** qué tan relevante es el contexto recuperado (evitando ruido).
+    - Compara la información recuperada contra la información de referencia (`cypher_result`) mediante un **LLM-as-a-judge**, clasificando:
+      - **TP:** elementos recuperados correctamente.
+      - **FN:** elementos de la referencia que no fueron recuperados.
+      - **FP:** elementos recuperados que no están en la referencia.
+    - A partir de estos valores se calculan Precision, Recall y F1-score.
   - Configuración:
     - Editar las constantes `MODELS` y `prompts_variants.json`, o pasar `--models-file`.
     - El juez puede ser Anthropic (`ANTHROPIC_API_KEY`) o un modelo local de Ollama mediante `--local-judge`.
