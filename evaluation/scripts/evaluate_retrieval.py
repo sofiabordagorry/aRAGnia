@@ -219,11 +219,7 @@ def judge_retrieval_local(model: str, question: str, gt_cypher_result: str, cand
 
 def mean(values: List[float]) -> float: return round(sum(values) / len(values), 4) if values else 0.0
 
-def compute_f1_score(precision: float, recall: float) -> float:
-    """Calcula F1-score usando Precision y Recall ya normalizados en escala 0-1."""
-    if precision + recall == 0:
-        return 0.0
-    return round(2 * precision * recall / (precision + recall), 4)
+def norm_score(score_1_5: float) -> float: return (score_1_5 - 1.0) / 4.0
 
 def fill_placeholders(retriever: GraphRAGRetriever, template: str, query: str) -> str:
     """Rellena los marcadores de posición del prompt dinámico con datos reales de Neo4j."""
@@ -408,7 +404,7 @@ def aggregate_combo(
         cat_judged = [r for r in judged if r["category"] == cat]
         cat_sent = [r for r in sentinels if r["category"] == cat]
         cat_scores = [
-            mean([r["scores"][d] for d in JUDGE_DIMS]) for r in cat_judged
+            norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged
         ] + [1.0 if r["sentinel_correct"] else 0.0 for r in cat_sent]
         if cat_scores:
             by_cat[cat] = mean(cat_scores)
