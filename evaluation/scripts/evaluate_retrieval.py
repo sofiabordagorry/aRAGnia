@@ -370,7 +370,10 @@ def evaluate_combo(
 def aggregate_combo(
     spec: Dict[str, str], prompt_id: str, records: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
-    judged = [r for r in records if r["scores"] is not None]
+    judged = [
+        r for r in records
+        if not r["is_sentinel"] and r["scores"] is not None
+    ]
     sentinels = [r for r in records if r["is_sentinel"]]
     latencies = [r["latency_s"] for r in records if r["latency_s"] is not None]
 
@@ -383,6 +386,12 @@ def aggregate_combo(
         r["scores"]["f1"]
         for r in judged
     ])
+
+    count_totals = {
+        "tp": sum(int(r["scores"].get("tp", 0)) for r in judged),
+        "fp": sum(int(r["scores"].get("fp", 0)) for r in judged),
+        "fn": sum(int(r["scores"].get("fn", 0)) for r in judged),
+    }
     quality_scores = [
         r["scores"]["f1"]
         for r in judged
@@ -421,6 +430,7 @@ def aggregate_combo(
         "n_sentinel": len(sentinels),
         "dim_means": dim_means,
         "f1_score": f1_score,
+        "count_totals": count_totals,
         "quality_overall": quality_overall,
         "sentinel_accuracy": sentinel_acc,
         "by_category": by_cat,
@@ -476,6 +486,79 @@ def _heatmap(
     fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02, label="Score (0–1)")
     fig.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return path
+
+
+def _generate_best_confusion_matrix(
+    best_result: Dict[str, Any], images_dir: Path
+) -> Path:
+    """Genera una matriz de confusión 2x2 para la mejor combinación.
+
+    TP, FP y FN provienen de los elementos clasificados por el juez.
+    TN corresponde a los casos centinela resueltos correctamente por exact-match.
+    Los centinelas incorrectos se agregan a FP para reflejar falsos positivos
+    a nivel de la evaluación global.
+    """
+    count_totals = best_result.get("count_totals", {})
+    tp = int(count_totals.get("tp", 0))
+    fn = int(count_totals.get("fn", 0))
+    fp_items = int(count_totals.get("fp", 0))
+
+    sentinel_records = [
+        rec for rec in best_result.get("records", [])
+        if rec.get("is_sentinel")
+    ]
+    tn = sum(rec.get("sentinel_correct") is True for rec in sentinel_records)
+    sentinel_failures = sum(rec.get("sentinel_correct") is False for rec in sentinel_records)
+    fp = fp_items + sentinel_failures
+
+    matrix = np.array([[tp, fn], [fp, tn]], dtype=int)
+    cell_names = np.array([["TP", "FN"], ["FP", "TN"]])
+
+    fig, ax = plt.subplots(figsize=(6.4, 6.4))
+    im = ax.imshow(matrix, cmap="Blues", aspect="equal")
+
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Positivo", "Negativo"], fontsize=10)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(["Positivo", "Negativo"], fontsize=10)
+    ax.set_xlabel("Predicción", fontweight="bold")
+    ax.set_ylabel("Valor real", fontweight="bold")
+
+    max_value = int(matrix.max()) if matrix.size else 0
+    threshold = max_value / 2 if max_value else 0
+    for i in range(2):
+        for j in range(2):
+            value = int(matrix[i, j])
+            ax.text(
+                j,
+                i,
+                f"{cell_names[i, j]}\n{value}",
+                ha="center",
+                va="center",
+                fontsize=18,
+                fontweight="bold",
+                color="white" if value > threshold else "#1f2937",
+            )
+
+    ax.set_title(
+        "Matriz de confusión de la mejor combinación\n"
+        f"{best_result['label']} | Calidad global: {best_result['quality_overall']:.3f}",
+        fontsize=12,
+        pad=14,
+    )
+
+    note = (
+        "TN = centinelas correctos por exact-match. "
+        "FP incluye elementos extra y centinelas incorrectos."
+    )
+    fig.text(0.5, 0.02, note, ha="center", va="bottom", fontsize=8, color="#555")
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Cantidad")
+    fig.tight_layout(rect=[0, 0.06, 1, 1])
+
+    path = images_dir / "chart_confusion_best.png"
+    fig.savefig(path, dpi=170, bbox_inches="tight")
     plt.close(fig)
     return path
 
@@ -553,6 +636,11 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     fig.savefig(p, dpi=150, bbox_inches="tight")
     plt.close(fig)
     paths["latency"] = p
+
+    # 5) Matriz de confusión únicamente para la combinación con mayor calidad global.
+    if results:
+        best_result = max(results, key=lambda r: r.get("quality_overall", 0.0))
+        paths["confusion_best"] = _generate_best_confusion_matrix(best_result, images_dir)
 
     return paths
 
@@ -645,6 +733,30 @@ def generate_html_report(
     img_dims = chart_paths["dimensions"].relative_to(output_path.parent)
     img_cats = chart_paths["categories"].relative_to(output_path.parent)
     img_lat = chart_paths["latency"].relative_to(output_path.parent)
+    img_confusion = chart_paths.get("confusion_best")
+    img_confusion_rel = (
+        img_confusion.relative_to(output_path.parent)
+        if img_confusion is not None
+        else None
+    )
+
+    best_result = max(results, key=lambda r: r.get("quality_overall", 0.0)) if results else None
+    confusion_block = ""
+    if img_confusion_rel is not None and best_result is not None:
+        confusion_block = f"""
+  <div class="card">
+    <h2>Matriz de confusión de la mejor combinación</h2>
+    <p class="chart-description">
+      Se muestra únicamente <strong>{best_result['label']}</strong>, que obtuvo la mayor
+      calidad global (<strong>{best_result['quality_overall']:.3f}</strong>).
+      TP, FP y FN se calculan con los elementos evaluados por el juez; TN corresponde
+      a los casos centinela resueltos correctamente por coincidencia exacta.
+    </p>
+    <div class="confusion-wrap">
+      <img src="{img_confusion_rel}" alt="Matriz de confusión de la mejor combinación">
+    </div>
+  </div>
+"""
 
     dist_block = ""
 
@@ -674,6 +786,9 @@ def generate_html_report(
     tr:hover td {{ background: #fafbfc; }}
     .chart-wrap {{ max-width: 900px; }}
     .chart-wrap img {{ width: 100%; height: auto; border-radius: 6px; }}
+    .confusion-wrap {{ width: min(100%, 660px); margin: 0 auto; }}
+    .confusion-wrap img {{ display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 6px; }}
+    .chart-description {{ color: #59636e; line-height: 1.55; margin-bottom: 1rem; }}
     ul.analysis {{ line-height: 1.9; }}
   </style>
 </head>
@@ -724,6 +839,9 @@ def generate_html_report(
     <h2>Calidad global basada en F1 y centinelas</h2>
     <div class="chart-wrap"><img src="{img_overall}" alt="Calidad global"></div>
   </div>
+
+  {confusion_block}
+
   <div class="card">
     <h2>Score por dimensión</h2>
     <div class="chart-wrap"><img src="{img_dims}" alt="Score por dimensión"></div>
