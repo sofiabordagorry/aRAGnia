@@ -7,8 +7,8 @@ Para cada modelo evaluado:
   1. Actúa como el motor de generación Cypher.
   2. Ejecuta la query en Neo4j y extrae la información relevante (`cypher_result`).
   3. Compara la información recuperada contra la información de referencia (GT) usando
-     un LLM-as-a-judge (API de Anthropic), evaluando Recall y Precision.
-  4. Calcula F1-score a partir de Precision y Recall.
+     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (TN) o adicionales incorrectos (FP)
+  4. Calcula Precision, Recall y F1-score a partir de la clasificacion.
   5. Mide latencias y la tasa de acierto en casos centinela.
 
 Salidas (en evaluation/results/retrieval/):
@@ -61,7 +61,7 @@ SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esq
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 SENTINEL_NOT_RESULT = ("La consulta no puede responderse con la información del grafo.")
 MODELS: List[Dict[str, str]] = [
-     {"display": "Qwen 2.5 3B", "backend": "ollama", "model": "qwen2.5:3b-instruct"},
+     {"display": "Qwen 2.5 14B", "backend": "ollama", "model": "qwen2.5:14b-instruct"},
     #{"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
     #{"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
@@ -101,34 +101,107 @@ def free_client(client: Any) -> None:
     if torch.cuda.is_available(): torch.cuda.empty_cache()
 
 JUDGE_SYSTEM = (
-    "Eres un evaluador experto de recuperación de información en sistemas GraphRAG. "
-    "Compara el CONTEXTO RECUPERADO contra el CONTEXTO DE REFERENCIA (Ground Truth). "
-    "Puntuá de 1 a 5 (1=muy malo, 5=excelente):\n"
-    "- recall: ¿El contexto recuperado contiene toda la información clave y entidades de la referencia?\n"
-    "- precision: ¿El contexto recuperado es conciso, evitando ruido o registros irrelevantes?\n"
-    "Respondé SOLO con un objeto JSON válido: {\"recall\": int, \"precision\": int, \"justification\": str}."
+    "Eres un evaluador de recuperación de información en sistemas GraphRAG. "
+    "Compara el CONTEXTO RECUPERADO contra el CONTEXTO DE REFERENCIA teniendo en cuenta la PREGUNTA. "
+    "Clasifica los elementos relevantes en:\n"
+    "- matched: elementos recuperados correctamente.\n"
+    "- missing: elementos de la referencia que faltan.\n"
+    "- extra: elementos recuperados incorrectos o no respaldados.\n\n"
+    "Devuelve únicamente un objeto JSON válido. "
+    "Los tres valores deben ser listas de strings, sin duplicados. "
+    "No agregues explicaciones ni otros campos.\n"
+    "Formato obligatorio:\n"
+    "{\"matched\": [\"elemento\"], \"missing\": [\"elemento\"], \"extra\": [\"elemento\"]}"
 )
 
-def _extract_json(text: str) -> Dict[str, Any]:
+def validate_judge_response(text: str) -> Dict[str, List[str]]:
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match: raise ValueError(f"El juez no devolvió JSON: {text[:100]}...")
-    return dict(json.loads(match.group(0)))
+    try:
+        data = json.loads(match.group(0))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"El juez no devolvió un JSON válido: {exc}") from exc
+
+    if not isinstance(data, dict):
+        raise ValueError("La respuesta del juez debe ser un objeto JSON")
+
+    expected_keys = {"matched", "missing", "extra"}
+    received_keys = set(data.keys())
+
+    if received_keys != expected_keys:
+        missing_keys = expected_keys - received_keys
+        extra_keys = received_keys - expected_keys
+
+        raise ValueError(
+            "Estructura JSON incorrecta. "
+            f"Campos faltantes: {sorted(missing_keys)}. "
+            f"Campos adicionales: {sorted(extra_keys)}."
+        )
+
+    for key in expected_keys:
+        if not isinstance(data[key], list):
+            raise ValueError(f"'{key}' debe ser una lista")
+
+        if not all(isinstance(item, str) for item in data[key]):
+            raise ValueError(
+                f"Todos los elementos de '{key}' deben ser strings"
+            )
+
+        if any(not item.strip() for item in data[key]):
+            raise ValueError(
+                f"'{key}' contiene strings vacíos"
+            )
+
+    return {
+        "matched": data["matched"],
+        "missing": data["missing"],
+        "extra": data["extra"],
+    }
+
+def _parse_judgment(data: Dict[str, Any]) -> Dict[str, Any]:
+    matched = data["matched"]
+    missing = data["missing"]
+    extra = data["extra"]
+
+    tp = len(matched)
+    fn = len(missing)
+    fp = len(extra)
+
+    precision = tp / (tp + fp) if tp + fp > 0 else 0.0
+    recall = tp / (tp + fn) if tp + fn > 0 else 0.0
+
+    f1 = (
+        2 * precision * recall / (precision + recall)
+        if precision + recall > 0
+        else 0.0
+    )
+
+    return {
+        "matched": matched,
+        "missing": missing,
+        "extra": extra,
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
+        "justification": "",
+    }
+
 
 def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_cypher_result: str, candidate_cypher_result: str, retries: int = 3) -> Dict[str, Any]:
-    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé el JSON con los scores."
+    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé únicamente el JSON con las listas matched, missing y extra."
     payload = {"model": model, "max_tokens": 512, "system": JUDGE_SYSTEM, "messages": [{"role": "user", "content": user}]}
     headers = {"x-api-key": api_key, "anthropic-version": ANTHROPIC_VERSION, "content-type": "application/json"}
 
     for attempt in range(retries):
         try:
-            r = requests.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
-            r.raise_for_status()
-            data = _extract_json(r.json()["content"][0]["text"])
-            return {
-                "recall": max(1, min(5, int(data.get("recall", 1)))), 
-                "precision": max(1, min(5, int(data.get("precision", 1)))),
-                "justification": str(data.get("justification", ""))
-            }
+            response = requests.post(ANTHROPIC_URL, json=payload, headers=headers, timeout=120)
+            response.raise_for_status()
+            data = validate_judge_response(response.json()["content"][0]["text"])
+            logger.info("RESPUESTA: %s", data)
+            return _parse_judgment(data)
         except Exception as exc:
             if attempt == retries - 1: raise RuntimeError(f"El juez falló: {exc}")
             time.sleep(2 * (attempt + 1))
@@ -136,25 +209,15 @@ def judge_retrieval_anthropic(api_key: str, model: str, question: str, gt_cypher
 def judge_retrieval_local(model: str, question: str, gt_cypher_result: str, candidate_cypher_result: str) -> Dict[str, Any]:
     """Usa un modelo de Ollama local como juez."""
     client = OllamaClient(model=model)
-    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé el JSON con los scores del 1 al 5."
+    user = f"PREGUNTA:\n{question}\n\nCONTEXTO DE REFERENCIA:\n{gt_cypher_result}\n\nCONTEXTO RECUPERADO:\n{candidate_cypher_result}\n\nDevolvé únicamente el JSON con las listas matched, missing y extra."
     messages = [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": user}]
     
     response = client.generate(messages=messages, temperature=0.0, max_tokens=512)
-    data = _extract_json(response)
-    return {
-        "recall": max(1, min(5, int(data.get("recall", 1)))), 
-        "precision": max(1, min(5, int(data.get("precision", 1)))),
-        "justification": str(data.get("justification", ""))
-    }
+    data = validate_judge_response(response)
+    return _parse_judgment(data)
 
-def norm_score(score_1_5: float) -> float: return (score_1_5 - 1.0) / 4.0
+
 def mean(values: List[float]) -> float: return round(sum(values) / len(values), 4) if values else 0.0
-
-def compute_f1_score(precision: float, recall: float) -> float:
-    """Calcula F1-score usando Precision y Recall ya normalizados en escala 0-1."""
-    if precision + recall == 0:
-        return 0.0
-    return round(2 * precision * recall / (precision + recall), 4)
 
 def fill_placeholders(retriever: GraphRAGRetriever, template: str, query: str) -> str:
     """Rellena los marcadores de posición del prompt dinámico con datos reales de Neo4j."""
@@ -237,11 +300,27 @@ def evaluate_combo(
             }
 
             if getattr(retriever, "_last_intent", None) == "CHAT":
-                scores = {"recall": 1, "precision": 1, "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."}
+                scores = {
+                    "matched": [],
+                    "missing": [],
+                    "extra": [],
+                    "tp": 0,
+                    "fp": 0,
+                    "fn": 0,
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1": 0.0,
+                    "justification": "Penalizado automáticamente: El LLM de clasificación (Answer Model) evaluó erróneamente la consulta como CHAT en lugar de SEARCH."
+                }
                 rec["scores"] = scores
                 rec["justification"] = scores["justification"]
-                avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-                print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (FAIL DIRECTO: Intención CHAT)", flush=True)
+                print(
+                    f"  [{qid}] {latency:.1f}s "
+                    f"P={scores['precision']:.3f} "
+                    f"R={scores['recall']:.3f} "
+                    f"F1={scores['f1']:.3f}",
+                    flush=True,
+                )
                 records_res.append(rec)
                 continue
 
@@ -254,16 +333,26 @@ def evaluate_combo(
                     scores = judge_retrieval_local(local_judge, question, gt_cypher_result, candidate_cypher_result)
                     rec["scores"] = scores
                     rec["justification"] = scores["justification"]
-                    avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-                    print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f} (Juez Local)", flush=True)
+                    print(
+                        f"  [{qid}] {latency:.1f}s "
+                        f"P={scores['precision']:.3f} "
+                        f"R={scores['recall']:.3f} "
+                        f"F1={scores['f1']:.3f}",
+                        flush=True,
+                    )
                 except Exception as e:
                     print(f"  [{qid}] Falló el juez local: {e}", flush=True)
             elif api_key:
                 scores = judge_retrieval_anthropic(api_key, judge_model, question, gt_cypher_result, candidate_cypher_result)
                 rec["scores"] = scores
                 rec["justification"] = scores["justification"]
-                avg = mean([norm_score(scores[d]) for d in JUDGE_DIMS])
-                print(f"  [{qid}] {latency:.1f}s  calidad={avg:.2f}", flush=True)
+                print(
+                        f"  [{qid}] {latency:.1f}s "
+                        f"P={scores['precision']:.3f} "
+                        f"R={scores['recall']:.3f} "
+                        f"F1={scores['f1']:.3f}",
+                        flush=True,
+                    )
             else:
                 print(f"  [{qid}] {latency:.1f}s  (sin juez)", flush=True)
 
@@ -275,16 +364,32 @@ def evaluate_combo(
 def aggregate_combo(
     spec: Dict[str, str], prompt_id: str, records: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
-    judged = [r for r in records if r["scores"] is not None]
+    judged = [
+        r for r in records
+        if not r["is_sentinel"] and r["scores"] is not None
+    ]
     sentinels = [r for r in records if r["is_sentinel"]]
     latencies = [r["latency_s"] for r in records if r["latency_s"] is not None]
 
     dim_means = {
-        d: mean([norm_score(r["scores"][d]) for r in judged]) for d in JUDGE_DIMS
+        d: mean([r["scores"][d] for r in judged])
+        for d in JUDGE_DIMS
     }
-    f1_score = compute_f1_score(dim_means.get("precision", 0.0), dim_means.get("recall", 0.0))
-    
-    quality_scores = [norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in judged]
+
+    f1_score = mean([
+        r["scores"]["f1"]
+        for r in judged
+    ])
+
+    count_totals = {
+        "tp": sum(int(r["scores"].get("tp", 0)) for r in judged),
+        "fp": sum(int(r["scores"].get("fp", 0)) for r in judged),
+        "fn": sum(int(r["scores"].get("fn", 0)) for r in judged),
+    }
+    quality_scores = [
+        r["scores"]["f1"]
+        for r in judged
+    ]
     sentinel_quality_scores = [1.0 if r["sentinel_correct"] else 0.0 for r in sentinels]
     all_quality_scores = (quality_scores + sentinel_quality_scores)
     
@@ -297,7 +402,7 @@ def aggregate_combo(
         cat_judged = [r for r in judged if r["category"] == cat]
         cat_sent = [r for r in sentinels if r["category"] == cat]
         cat_scores = [
-            norm_score(mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged
+            (mean([r["scores"][d] for d in JUDGE_DIMS])) for r in cat_judged
         ] + [1.0 if r["sentinel_correct"] else 0.0 for r in cat_sent]
         if cat_scores:
             by_cat[cat] = mean(cat_scores)
@@ -319,6 +424,7 @@ def aggregate_combo(
         "n_sentinel": len(sentinels),
         "dim_means": dim_means,
         "f1_score": f1_score,
+        "count_totals": count_totals,
         "quality_overall": quality_overall,
         "sentinel_accuracy": sentinel_acc,
         "by_category": by_cat,
@@ -374,6 +480,79 @@ def _heatmap(
     fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02, label="Score (0–1)")
     fig.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return path
+
+
+def _generate_best_confusion_matrix(
+    best_result: Dict[str, Any], images_dir: Path
+) -> Path:
+    """Genera una matriz de confusión 2x2 para la mejor combinación.
+
+    TP, FP y FN provienen de los elementos clasificados por el juez.
+    TN corresponde a los casos centinela resueltos correctamente por exact-match.
+    Los centinelas incorrectos se agregan a FP para reflejar falsos positivos
+    a nivel de la evaluación global.
+    """
+    count_totals = best_result.get("count_totals", {})
+    tp = int(count_totals.get("tp", 0))
+    fn = int(count_totals.get("fn", 0))
+    fp_items = int(count_totals.get("fp", 0))
+
+    sentinel_records = [
+        rec for rec in best_result.get("records", [])
+        if rec.get("is_sentinel")
+    ]
+    tn = sum(rec.get("sentinel_correct") is True for rec in sentinel_records)
+    sentinel_failures = sum(rec.get("sentinel_correct") is False for rec in sentinel_records)
+    fp = fp_items + sentinel_failures
+
+    matrix = np.array([[tp, fn], [fp, tn]], dtype=int)
+    cell_names = np.array([["TP", "FN"], ["FP", "TN"]])
+
+    fig, ax = plt.subplots(figsize=(6.4, 6.4))
+    im = ax.imshow(matrix, cmap="Blues", aspect="equal")
+
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Positivo", "Negativo"], fontsize=10)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(["Positivo", "Negativo"], fontsize=10)
+    ax.set_xlabel("Predicción", fontweight="bold")
+    ax.set_ylabel("Valor real", fontweight="bold")
+
+    max_value = int(matrix.max()) if matrix.size else 0
+    threshold = max_value / 2 if max_value else 0
+    for i in range(2):
+        for j in range(2):
+            value = int(matrix[i, j])
+            ax.text(
+                j,
+                i,
+                f"{cell_names[i, j]}\n{value}",
+                ha="center",
+                va="center",
+                fontsize=18,
+                fontweight="bold",
+                color="white" if value > threshold else "#1f2937",
+            )
+
+    ax.set_title(
+        "Matriz de confusión de la mejor combinación\n"
+        f"{best_result['label']} | Calidad global: {best_result['quality_overall']:.3f}",
+        fontsize=12,
+        pad=14,
+    )
+
+    note = (
+        "TN = centinelas correctos por exact-match. "
+        "FP incluye elementos extra y centinelas incorrectos."
+    )
+    fig.text(0.5, 0.02, note, ha="center", va="bottom", fontsize=8, color="#555")
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Cantidad")
+    fig.tight_layout(rect=[0, 0.06, 1, 1])
+
+    path = images_dir / "chart_confusion_best.png"
+    fig.savefig(path, dpi=170, bbox_inches="tight")
     plt.close(fig)
     return path
 
@@ -452,48 +631,10 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["latency"] = p
 
-    # 5) Distribución de scores del juez (1-5): barras horizontales apiladas (% del total).
-    #    Revela la FORMA, no solo la media: dos combinaciones con media parecida pueden
-    #    diferir en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones.
-    score_colors = {5: "#27ae60", 4: "#7fc97f", 3: "#f39c12", 2: "#e67e22", 1: "#e74c3c"}
-    dist_pct: Dict[int, List[float]] = {s: [] for s in (5, 4, 3, 2, 1)}
-    any_scores = False
-    for r in results:
-        counts = {s: 0 for s in (1, 2, 3, 4, 5)}
-        total = 0
-        for rec in r.get("records", []):
-            sc = rec.get("scores")
-            if not sc:
-                continue
-            for d in JUDGE_DIMS:
-                score_val = int(sc[d])
-                score_val = max(1, min(5, score_val))
-                counts[score_val] += 1
-                total += 1
-        any_scores = any_scores or total > 0
-        for s in (5, 4, 3, 2, 1):
-            dist_pct[s].append(100.0 * counts[s] / total if total else 0.0)
-
-    if any_scores:
-        fig, ax = plt.subplots(figsize=(8.0, fig_h))
-        left = np.zeros(n)
-        for s in (5, 4, 3, 2, 1):
-            vals = np.array(dist_pct[s])
-            ax.barh(y, vals, 0.62, left=left, label=str(s), color=score_colors[s])
-            left += vals
-        ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=8)
-        ax.set_xlim(0, 100)
-        ax.set_xlabel("% de scores del juez")
-        ax.set_title("Distribución de scores del juez (1–5) por combinación")
-        ax.legend(title="Score", fontsize=8, ncol=5, loc="upper center",
-                  bbox_to_anchor=(0.5, -0.06 - 2.0 / fig_h), framealpha=0.9)
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        p = images_dir / "chart_score_distribution.png"
-        fig.savefig(p, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        paths["score_dist"] = p
+    # 5) Matriz de confusión únicamente para la combinación con mayor calidad global.
+    if results:
+        best_result = max(results, key=lambda r: r.get("quality_overall", 0.0))
+        paths["confusion_best"] = _generate_best_confusion_matrix(best_result, images_dir)
 
     return paths
 
@@ -586,16 +727,32 @@ def generate_html_report(
     img_dims = chart_paths["dimensions"].relative_to(output_path.parent)
     img_cats = chart_paths["categories"].relative_to(output_path.parent)
     img_lat = chart_paths["latency"].relative_to(output_path.parent)
+    img_confusion = chart_paths.get("confusion_best")
+    img_confusion_rel = (
+        img_confusion.relative_to(output_path.parent)
+        if img_confusion is not None
+        else None
+    )
+
+    best_result = max(results, key=lambda r: r.get("quality_overall", 0.0)) if results else None
+    confusion_block = ""
+    if img_confusion_rel is not None and best_result is not None:
+        confusion_block = f"""
+  <div class="card">
+    <h2>Matriz de confusión de la mejor combinación</h2>
+    <p class="chart-description">
+      Se muestra únicamente <strong>{best_result['label']}</strong>, que obtuvo la mayor
+      calidad global (<strong>{best_result['quality_overall']:.3f}</strong>).
+      TP, FP y FN se calculan con los elementos evaluados por el juez; TN corresponde
+      a los casos centinela resueltos correctamente por coincidencia exacta.
+    </p>
+    <div class="confusion-wrap">
+      <img src="{img_confusion_rel}" alt="Matriz de confusión de la mejor combinación">
+    </div>
+  </div>
+"""
 
     dist_block = ""
-    if "score_dist" in chart_paths:
-        img_dist = chart_paths["score_dist"].relative_to(output_path.parent)
-        dist_block = (
-            '<div class="card">\n'
-            "    <h2>Distribución de scores del juez (1-5)</h2>\n"
-            f'    <div class="chart-wrap"><img src="{img_dist}" alt="Distribución de scores"></div>\n'
-            "  </div>"
-        )
 
     dim_headers = "".join(f"<th>{DIM_LABELS[d]}</th>" for d in JUDGE_DIMS)
 
@@ -623,6 +780,9 @@ def generate_html_report(
     tr:hover td {{ background: #fafbfc; }}
     .chart-wrap {{ max-width: 900px; }}
     .chart-wrap img {{ width: 100%; height: auto; border-radius: 6px; }}
+    .confusion-wrap {{ width: min(100%, 660px); margin: 0 auto; }}
+    .confusion-wrap img {{ display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 6px; }}
+    .chart-description {{ color: #59636e; line-height: 1.55; margin-bottom: 1rem; }}
     ul.analysis {{ line-height: 1.9; }}
   </style>
 </head>
@@ -670,14 +830,16 @@ def generate_html_report(
   </div>
 
   <div class="card">
-    <h2>Calidad global y centinelas</h2>
+    <h2>Calidad global basada en F1 y centinelas</h2>
     <div class="chart-wrap"><img src="{img_overall}" alt="Calidad global"></div>
   </div>
+
+  {confusion_block}
+
   <div class="card">
     <h2>Score por dimensión</h2>
     <div class="chart-wrap"><img src="{img_dims}" alt="Score por dimensión"></div>
   </div>
-  {dist_block}
   <div class="card">
     <h2>Score por categoría</h2>
     <div class="chart-wrap"><img src="{img_cats}" alt="Score por categoría"></div>
