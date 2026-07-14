@@ -7,7 +7,7 @@ Para cada modelo evaluado:
   1. Actúa como el motor de generación Cypher.
   2. Ejecuta la query en Neo4j y extrae la información relevante (`cypher_result`).
   3. Compara la información recuperada contra la información de referencia (GT) usando
-     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (TN) o adicionales incorrectos (FP)
+     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (FN) o adicionales incorrectos (FP)
   4. Calcula Precision, Recall y F1-score a partir de la clasificacion.
   5. Mide latencias y la tasa de acierto en casos centinela.
 
@@ -61,7 +61,7 @@ SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esq
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 SENTINEL_NOT_RESULT = ("La consulta no puede responderse con la información del grafo.")
 MODELS: List[Dict[str, str]] = [
-     {"display": "Qwen 2.5 14B", "backend": "ollama", "model": "qwen2.5:14b-instruct"},
+     #{"display": "Qwen 2.5 14B", "backend": "ollama", "model": "qwen2.5:14b-instruct"},
     #{"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
     #{"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
@@ -494,68 +494,100 @@ def _generate_best_confusion_matrix(
     Los centinelas incorrectos se agregan a FP para reflejar falsos positivos
     a nivel de la evaluación global.
     """
-    count_totals = best_result.get("count_totals", {})
-    tp = int(count_totals.get("tp", 0))
-    fn = int(count_totals.get("fn", 0))
-    fp_items = int(count_totals.get("fp", 0))
+    tp = 0
+    fp = 0
+    fn = 0
 
-    sentinel_records = [
-        rec for rec in best_result.get("records", [])
-        if rec.get("is_sentinel")
-    ]
-    tn = sum(rec.get("sentinel_correct") is True for rec in sentinel_records)
-    sentinel_failures = sum(rec.get("sentinel_correct") is False for rec in sentinel_records)
-    fp = fp_items + sentinel_failures
+    for rec in best_result.get("records", []):
+        if rec.get("is_sentinel"):
+            if rec.get("sentinel_correct") is True:
+                tp += 1
+            elif rec.get("sentinel_correct") is False:
+                fn += 1
+        else:
+            scores = rec.get("scores") or {}
+            tp += int(scores.get("tp", 0))
+            fp += int(scores.get("fp", 0))
+            fn += int(scores.get("fn", 0))
 
-    matrix = np.array([[tp, fn], [fp, tn]], dtype=int)
-    cell_names = np.array([["TP", "FN"], ["FP", "TN"]])
+    matrix = np.array(
+        [
+            [tp, fn],
+            [fp, 0],
+        ],
+        dtype=int,
+    )
+    cell_color = np.array(
+        [
+            ["#27ae60", "#e74c3c"],
+            ["#e74c3c", "#27ae60"],
+        ]
+    )
+    cell_names = np.array(
+        [
+            ["TP", "FN"],
+            ["FP", "TN"],
+        ]
+    )
 
-    fig, ax = plt.subplots(figsize=(6.4, 6.4))
-    im = ax.imshow(matrix, cmap="Blues", aspect="equal")
+    fig, ax = plt.subplots(figsize=(4.6, 4.4))
 
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(["Positivo", "Negativo"], fontsize=10)
-    ax.set_yticks([0, 1])
-    ax.set_yticklabels(["Positivo", "Negativo"], fontsize=10)
-    ax.set_xlabel("Predicción", fontweight="bold")
-    ax.set_ylabel("Valor real", fontweight="bold")
-
-    max_value = int(matrix.max()) if matrix.size else 0
-    threshold = max_value / 2 if max_value else 0
     for i in range(2):
         for j in range(2):
-            value = int(matrix[i, j])
+            ax.add_patch(
+                plt.Rectangle(
+                    (j, 1 - i),
+                    1,
+                    1,
+                    color=cell_color[i, j],
+                    alpha=0.18,
+                )
+            )
             ax.text(
-                j,
-                i,
-                f"{cell_names[i, j]}\n{value}",
+                j + 0.5,
+                1 - i + 0.60,
+                cell_names[i, j],
                 ha="center",
                 va="center",
-                fontsize=18,
+                fontsize=11,
+                color=cell_color[i, j],
                 fontweight="bold",
-                color="white" if value > threshold else "#1f2937",
+            )
+            ax.text(
+                j + 0.5,
+                1 - i + 0.34,
+                f"{matrix[i, j]:,}",
+                ha="center",
+                va="center",
+                fontsize=16,
+                color="#2c3e50",
             )
 
-    ax.set_title(
-        "Matriz de confusión de la mejor combinación\n"
-        f"{best_result['label']} | Calidad global: {best_result['quality_overall']:.3f}",
-        fontsize=12,
-        pad=14,
-    )
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 2)
+    ax.set_xticks([0.5, 1.5])
+    ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
+    ax.set_yticks([0.5, 1.5])
+    ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
+    ax.set_title("Mejor combinación", fontsize=11)
+    ax.set_aspect("equal")
 
-    note = (
-        "TN = centinelas correctos por exact-match. "
-        "FP incluye elementos extra y centinelas incorrectos."
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(length=0)
+
+    fig.suptitle(
+        "Matriz de confusión — "
+        f"{best_result['label']} | Calidad global: "
+        f"{best_result['quality_overall']:.3f}",
+        fontsize=12,
     )
-    fig.text(0.5, 0.02, note, ha="center", va="bottom", fontsize=8, color="#555")
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Cantidad")
-    fig.tight_layout(rect=[0, 0.06, 1, 1])
+    fig.tight_layout()
 
     path = images_dir / "chart_confusion_best.png"
-    fig.savefig(path, dpi=170, bbox_inches="tight")
+    fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     return path
-
 
 def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
     """Gráficas en formato imprimible (para el informe).
