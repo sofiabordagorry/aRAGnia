@@ -90,7 +90,10 @@ from institutional_graphrag.ingest.docling_parser import (
     parse_single_document,
 )
 from institutional_graphrag.ingest.table_extractors import convert_tables_to_chunks
-
+from institutional_graphrag.llm.llm_provider import (
+    HuggingFaceClient,
+    get_llm_client,
+)
 try:
     from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
 except ImportError:
@@ -434,6 +437,53 @@ def _extract_json(text: str) -> Dict[str, Any]:
     return dict(json.loads(match.group(0)))
 
 
+def unload_huggingface_model(
+    model_id: str,
+    retriever: GraphRAGRetriever,
+) -> None:
+    """Elimina todas las referencias al modelo y libera su memoria CUDA."""
+    import gc
+    import torch
+
+    # GraphRAGRetriever puede conservar referencias al mismo cliente.
+    for attribute in (
+        "cypher_llm_client",
+        "answer_llm_client",
+        "generation_llm_client",
+        "llm_client",
+    ):
+        client = getattr(retriever, attribute, None)
+
+        if getattr(client, "model_id", None) == model_id:
+            setattr(retriever, attribute, None)
+
+    client = HuggingFaceClient._instances.pop(model_id, None)
+
+    if client is not None:
+        client.pipe = None
+        client.model = None
+        client.tokenizer = None
+        del client
+
+    gc.collect()
+
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+        try:
+            torch.cuda.ipc_collect()
+        except Exception:
+            pass
+
+        free, total = torch.cuda.mem_get_info()
+
+        log.info(
+            "Modelo descargado: %s | GPU libre: %.2f/%.2f GiB",
+            model_id,
+            free / 1024**3,
+            total / 1024**3,
+        )
+
 def run_qa_evaluation(
     dataset_path: Path,
     api_key: Optional[str],
@@ -443,8 +493,20 @@ def run_qa_evaluation(
     items = load_qa_items(dataset_path)
     if max_questions is not None:
         items = items[:max_questions]
+    retrieval_model = os.getenv("HF_RETRIEVAL_MODEL")
+    generation_model = os.getenv("HF_GENERATION_MODEL")
+    
+    if not retrieval_model:
+        raise RuntimeError("Falta HF_RETRIEVAL_MODEL")
 
+    if not generation_model:
+        raise RuntimeError("Falta HF_GENERATION_MODEL")
+    
+    os.environ["HF_GENERATION_MODEL"] = retrieval_model
     uri, user, password = neo4j_config()
+
+    retrieval_records: List[Dict[str, Any]] = []
+    records: List[Dict[str, Any]] = []
 
     retriever = GraphRAGRetriever(
         neo4j_uri=uri,
@@ -452,7 +514,6 @@ def run_qa_evaluation(
         neo4j_password=password,
     )
 
-    records: List[Dict[str, Any]] = []
     try:
         for index, item in enumerate(items, start=1):
             qid = item.get("id", index)
@@ -466,38 +527,99 @@ def run_qa_evaluation(
             sentinel = is_sentinel(item)
 
             log.info("[%s/%s] Pregunta id=%s", index, len(items), qid)
-            started = time.perf_counter()
-            candidate = ""
-            generated_cypher = ""
-            n_chunks = 0
+            
+            records_result: List[Any] = []
             query_error = ""
+            cypher_query: str = ""
+            invalid_result = None
+
+            started = time.perf_counter()
 
             try:
-                result = retriever.query(question)
-                candidate = str(result_field(result, "answer", "") or "").strip()
-                generated_cypher = str(
-                    result_field(result, "cypher_query", "") or ""
+                invalid_result, records_result, cypher_query = retriever.generate_cypher_query_result(
+                    user_query=question
                 )
-                chunks = result_field(result, "chunks", []) or []
-                n_chunks = len(chunks)
             except Exception as exc:  # noqa: BLE001
                 query_error = f"{type(exc).__name__}: {exc}"
                 log.exception("Falló query para la pregunta %s", qid)
 
             latency = time.perf_counter() - started
+            retrieval_records.append(
+                {
+                    "id": qid,
+                    "category": item.get("categoria", item.get("category", "")),
+                    "question": question,
+                    "gt_answer": gt_answer,
+                    "gt_cypher_query": item.get("cypher_query", ""),
+                    "gt_cypher_result": gt_subgraph,
+                    "records_result": records_result,
+                    "generated_cypher_query": cypher_query,
+                    "latency_s": round(latency, 4),
+                    "is_sentinel": sentinel,
+                    "query_error": query_error,
+                    "invalid_result": invalid_result,
+                }
+            )
 
+        unload_huggingface_model(
+            model_id=retrieval_model,
+            retriever=retriever,
+        )
+        os.environ["HF_GENERATION_MODEL"] = generation_model
+        retriever.answer_llm_client = get_llm_client(model=generation_model)
+        retriever.cypher_llm_client = None
+        for index, retrieval_record in enumerate(retrieval_records,start=1,):
+            qid = retrieval_record.get("id")
+            category = retrieval_record.get("category", "")
+            question = retrieval_record.get("question", "")
+            gt_answer = retrieval_record.get("gt_answer", "")
+            gt_cypher_query = retrieval_record.get("gt_cypher_query", "")
+            gt_cypher_result = retrieval_record.get("gt_cypher_result", "")
+            records_result = retrieval_record.get("records_result", [])
+            cypher_query = retrieval_record.get("generated_cypher_query", "")
+            latency_s = retrieval_record.get("latency_s", 0.0)
+            is_sentinel = retrieval_record.get("is_sentinel", False)
+            query_error = retrieval_record.get("query_error", "")
+            invalid_result = retrieval_record.get("invalid_result")
+
+            candidate = ""
+            generated_cypher = cypher_query
+            n_chunks = 0
+            generation_latency = 0.0
+            if not query_error:
+                started = time.perf_counter()
+                try:
+                    if not records_result:
+                        result = invalid_result
+                    else:
+                        result = retriever.generate_result(
+                            records=records_result, user_query=question, cypher_query=cypher_query
+                        )
+
+                    candidate = str(result_field(result, "answer", "") or "").strip()
+                    generated_cypher = str(
+                        result_field(result, "cypher_query", cypher_query) or cypher_query
+                    )
+                    chunks = result_field(result, "chunks", []) or []
+                    n_chunks = len(chunks)
+                except Exception as exc:  # noqa: BLE001
+                    query_error = f"{type(exc).__name__}: {exc}"
+                    log.exception("Falló query para la pregunta %s", qid)
+                generation_latency = time.perf_counter() - started
+
+            latency = float(latency_s) + generation_latency
             record: Dict[str, Any] = {
                 "id": qid,
-                "category": item.get("categoria", item.get("category", "")),
+                "category": category,
                 "question": question,
                 "gt_answer": gt_answer,
-                "gt_cypher_query": item.get("cypher_query", ""),
-                "gt_cypher_result": gt_subgraph,
+                "gt_cypher_query": gt_cypher_query,
+                "gt_cypher_result": gt_cypher_result,
                 "candidate": candidate,
                 "generated_cypher_query": generated_cypher,
                 "latency_s": round(latency, 4),
                 "n_chunks": n_chunks,
-                "is_sentinel": sentinel,
+                "is_sentinel": is_sentinel,
                 "sentinel_correct": None,
                 "scores": None,
                 "quality_overall": None,
@@ -510,7 +632,7 @@ def run_qa_evaluation(
                 records.append(record)
                 continue
 
-            if sentinel:
+            if is_sentinel:
                 record["sentinel_correct"] = sentinel_matches(candidate, gt_answer)
                 log.info(
                     "  centinela=%s latencia=%.2fs",
@@ -526,7 +648,7 @@ def run_qa_evaluation(
                         api_key,
                         judge_model,
                         question,
-                        gt_subgraph,
+                        gt_cypher_result,
                         gt_answer,
                         candidate,
                     )
@@ -548,6 +670,15 @@ def run_qa_evaluation(
 
             records.append(record)
     finally:
+        try:
+            unload_huggingface_model(
+                model_id=generation_model,
+                retriever=retriever,
+            )
+        except Exception:  # noqa: BLE001
+            log.exception(
+                "No se pudo descargar el modelo de generación"
+            )
         close_method = getattr(retriever, "close", None)
         if callable(close_method):
             close_method()
