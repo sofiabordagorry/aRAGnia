@@ -115,7 +115,7 @@ BACKEND_DIR = REPO_DIR / "backend"
 DATA_DIR = REPO_DIR / "data"
 EVAL_DIR = REPO_DIR / "evaluation"
 
-DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "datasetQA_GT_evaluation.json"
+DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "extraction" / "ground_truth_kg_evaluation.json"
 
 CORPUS_DIR = DATA_DIR / "corpus"
 DOCLING_DIR = DEFAULT_DOCLING_DIR
@@ -1100,7 +1100,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Ejecuta solamente preguntas, respuestas, evaluación y reportes. "
-            "Omite Docling, chunking, extracción y carga en Neo4j."
+            "Omite Docling, chunking, extracción."
         ),
     )
     return parser.parse_args()
