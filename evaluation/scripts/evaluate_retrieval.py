@@ -494,24 +494,45 @@ def _generate_best_confusion_matrix(
     Los centinelas incorrectos se agregan a FP para reflejar falsos positivos
     a nivel de la evaluación global.
     """
-    count_totals = best_result.get("count_totals", {})
-    tp = int(count_totals.get("tp", 0))
-    fn = int(count_totals.get("fn", 0))
-    fp_items = int(count_totals.get("fp", 0))
+    tp = 0
+    fp = 0
+    fn = 0
 
-    sentinel_records = [
-        rec for rec in best_result.get("records", [])
-        if rec.get("is_sentinel")
-    ]
-    tn = sum(rec.get("sentinel_correct") is True for rec in sentinel_records)
-    sentinel_failures = sum(rec.get("sentinel_correct") is False for rec in sentinel_records)
-    fp = fp_items + sentinel_failures
+    for rec in best_result.get("records", []):
+        if rec.get("is_sentinel"):
+            if rec.get("sentinel_correct") is True:
+                # El sistema devolvió correctamente el resultado esperado.
+                tp += 1
+            elif rec.get("sentinel_correct") is False:
+                # No devolvió el centinela esperado y produjo otra salida.
+                fn += 1
+        else:
+            scores = rec.get("scores") or {}
+            tp += int(scores.get("tp", 0))
+            fp += int(scores.get("fp", 0))
+            fn += int(scores.get("fn", 0))
 
-    matrix = np.array([[tp, fn], [fp, tn]], dtype=int)
-    cell_names = np.array([["TP", "FN"], ["FP", "TN"]])
+    # No existe un universo completo de elementos negativos,
+    # por lo que TN no puede calcularse.
+    matrix = np.array(
+        [
+            [tp, fn],
+            [fp, np.nan],
+        ],
+        dtype=float,
+    )
+
+    cell_names = np.array(
+        [
+            ["TP", "FN"],
+            ["FP", "N/A"],
+        ]
+    )
 
     fig, ax = plt.subplots(figsize=(6.4, 6.4))
-    im = ax.imshow(matrix, cmap="Blues", aspect="equal")
+    cmap = plt.get_cmap("Blues").copy()
+    cmap.set_bad("#f3f4f6")
+    im = ax.imshow(matrix, cmap=cmap, aspect="equal")
 
     ax.set_xticks([0, 1])
     ax.set_xticklabels(["Positivo", "Negativo"], fontsize=10)
@@ -520,20 +541,30 @@ def _generate_best_confusion_matrix(
     ax.set_xlabel("Predicción", fontweight="bold")
     ax.set_ylabel("Valor real", fontweight="bold")
 
-    max_value = int(matrix.max()) if matrix.size else 0
+    finite_values = matrix[np.isfinite(matrix)]
+    max_value = float(finite_values.max()) if finite_values.size else 0
     threshold = max_value / 2 if max_value else 0
+
     for i in range(2):
         for j in range(2):
-            value = int(matrix[i, j])
+            value = matrix[i, j]
+
+            if np.isnan(value):
+                text = "TN\nN/A"
+                text_color = "#1f2937"
+            else:
+                text = f"{cell_names[i, j]}\n{int(value)}"
+                text_color = "white" if value > threshold else "#1f2937"
+
             ax.text(
                 j,
                 i,
-                f"{cell_names[i, j]}\n{value}",
+                text,
                 ha="center",
                 va="center",
                 fontsize=18,
                 fontweight="bold",
-                color="white" if value > threshold else "#1f2937",
+                color=text_color,
             )
 
     ax.set_title(
@@ -543,18 +574,32 @@ def _generate_best_confusion_matrix(
         pad=14,
     )
 
-    note = (
-        "TN = centinelas correctos por exact-match. "
-        "FP incluye elementos extra y centinelas incorrectos."
+    fig.colorbar(
+        im,
+        ax=ax,
+        fraction=0.046,
+        pad=0.04,
+        label="Cantidad",
     )
-    fig.text(0.5, 0.02, note, ha="center", va="bottom", fontsize=8, color="#555")
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Cantidad")
-    fig.tight_layout(rect=[0, 0.06, 1, 1])
+
+    fig.subplots_adjust(
+        left=0.15,
+        right=0.88,
+        bottom=0.13,
+        top=0.84,
+    )
 
     path = images_dir / "chart_confusion_best.png"
-    fig.savefig(path, dpi=170, bbox_inches="tight")
+
+    fig.savefig(
+        path,
+        dpi=170,
+        facecolor="white",
+    )
+
     plt.close(fig)
     return path
+    h
 
 
 def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:

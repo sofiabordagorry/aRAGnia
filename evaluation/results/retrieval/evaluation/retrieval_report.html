@@ -22,6 +22,9 @@
     tr:hover td { background: #fafbfc; }
     .chart-wrap { max-width: 900px; }
     .chart-wrap img { width: 100%; height: auto; border-radius: 6px; }
+    .confusion-wrap { width: min(100%, 660px); margin: 0 auto; }
+    .confusion-wrap img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 6px; }
+    .chart-description { color: #59636e; line-height: 1.55; margin-bottom: 1rem; }
     ul.analysis { line-height: 1.9; }
   </style>
 </head>
@@ -32,11 +35,11 @@
   <div class="card">
     <h2>Mini Análisis</h2>
     <ul class="analysis">
-      <li><strong>Qwen 2.5 Coder 14B / structured</strong> logra la mejor calidad global (0.786).</li>
-<li>El modelo <strong>Qwen 2.5 Coder 14B</strong> es el de mayor calidad pico (0.786).</li>
-<li>El prompt <strong>structured</strong> es el mejor en promedio (0.786).</li>
-<li><strong>Qwen 2.5 Coder 14B / structured</strong> maneja mejor los centinelas (accuracy 0.769).</li>
-<li><strong>Qwen 2.5 Coder 14B / structured</strong> es el más rápido (latencia media 9.2s, p95 19.6s).</li>
+      <li><strong>Qwen 2.5 Coder 14B / structured</strong> logra la mejor calidad global (0.683).</li>
+<li>El modelo <strong>Qwen 2.5 Coder 14B</strong> es el de mayor calidad pico (0.683).</li>
+<li>El prompt <strong>structured</strong> es el mejor en promedio (0.683).</li>
+<li><strong>Qwen 2.5 Coder 14B / structured</strong> maneja mejor los centinelas (accuracy 0.692).</li>
+<li><strong>Qwen 2.5 Coder 14B / structured</strong> es el más rápido (latencia media 9.8s, p95 19.3s).</li>
     </ul>
   </div>
 
@@ -56,7 +59,7 @@
           <tr><th>Recall</th><th>Precision</th><th>media</th><th>mediana</th><th>p95</th></tr>
         </thead>
         <tbody>
-          <tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.795</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.784</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.789</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.786</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.769</td><td>9.2s</td><td>6.6s</td><td>19.6s</td></tr>
+          <tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.679</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.697</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.681</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.683</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.692</td><td>9.8s</td><td>7.1s</td><td>19.3s</td></tr>
         </tbody>
       </table>
     </div>
@@ -67,30 +70,42 @@
     <div class="overflow-x">
       <table>
         <thead><tr><th>Modelo / Prompt</th><th>Análisis Temporal</th><th>Consultas Complejas</th><th>Consultas Estructurales Simples</th><th>Fuera de Alcance</th><th>Lenguaje Natural Informal</th></tr></thead>
-        <tbody><tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.953</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.562</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.767</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.727</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.682</td></tr></tbody>
+        <tbody><tr><td class='llm-name'>Qwen 2.5 Coder 14B / structured</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.700</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.500</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.818</td><td style="background:#27ae6018;color:#27ae60;font-weight:600;">0.727</td><td style="background:#e67e2218;color:#e67e22;font-weight:600;">0.548</td></tr></tbody>
       </table>
     </div>
   </div>
 
   <div class="card">
-    <h2>Calidad global y centinelas</h2>
-    <div class="chart-wrap"><img src="images/chart_overall.png" alt="Calidad global"></div>
+    <h2>Calidad global basada en F1 y centinelas</h2>
+    <div class="chart-wrap"><img src="images\chart_overall.png" alt="Calidad global"></div>
   </div>
+
+  
+  <div class="card">
+    <h2>Matriz de confusión de la mejor combinación</h2>
+    <p class="chart-description">
+      Se muestra únicamente <strong>Qwen 2.5 Coder 14B / structured</strong>, que obtuvo la mayor
+      calidad global (<strong>0.683</strong>).
+      TP, FP y FN se calculan con los elementos evaluados por el juez; TN corresponde
+      a los casos centinela resueltos correctamente por coincidencia exacta.
+    </p>
+    <div class="confusion-wrap">
+      <img src="images\chart_confusion_best.png" alt="Matriz de confusión de la mejor combinación">
+    </div>
+  </div>
+
+
   <div class="card">
     <h2>Score por dimensión</h2>
-    <div class="chart-wrap"><img src="images/chart_dimensions.png" alt="Score por dimensión"></div>
-  </div>
-  <div class="card">
-    <h2>Distribución de scores del juez (1-5)</h2>
-    <div class="chart-wrap"><img src="images/chart_score_distribution.png" alt="Distribución de scores"></div>
+    <div class="chart-wrap"><img src="images\chart_dimensions.png" alt="Score por dimensión"></div>
   </div>
   <div class="card">
     <h2>Score por categoría</h2>
-    <div class="chart-wrap"><img src="images/chart_categories.png" alt="Score por categoría"></div>
+    <div class="chart-wrap"><img src="images\chart_categories.png" alt="Score por categoría"></div>
   </div>
   <div class="card">
     <h2>Latencia de recuperación </h2>
-    <div class="chart-wrap"><img src="images/chart_latency.png" alt="Latencia"></div>
+    <div class="chart-wrap"><img src="images\chart_latency.png" alt="Latencia"></div>
   </div>
 </body>
 </html>
