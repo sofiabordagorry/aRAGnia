@@ -7,7 +7,7 @@ Para cada modelo evaluado:
   1. Actúa como el motor de generación Cypher.
   2. Ejecuta la query en Neo4j y extrae la información relevante (`cypher_result`).
   3. Compara la información recuperada contra la información de referencia (GT) usando
-     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (TN) o adicionales incorrectos (FP)
+     un LLM-as-a-judge (API de Anthropic), clasifica los elementos como correctamente recuperados (TP), faltantes (FN) o adicionales incorrectos (FP)
   4. Calcula Precision, Recall y F1-score a partir de la clasificacion.
   5. Mide latencias y la tasa de acierto en casos centinela.
 
@@ -61,7 +61,7 @@ SENTINEL_NOT_IN_SCHEMA = "La consulta solicitada está fuera del alcance del esq
 SENTINEL_NO_INFO = "No se encontró ningún elemento que cumpla con los criterios de la consulta."
 SENTINEL_NOT_RESULT = ("La consulta no puede responderse con la información del grafo.")
 MODELS: List[Dict[str, str]] = [
-     {"display": "Qwen 2.5 14B", "backend": "ollama", "model": "qwen2.5:14b-instruct"},
+     #{"display": "Qwen 2.5 14B", "backend": "ollama", "model": "qwen2.5:14b-instruct"},
     #{"display": "Qwen 2.5 14B", "backend": "huggingface", "model": "Qwen/Qwen2.5-14B-Instruct"},
     #{"display": "Qwen 2.5 Coder 7B", "backend": "huggingface", "model": "Qwen/Qwen2.5-Coder-7B-Instruct"},
     # {"display": "Text2Cypher Gemma 2 9B", "backend": "huggingface", "model": "neo4j/text2cypher-gemma-2-9b-it-finetuned-2024v1"},
@@ -501,10 +501,8 @@ def _generate_best_confusion_matrix(
     for rec in best_result.get("records", []):
         if rec.get("is_sentinel"):
             if rec.get("sentinel_correct") is True:
-                # El sistema devolvió correctamente el resultado esperado.
                 tp += 1
             elif rec.get("sentinel_correct") is False:
-                # No devolvió el centinela esperado y produjo otra salida.
                 fn += 1
         else:
             scores = rec.get("scores") or {}
@@ -512,95 +510,84 @@ def _generate_best_confusion_matrix(
             fp += int(scores.get("fp", 0))
             fn += int(scores.get("fn", 0))
 
-    # No existe un universo completo de elementos negativos,
-    # por lo que TN no puede calcularse.
     matrix = np.array(
         [
             [tp, fn],
-            [fp, np.nan],
+            [fp, 0],
         ],
-        dtype=float,
+        dtype=int,
     )
-
+    cell_color = np.array(
+        [
+            ["#27ae60", "#e74c3c"],
+            ["#e74c3c", "#27ae60"],
+        ]
+    )
     cell_names = np.array(
         [
             ["TP", "FN"],
-            ["FP", "N/A"],
+            ["FP", "TN"],
         ]
     )
 
-    fig, ax = plt.subplots(figsize=(6.4, 6.4))
-    cmap = plt.get_cmap("Blues").copy()
-    cmap.set_bad("#f3f4f6")
-    im = ax.imshow(matrix, cmap=cmap, aspect="equal")
-
-    ax.set_xticks([0, 1])
-    ax.set_xticklabels(["Positivo", "Negativo"], fontsize=10)
-    ax.set_yticks([0, 1])
-    ax.set_yticklabels(["Positivo", "Negativo"], fontsize=10)
-    ax.set_xlabel("Predicción", fontweight="bold")
-    ax.set_ylabel("Valor real", fontweight="bold")
-
-    finite_values = matrix[np.isfinite(matrix)]
-    max_value = float(finite_values.max()) if finite_values.size else 0
-    threshold = max_value / 2 if max_value else 0
+    fig, ax = plt.subplots(figsize=(4.6, 4.4))
 
     for i in range(2):
         for j in range(2):
-            value = matrix[i, j]
-
-            if np.isnan(value):
-                text = "TN\nN/A"
-                text_color = "#1f2937"
-            else:
-                text = f"{cell_names[i, j]}\n{int(value)}"
-                text_color = "white" if value > threshold else "#1f2937"
-
+            ax.add_patch(
+                plt.Rectangle(
+                    (j, 1 - i),
+                    1,
+                    1,
+                    color=cell_color[i, j],
+                    alpha=0.18,
+                )
+            )
             ax.text(
-                j,
-                i,
-                text,
+                j + 0.5,
+                1 - i + 0.60,
+                cell_names[i, j],
                 ha="center",
                 va="center",
-                fontsize=18,
+                fontsize=11,
+                color=cell_color[i, j],
                 fontweight="bold",
-                color=text_color,
+            )
+            ax.text(
+                j + 0.5,
+                1 - i + 0.34,
+                f"{matrix[i, j]:,}",
+                ha="center",
+                va="center",
+                fontsize=16,
+                color="#2c3e50",
             )
 
-    ax.set_title(
-        "Matriz de confusión de la mejor combinación\n"
-        f"{best_result['label']} | Calidad global: {best_result['quality_overall']:.3f}",
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 2)
+    ax.set_xticks([0.5, 1.5])
+    ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
+    ax.set_yticks([0.5, 1.5])
+    ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
+    ax.set_title("Mejor combinación", fontsize=11)
+    ax.set_aspect("equal")
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(length=0)
+
+    fig.suptitle(
+        "Matriz de confusión — "
+        f"{best_result['label']} | Calidad global: "
+        f"{best_result['quality_overall']:.3f}",
         fontsize=12,
-        pad=14,
     )
-
-    fig.colorbar(
-        im,
-        ax=ax,
-        fraction=0.046,
-        pad=0.04,
-        label="Cantidad",
-    )
-
-    fig.subplots_adjust(
-        left=0.15,
-        right=0.88,
-        bottom=0.13,
-        top=0.84,
-    )
+    fig.tight_layout()
 
     path = images_dir / "chart_confusion_best.png"
-
-    fig.savefig(
-        path,
-        dpi=170,
-        facecolor="white",
-    )
-
+    fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     return path
-    h
-
 
 def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
     """Gráficas en formato imprimible (para el informe).
