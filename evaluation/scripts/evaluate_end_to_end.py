@@ -1100,7 +1100,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Ejecuta solamente preguntas, respuestas, evaluación y reportes. "
-            "Omite Docling, chunking, extracción."
+            "Omite Docling, chunking y extracción."
         ),
     )
     return parser.parse_args()
@@ -1120,7 +1120,7 @@ def main() -> int:
             load_into_neo4j(DEFAULT_DATASET)
 
             log.info(
-                "Modo --qa-only: se omiten Docling, chunking, extracción y carga en Neo4j"
+                "Modo --qa-only: se omiten Docling, chunking y extracción"
             )
         else:
             if args.skip_docling:
