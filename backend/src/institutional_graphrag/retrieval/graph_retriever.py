@@ -87,8 +87,16 @@ class GraphRAGRetriever:
     ):
         backend_dir = Path(__file__).resolve().parents[3]
         load_dotenv(backend_dir / ".env")
-        cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
-        answer_model = os.getenv("HF_GENERATION_MODEL")
+
+        backend = os.getenv("LLM_BACKEND", "ollama").lower()
+
+        if backend == "huggingface":
+            cypher_model = os.getenv("HF_RETRIEVAL_MODEL")
+            answer_model = os.getenv("HF_GENERATION_MODEL")
+        else:
+            cypher_model = os.getenv("OLLAMA_MODEL_CYPHER")
+            answer_model = os.getenv("OLLAMA_MODEL_ANSWER")
+    
         self.driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
         self.cypher_llm_client = get_llm_client(model=cypher_model)
         self.answer_llm_client = get_llm_client(model=answer_model)

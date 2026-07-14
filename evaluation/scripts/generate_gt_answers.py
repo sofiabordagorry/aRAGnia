@@ -78,7 +78,7 @@ def _resolve_answer_model() -> str | None:
     """Modelo de respuestas según el backend (LLM_BACKEND=ollama|huggingface)."""
     backend = os.getenv("LLM_BACKEND", "ollama").lower()
     if backend == "huggingface":
-        return os.getenv("HF_MODEL")
+        return os.getenv("HF_RETRIEVAL_MODEL")
     return os.getenv("OLLAMA_MODEL_ANSWER")
 
 

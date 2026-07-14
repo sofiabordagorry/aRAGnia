@@ -105,14 +105,14 @@ export LLM_BACKEND="huggingface"
 #   Qwen/Qwen2.5-3B-Instruct      (~6 GB VRAM)  ← default, equivalente al modelo Ollama actual
 #   Qwen/Qwen2.5-7B-Instruct      (~14 GB VRAM)
 #   meta-llama/Llama-3.2-3B-Instruct (~6 GB VRAM, requiere aceptar licencia en HF)
-export HF_MODEL="${HF_MODEL:-Qwen/Qwen2.5-3B-Instruct}"
+export HF_RETRIEVAL_MODEL="${HF_RETRIEVAL_MODEL:-Qwen/Qwen2.5-3B-Instruct}"
 
 # Directorio de caché para modelos (evita re-descargar entre jobs)
 # Por defecto HuggingFace usa ~/.cache/huggingface — conviene apuntar a un dir con espacio
 export HF_CACHE_DIR="${HF_CACHE_DIR:-$HOME/.cache/huggingface}"
 
 echo "[INFO] LLM_BACKEND: $LLM_BACKEND"
-echo "[INFO] HF_MODEL:    $HF_MODEL"
+echo "[INFO] HF_RETRIEVAL_MODEL:    $HF_RETRIEVAL_MODEL"
 echo "[INFO] HF_CACHE_DIR: $HF_CACHE_DIR"
 
 echo ""

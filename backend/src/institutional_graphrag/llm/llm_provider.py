@@ -40,7 +40,7 @@ class HuggingFaceClient:
     """Cliente que carga un modelo de HuggingFace localmente con transformers.
 
     Variables de entorno:
-        HF_MODEL      - model ID en HuggingFace Hub (default: Qwen/Qwen2.5-3B-Instruct)
+        HF_RETRIEVAL_MODEL      - model ID en HuggingFace Hub (default: Qwen/Qwen2.5-3B-Instruct)
         HF_CACHE_DIR  - directorio de caché para modelos descargados (opcional)
     """
 
@@ -130,7 +130,7 @@ def get_llm_client(*, model: Optional[str] = None) -> OllamaClient | HuggingFace
 
     backend = os.getenv("LLM_BACKEND", "ollama").lower()
     if backend == "huggingface":
-        model_id = model or os.getenv("HF_MODEL") or "Qwen/Qwen2.5-3B-Instruct"
+        model_id = model or os.getenv("HF_RETRIEVAL_MODEL") or "Qwen/Qwen2.5-3B-Instruct"
         if model_id not in HuggingFaceClient._instances:
             HuggingFaceClient._instances[model_id] = HuggingFaceClient(model_id)
         return HuggingFaceClient._instances[model_id]
