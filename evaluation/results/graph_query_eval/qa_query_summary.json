@@ -1,0 +1,29 @@
+{
+  "judge": {
+    "backend": "none",
+    "model": "claude-opus-4-8"
+  },
+  "n_total": 2,
+  "n_judged": 0,
+  "n_sentinel": 0,
+  "n_query_errors": 0,
+  "n_judge_errors": 0,
+  "dim_means": {
+    "factual_correctness": 0.0,
+    "completeness": 0.0,
+    "faithfulness": 0.0
+  },
+  "quality_overall": 0.0,
+  "sentinel_accuracy": 0.0,
+  "by_category": {
+    "Consultas Estructurales Simples": 0.0
+  },
+  "latency": {
+    "mean": 25.23,
+    "median": 25.23,
+    "p95": 25.83,
+    "n": 2
+  },
+  "query_error_ids": [],
+  "judge_error_ids": []
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluación end-to-end GraphRAG</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin:0; padding:2rem 3rem; background:#f0f2f5; color:#2c3e50; }
+    h1 { margin-bottom:.25rem; }
+    h2 { font-size:1.15rem; border-left:4px solid #3498db; padding-left:10px; }
+    .subtitle { color:#666; margin-top:0; }
+    .card { background:#fff; border-radius:10px; padding:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,.08); margin:1rem 0; overflow-x:auto; }
+    table { border-collapse:collapse; width:100%; font-size:.8rem; }
+    th { background:#2c3e50; color:white; padding:7px 9px; text-align:center; white-space:nowrap; }
+    td { border-bottom:1px solid #eee; padding:7px 9px; vertical-align:top; }
+    td.question { min-width:260px; }
+    td.candidate { min-width:360px; }
+    td.cypher { min-width:300px; }
+    td.error { color:#c0392b; min-width:180px; }
+    pre { white-space:pre-wrap; margin:0; font-size:.75rem; }
+    img { max-width:950px; width:100%; height:auto; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <h1>Evaluación end-to-end GraphRAG</h1>
+  <p class="subtitle">
+    Preguntas: 2 ·
+    Juzgadas: 0 ·
+    Centinelas: 0 ·
+    Errores de consulta: 0 ·
+    Errores del juez: 0 ·
+    Juez: <code>none/claude-opus-4-8</code>
+  </p>
+
+  <div class="card">
+    <h2>Resumen global</h2>
+    <table>
+      <thead>
+        <tr><th>Correctitud</th><th>Completitud</th><th>Fidelidad</th><th>Calidad global</th><th>Centinelas</th><th>Latencia media</th><th>Mediana</th><th>p95</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td><td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td>
+          <td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td>
+          <td style="background:#e74c3c18;color:#e74c3c;font-weight:600;">0.000</td>
+          <td>25.23s</td>
+          <td>25.23s</td>
+          <td>25.83s</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card"><h2>Score por categoría</h2><img src="images/categories.png" alt="Score por categoría"></div><div class="card"><h2>Latencia end-to-end por pregunta</h2><img src="images/latency_by_question.png" alt="Latencia end-to-end por pregunta"></div>
+
+  <div class="card">
+    <h2>Detalle por pregunta</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th><th>Categoría</th><th>Pregunta</th><th>Calidad</th>
+          <th>Correctitud</th><th>Completitud</th><th>Fidelidad</th>
+          <th>Latencia</th><th>Centinela</th><th>Centinela OK</th>
+          <th>Chunks</th><th>Respuesta candidata</th><th>Cypher generada</th><th>Error</th>
+        </tr>
+      </thead>
+      <tbody><tr><td>1</td><td>Consultas Estructurales Simples</td><td class='question'>¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?</td><td>—</td><td>—</td><td>—</td><td>—</td><td>25.89s</td><td>no</td><td>—</td><td>0</td><td class='candidate'>La consulta no puede responderse con la información del grafo.</td><td class='cypher'><pre>MATCH (p:Proyecto)
+WHERE toLower(p.titulo) CONTAINS &#x27;web warehouse de datos abiertos de gobierno con gestion de calidad&#x27;
+MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: &#x27;responsable&#x27;}]-&gt;(p)
+OPTIONAL MATCH (ic:Chunk)-[:EXTRAIDO_DE]-&gt;(i)
+RETURN i, COLLECT(DISTINCT ic) AS chunks</pre></td><td class='error'></td></tr><tr><td>2</td><td>Consultas Estructurales Simples</td><td class='question'>¿En qué proyecto participó fernando carpani?</td><td>—</td><td>—</td><td>—</td><td>—</td><td>24.56s</td><td>no</td><td>—</td><td>0</td><td class='candidate'>La consulta no puede responderse con la información del grafo.</td><td class='cypher'><pre>MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS &#x27;fernando carpani&#x27;
+MATCH (i)-[:PARTICIPO_EN]-&gt;(p:Proyecto)
+OPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]-&gt;(c:Chunk)
+RETURN p, i, COLLECT(DISTINCT c) AS chunks</pre></td><td class='error'></td></tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+[
+  {
+    "id": 1,
+    "category": "Consultas Estructurales Simples",
+    "question": "¿Quién es el investigador responsable del proyecto Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad?",
+    "gt_answer": "La investigadora responsable del proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad' es Adriana Alejandra Marotta Llambí.",
+    "gt_cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p:Proyecto) WHERE toLower(p.titulo) CONTAINS toLower('Web Warehouse de Datos Abiertos de Gobierno') RETURN DISTINCT i AS investigador_responsable",
+    "gt_retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. investigador_responsable: Adriana Alejandra Marotta Llambí (Investigador)",
+    "candidate": "La consulta no puede responderse con la información del grafo.",
+    "generated_cypher_query": "MATCH (p:Proyecto)\nWHERE toLower(p.titulo) CONTAINS 'web warehouse de datos abiertos de gobierno con gestion de calidad'\nMATCH (i:Investigador)-[:PARTICIPO_EN {calidad: 'responsable'}]->(p)\nOPTIONAL MATCH (ic:Chunk)-[:EXTRAIDO_DE]->(i)\nRETURN i, COLLECT(DISTINCT ic) AS chunks",
+    "latency_s": 25.8938,
+    "n_chunks": 0,
+    "is_sentinel": false,
+    "sentinel_correct": null,
+    "scores": null,
+    "quality_overall": null,
+    "justification": "",
+    "query_error": "",
+    "judge_error": ""
+  },
+  {
+    "id": 2,
+    "category": "Consultas Estructurales Simples",
+    "question": "¿En qué proyecto participó fernando carpani?",
+    "gt_answer": "Fernando Carpani participó en el proyecto 'Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad'.",
+    "gt_cypher_query": "MATCH (i:Investigador)-[:PARTICIPO_EN]->(p:Proyecto) WHERE toLower(i.nombre) CONTAINS toLower('fernando carpani') RETURN DISTINCT p.titulo_de_despliegue AS proyecto",
+    "gt_retrieved_subgraph": "=== QUERY RESULTS ===\n\n1. proyecto: Web Warehouse de Datos Abiertos de Gobierno con gestión de calidad",
+    "candidate": "La consulta no puede responderse con la información del grafo.",
+    "generated_cypher_query": "MATCH (i:Investigador) WHERE toLower(i.nombre) CONTAINS 'fernando carpani'\nMATCH (i)-[:PARTICIPO_EN]->(p:Proyecto)\nOPTIONAL MATCH (p)-[:TITULO_EXTRAIDO_DE]->(c:Chunk)\nRETURN p, i, COLLECT(DISTINCT c) AS chunks",
+    "latency_s": 24.5629,
+    "n_chunks": 0,
+    "is_sentinel": false,
+    "sentinel_correct": null,
+    "scores": null,
+    "quality_overall": null,
+    "justification": "",
+    "query_error": "",
+    "judge_error": ""
+  }
+]
