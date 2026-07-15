@@ -48,6 +48,11 @@ que ya está cargado:
         evaluation/ground_truth/datasetQA_GT_evaluation.json \
         --qa-only
 
+Regenerar únicamente gráficas y HTML desde los resultados existentes:
+
+    python evaluation/scripts/evaluate_end_to_end.py \
+        --charts-only
+
 Cuando se ejecutan Docling o chunking, sus carpetas de salida se limpian siempre
 antes de comenzar. Cuando se carga Neo4j, el grafo se limpia siempre antes de la
 ingesta.
@@ -121,7 +126,10 @@ CORPUS_DIR = DATA_DIR / "corpus"
 DOCLING_DIR = DEFAULT_DOCLING_DIR
 CHUNKS_DIR = DATA_DIR / "chunks"
 EXTRACTED_FILENAME = "entity_documents.json"
-RESULTS_DIR = EVAL_DIR / "results" / "graph_query_eval"
+RESULTS_DIR = EVAL_DIR / "results" / "end_to_end"
+DEFAULT_DETAILS_PATH = RESULTS_DIR / "end_to_end_details.json"
+DEFAULT_SUMMARY_PATH = RESULTS_DIR / "end_to_end_summary.json"
+
 
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
@@ -133,6 +141,8 @@ DIM_LABELS = {
     "completeness": "Completitud",
     "faithfulness": "Fidelidad",
 }
+
+PALETTE = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22"]
 
 JUDGE_SYSTEM = (
     "Eres un evaluador experto de respuestas de un sistema GraphRAG. Compara la "
@@ -582,7 +592,7 @@ def run_qa_evaluation(
             records_result = retrieval_record.get("records_result", [])
             cypher_query = retrieval_record.get("generated_cypher_query", "")
             latency_s = retrieval_record.get("latency_s", 0.0)
-            is_sentinel = retrieval_record.get("is_sentinel", False)
+            sentinel = retrieval_record.get("is_sentinel", False)
             query_error = retrieval_record.get("query_error", "")
             invalid_result = retrieval_record.get("invalid_result")
 
@@ -623,7 +633,7 @@ def run_qa_evaluation(
                 "generated_cypher_query": generated_cypher,
                 "latency_s": round(latency, 4),
                 "n_chunks": n_chunks,
-                "is_sentinel": is_sentinel,
+                "is_sentinel": sentinel,
                 "sentinel_correct": None,
                 "scores": None,
                 "quality_overall": None,
@@ -636,7 +646,7 @@ def run_qa_evaluation(
                 records.append(record)
                 continue
 
-            if is_sentinel:
+            if sentinel:
                 record["sentinel_correct"] = sentinel_matches(candidate, gt_answer)
                 log.info(
                     "  centinela=%s latencia=%.2fs",
@@ -757,262 +767,482 @@ def aggregate_results(
         "judge_error_ids": [record.get("id") for record in judge_errors],
     }
 
+def load_existing_results(
+    details_path: Path = DEFAULT_DETAILS_PATH,
+    summary_path: Path = DEFAULT_SUMMARY_PATH,
+) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    """Carga el summary y los records de una evaluación ya ejecutada."""
+
+    if not summary_path.exists():
+        raise FileNotFoundError(
+            f"No existe el JSON de resumen: {summary_path}"
+        )
+
+    if not details_path.exists():
+        raise FileNotFoundError(
+            f"No existe el JSON de detalle: {details_path}"
+        )
+
+    summary_data = json.loads(
+        summary_path.read_text(encoding="utf-8")
+    )
+    details_data = json.loads(
+        details_path.read_text(encoding="utf-8")
+    )
+
+    if not isinstance(summary_data, dict):
+        raise ValueError(
+            "El JSON de resumen debe contener un objeto."
+        )
+
+    if not isinstance(details_data, list):
+        raise ValueError(
+            "El JSON de detalle debe contener una lista de registros."
+        )
+
+    if not all(isinstance(record, dict) for record in details_data):
+        raise ValueError(
+            "Todos los elementos del JSON de detalle deben ser objetos."
+        )
+
+    summary: Dict[str, Any] = dict(summary_data)
+    records: List[Dict[str, Any]] = list(details_data)
+
+    return summary, records
 
 # -----------------------------------------------------------------------------
 # Salidas: JSON, gráficas y HTML
 # -----------------------------------------------------------------------------
 
 
-def generate_charts(
-    records: List[Dict[str, Any]],
+
+def build_generation_style_results(
     summary: Dict[str, Any],
-    images_dir: Path,
-) -> Dict[str, Path]:
+    records: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Adapta summary + records al formato de evaluate_generation solo en memoria.
+
+    El end-to-end usa dos modelos distintos:
+    - HF_RETRIEVAL_MODEL para generar/ejecutar la consulta Cypher.
+    - HF_GENERATION_MODEL para redactar la respuesta final.
+
+    No genera ni guarda un archivo JSON combinado.
+    """
+    retrieval_model = str(
+        os.getenv("HF_RETRIEVAL_MODEL")
+        or summary.get("retrieval_model")
+        or "retrieval-no-configurado"
+    )
+    generation_model = str(
+        os.getenv("HF_GENERATION_MODEL")
+        or summary.get("generation_model")
+        or summary.get("model")
+        or "generation-no-configurado"
+    )
+
+    backend = str(
+        summary.get("backend")
+        or os.getenv("E2E_BACKEND")
+        or "huggingface"
+    )
+    prompt = str(
+        summary.get("prompt")
+        or os.getenv("E2E_PROMPT")
+        or ""
+    )
+
+    # Las etiquetas se dividen en dos líneas para que sean legibles tanto en
+    # las gráficas de Matplotlib como en las tablas y el mini análisis del HTML.
+    display = str(
+        os.getenv("E2E_DISPLAY")
+        or (
+            f"Retrieval: {retrieval_model}\n"
+            f"Generación: {generation_model}"
+        )
+    )
+    label = str(
+        os.getenv("E2E_LABEL")
+        or (
+            f"Retrieval: {retrieval_model}\n"
+            f"Generación: {generation_model} / {prompt}"
+        )
+    )
+
+    return [
+        {
+            "display": display,
+            "backend": backend,
+            "model": f"{retrieval_model} -> {generation_model}",
+            "retrieval_model": retrieval_model,
+            "generation_model": generation_model,
+            "prompt": prompt,
+            "label": label,
+            "n_judged": int(summary.get("n_judged", 0)),
+            "n_sentinel": int(summary.get("n_sentinel", 0)),
+            "dim_means": dict(summary.get("dim_means", {})),
+            "quality_overall": float(summary.get("quality_overall", 0.0)),
+            "sentinel_accuracy": float(summary.get("sentinel_accuracy", 0.0)),
+            "by_category": dict(summary.get("by_category", {})),
+            "latency": dict(summary.get("latency", {})),
+            "records": records,
+        }
+    ]
+
+
+def _zoom_floor(values: List[float], pad: float = 0.03) -> float:
+    """Piso 'redondo' para un eje cuando los valores se agolpan cerca del techo (1.0).
+
+    Devuelve el múltiplo de 0.05 inmediatamente por debajo de (min - pad), acotado a
+    [0, 0.95]. Sirve para que las diferencias en la zona 0.89–1.0 sean visibles en vez
+    de quedar aplastadas contra un eje que arranca en 0.
+    """
+    if not values:
+        return 0.0
+    lo = float(np.floor((min(values) - pad) * 20) / 20.0)
+    return min(max(lo, 0.0), 0.95)
+
+
+def _heatmap(
+    path: Path, matrix: np.ndarray, row_labels: List[str], col_labels: List[str], title: str, fig_h: float
+) -> Path:
+    """Heatmap combos × columnas con anotación numérica y colormap con zoom cerca del techo.
+
+    Reemplaza a las barras agrupadas de 25 series (ilegibles): cada fila es una
+    combinación (mejor arriba) y cada columna una dimensión/categoría.
+    """
+    finite = matrix[np.isfinite(matrix)]
+    vmin = _zoom_floor(list(finite)) if finite.size else 0.0
+    fig, ax = plt.subplots(figsize=(max(4.5, 1.25 * len(col_labels) + 2.5), fig_h))
+    im = ax.imshow(matrix, aspect="auto", cmap="YlGn", vmin=vmin, vmax=1.0)
+    ax.set_xticks(np.arange(len(col_labels)))
+    ax.set_xticklabels(col_labels, rotation=20, ha="right", fontsize=8)
+    ax.set_yticks(np.arange(len(row_labels)))
+    ax.set_yticklabels(row_labels, fontsize=8)
+    ax.set_title(title)
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            v = matrix[i, j]
+            if not np.isfinite(v):
+                ax.text(j, i, "–", va="center", ha="center", fontsize=7, color="#999")
+                continue
+            frac = (v - vmin) / (1.0 - vmin) if vmin < 1.0 else 1.0
+            ax.text(j, i, f"{v:.3f}", va="center", ha="center", fontsize=7,
+                    color="white" if frac > 0.6 else "#222")
+    fig.colorbar(im, ax=ax, fraction=0.025, pad=0.02, label="Score (0–1)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return path
+
+
+def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str, Path]:
+    """Gráficas en formato imprimible (para el informe).
+
+    Todas las combinaciones se muestran en barras horizontales / heatmaps con las
+    etiquetas legibles (una por fila), ordenadas mejor-primero, y con ejes/colormap
+    recortados cerca del techo para que las diferencias no queden aplastadas.
+    """
     images_dir.mkdir(parents=True, exist_ok=True)
     paths: Dict[str, Path] = {}
 
-    judged = [
-        record for record in records if record.get("quality_overall") is not None
-    ]
-    if judged:
-        labels = [str(record["id"]) for record in judged]
-        values = [float(record["quality_overall"]) for record in judged]
-        height = max(4.0, 0.24 * len(judged) + 1.5)
+    results = sorted(results, key=lambda r: r["quality_overall"], reverse=True)
+    labels = [r["label"] for r in results]
+    n = len(results)
+    y = np.arange(n)[::-1]  # fila 0 (mejor) arriba
+    fig_h = max(4.0, 0.34 * n + 1.6)
 
-        fig, ax = plt.subplots(figsize=(8, height))
-        y = np.arange(len(judged))[::-1]
-        ax.barh(y, values)
+    # 1) Calidad global: barras horizontales con eje recortado; centinelas como marcador
+    #    (son ~1.0 en todas las combinaciones, así que un rombo alcanza para verlo).
+    quality = [r["quality_overall"] for r in results]
+    sent = [r["sentinel_accuracy"] for r in results]
+    fig, ax = plt.subplots(figsize=(8.0, fig_h))
+    ax.barh(y, quality, 0.62, color=PALETTE[0], label="Calidad global", zorder=3)
+    ax.scatter(sent, y, marker="D", s=20, color=PALETTE[1], label="Centinelas (exact-match)", zorder=4)
+    for yi, q in zip(y, quality):
+        ax.text(q - 0.001, yi, f"{q:.3f}", va="center", ha="right", fontsize=7, color="white", zorder=5)
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=8)
+    ax.set_xlim(_zoom_floor(quality + sent), 1.005)
+    ax.set_xlabel("Score (0–1)")
+    ax.set_title("Calidad global y manejo de centinelas")
+    ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    p = images_dir / "chart_overall.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths["overall"] = p
+
+    # 2) Score por dimensión → heatmap (combos × 3 dimensiones).
+    dim_matrix = np.array([[r["dim_means"][d] for d in JUDGE_DIMS] for r in results])
+    paths["dimensions"] = _heatmap(
+        images_dir / "chart_dimensions.png", dim_matrix, labels,
+        [DIM_LABELS[d] for d in JUDGE_DIMS], "Score por dimensión", fig_h,
+    )
+
+    # 3) Score por categoría → heatmap (combos × categorías).
+    all_cats = sorted({c for r in results for c in r["by_category"]})
+    cat_matrix = np.array([[r["by_category"].get(c, np.nan) for c in all_cats] for r in results])
+    paths["categories"] = _heatmap(
+        images_dir / "chart_categories.png", cat_matrix, labels, all_cats, "Score por categoría", fig_h,
+    )
+
+    # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
+    by_lat = sorted(results, key=lambda r: r["latency"]["mean"])
+    lat_labels = [r["label"] for r in by_lat]
+    yl = np.arange(len(by_lat))[::-1]
+    fig, ax = plt.subplots(figsize=(8.0, fig_h))
+    ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
+    ax.barh(yl - 0.2, [r["latency"]["p95"] for r in by_lat], 0.4, color=PALETTE[1], label="p95")
+    ax.set_yticks(yl)
+    ax.set_yticklabels(lat_labels, fontsize=8)
+    ax.set_xlabel("Segundos")
+    ax.set_title("Latencia de generación por combinación (menor es mejor)")
+    ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
+    ax.spines[["top", "right"]].set_visible(False)
+    fig.tight_layout()
+    p = images_dir / "chart_latency.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths["latency"] = p
+
+    # 5) Distribución de scores del juez (1-5): barras horizontales apiladas (% del total).
+    #    Revela la FORMA, no solo la media: dos combinaciones con media parecida pueden
+    #    diferir en cuántos fallos graves (score 1) tienen. Poolea las 3 dimensiones.
+    score_colors = {5: "#27ae60", 4: "#7fc97f", 3: "#f39c12", 2: "#e67e22", 1: "#e74c3c"}
+    dist_pct: Dict[int, List[float]] = {s: [] for s in (5, 4, 3, 2, 1)}
+    any_scores = False
+    for r in results:
+        counts = {s: 0 for s in (1, 2, 3, 4, 5)}
+        total = 0
+        for rec in r.get("records", []):
+            sc = rec.get("scores")
+            if not sc:
+                continue
+            for d in JUDGE_DIMS:
+                counts[int(sc[d])] += 1
+                total += 1
+        any_scores = any_scores or total > 0
+        for s in (5, 4, 3, 2, 1):
+            dist_pct[s].append(100.0 * counts[s] / total if total else 0.0)
+
+    if any_scores:
+        fig, ax = plt.subplots(figsize=(8.0, fig_h))
+        left = np.zeros(n)
+        for s in (5, 4, 3, 2, 1):
+            vals = np.array(dist_pct[s])
+            ax.barh(y, vals, 0.62, left=left, label=str(s), color=score_colors[s])
+            left += vals
         ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=7)
-        ax.set_xlim(0, 1)
-        ax.set_xlabel("Score normalizado (0-1)")
-        ax.set_ylabel("ID de pregunta")
-        ax.set_title("Calidad global por pregunta")
+        ax.set_yticklabels(labels, fontsize=8)
+        ax.set_xlim(0, 100)
+        ax.set_xlabel("% de scores del juez")
+        ax.set_title("Distribución de scores del juez (1–5) por combinación")
+        ax.legend(title="Score", fontsize=8, ncol=5, loc="upper center",
+                  bbox_to_anchor=(0.5, -0.06 - 2.0 / fig_h), framealpha=0.9)
         ax.spines[["top", "right"]].set_visible(False)
         fig.tight_layout()
-        path = images_dir / "quality_by_question.png"
-        fig.savefig(path, dpi=150, bbox_inches="tight")
+        p = images_dir / "chart_score_distribution.png"
+        fig.savefig(p, dpi=150, bbox_inches="tight")
         plt.close(fig)
-        paths["quality_by_question"] = path
-
-        dimension_values = [
-            float(summary["dim_means"][dimension]) for dimension in JUDGE_DIMS
-        ]
-        fig, ax = plt.subplots(figsize=(6.5, 4))
-        ax.bar([DIM_LABELS[dimension] for dimension in JUDGE_DIMS], dimension_values)
-        ax.set_ylim(0, 1)
-        ax.set_ylabel("Score normalizado (0-1)")
-        ax.set_title("Promedio por dimensión")
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        path = images_dir / "dimensions.png"
-        fig.savefig(path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        paths["dimensions"] = path
-
-        counts = {score: 0 for score in range(1, 6)}
-        for record in judged:
-            for dimension in JUDGE_DIMS:
-                counts[int(record["scores"][dimension])] += 1
-
-        fig, ax = plt.subplots(figsize=(6.5, 4))
-        ax.bar([str(score) for score in range(1, 6)], [counts[score] for score in range(1, 6)])
-        ax.set_xlabel("Score del juez")
-        ax.set_ylabel("Cantidad")
-        ax.set_title("Distribución de scores del juez")
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        path = images_dir / "score_distribution.png"
-        fig.savefig(path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        paths["score_distribution"] = path
-
-    latency_records = [
-        record for record in records if record.get("latency_s") is not None
-    ]
-    if latency_records:
-        labels = [str(record["id"]) for record in latency_records]
-        values = [float(record["latency_s"]) for record in latency_records]
-        height = max(4.0, 0.24 * len(latency_records) + 1.5)
-
-        fig, ax = plt.subplots(figsize=(8, height))
-        y = np.arange(len(latency_records))[::-1]
-        ax.barh(y, values)
-        ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=7)
-        ax.set_xlabel("Segundos")
-        ax.set_ylabel("ID de pregunta")
-        ax.set_title("Latencia de consulta y generación de respuesta")
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        path = images_dir / "latency_by_question.png"
-        fig.savefig(path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        paths["latency_by_question"] = path
-
-    categories = list(summary.get("by_category", {}).keys())
-    if categories:
-        values = [float(summary["by_category"][category]) for category in categories]
-        fig, ax = plt.subplots(figsize=(max(7, len(categories) * 1.1), 4.5))
-        ax.bar(categories, values)
-        ax.set_ylim(0, 1)
-        ax.set_ylabel("Score normalizado (0-1)")
-        ax.set_title("Score por categoría")
-        ax.tick_params(axis="x", rotation=25)
-        ax.spines[["top", "right"]].set_visible(False)
-        fig.tight_layout()
-        path = images_dir / "categories.png"
-        fig.savefig(path, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        paths["categories"] = path
+        paths["score_dist"] = p
 
     return paths
 
+def _val_color(val: float) -> str:
+    if val >= 0.7:
+        return "#27ae60"
+    if val >= 0.4:
+        return "#e67e22"
+    return "#e74c3c"
 
-def metric_cell(value: float) -> str:
-    if value >= 0.7:
-        color = "#27ae60"
-    elif value >= 0.4:
-        color = "#e67e22"
-    else:
-        color = "#e74c3c"
-    return (
-        f'<td style="background:{color}18;color:{color};font-weight:600;">'
-        f"{value:.3f}</td>"
-    )
+
+def _metric_cell(val: float) -> str:
+    color = _val_color(val)
+    return f'<td style="background:{color}18;color:{color};font-weight:600;">{val:.3f}</td>'
 
 
 def generate_html_report(
-    records: List[Dict[str, Any]],
-    summary: Dict[str, Any],
-    chart_paths: Dict[str, Path],
+    results: List[Dict[str, Any]],
     output_path: Path,
+    chart_paths: Dict[str, Path],
+    judge_model: str,
+    judged: bool,
 ) -> None:
-    def relative_image(key: str) -> str:
-        return str(chart_paths[key].relative_to(output_path.parent)).replace("\\", "/")
+    all_cats = sorted({c for r in results for c in r["by_category"]})
 
-    dimension_headers = "".join(
-        f"<th>{DIM_LABELS[dimension]}</th>" for dimension in JUDGE_DIMS
-    )
-    dimension_cells = "".join(
-        metric_cell(float(summary["dim_means"].get(dimension, 0.0)))
-        for dimension in JUDGE_DIMS
-    )
+    def html_text(value: Any) -> str:
+        """Escapa HTML y conserva los saltos de línea como <br>."""
+        return html.escape(str(value)).replace("\n", "<br>")
 
-    chart_cards: List[str] = []
-    chart_titles = {
-        "quality_by_question": "Calidad global por pregunta",
-        "dimensions": "Promedio por dimensión",
-        "score_distribution": "Distribución de scores del juez",
-        "categories": "Score por categoría",
-        "latency_by_question": "Latencia end-to-end por pregunta",
-    }
-    for key, title in chart_titles.items():
-        if key in chart_paths:
-            chart_cards.append(
-                '<div class="card">'
-                f"<h2>{title}</h2>"
-                f'<img src="{relative_image(key)}" alt="{title}">'
-                "</div>"
-            )
+    def html_label(result: Dict[str, Any]) -> str:
+        return html_text(result.get("label", ""))
 
-    rows: List[str] = []
-    for record in records:
-        scores = record.get("scores") or {}
-        score_cells = "".join(
-            f"<td>{scores.get(dimension, '—')}</td>" for dimension in JUDGE_DIMS
-        )
-        quality = record.get("quality_overall")
-        quality_text = f"{quality:.3f}" if isinstance(quality, (float, int)) else "—"
-        candidate = str(record.get("candidate", ""))
-        error = record.get("query_error") or record.get("judge_error") or ""
+    def overall_rows() -> str:
+        rows = []
+        for r in results:
+            row = f"<tr><td class='llm-name'>{html_label(r)}</td>"
+            for d in JUDGE_DIMS:
+                row += _metric_cell(r["dim_means"][d])
+            row += _metric_cell(r["quality_overall"])
+            row += _metric_cell(r["sentinel_accuracy"])
+            lat = r["latency"]
+            row += f"<td>{lat['mean']:.1f}s</td><td>{lat['median']:.1f}s</td><td>{lat['p95']:.1f}s</td>"
+            row += "</tr>"
+            rows.append(row)
+        return "\n".join(rows)
 
-        rows.append(
-            "<tr>"
-            f"<td>{html.escape(str(record.get('id', '')))}</td>"
-            f"<td>{html.escape(str(record.get('category', '')))}</td>"
-            f"<td class='question'>{html.escape(str(record.get('question', '')))}</td>"
-            f"<td>{quality_text}</td>"
-            f"{score_cells}"
-            f"<td>{float(record.get('latency_s', 0.0)):.2f}s</td>"
-            f"<td>{'sí' if record.get('is_sentinel') else 'no'}</td>"
-            f"<td>{html.escape(str(record.get('sentinel_correct'))) if record.get('is_sentinel') else '—'}</td>"
-            f"<td>{record.get('n_chunks', 0)}</td>"
-            f"<td class='candidate'>{html.escape(candidate[:600])}{'…' if len(candidate) > 600 else ''}</td>"
-            f"<td class='cypher'><pre>{html.escape(str(record.get('generated_cypher_query', '')))}</pre></td>"
-            f"<td class='error'>{html.escape(str(error))}</td>"
-            "</tr>"
+    def category_rows() -> str:
+        rows = []
+        for r in results:
+            row = f"<tr><td class='llm-name'>{html_label(r)}</td>"
+            for c in all_cats:
+                row += _metric_cell(r["by_category"].get(c, 0.0))
+            row += "</tr>"
+            rows.append(row)
+        return "\n".join(rows)
+
+    cat_headers = "".join(f"<th>{c}</th>" for c in all_cats)
+
+    analysis_items = []
+    if judged:
+        best_q = max(results, key=lambda r: r["quality_overall"])
+        analysis_items.append(
+            f"<strong>{html_label(best_q)}</strong> logra la mejor calidad global "
+            f"({best_q['quality_overall']:.3f})."
         )
 
-    judge = summary["judge"]
+        by_model: Dict[str, List[float]] = {}
+        for r in results:
+            by_model.setdefault(r["display"], []).append(r["quality_overall"])
+        best_model = max(by_model.items(), key=lambda kv: max(kv[1]))
+        analysis_items.append(
+            f"El modelo <strong>{html_text(best_model[0])}</strong> es el de mayor calidad pico "
+            f"({max(best_model[1]):.3f})."
+        )
+        by_prompt: Dict[str, List[float]] = {}
+        for r in results:
+            by_prompt.setdefault(r["prompt"], []).append(r["quality_overall"])
+        best_prompt = max(by_prompt.items(), key=lambda kv: mean(kv[1]))
+        analysis_items.append(
+            f"El prompt <strong>{html_text(best_prompt[0])}</strong> es el mejor en promedio "
+            f"({mean(best_prompt[1]):.3f})."
+        )
+        best_sent = max(results, key=lambda r: r["sentinel_accuracy"])
+        analysis_items.append(
+            f"<strong>{html_label(best_sent)}</strong> maneja mejor los centinelas "
+            f"(accuracy {best_sent['sentinel_accuracy']:.3f})."
+        )
+    fastest = min(results, key=lambda r: r["latency"]["mean"] or float("inf"))
+    analysis_items.append(
+        f"<strong>{html_label(fastest)}</strong> es el más rápido "
+        f"(latencia media {fastest['latency']['mean']:.1f}s, p95 {fastest['latency']['p95']:.1f}s)."
+    )
+    analysis_html = "\n".join(f"<li>{item}</li>" for item in analysis_items)
+
+    img_overall = chart_paths["overall"].relative_to(output_path.parent)
+    img_dims = chart_paths["dimensions"].relative_to(output_path.parent)
+    img_cats = chart_paths["categories"].relative_to(output_path.parent)
+    img_lat = chart_paths["latency"].relative_to(output_path.parent)
+
+    dist_block = ""
+    if "score_dist" in chart_paths:
+        img_dist = chart_paths["score_dist"].relative_to(output_path.parent)
+        dist_block = (
+            '<div class="card">\n'
+            "    <h2>Distribución de scores del juez (1-5)</h2>\n"
+            f'    <div class="chart-wrap"><img src="{img_dist}" alt="Distribución de scores"></div>\n'
+            "  </div>"
+        )
+
+    dim_headers = "".join(f"<th>{DIM_LABELS[d]}</th>" for d in JUDGE_DIMS)
+
     html_document = f"""<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Evaluación end-to-end GraphRAG</title>
+  <title>Evaluación de Generación – GraphRAG</title>
   <style>
     *, *::before, *::after {{ box-sizing: border-box; }}
-    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin:0; padding:2rem 3rem; background:#f0f2f5; color:#2c3e50; }}
-    h1 {{ margin-bottom:.25rem; }}
-    h2 {{ font-size:1.15rem; border-left:4px solid #3498db; padding-left:10px; }}
-    .subtitle {{ color:#666; margin-top:0; }}
-    .card {{ background:#fff; border-radius:10px; padding:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,.08); margin:1rem 0; overflow-x:auto; }}
-    table {{ border-collapse:collapse; width:100%; font-size:.8rem; }}
-    th {{ background:#2c3e50; color:white; padding:7px 9px; text-align:center; white-space:nowrap; }}
-    td {{ border-bottom:1px solid #eee; padding:7px 9px; vertical-align:top; }}
-    td.question {{ min-width:260px; }}
-    td.candidate {{ min-width:360px; }}
-    td.cypher {{ min-width:300px; }}
-    td.error {{ color:#c0392b; min-width:180px; }}
-    pre {{ white-space:pre-wrap; margin:0; font-size:.75rem; }}
-    img {{ max-width:950px; width:100%; height:auto; border-radius:6px; }}
+    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0; padding: 2rem 3rem; background: #f0f2f5; color: #2c3e50; }}
+    h1 {{ font-size: 1.8rem; margin-bottom: 0.25rem; }}
+    h2 {{ font-size: 1.2rem; color: #34495e; border-left: 4px solid #3498db; padding-left: 10px; margin-top: 2rem; }}
+    p.subtitle {{ color: #666; margin-top: 0; }}
+    .card {{ background: white; border-radius: 10px; padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin: 1rem 0; }}
+    .overflow-x {{ overflow-x: auto; }}
+    table {{ border-collapse: collapse; width: 100%; font-size: 0.85rem; }}
+    th {{ background: #2c3e50; color: white; padding: 7px 10px; text-align: center; white-space: nowrap; font-size: 0.78rem; }}
+    th:first-child {{ text-align: left; }}
+    td {{ padding: 7px 10px; text-align: center; border-bottom: 1px solid #f0f0f0; }}
+    td.llm-name {{ text-align: left; font-weight: 600; white-space: normal;
+      line-height: 1.45; min-width: 360px; }}
+    tr:last-child td {{ border-bottom: none; }}
+    tr:hover td {{ background: #fafbfc; }}
+    .chart-wrap {{ max-width: 900px; }}
+    .chart-wrap img {{ width: 100%; height: auto; border-radius: 6px; }}
+    ul.analysis {{ line-height: 1.9; }}
   </style>
 </head>
 <body>
-  <h1>Evaluación end-to-end GraphRAG</h1>
-  <p class="subtitle">
-    Preguntas: {summary['n_total']} ·
-    Juzgadas: {summary['n_judged']} ·
-    Centinelas: {summary['n_sentinel']} ·
-    Errores de consulta: {summary['n_query_errors']} ·
-    Errores del juez: {summary['n_judge_errors']} ·
-    Juez: <code>{html.escape(judge['backend'])}/{html.escape(judge['model'])}</code>
-  </p>
+  <h1>Evaluación de Generación – Comparación de LLMs y Prompts</h1>
+  <p class="subtitle">{len(results)} combinaciones modelo×prompt evaluadas sobre el GT de validación. Juez: <code>{judge_model}</code>. Scores normalizados 0-1.</p>
 
   <div class="card">
-    <h2>Resumen global</h2>
-    <table>
-      <thead>
-        <tr>{dimension_headers}<th>Calidad global</th><th>Centinelas</th><th>Latencia media</th><th>Mediana</th><th>p95</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          {dimension_cells}
-          {metric_cell(float(summary['quality_overall']))}
-          {metric_cell(float(summary['sentinel_accuracy']))}
-          <td>{summary['latency']['mean']:.2f}s</td>
-          <td>{summary['latency']['median']:.2f}s</td>
-          <td>{summary['latency']['p95']:.2f}s</td>
-        </tr>
-      </tbody>
-    </table>
+    <h2>Mini Análisis</h2>
+    <ul class="analysis">
+      {analysis_html}
+    </ul>
   </div>
 
-  {''.join(chart_cards)}
+  <div class="card">
+    <h2>Resumen Global</h2>
+    <div class="overflow-x">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Modelo / Prompt</th>
+            <th colspan="{len(JUDGE_DIMS)}" style="background:#1a252f;">Calidad (juez)</th>
+            <th rowspan="2">Calidad global</th>
+            <th rowspan="2">Centinelas</th>
+            <th colspan="3" style="background:#1a252f;">Latencia</th>
+          </tr>
+          <tr>{dim_headers}<th>media</th><th>mediana</th><th>p95</th></tr>
+        </thead>
+        <tbody>
+          {overall_rows()}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <div class="card">
-    <h2>Detalle por pregunta</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th><th>Categoría</th><th>Pregunta</th><th>Calidad</th>
-          {dimension_headers}
-          <th>Latencia</th><th>Centinela</th><th>Centinela OK</th>
-          <th>Chunks</th><th>Respuesta candidata</th><th>Cypher generada</th><th>Error</th>
-        </tr>
-      </thead>
-      <tbody>{''.join(rows)}</tbody>
-    </table>
+    <h2>Score por Categoría</h2>
+    <div class="overflow-x">
+      <table>
+        <thead><tr><th>Modelo / Prompt</th>{cat_headers}</tr></thead>
+        <tbody>{category_rows()}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Calidad global y centinelas</h2>
+    <div class="chart-wrap"><img src="{img_overall}" alt="Calidad global"></div>
+  </div>
+  <div class="card">
+    <h2>Score por dimensión</h2>
+    <div class="chart-wrap"><img src="{img_dims}" alt="Score por dimensión"></div>
+  </div>
+  {dist_block}
+  <div class="card">
+    <h2>Score por categoría</h2>
+    <div class="chart-wrap"><img src="{img_cats}" alt="Score por categoría"></div>
+  </div>
+  <div class="card">
+    <h2>Latencia de generación</h2>
+    <div class="chart-wrap"><img src="{img_lat}" alt="Latencia"></div>
   </div>
 </body>
 </html>"""
@@ -1020,16 +1250,14 @@ def generate_html_report(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html_document, encoding="utf-8")
 
-
 def save_results(
     records: List[Dict[str, Any]],
     summary: Dict[str, Any],
 ) -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    details_path = RESULTS_DIR / "qa_query_details.json"
-    summary_path = RESULTS_DIR / "qa_query_summary.json"
-    html_path = RESULTS_DIR / "qa_query_report.html"
+    details_path = RESULTS_DIR / "end_to_end_details.json"
+    summary_path = RESULTS_DIR / "end_to_end_summary.json"
 
     details_path.write_text(
         json.dumps(records, ensure_ascii=False, indent=2) + "\n",
@@ -1040,12 +1268,9 @@ def save_results(
         encoding="utf-8",
     )
 
-    charts = generate_charts(records, summary, RESULTS_DIR / "images")
-    generate_html_report(records, summary, charts, html_path)
 
     log.info("Detalle JSON: %s", details_path)
     log.info("Resumen JSON: %s", summary_path)
-    log.info("Reporte HTML: %s", html_path)
 
 
 # -----------------------------------------------------------------------------
@@ -1061,9 +1286,23 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument(
+        "--charts-only",
+        action="store_true",
+        help=(
+            "Crea las gráficas y reportes a partir de los JSON existentes en "
+            f"{DEFAULT_DETAILS_PATH} y {DEFAULT_SUMMARY_PATH}, sin volver a ejecutar el pipeline."
+        ),
+    )
+
+    parser.add_argument(
         "qa_dataset",
+        nargs="?",
         type=Path,
-        help="Dataset JSON obligatorio con preguntas, cypher_result y answer.",
+        default=None,
+        help=(
+            "Dataset JSON con preguntas, cypher_result y answer. "
+            "Es obligatorio salvo cuando se usa --charts-only."
+        ),
     )
     parser.add_argument(
         "--judge-model",
@@ -1109,85 +1348,103 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     load_env()
-    if args.skip_chunking and not args.skip_docling and not args.qa_only:
-        raise ValueError(
-            "--skip-chunking requiere también --skip-docling, "
-            "porque de lo contrario los chunks podrían no coincidir "
-            "con los documentos de Docling."
-        )
-    try:
-        if args.qa_only:
-            load_into_neo4j(DEFAULT_DATASET)
-
-            log.info(
-                "Modo --qa-only: se omiten Docling, chunking y extracción"
+    if not args.charts_only:
+        if args.skip_chunking and not args.skip_docling and not args.qa_only:
+            raise ValueError(
+                "--skip-chunking requiere también --skip-docling, "
+                "porque de lo contrario los chunks podrían no coincidir "
+                "con los documentos de Docling."
             )
-        else:
-            if args.skip_docling:
-                log.info("Docling omitido por --skip-docling")
-            else:
-                log.info("ETAPA 1/6 - Docling")
-                run_docling()
+        if args.qa_dataset is None:
+            raise ValueError(
+                "Debe indicarse qa_dataset salvo cuando se usa --charts-only."
+            )
+        try:
+            if args.qa_only:
+                load_into_neo4j(DEFAULT_DATASET)
 
-            if args.skip_chunking:
-                log.info("Chunking omitido por --skip-chunking")
-            else:
-                log.info("ETAPA 2/6 - Chunking")
-                processed, errors, _ = run_chunking()
-                if errors:
-                    raise RuntimeError(
-                        f"Falló el chunking de {errors} documentos. "
-                        "Se cancela la extracción para no generar un grafo incompleto."
-                    )
-                if processed == 0:
-                    raise RuntimeError("No se procesó correctamente ningún documento.")
-            log.info("ETAPA 3/6 - Extracción de entidades y relaciones")
-            graph_json = run_extraction()
-
-            log.info("ETAPA 4/6 - Limpieza y carga en Neo4j")
-            load_into_neo4j(graph_json)
-
-        log.info("ETAPA 5/6 - Consultas y evaluación QA")
-        
-        api_key: Optional[str] = None
-        if not args.no_judge:
-            api_key = os.getenv("ANTHROPIC_API_KEY")
-            if not api_key:
-                print(
-                    "ADVERTENCIA: falta ANTHROPIC_API_KEY; "
-                    "corriendo en modo --no-judge.",
-                    flush=True,
+                log.info(
+                    "Modo --qa-only: se omiten Docling, chunking y extracción"
                 )
+            else:
+                if args.skip_docling:
+                    log.info("Docling omitido por --skip-docling")
+                else:
+                    log.info("ETAPA 1/6 - Docling")
+                    run_docling()
 
-        records, summary = run_qa_evaluation(
-            dataset_path=args.qa_dataset,
-            api_key=api_key,
-            judge_model=args.judge_model,
-            max_questions=args.max_questions,
-        )
+                if args.skip_chunking:
+                    log.info("Chunking omitido por --skip-chunking")
+                else:
+                    log.info("ETAPA 2/6 - Chunking")
+                    processed, errors, _ = run_chunking()
+                    if errors:
+                        raise RuntimeError(
+                            f"Falló el chunking de {errors} documentos. "
+                            "Se cancela la extracción para no generar un grafo incompleto."
+                        )
+                    if processed == 0:
+                        raise RuntimeError("No se procesó correctamente ningún documento.")
+                log.info("ETAPA 3/6 - Extracción de entidades y relaciones")
+                graph_json = run_extraction()
 
-        log.info("ETAPA 6/6 - JSON, gráficas y HTML")
-        save_results(records, summary)
+                log.info("ETAPA 4/6 - Limpieza y carga en Neo4j")
+                load_into_neo4j(graph_json)
 
-        print("\n" + "=" * 78)
-        print("RESULTADO END-TO-END")
-        print("=" * 78)
-        print(f"Preguntas:           {summary['n_total']}")
-        print(f"Calidad global:      {summary['quality_overall']:.3f}")
-        print(f"Centinelas:          {summary['sentinel_accuracy']:.3f}")
-        print(f"Latencia media:      {summary['latency']['mean']:.2f}s")
-        print(f"Latencia p95:        {summary['latency']['p95']:.2f}s")
-        print(f"Errores de consulta: {summary['n_query_errors']}")
-        print(f"Errores del juez:    {summary['n_judge_errors']}")
-        print("=" * 78)
-        print(f"Resumen JSON: {RESULTS_DIR / 'qa_query_summary.json'}")
-        print(f"Detalle JSON: {RESULTS_DIR / 'qa_query_details.json'}")
-        print(f"Reporte HTML: {RESULTS_DIR / 'qa_query_report.html'}")
-        return 0
+            log.info("ETAPA 5/6 - Consultas y evaluación QA")
+            
+            api_key: Optional[str] = None
+            if not args.no_judge:
+                api_key = os.getenv("ANTHROPIC_API_KEY")
+                if not api_key:
+                    print(
+                        "ADVERTENCIA: falta ANTHROPIC_API_KEY; "
+                        "corriendo en modo --no-judge.",
+                        flush=True,
+                    )
 
-    except Exception as exc:  # noqa: BLE001
-        log.exception("PIPELINE FALLÓ: %s", exc)
-        return 1
+            records, summary = run_qa_evaluation(
+                dataset_path=args.qa_dataset,
+                api_key=api_key,
+                judge_model=args.judge_model,
+                max_questions=args.max_questions,
+            )
+
+            log.info("ETAPA 6/6 - JSON, gráficas y HTML")
+            save_results(records, summary)
+        except Exception as exc:  # noqa: BLE001
+            log.exception("PIPELINE FALLÓ: %s", exc)
+            return 1
+    else:
+        summary, records = load_existing_results()
+
+    results = build_generation_style_results(summary, records)
+    html_path = RESULTS_DIR / "end_to_end_report.html"
+    charts = generate_charts(results, RESULTS_DIR / "images")
+
+    judge = summary.get("judge", {})
+    generate_html_report(
+        results=results,
+        output_path=html_path,
+        chart_paths=charts,
+        judge_model=str(judge.get("model", "")),
+        judged=bool(summary.get("n_judged", 0)),
+    )
+    
+    log.info("Reporte HTML: %s", html_path)
+    print("\n" + "=" * 78)
+    print("RESULTADO END-TO-END")
+    print("=" * 78)
+    print(f"Preguntas:           {summary['n_total']}")
+    print(f"Calidad global:      {summary['quality_overall']:.3f}")
+    print(f"Centinelas:          {summary['sentinel_accuracy']:.3f}")
+    print(f"Latencia media:      {summary['latency']['mean']:.2f}s")
+    print(f"Latencia p95:        {summary['latency']['p95']:.2f}s")
+    print(f"Errores de consulta: {summary['n_query_errors']}")
+    print(f"Errores del juez:    {summary['n_judge_errors']}")
+    print("=" * 78)
+    print(f"Reporte HTML: {RESULTS_DIR / 'end_to_end_report.html'}")
+    return 0
 
 
 if __name__ == "__main__":
