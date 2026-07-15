@@ -1,0 +1,33 @@
+{
+  "judge": {
+    "backend": "anthropic",
+    "model": "claude-opus-4-8"
+  },
+  "n_total": 80,
+  "n_judged": 67,
+  "n_sentinel": 13,
+  "n_query_errors": 0,
+  "n_judge_errors": 0,
+  "dim_means": {
+    "factual_correctness": 0.3694,
+    "completeness": 0.3321,
+    "faithfulness": 0.6119
+  },
+  "quality_overall": 0.4378,
+  "sentinel_accuracy": 0.3846,
+  "by_category": {
+    "Análisis Temporal": 0.3467,
+    "Consultas Complejas": 0.2,
+    "Consultas Estructurales Simples": 0.6364,
+    "Fuera de Alcance": 0.4545,
+    "Lenguaje Natural Informal": 0.3889
+  },
+  "latency": {
+    "mean": 44.68,
+    "median": 11.91,
+    "p95": 173.86,
+    "n": 80
+  },
+  "query_error_ids": [],
+  "judge_error_ids": []
+}
