@@ -126,7 +126,7 @@ CORPUS_DIR = DATA_DIR / "corpus"
 DOCLING_DIR = DEFAULT_DOCLING_DIR
 CHUNKS_DIR = DATA_DIR / "chunks"
 EXTRACTED_FILENAME = "entity_documents.json"
-RESULTS_DIR = EVAL_DIR / "results" / "end_to_end"
+RESULTS_DIR = EVAL_DIR / "results" / "retrieval_and_generation"
 DEFAULT_DETAILS_PATH = RESULTS_DIR / "end_to_end_details.json"
 DEFAULT_SUMMARY_PATH = RESULTS_DIR / "end_to_end_summary.json"
 
@@ -961,7 +961,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     for yi, q in zip(y, quality):
         ax.text(q - 0.001, yi, f"{q:.3f}", va="center", ha="right", fontsize=7, color="white", zorder=5)
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=8)
+    ax.tick_params(axis="y", left=False, labelleft=False)
     ax.set_xlim(_zoom_floor(quality + sent), 1.005)
     ax.set_xlabel("Score (0–1)")
     ax.set_title("Calidad global y manejo de centinelas")
@@ -976,7 +976,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     # 2) Score por dimensión → heatmap (combos × 3 dimensiones).
     dim_matrix = np.array([[r["dim_means"][d] for d in JUDGE_DIMS] for r in results])
     paths["dimensions"] = _heatmap(
-        images_dir / "chart_dimensions.png", dim_matrix, labels,
+        images_dir / "chart_dimensions.png", dim_matrix, [""] * n,
         [DIM_LABELS[d] for d in JUDGE_DIMS], "Score por dimensión", fig_h,
     )
 
@@ -984,7 +984,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     all_cats = sorted({c for r in results for c in r["by_category"]})
     cat_matrix = np.array([[r["by_category"].get(c, np.nan) for c in all_cats] for r in results])
     paths["categories"] = _heatmap(
-        images_dir / "chart_categories.png", cat_matrix, labels, all_cats, "Score por categoría", fig_h,
+        images_dir / "chart_categories.png", cat_matrix, [""] * n, all_cats, "Score por categoría", fig_h,
     )
 
     # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
@@ -995,9 +995,9 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
     ax.barh(yl - 0.2, [r["latency"]["p95"] for r in by_lat], 0.4, color=PALETTE[1], label="p95")
     ax.set_yticks(yl)
-    ax.set_yticklabels(lat_labels, fontsize=8)
+    ax.tick_params(axis="y", left=False, labelleft=False)
     ax.set_xlabel("Segundos")
-    ax.set_title("Latencia de generación por combinación (menor es mejor)")
+    ax.set_title("Latencia de generación por combinación")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
@@ -1034,10 +1034,10 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
             ax.barh(y, vals, 0.62, left=left, label=str(s), color=score_colors[s])
             left += vals
         ax.set_yticks(y)
-        ax.set_yticklabels(labels, fontsize=8)
+        ax.tick_params(axis="y", left=False, labelleft=False)
         ax.set_xlim(0, 100)
         ax.set_xlabel("% de scores del juez")
-        ax.set_title("Distribución de scores del juez (1–5) por combinación")
+        ax.set_title("Distribución de scores del juez (1–5)")
         ax.legend(title="Score", fontsize=8, ncol=5, loc="upper center",
                   bbox_to_anchor=(0.5, -0.06 - 2.0 / fig_h), framealpha=0.9)
         ax.spines[["top", "right"]].set_visible(False)
