@@ -566,10 +566,16 @@ def _generate_best_confusion_matrix(
     ax.set_xlim(0, 2)
     ax.set_ylim(0, 2)
     ax.set_xticks([0.5, 1.5])
-    ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
-    ax.set_yticks([0.5, 1.5])
-    ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
-    ax.set_title("Mejor combinación", fontsize=11)
+
+    # Se eliminan las etiquetas laterales "pred: sí" y "pred: no".
+    ax.set_yticks([])
+
+    ax.set_title(
+        f"{best_result['label']}\n"
+        f"Calidad global: {best_result['quality_overall']:.3f}",
+        fontsize=10,
+        pad=10,
+    )
     ax.set_aspect("equal")
 
     for spine in ax.spines.values():
@@ -577,12 +583,12 @@ def _generate_best_confusion_matrix(
     ax.tick_params(length=0)
 
     fig.suptitle(
-        "Matriz de confusión — "
-        f"{best_result['label']} | Calidad global: "
-        f"{best_result['quality_overall']:.3f}",
-        fontsize=12,
+        "Matriz de confusión de la mejor combinación",
+        fontsize=13,
+        fontweight="bold",
+        y=0.98,
     )
-    fig.tight_layout()
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
 
     path = images_dir / "chart_confusion_best.png"
     fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
@@ -654,7 +660,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_yticks(yl)
     ax.set_yticklabels(lat_labels, fontsize=8)
     ax.set_xlabel("Segundos")
-    ax.set_title("Latencia de recuperación por combinación (menor es mejor)")
+    ax.set_title("Latencia de recuperación por combinación")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
