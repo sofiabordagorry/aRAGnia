@@ -620,9 +620,9 @@ def generate_charts(configs: List[Dict[str, Any]], images_dir: Path) -> Dict[str
         ax.set_xlim(0, 2)
         ax.set_ylim(0, 2)
         ax.set_xticks([0.5, 1.5])
-        ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
+        ax.set_xticklabels([], fontsize=9)
         ax.set_yticks([0.5, 1.5])
-        ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
+        ax.set_yticklabels([], fontsize=9)
         ax.set_title(title, fontsize=11)
         ax.set_aspect("equal")
         for s in ax.spines.values():
