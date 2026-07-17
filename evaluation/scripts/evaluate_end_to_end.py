@@ -126,7 +126,7 @@ CORPUS_DIR = DATA_DIR / "corpus"
 DOCLING_DIR = DEFAULT_DOCLING_DIR
 CHUNKS_DIR = DATA_DIR / "chunks"
 EXTRACTED_FILENAME = "entity_documents.json"
-RESULTS_DIR = EVAL_DIR / "results" / "end_to_end"
+RESULTS_DIR = EVAL_DIR / "results" / "retrieval_and_generation"
 DEFAULT_DETAILS_PATH = RESULTS_DIR / "end_to_end_details.json"
 DEFAULT_SUMMARY_PATH = RESULTS_DIR / "end_to_end_summary.json"
 
@@ -989,7 +989,6 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
 
     # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
     by_lat = sorted(results, key=lambda r: r["latency"]["mean"])
-    lat_labels = [r["label"] for r in by_lat]
     yl = np.arange(len(by_lat))[::-1]
     fig, ax = plt.subplots(figsize=(8.0, fig_h))
     ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
