@@ -565,9 +565,7 @@ def _generate_best_confusion_matrix(
 
     ax.set_xlim(0, 2)
     ax.set_ylim(0, 2)
-    ax.set_xticks([0.5, 1.5])
-
-    # Se eliminan las etiquetas laterales "pred: sí" y "pred: no".
+    ax.set_xticks([])
     ax.set_yticks([])
 
     ax.set_title(
@@ -582,12 +580,6 @@ def _generate_best_confusion_matrix(
         spine.set_visible(False)
     ax.tick_params(length=0)
 
-    fig.suptitle(
-        "Matriz de confusión de la mejor combinación",
-        fontsize=13,
-        fontweight="bold",
-        y=0.98,
-    )
     fig.tight_layout(rect=[0, 0, 1, 0.93])
 
     path = images_dir / "chart_confusion_best.png"
