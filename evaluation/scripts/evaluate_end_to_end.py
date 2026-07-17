@@ -989,7 +989,6 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
 
     # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
     by_lat = sorted(results, key=lambda r: r["latency"]["mean"])
-    lat_labels = [r["label"] for r in by_lat]
     yl = np.arange(len(by_lat))[::-1]
     fig, ax = plt.subplots(figsize=(8.0, fig_h))
     ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
@@ -997,6 +996,7 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_yticks(yl)
     ax.tick_params(axis="y", left=False, labelleft=False)
     ax.set_xlabel("Segundos")
+    ax.set_xlim(0, 600)
     ax.set_title("Latencia de generación por combinación")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
