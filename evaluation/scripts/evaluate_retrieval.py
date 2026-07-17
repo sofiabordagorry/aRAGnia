@@ -565,11 +565,10 @@ def _generate_best_confusion_matrix(
 
     ax.set_xlim(0, 2)
     ax.set_ylim(0, 2)
-    ax.set_xticks([0.5, 1.5])
-    ax.set_xticklabels(["GT: sí", "GT: no"], fontsize=9)
-    ax.set_yticks([0.5, 1.5])
-    ax.set_yticklabels(["pred: no", "pred: sí"], fontsize=9)
-    ax.set_title("Mejor combinación", fontsize=11)
+    ax.set_xticks([])
+    ax.set_xticklabels([], fontsize=9)
+    
+    ax.set_yticks([])
     ax.set_aspect("equal")
 
     for spine in ax.spines.values():
@@ -654,7 +653,8 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     ax.set_yticks(yl)
     ax.set_yticklabels(lat_labels, fontsize=8)
     ax.set_xlabel("Segundos")
-    ax.set_title("Latencia de recuperación por combinación (menor es mejor)")
+    ax.set_xlim(0, 50)
+    ax.set_title("Latencia de recuperación por combinación")
     ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
