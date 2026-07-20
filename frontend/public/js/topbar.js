@@ -863,12 +863,24 @@
     }
 
     if (csvFile) {
-      const cols = await readCsvHeader(csvFile);
-      const missing = CSV_REQUIRED_COLS.filter((c) => !cols.includes(c));
-      if (missing.length > 0) {
+      const lowerName = csvFile.name.toLowerCase();
+
+      if (!lowerName.includes("proyecto")) {
         validationErrors.push(
-          `Faltan las columnas ${missing.map((c) => `<code>${escapeHtml(c)}</code>`).join(", ")} en el CSV "${escapeHtml(csvFile.name)}".`,
+          `El CSV "${escapeHtml(csvFile.name)}" no cumple el formato esperado. ` +
+            `El nombre del archivo debe contener la palabra <code>proyecto</code>.`,
         );
+      } else {
+        const cols = await readCsvHeader(csvFile);
+        const missing = CSV_REQUIRED_COLS.filter((c) => !cols.includes(c));
+
+        if (missing.length > 0) {
+          validationErrors.push(
+            `Faltan las columnas ${missing
+              .map((c) => `<code>${escapeHtml(c)}</code>`)
+              .join(", ")} en el CSV "${escapeHtml(csvFile.name)}".`,
+          );
+        }
       }
     }
 
@@ -1135,25 +1147,49 @@
     });
 
     const csvInput = document.getElementById("csvInput");
+
     csvInput?.addEventListener("change", () => {
       const sel = document.getElementById("csvSelected");
-      const name = csvInput.files?.[0]?.name ?? "";
-      if (sel) {
-        if (name) {
-          sel.innerHTML =
-            `<span class="upload-folder-tag">` +
-            `${escapeHtml(name)}` +
-            `<button type="button" class="upload-folder-tag-remove" aria-label="Quitar CSV">✕</button>` +
-            `</span>`;
-          sel
-            .querySelector(".upload-folder-tag-remove")
-            ?.addEventListener("click", () => {
-              csvInput.value = "";
-              sel.innerHTML = "";
-            });
-        } else {
+      const file = csvInput.files?.[0] ?? null;
+
+      if (!file) {
+        if (sel) sel.innerHTML = "";
+        return;
+      }
+
+      const name = file.name;
+      const lowerName = name.toLowerCase();
+
+      if (!lowerName.includes("proyecto")) {
+        csvInput.value = "";
+
+        if (sel) {
           sel.innerHTML = "";
         }
+
+        showToast(
+          `El CSV "${escapeHtml(name)}" no cumple el formato esperado. ` +
+            `El nombre del archivo debe contener la palabra "proyecto".`,
+          "error",
+          { sticky: true },
+        );
+
+        return;
+      }
+
+      if (sel) {
+        sel.innerHTML =
+          `<span class="upload-folder-tag">` +
+          `${escapeHtml(name)}` +
+          `<button type="button" class="upload-folder-tag-remove" aria-label="Quitar CSV">✕</button>` +
+          `</span>`;
+
+        sel
+          .querySelector(".upload-folder-tag-remove")
+          ?.addEventListener("click", () => {
+            csvInput.value = "";
+            sel.innerHTML = "";
+          });
       }
     });
 
