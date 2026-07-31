@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Any
 import os
 
 from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
@@ -44,7 +43,7 @@ def main() -> None:
 
         print(f"Ejecutando pregunta {question_id}...")
         if not query:
-            print(f"No hay query")
+            print("No hay query")
             item["cypher_result"] = "La consulta solicitada está fuera del alcance del esquema actual del grafo."
             continue
 

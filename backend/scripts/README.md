@@ -68,23 +68,28 @@ cd backend
     - `--max-projects N`
 
 - `extract_end_to_end.py`
-  - Corre un flujo de ingest end-to-end para un input configurado dentro del script.
+  - Corre el flujo de ingest end-to-end sobre una carpeta local, igual que la carga del frontend (`IngestService.ingest_from_uploads`).
+  - Entrada:
+    - Carpeta con la estructura de proyectos/grupos (parámetro posicional obligatorio), misma que espera `prepare_corpus.py`.
+    - Opcionalmente un CSV de proyectos con `--csv`.
   - Salida principal: entidades/relaciones consolidadas en `data/entities_relations/entity_extraction_web_<id>.json`.
-  - Si se usa `--debug`, también deja artefactos intermedios en `data/corpus/`, `data/docling/`, `data/chunks/` y `data/embeddings/`.
-  - Uso: `python scripts/extract_end_to_end.py`
+  - Si se usa `--debug`, también deja artefactos intermedios en `data/corpus/`, `data/docling/` y `data/chunks/`.
+  - Uso: `python scripts/extract_end_to_end.py <ruta/a/carpeta>`
   - Opciones:
+    - `--csv <ruta/al/proyectos.csv>`
     - `--debug`
-    - `--no-headings`
 
 - `add_projects.py`
-  - Ingresa varios proyectos predefinidos (paths hardcodeados en el script).
-  - Salida: igual que `extract_end_to_end.py` (crea/actualiza `data/entities_relations/entity_extraction_web_<id>.json` y, al estar en modo debug, conserva artefactos intermedios en `data/`).
-  - Uso: `python scripts/add_projects.py`
+  - Igual que `extract_end_to_end.py` pero para varias carpetas en una sola corrida (limpia el estado del servicio entre carpetas). Siempre corre en modo debug.
+  - Salida: igual que `extract_end_to_end.py`.
+  - Uso: `python scripts/add_projects.py <carpeta1> <carpeta2> ... [--csv <ruta/al/proyectos.csv>]`
 
 - `load_graph.py`
-  - Carga entidades/relaciones en Neo4j desde `data/entities_relations/entity_documents.json`.
+  - Carga entidades/relaciones en Neo4j desde un JSON de grafo (limpia el grafo antes de cargar).
+  - Entrada: path al JSON, opcional. Default: `data/entities_relations/entity_documents.json`.
   - Salida: nodos y relaciones en Neo4j (no genera archivo local).
   - Uso: `python scripts/load_graph.py`
+  - Para cargar el ground truth: `python scripts/load_graph.py evaluation/ground_truth/extraction/ground_truth_kg.json`
 
 - `export_graph.py`
   - Exporta el grafo desde Neo4j a `data/entities_relations/export_graph.json`.

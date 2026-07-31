@@ -1,9 +1,13 @@
 import asyncio
+import sys
 from pathlib import Path
-from typing import Optional
-import urllib.parse
+from typing import List, Optional
 
 from institutional_graphrag.services.ingest_service import IngestService
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from extract_end_to_end import collect_folder_files  # noqa: E402
 
 # ==============================
 # CONFIGURACIÓN
@@ -12,44 +16,50 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
 ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
-# Lista de paths originales
-paths = [
-    r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\informe_propusetas_2020\513",
-    r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\413",
-    r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2020_informes_vs_propuestas\id2018p_informes_vs__propuestas\informes_propuestas_2018\260",
-    r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2016_informes_vs_propuestas\informes_propuestas_2016\729",
-    r"\2_PROYECTOS I+D_2012_2014_2016_2018_2020\id2012_Informes_vs_propuestas\informes_propuestas_2012\638",
-]
-
 # ==============================
 # MAIN ASYNC
 # ==============================
 
 
-async def main():
+async def main(input_dirs: List[Path], csv_path: Optional[Path]):
     print("Inicializando IngestService...")
 
-    print("Ejecutando ingest...")
-    url_encoded_paths = []
-    for path in paths:
-        path_normalized = path.replace("\\", "/")
-        path_encoded = urllib.parse.quote(path_normalized)
-        url_encoded_paths.append(path_encoded)
-
-    # Imprimir los paths codificados
     service = IngestService(
         data_dir=DATA_DIR,
         env_path=ENV_PATH,
         keep_debug_artifacts=True,
     )
-    for encoded_path in url_encoded_paths:
+
+    print("Ejecutando ingest...")
+    for input_dir in input_dirs:
         service.cleanup()
-        result = await service.ingest_items(encoded_path)
-        print("Resultados del path ", encoded_path, ":")
+        result = await service.ingest_from_uploads(
+            folder_files=collect_folder_files(input_dir),
+            csv_bytes=csv_path.read_bytes() if csv_path else None,
+            csv_filename=csv_path.name if csv_path else None,
+        )
+        print("Resultados de la carpeta ", input_dir, ":")
         print(result)
 
 
 if __name__ == "__main__":
-    import asyncio
+    import argparse
 
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="Ingestar varias carpetas de proyectos")
+
+    parser.add_argument(
+        "input_paths",
+        type=Path,
+        nargs="+",
+        help="Carpetas locales con la estructura de proyectos/grupos a ingestar",
+    )
+    parser.add_argument(
+        "--csv",
+        type=Path,
+        default=None,
+        help="CSV de proyectos a cargar junto con los archivos",
+    )
+
+    args = parser.parse_args()
+
+    asyncio.run(main(args.input_paths, args.csv))

@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Tuple
 
 from institutional_graphrag.services.ingest_service import IngestService
 
@@ -11,7 +11,26 @@ DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
 ENV_PATH: Optional[Path] = Path(BACKEND_DIR / ".env")
 
-INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_vs_propuestas%2Finformes_propuestas_2014%2F21"
+
+# ==============================
+# LECTURA DE ARCHIVOS
+# ==============================
+
+
+def collect_folder_files(input_dir: Path) -> List[Tuple[str, bytes]]:
+    if not input_dir.is_dir():
+        raise FileNotFoundError(f"No existe la carpeta de entrada: {input_dir}")
+
+    folder_files: List[Tuple[str, bytes]] = []
+    for file_path in sorted(input_dir.rglob("*")):
+        if not file_path.is_file():
+            continue
+        rel_inside = file_path.relative_to(input_dir).as_posix()
+        if any(part.startswith(".") for part in rel_inside.split("/")):
+            continue
+        folder_files.append((f"{input_dir.name}/{rel_inside}", file_path.read_bytes()))
+
+    return folder_files
 
 
 # ==============================
@@ -19,7 +38,7 @@ INPUT_PATH = "%2F2_PROYECTOS%20I%2BD_2012_2014_2016_2018_2020%2Fid2014_informes_
 # ==============================
 
 
-async def main(keep_debug_artifacts: bool):
+async def main(input_dir: Path, csv_path: Optional[Path], keep_debug_artifacts: bool):
     print("Inicializando IngestService...")
     try:
         service = IngestService(
@@ -30,7 +49,11 @@ async def main(keep_debug_artifacts: bool):
 
         print("Ejecutando ingest...")
 
-        result = await service.ingest_items(INPUT_PATH)
+        result = await service.ingest_from_uploads(
+            folder_files=collect_folder_files(input_dir),
+            csv_bytes=csv_path.read_bytes() if csv_path else None,
+            csv_filename=csv_path.name if csv_path else None,
+        )
         print("Resultado:")
         print(result)
     except Exception as e:
@@ -43,10 +66,20 @@ async def main(keep_debug_artifacts: bool):
 
 if __name__ == "__main__":
     import argparse
-    import asyncio
 
     parser = argparse.ArgumentParser(description="Ejecutar end to end")
 
+    parser.add_argument(
+        "input_path",
+        type=Path,
+        help="Carpeta local con la estructura de proyectos/grupos a ingestar",
+    )
+    parser.add_argument(
+        "--csv",
+        type=Path,
+        default=None,
+        help="CSV de proyectos a cargar junto con los archivos",
+    )
     parser.add_argument(
         "--debug",
         action="store_true",
@@ -59,4 +92,4 @@ if __name__ == "__main__":
 
     print(f"[CONFIG] MODO DEBUG: {'ACTIVO' if keep_debug_artifacts else 'DESACTIVADO'}")
 
-    asyncio.run(main(keep_debug_artifacts))
+    asyncio.run(main(args.input_path, args.csv, keep_debug_artifacts))
