@@ -1,13 +1,8 @@
 import asyncio
-import sys
 from pathlib import Path
 from typing import List, Optional
 
-from institutional_graphrag.services.ingest_service import IngestService
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-from extract_end_to_end import collect_folder_files  # noqa: E402
+from institutional_graphrag.services.ingest_service import IngestService, collect_folder_files
 
 # ==============================
 # CONFIGURACIÓN
