@@ -216,9 +216,7 @@ class IngestService:
                 )
 
             if not output_path.exists():
-                raise RuntimeError(
-                    f"Docling terminó sin devolver resultado para {tmp_path.name}"
-                )
+                raise RuntimeError(f"Docling terminó sin devolver resultado para {tmp_path.name}")
 
             result = json.loads(output_path.read_text(encoding="utf-8"))
             if not isinstance(result, dict):
@@ -271,8 +269,7 @@ class IngestService:
                 detail = (process.stderr or process.stdout or "sin detalle").strip()
                 exit_code = process.returncode & 0xFFFFFFFF
                 raise RuntimeError(
-                    f"BERT falló en el subproceso; "
-                    f"código=0x{exit_code:08X}. {detail[-4000:]}"
+                    f"BERT falló en el subproceso; " f"código=0x{exit_code:08X}. {detail[-4000:]}"
                 )
 
             clean_extractor = EntityExtractor(data_dir=self.data_dir)
