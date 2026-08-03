@@ -357,7 +357,7 @@ exit
 ```
 ### 2. Poblar el grafo con el ground truth y evaluar el retrieval
 
-Nota: Para esto se debe editar load_graph.py para que carque el ground_truth_kg.json en vez del entity_documents.json
+`submit_retrieval.sh` le pasa el `ground_truth_kg.json` a `load_graph.py` como argumento, no hay que editar nada.
 ```bash
 cd ~/institutional-graphrag
 

@@ -38,6 +38,22 @@ class MissingNeo4jCredentialsError(Exception):
     pass
 
 
+def collect_folder_files(input_dir: Path) -> List[Tuple[str, bytes]]:
+    if not input_dir.is_dir():
+        raise FileNotFoundError(f"No existe la carpeta de entrada: {input_dir}")
+
+    folder_files: List[Tuple[str, bytes]] = []
+    for file_path in sorted(input_dir.rglob("*")):
+        if not file_path.is_file():
+            continue
+        rel_inside = file_path.relative_to(input_dir).as_posix()
+        if any(part.startswith(".") for part in rel_inside.split("/")):
+            continue
+        folder_files.append((f"{input_dir.name}/{rel_inside}", file_path.read_bytes()))
+
+    return folder_files
+
+
 class IngestService:
     def __init__(
         self,

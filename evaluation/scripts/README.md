@@ -166,3 +166,27 @@ Guía rápida de los scripts en esta carpeta.
     - `python evaluation/scripts/evaluate_retrieval.py --no-judge`
     - `python evaluation/scripts/evaluate_retrieval.py --judge-model claude-opus-4-8`
     - `python evaluation/scripts/evaluate_retrieval.py --replot` (regenera únicamente las gráficas y el reporte HTML a partir de `retrieval_details.json`)
+
+- `evaluate_end_to_end.py`
+  - Corre el **pipeline completo local** (`data/corpus` → Docling → chunking → extracción → carga en Neo4j → preguntas con `GraphRAGRetriever` → LLM-as-a-judge) y evalúa las respuestas finales.
+  - A diferencia de `evaluate_retrieval.py` y `evaluate_generation.py`, **no compara modelos ni variantes de prompt**: usa el modelo y el prompt por defecto de `GraphRAGRetriever`.
+  - Cuando corre Docling o chunking limpia sus carpetas de salida antes de empezar; cuando carga Neo4j limpia el grafo antes de la ingesta.
+  - Entrada: dataset QA como parámetro posicional (obligatorio salvo con `--charts-only`).
+  - Requiere Neo4j, Qdrant y `ANTHROPIC_API_KEY` (salvo `--no-judge`).
+  - Salida (en `evaluation/results/retrieval_and_generation/`):
+    - Detalle por pregunta en `end_to_end_details.json`
+    - Resumen agregado en `end_to_end_summary.json`
+    - Gráficas PNG en `images/`
+    - Reporte HTML en `end_to_end_report.html`
+  - Flags:
+    - `--judge-model`: modelo de Anthropic para el juez.
+    - `--no-judge`: no juzga, solo consulta y mide latencias.
+    - `--max-questions N`: limita las preguntas (smoke test).
+    - `--skip-docling`: reusa los JSON de `data/docling/`.
+    - `--skip-chunking`: reusa los chunks de `data/chunks/` (requiere también `--skip-docling`).
+    - `--qa-only`: solo preguntas, respuestas, evaluación y reportes, sobre el grafo ya cargado.
+    - `--charts-only`: regenera solo gráficas y HTML desde los JSON existentes.
+  - Uso:
+    - `python evaluation/scripts/evaluate_end_to_end.py evaluation/ground_truth/datasetQA_GT_evaluation.json`
+    - `python evaluation/scripts/evaluate_end_to_end.py evaluation/ground_truth/datasetQA_GT_evaluation.json --skip-docling`
+    - `python evaluation/scripts/evaluate_end_to_end.py --charts-only`

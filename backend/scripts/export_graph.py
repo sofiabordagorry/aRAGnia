@@ -6,8 +6,8 @@ from institutional_graphrag.graph.builder import GraphBuilder
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)
-INPUT_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "entity_documents.json"
 OUTPUT_PATH = Path(__file__).parents[2] / "data" / "entities_relations" / "export_graph.json"
+
 
 def main():
     neo4j_host = os.getenv("HOST", "localhost")
@@ -22,7 +22,6 @@ def main():
     )
     graph.export_graph(output_json_path=OUTPUT_PATH)
     graph.close()
-
 
 
 if __name__ == "__main__":

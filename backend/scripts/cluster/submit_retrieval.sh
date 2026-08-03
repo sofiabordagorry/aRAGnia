@@ -117,7 +117,8 @@ echo "============================================================"
 
 echo "============================================================"
 echo "[INFO] Poblando el grafo con ground_truth_kg.json..."
-python "$REPO_ROOT/backend/scripts/load_graph.py"
+python "$REPO_ROOT/backend/scripts/load_graph.py" \
+    "$REPO_ROOT/evaluation/ground_truth/extraction/ground_truth_kg.json"
 
 echo "[INFO] Poblando Qdrant (Few-Shot Store)..."
 python "$REPO_ROOT/backend/scripts/load_fewshot_examples.py"
