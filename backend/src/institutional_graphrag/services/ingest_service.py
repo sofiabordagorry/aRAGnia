@@ -268,7 +268,12 @@ class IngestService:
             if process.returncode != 0:
                 detail = (process.stderr or process.stdout or "sin detalle").strip()
                 exit_code = process.returncode & 0xFFFFFFFF
-                detail_text = detail.decode("utf-8", errors="replace")
+                detail_text = (
+                    detail.decode("utf-8", errors="replace")
+                    if isinstance(detail, bytes)
+                    else detail
+                )
+
                 raise RuntimeError(
                     f"BERT falló en el subproceso; "
                     f"código=0x{exit_code:08X}. {detail_text[-4000:]}"
