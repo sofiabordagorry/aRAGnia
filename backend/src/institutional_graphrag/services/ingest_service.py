@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import csv
+import gc
 import io
 import json
 import os
 import re
+import subprocess
+import sys
+import tempfile
+import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -21,7 +26,6 @@ from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtr
 from institutional_graphrag.graph.builder import GraphBuilder
 from institutional_graphrag.graph.graph_loader import load_graph_json
 from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-from institutional_graphrag.ingest.docling_parser import parse_single_document
 from institutional_graphrag.ingest.file_namer import (
     PdfKind,
     classify_pdf,
@@ -32,6 +36,55 @@ from institutional_graphrag.ingest.table_extractors import build_table_chunks, c
 from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
 
 _PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
+
+
+_DOCLING_WORKER_CODE = r"""
+import json
+import os
+import sys
+from pathlib import Path
+
+os.environ["DOCLING_DEVICE"] = "cuda"
+
+from institutional_graphrag.ingest.docling_parser import parse_single_document
+
+input_path = Path(sys.argv[1])
+output_path = Path(sys.argv[2])
+result = parse_single_document(input_path)
+if result is None:
+    raise ValueError(f"Docling no devolvió contenido para {input_path.name}")
+output_path.write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+"""
+
+
+_BERT_WORKER_CODE = r"""
+import logging
+import os
+import sys
+from pathlib import Path
+
+os.environ["PYTHONUTF8"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
+from institutional_graphrag.extraction.ie import EntityExtractor
+
+data_dir = Path(sys.argv[1]).resolve()
+input_filename = sys.argv[2]
+output_filename = sys.argv[3]
+
+extractor = EntityExtractor(data_dir=data_dir)
+previous = extractor.load_from_json(input_filename)
+if previous is None:
+    raise RuntimeError(f"No se pudo cargar {input_filename}")
+
+extractor.add_entities(previous.entities)
+extractor.add_relationship(previous.relationships)
+extractor.res.errors.extend(previous.errors)
+extractor._build_doc_indexes()
+extractor._extract_with_bert()
+extractor.save_in_file(output_filename)
+"""
 
 
 class MissingNeo4jCredentialsError(Exception):
@@ -86,9 +139,9 @@ class IngestService:
         self.cache_file = data_dir / "cache_paths.csv"
         self.cache_file.touch(exist_ok=True)
         self.tokenizer = EMBED_MODEL_ID
-        self.chunker = get_native_chunker(tokenizer=self.tokenizer)
+        self.chunker: Any = None
         self.rule_based_extractor = RuleBasedExtractor()
-        self.entity_extractor = EntityExtractor()
+        self.entity_extractor = EntityExtractor(data_dir=self.data_dir)
         self.processed_files: List[str] = []
 
         self.cache_dict: Dict[str, int] = {}
@@ -112,8 +165,133 @@ class IngestService:
         self.builder = GraphBuilder(self.neo4j_uri, self.user, self.password)
         self.rule_based_extractor.cleanup()
         self.entity_extractor.cleanup()
+        self.chunker = None
         self.processed_files = []
         self.cache_dict = {}
+
+    def _subprocess_env(self) -> Dict[str, str]:
+        env = os.environ.copy()
+        env["PYTHONUTF8"] = "1"
+        env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUNBUFFERED"] = "1"
+
+        pythonpath = [entry for entry in sys.path if entry]
+        if env.get("PYTHONPATH"):
+            pythonpath.append(env["PYTHONPATH"])
+        env["PYTHONPATH"] = os.pathsep.join(dict.fromkeys(pythonpath))
+        return env
+
+    def _parse_document_isolated(self, tmp_path: Path) -> Dict[str, Any]:
+        timeout = int(os.getenv("DOCLING_FILE_TIMEOUT_SECONDS", "900"))
+
+        with tempfile.TemporaryDirectory(prefix="docling_worker_") as temp_dir:
+            output_path = Path(temp_dir) / "result.json"
+            env = self._subprocess_env()
+            env["DOCLING_DEVICE"] = "cuda"
+
+            try:
+                process = subprocess.run(
+                    [
+                        sys.executable,
+                        "-u",
+                        "-c",
+                        _DOCLING_WORKER_CODE,
+                        str(tmp_path),
+                        str(output_path),
+                    ],
+                    env=env,
+                    timeout=timeout,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired as error:
+                raise TimeoutError(
+                    f"Docling superó {timeout} segundos procesando {tmp_path.name}"
+                ) from error
+
+            if process.returncode != 0:
+                raise RuntimeError(
+                    f"Docling falló para {tmp_path.name}; "
+                    f"código={process.returncode}. "
+                    "El detalle fue impreso en la consola."
+                )
+
+            if not output_path.exists():
+                raise RuntimeError(f"Docling terminó sin devolver resultado para {tmp_path.name}")
+
+            result = json.loads(output_path.read_text(encoding="utf-8"))
+            if not isinstance(result, dict):
+                raise TypeError("El resultado de Docling no es un diccionario")
+            return result
+
+    def _release_pre_bert_resources(self) -> None:
+        self.chunker = None
+        gc.collect()
+
+        try:
+            torch = sys.modules.get("torch")
+            if torch is not None and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except Exception:
+            pass
+
+    def _run_bert_isolated(self) -> None:
+        worker_id = uuid.uuid4().hex
+        input_filename = f"_bert_{worker_id}_input.json"
+        output_filename = f"_bert_{worker_id}_output.json"
+        input_path = self.entities_dir / input_filename
+        output_path = self.entities_dir / output_filename
+
+        self.entity_extractor.save_in_file(input_filename)
+        env = self._subprocess_env()
+        timeout_value = int(os.getenv("BERT_PROCESS_TIMEOUT_SECONDS", "21600"))
+        timeout = timeout_value if timeout_value > 0 else None
+
+        try:
+            try:
+                process = subprocess.run(
+                    [
+                        sys.executable,
+                        "-u",
+                        "-c",
+                        _BERT_WORKER_CODE,
+                        str(self.data_dir.resolve()),
+                        input_filename,
+                        output_filename,
+                    ],
+                    env=env,
+                    timeout=timeout,
+                    check=False,
+                )
+            except subprocess.TimeoutExpired as error:
+                raise TimeoutError("BERT superó el tiempo máximo configurado") from error
+
+            if process.returncode != 0:
+                detail = (process.stderr or process.stdout or "sin detalle").strip()
+                exit_code = process.returncode & 0xFFFFFFFF
+                detail_text = (
+                    detail.decode("utf-8", errors="replace")
+                    if isinstance(detail, bytes)
+                    else detail
+                )
+
+                raise RuntimeError(
+                    f"BERT falló en el subproceso; "
+                    f"código=0x{exit_code:08X}. {detail_text[-4000:]}"
+                )
+
+            clean_extractor = EntityExtractor(data_dir=self.data_dir)
+            result = clean_extractor.load_from_json(output_filename)
+            if result is None:
+                raise RuntimeError("BERT terminó sin devolver un resultado válido")
+
+            clean_extractor.add_entities(result.entities)
+            clean_extractor.add_relationship(result.relationships)
+            clean_extractor.res.errors.extend(result.errors)
+            clean_extractor._build_doc_indexes()
+            self.entity_extractor = clean_extractor
+        finally:
+            input_path.unlink(missing_ok=True)
+            output_path.unlink(missing_ok=True)
 
     async def ingest_from_uploads(
         self,
@@ -191,14 +369,8 @@ class IngestService:
                         progress_callback(processed_count, total_files)
 
         self._extract_projects_and_responsibles()
-        try:
-            import torch
-
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-        except Exception:
-            pass
-        self.entity_extractor._extract_with_bert()
+        self._release_pre_bert_resources()
+        self._run_bert_isolated()
         entity_dicts, rel_dicts = self._collect_entity_dicts()
         entity_json_path = self._save_entities_json(entity_dicts, rel_dicts)
 
@@ -263,7 +435,7 @@ class IngestService:
                     "tipo": m.group("kind"),
                 }
 
-            doc_dict = parse_single_document(tmp_path)
+            doc_dict = self._parse_document_isolated(tmp_path)
             if doc_dict is None:
                 raise ValueError(f"No se pudo extraer texto del documento: {new_filename}")
 
@@ -276,6 +448,8 @@ class IngestService:
             )
 
             doc = DoclingDocument.model_validate(doc_dict)
+            if self.chunker is None:
+                self.chunker = get_native_chunker(tokenizer=self.tokenizer)
             chunks = chunk_document(doc=doc, chunker=self.chunker)
             chunk_json_path.write_text(
                 json.dumps(
