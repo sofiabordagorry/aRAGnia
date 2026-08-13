@@ -126,7 +126,7 @@ CORPUS_DIR = DATA_DIR / "corpus"
 DOCLING_DIR = DEFAULT_DOCLING_DIR
 CHUNKS_DIR = DATA_DIR / "chunks"
 EXTRACTED_FILENAME = "entity_documents.json"
-RESULTS_DIR = EVAL_DIR / "results" / "retrieval_and_generation"
+RESULTS_DIR = EVAL_DIR / "results" / "end_to_end"
 DEFAULT_DETAILS_PATH = RESULTS_DIR / "end_to_end_details.json"
 DEFAULT_SUMMARY_PATH = RESULTS_DIR / "end_to_end_summary.json"
 
@@ -973,33 +973,114 @@ def generate_charts(results: List[Dict[str, Any]], images_dir: Path) -> Dict[str
     plt.close(fig)
     paths["overall"] = p
 
-    # 2) Score por dimensión → heatmap (combos × 3 dimensiones).
-    dim_matrix = np.array([[r["dim_means"][d] for d in JUDGE_DIMS] for r in results])
-    paths["dimensions"] = _heatmap(
-        images_dir / "chart_dimensions.png", dim_matrix, [""] * n,
-        [DIM_LABELS[d] for d in JUDGE_DIMS], "Score por dimensión", fig_h,
+    # 2) Score por dimensión → barras.
+    dimensions = JUDGE_DIMS
+    dim_labels = [DIM_LABELS[d] for d in dimensions]
+
+    values = [results[0]["dim_means"][d] for d in dimensions]
+
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+
+    bars = ax.bar(
+        dim_labels,
+        values,
+        width=0.6,
     )
 
-    # 3) Score por categoría → heatmap (combos × categorías).
+    for bar, value in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 0.015,
+            f"{value:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+        )
+
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("Score (0–1)")
+    ax.set_title("Score por dimensión")
+
+    ax.grid(axis="y", linestyle="--", alpha=0.3)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    fig.tight_layout()
+
+    p = images_dir / "chart_dimensions.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    paths["dimensions"] = p
+
+    # 3) Score por categoría → barras, similar a score por dimensión.
     all_cats = sorted({c for r in results for c in r["by_category"]})
-    cat_matrix = np.array([[r["by_category"].get(c, np.nan) for c in all_cats] for r in results])
-    paths["categories"] = _heatmap(
-        images_dir / "chart_categories.png", cat_matrix, [""] * n, all_cats, "Score por categoría", fig_h,
+
+    values = [results[0]["by_category"].get(c, 0.0) for c in all_cats]
+
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+
+    bars = ax.bar(
+        all_cats,
+        values,
+        width=0.6,
     )
 
-    # 4) Latencia (media + p95): barras horizontales agrupadas, ordenadas por media.
+    for bar, value in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 0.015,
+            f"{value:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+        )
+
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("Score (0–1)")
+    ax.set_title("Score por categoría")
+
+    ax.grid(axis="y", linestyle="--", alpha=0.3)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    plt.xticks(rotation=20, ha="right")
+
+    fig.tight_layout()
+
+    p = images_dir / "chart_categories.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    paths["categories"] = p
+
+    # 4) Latencia (media + p95): barras horizontales simples.
     by_lat = sorted(results, key=lambda r: r["latency"]["mean"])
-    yl = np.arange(len(by_lat))[::-1]
-    fig, ax = plt.subplots(figsize=(8.0, fig_h))
-    ax.barh(yl + 0.2, [r["latency"]["mean"] for r in by_lat], 0.4, color=PALETTE[3], label="Media")
-    ax.barh(yl - 0.2, [r["latency"]["p95"] for r in by_lat], 0.4, color=PALETTE[1], label="p95")
-    ax.set_yticks(yl)
-    ax.tick_params(axis="y", left=False, labelleft=False)
-    ax.set_xlabel("Segundos")
-    ax.set_xlim(0, 600)
+
+    # Si hay una sola combinación, usamos sus valores
+    mean_val = by_lat[0]["latency"]["mean"]
+    p95_val = by_lat[0]["latency"]["p95"]
+
+    y_labels = ["Media", "p95"]
+    values = [mean_val, p95_val]
+    colors = [PALETTE[3], PALETTE[1]]
+
+    fig, ax = plt.subplots(figsize=(8.0, 4.5))
+
+    ax.barh(y_labels, values, color=colors)
+
+    ax.set_xlabel("Latencia (segundos)")
+    ax.set_ylabel("Estadístico de latencia")
     ax.set_title("Latencia de generación por combinación")
-    ax.legend(fontsize=8, loc="lower right", framealpha=0.9)
-    ax.spines[["top", "right"]].set_visible(False)
+
+    max_latency = max(values)
+    ax.set_xlim(0, max_latency * 1.08)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
     fig.tight_layout()
     p = images_dir / "chart_latency.png"
     fig.savefig(p, dpi=150, bbox_inches="tight")
