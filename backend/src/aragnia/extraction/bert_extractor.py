@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from institutional_graphrag.graph.schema import (
+from aragnia.graph.schema import (
     EXTRAIDO_DE,
     PERTENECE_A_SUBCAMPO,
     TIENE_TOPICO,

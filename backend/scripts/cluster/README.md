@@ -175,7 +175,7 @@ Verificar que todo importa:
 ```bash
 python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
 python -c "import docling; from docling.chunking import HybridChunker; print('docling OK')"
-python -c "import institutional_graphrag; print('paquete OK')"
+python -c "import aragnia; print('paquete OK')"
 ```
 
 Salir del nodo interactivo:

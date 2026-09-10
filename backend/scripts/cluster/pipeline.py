@@ -75,7 +75,7 @@ def step_docling(corpus_dir: Path, docling_dir: Path, batch_size: int = 10) -> N
     _require_dir(corpus_dir, "corpus")
     docling_dir.mkdir(parents=True, exist_ok=True)
 
-    from institutional_graphrag.ingest.docling_parser import (
+    from aragnia.ingest.docling_parser import (
         parse_corpus,
     )
 
@@ -99,9 +99,9 @@ def step_chunks(docling_dir: Path, chunks_dir: Path) -> None:
     chunks_dir.mkdir(parents=True, exist_ok=True)
 
     from docling_core.types.doc import DoclingDocument
-    from institutional_graphrag.config import EMBED_MODEL_ID
-    from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-    from institutional_graphrag.ingest.table_extractors import convert_tables_to_chunks
+    from aragnia.config import EMBED_MODEL_ID
+    from aragnia.ingest.chunker import chunk_document, get_native_chunker
+    from aragnia.ingest.table_extractors import convert_tables_to_chunks
 
     json_files = sorted(docling_dir.glob("*.json"))
     if not json_files:
@@ -160,7 +160,7 @@ def step_extraction(
     """Extrae entidades y relaciones (tabular + BERT tópicos)."""
     log.info("Etapa 3: Extracción")
 
-    from institutional_graphrag.extraction.ie import EntityExtractor
+    from aragnia.extraction.ie import EntityExtractor
 
     extractor = EntityExtractor(llm_model=llm_model, data_dir=data_dir)
     res = extractor.run(

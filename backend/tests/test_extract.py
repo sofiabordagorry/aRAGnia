@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-import institutional_graphrag.extraction.ie as ie_mod
-from institutional_graphrag.extraction.bert_extractor import TopicMention
-from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
-from institutional_graphrag.graph.schema import (
+import aragnia.extraction.ie as ie_mod
+from aragnia.extraction.bert_extractor import TopicMention
+from aragnia.extraction.ie import EntityExtractor, ExtractionResult
+from aragnia.graph.schema import (
     Anio,
     Chunk,
     Documento,
@@ -422,7 +422,7 @@ def test_tabular_extractor_calidad_property(tmp_path: Path):
     """La propiedad 'calidad' se guarda correctamente en la relación PARTICIPO_EN."""
     import csv
 
-    from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
+    from aragnia.extraction.tabular_extractor import TabularExtractor
 
     csv_path = tmp_path / "equipos_test.csv"
     rows = [
@@ -515,7 +515,7 @@ def test_tabular_extractor_creates_project_and_title_extracted_from_chunk(tmp_pa
     """Crea Proyecto y relación TITULO_EXTRAIDO_DE hacia el chunk de la fila."""
     import csv
 
-    from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
+    from aragnia.extraction.tabular_extractor import TabularExtractor
 
     csv_path = tmp_path / "equipos_test.csv"
     rows = [

@@ -18,9 +18,9 @@ from pydantic import BaseModel
 from starlette.datastructures import UploadFile as StarletteUploadFile
 from typing_extensions import TypedDict
 
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.services.ingest_service import IngestService
-from institutional_graphrag.storage.queries import (
+from aragnia.graph.builder import GraphBuilder
+from aragnia.services.ingest_service import IngestService
+from aragnia.storage.queries import (
     delete_all_queries,
     delete_query_by_id,
     get_queries_with_chunks,

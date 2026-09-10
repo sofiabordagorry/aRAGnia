@@ -5,8 +5,8 @@ import re
 import zipfile
 from pathlib import Path
 
-from institutional_graphrag.ingest.file_namer import generate_new_filename
-from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
+from aragnia.ingest.file_namer import generate_new_filename
+from aragnia.ingest.type_converter import odt_bytes_to_pdf
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]

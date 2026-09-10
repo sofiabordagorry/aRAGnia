@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from institutional_graphrag.ingest.table_extractors import clean_table
+from aragnia.ingest.table_extractors import clean_table
 import csv
 import argparse
 

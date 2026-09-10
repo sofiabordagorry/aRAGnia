@@ -9,8 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
-from institutional_graphrag.document_naming import build_project_id
-from institutional_graphrag.graph.schema import (
+from aragnia.document_naming import build_project_id
+from aragnia.graph.schema import (
     ES_DESCRITO_POR,
     EXTRAIDO_DE,
     INICIO_EN,

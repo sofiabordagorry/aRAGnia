@@ -42,7 +42,7 @@ jobs:
       - name: Type check with mypy
         working-directory: backend
         run: |
-          mypy src/institutional_graphrag
+          mypy src/aragnia
 
       - name: Frontend - Install deps
         working-directory: frontend

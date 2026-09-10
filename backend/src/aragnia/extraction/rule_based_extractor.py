@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-from institutional_graphrag.graph.schema import (
+from aragnia.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
     PRIMER_CHUNK,

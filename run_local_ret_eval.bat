@@ -21,7 +21,7 @@ echo ============================================================
 
 :: 2. Activar el entorno virtual
 if exist .venv\Scripts\activate.bat (
-    echo [INFO] Activando entorno virtual .venv de institutional-graphrag...
+    echo [INFO] Activando entorno virtual .venv de aragnia...
     call .venv\Scripts\activate.bat
     echo [INFO] Entorno virtual activado.
 )

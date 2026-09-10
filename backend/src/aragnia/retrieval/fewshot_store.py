@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from institutional_graphrag.ingest.embedder import E5Embedder
-from institutional_graphrag.retrieval.vector_store import VectorStore
+from aragnia.ingest.embedder import E5Embedder
+from aragnia.retrieval.vector_store import VectorStore
 
 COLLECTION_NAME = "cypher_fewshot_examples"
 EMBEDDING_DIM = 1024  # e5-large-v2

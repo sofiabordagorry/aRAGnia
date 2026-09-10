@@ -2,7 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Optional
 
-from institutional_graphrag.services.ingest_service import IngestService, collect_folder_files
+from aragnia.services.ingest_service import IngestService, collect_folder_files
 
 # ==============================
 # CONFIGURACIÓN

@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
-from institutional_graphrag.storage.queries import (
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.storage.queries import (
     insert_graphrag_chunk_entities,
     insert_graphrag_chunks,
     insert_query,

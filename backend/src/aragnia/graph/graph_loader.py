@@ -5,8 +5,8 @@ import logging
 from pathlib import Path
 from typing import Any, Tuple
 
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.graph.schema import Entity, GraphSchema, Relationship
+from aragnia.graph.builder import GraphBuilder
+from aragnia.graph.schema import Entity, GraphSchema, Relationship
 
 logger = logging.getLogger("graph_ingest")
 

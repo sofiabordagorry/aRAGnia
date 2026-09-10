@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from institutional_graphrag.rag.generate import RAG
-from institutional_graphrag.storage.queries import insert_chunks, insert_query
+from aragnia.rag.generate import RAG
+from aragnia.storage.queries import insert_chunks, insert_query
 
 router = APIRouter()
 

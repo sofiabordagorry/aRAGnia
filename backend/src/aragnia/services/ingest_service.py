@@ -16,24 +16,24 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from docling_core.types.doc import DoclingDocument
 from dotenv import load_dotenv
 
-from institutional_graphrag.config import EMBED_MODEL_ID
-from institutional_graphrag.document_naming import (
+from aragnia.config import EMBED_MODEL_ID
+from aragnia.document_naming import (
     PATTERN_DOCUMENT_WITH_OPTIONAL_PDF as PATTERN_DOCUMENT,
 )
-from institutional_graphrag.document_naming import PATTERN_TABLE
-from institutional_graphrag.extraction.ie import EntityExtractor
-from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.graph.graph_loader import load_graph_json
-from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-from institutional_graphrag.ingest.file_namer import (
+from aragnia.document_naming import PATTERN_TABLE
+from aragnia.extraction.ie import EntityExtractor
+from aragnia.extraction.rule_based_extractor import RuleBasedExtractor
+from aragnia.graph.builder import GraphBuilder
+from aragnia.graph.graph_loader import load_graph_json
+from aragnia.ingest.chunker import chunk_document, get_native_chunker
+from aragnia.ingest.file_namer import (
     PdfKind,
     classify_pdf,
     generate_new_filename,
     save_temp_file,
 )
-from institutional_graphrag.ingest.table_extractors import build_table_chunks, clean_table
-from institutional_graphrag.ingest.type_converter import odt_bytes_to_pdf
+from aragnia.ingest.table_extractors import build_table_chunks, clean_table
+from aragnia.ingest.type_converter import odt_bytes_to_pdf
 
 _PROYECTOS_YEAR_RE = re.compile(r"^proyectos[_\s]?(\d{4})", re.IGNORECASE)
 
@@ -46,7 +46,7 @@ from pathlib import Path
 
 os.environ["DOCLING_DEVICE"] = "cuda"
 
-from institutional_graphrag.ingest.docling_parser import parse_single_document
+from aragnia.ingest.docling_parser import parse_single_document
 
 input_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
@@ -67,7 +67,7 @@ os.environ["PYTHONUTF8"] = "1"
 os.environ["PYTHONIOENCODING"] = "utf-8"
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
-from institutional_graphrag.extraction.ie import EntityExtractor
+from aragnia.extraction.ie import EntityExtractor
 
 data_dir = Path(sys.argv[1]).resolve()
 input_filename = sys.argv[2]

@@ -15,8 +15,8 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import CypherSyntaxError
 from neo4j.graph import Node
 
-from institutional_graphrag.llm.llm_provider import get_llm_client
-from institutional_graphrag.retrieval.fewshot_store import FewShotStore
+from aragnia.llm.llm_provider import get_llm_client
+from aragnia.retrieval.fewshot_store import FewShotStore
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

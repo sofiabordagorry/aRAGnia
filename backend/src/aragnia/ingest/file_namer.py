@@ -3,7 +3,7 @@ import tempfile
 from enum import Enum
 from pathlib import Path
 
-from institutional_graphrag.document_naming import (
+from aragnia.document_naming import (
     document_kind_from_name,
     document_kind_position,
     is_legacy_root_marker,
@@ -26,7 +26,7 @@ def classify_pdf(fileName: str) -> PdfKind:
 
 
 def save_temp_file(content: bytes, filename: str) -> Path:
-    tmp_dir = Path(tempfile.gettempdir()) / "institutional_graphrag"
+    tmp_dir = Path(tempfile.gettempdir()) / "aragnia"
     tmp_dir.mkdir(parents=True, exist_ok=True)
 
     path = tmp_dir / filename

@@ -7,12 +7,12 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from qdrant_client import QdrantClient
 
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.graph.graph_loader import load_graph_json
-from institutional_graphrag.ingest.persist_embeddings import persist_all_embeddings_and_metadata
-from institutional_graphrag.retrieval.fewshot_store import DEFAULT_EXAMPLES, FewShotStore
-from institutional_graphrag.retrieval.vector_store import VectorStore
-from institutional_graphrag.storage.database import create_tables
+from aragnia.graph.builder import GraphBuilder
+from aragnia.graph.graph_loader import load_graph_json
+from aragnia.ingest.persist_embeddings import persist_all_embeddings_and_metadata
+from aragnia.retrieval.fewshot_store import DEFAULT_EXAMPLES, FewShotStore
+from aragnia.retrieval.vector_store import VectorStore
+from aragnia.storage.database import create_tables
 
 env_path = Path(__file__).parents[3] / ".env"
 load_dotenv(env_path)

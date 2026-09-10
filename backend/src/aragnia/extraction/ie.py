@@ -11,11 +11,11 @@ from typing import Any, Dict, List, Optional, cast
 
 import ijson
 
-from institutional_graphrag.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
-from institutional_graphrag.extraction.bert_extractor import BertTopicExtractor
-from institutional_graphrag.extraction.rule_based_extractor import RuleBasedExtractor
-from institutional_graphrag.extraction.tabular_extractor import TabularExtractor
-from institutional_graphrag.graph.schema import (
+from aragnia.document_naming import PATTERN_DOCUMENT, PATTERN_TABLE
+from aragnia.extraction.bert_extractor import BertTopicExtractor
+from aragnia.extraction.rule_based_extractor import RuleBasedExtractor
+from aragnia.extraction.tabular_extractor import TabularExtractor
+from aragnia.graph.schema import (
     Documento,
     Entity,
     GraphSchema,

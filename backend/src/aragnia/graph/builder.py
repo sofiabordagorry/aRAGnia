@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
 
-from institutional_graphrag.graph.schema import (
+from aragnia.graph.schema import (
     Entity,
     GraphSchema,
     Relationship,

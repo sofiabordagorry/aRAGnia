@@ -1,5 +1,5 @@
-from institutional_graphrag.ingest.persist_embeddings import persist_all_embeddings_and_metadata
-from institutional_graphrag.retrieval.vector_store import VectorStore
+from aragnia.ingest.persist_embeddings import persist_all_embeddings_and_metadata
+from aragnia.retrieval.vector_store import VectorStore
 
 # Script para probar el archivo persist_embeddings.py el cual carga en la base de datos los embeddings ubicados en data/embeddings
 

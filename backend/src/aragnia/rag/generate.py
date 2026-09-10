@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from institutional_graphrag.ingest.embedder import E5Embedder
-from institutional_graphrag.llm.llm_provider import get_llm_client
-from institutional_graphrag.retrieval.vector_store import VectorStore
+from aragnia.ingest.embedder import E5Embedder
+from aragnia.llm.llm_provider import get_llm_client
+from aragnia.retrieval.vector_store import VectorStore
 
 BASE_DIR = Path(__file__).resolve().parents[4]
 DEFAULT_EMBEDDINGS_DIR = BASE_DIR / Path("data/embeddings")

@@ -50,7 +50,7 @@ EVAL_DIR = SCRIPTS_DIR.parent
 sys.path.append(str(SCRIPTS_DIR))
 
 import generate_gt_answers as gen  # noqa: E402
-from institutional_graphrag.llm.llm_provider import (  # noqa: E402
+from aragnia.llm.llm_provider import (  # noqa: E402
     HuggingFaceClient,
     OllamaClient,
 )

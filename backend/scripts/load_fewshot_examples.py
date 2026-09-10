@@ -13,7 +13,7 @@ import argparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from institutional_graphrag.retrieval.fewshot_store import DEFAULT_EXAMPLES, FewShotStore
+from aragnia.retrieval.fewshot_store import DEFAULT_EXAMPLES, FewShotStore
 
 
 def main() -> None:

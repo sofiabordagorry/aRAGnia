@@ -5,7 +5,7 @@ python -m pip install -e ".[dev]"
 
 ruff check src tests
 black --check src tests
-mypy src/institutional_graphrag
-pytest -v --cov=institutional_graphrag --cov-report=term-missing
+mypy src/aragnia
+pytest -v --cov=aragnia --cov-report=term-missing
 
 echo "All checks passed!"

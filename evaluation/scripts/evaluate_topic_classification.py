@@ -46,8 +46,8 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 EVAL_DIR = SCRIPTS_DIR.parent
 REPO_ROOT = EVAL_DIR.parent
 
-from institutional_graphrag.config import CHUNK_MAX_TOKENS  # noqa: E402
-from institutional_graphrag.extraction.bert_extractor import (  # noqa: E402
+from aragnia.config import CHUNK_MAX_TOKENS  # noqa: E402
+from aragnia.extraction.bert_extractor import (  # noqa: E402
     DEFAULT_CONFIDENCE_LOGIT_THRESHOLD,
     DEFAULT_COVERAGE_LOGIT_THRESHOLD,
     DEFAULT_MIN_TOPICS,
@@ -169,8 +169,8 @@ def _rechunk_project(
     from docling.chunking import HybridChunker
     from docling_core.types.doc import DoclingDocument
 
-    from institutional_graphrag.config import EMBED_MODEL_ID
-    from institutional_graphrag.ingest.chunker import chunk_document
+    from aragnia.config import EMBED_MODEL_ID
+    from aragnia.ingest.chunker import chunk_document
 
     chunker = HybridChunker(tokenizer=EMBED_MODEL_ID, max_tokens=chunk_size, merge_peers=True)
     out: Dict[str, List[dict]] = {}

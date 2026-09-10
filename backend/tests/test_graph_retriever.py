@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
 
 
 @pytest.mark.parametrize(
@@ -111,8 +111,8 @@ def test_fix_relationship_directions_on_retriever_instance() -> None:
     )
 
     with (
-        patch("institutional_graphrag.retrieval.graph_retriever.GraphDatabase"),
-        patch("institutional_graphrag.retrieval.graph_retriever.get_llm_client"),
+        patch("aragnia.retrieval.graph_retriever.GraphDatabase"),
+        patch("aragnia.retrieval.graph_retriever.get_llm_client"),
     ):
         retriever = GraphRAGRetriever(
             neo4j_uri="bolt://localhost:7687",

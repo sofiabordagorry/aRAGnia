@@ -1,4 +1,4 @@
-"""Genera las piezas del logo Aragnia.
+"""Genera las piezas del logo aRAGnia.
 
 Uso:
     python3 build.py                     todas las piezas, versión marrón

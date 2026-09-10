@@ -83,24 +83,24 @@ import requests
 from dotenv import load_dotenv
 from docling_core.types.doc import DoclingDocument
 
-from institutional_graphrag.config import EMBED_MODEL_ID
-from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.graph.graph_loader import load_graph_json
-from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-from institutional_graphrag.ingest.docling_parser import (
+from aragnia.config import EMBED_MODEL_ID
+from aragnia.extraction.ie import EntityExtractor, ExtractionResult
+from aragnia.graph.builder import GraphBuilder
+from aragnia.graph.graph_loader import load_graph_json
+from aragnia.ingest.chunker import chunk_document, get_native_chunker
+from aragnia.ingest.docling_parser import (
     DEFAULT_DOCLING_DIR,
     DocumentAlreadyProcessed,
     parse_corpus,
     parse_single_document,
 )
-from institutional_graphrag.ingest.table_extractors import convert_tables_to_chunks
-from institutional_graphrag.llm.llm_provider import (
+from aragnia.ingest.table_extractors import convert_tables_to_chunks
+from aragnia.llm.llm_provider import (
     HuggingFaceClient,
     get_llm_client,
 )
 try:
-    from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+    from aragnia.retrieval.graph_retriever import GraphRAGRetriever
 except ImportError:
     from graph_retriever import GraphRAGRetriever  # type: ignore
 

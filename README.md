@@ -1,4 +1,4 @@
-# Institutional GraphRAG
+# aRAGnia
 
 Proyecto de grado de Ingeniería en Computación (FIng - Udelar, 2025-2026).
 
