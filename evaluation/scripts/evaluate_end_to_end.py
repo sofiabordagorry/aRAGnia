@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pipeline end-to-end local para Institutional GraphRAG con evaluación QA.
+"""Pipeline end-to-end local para aRAGnia con evaluación QA.
 
 Flujo predeterminado:
     data/corpus

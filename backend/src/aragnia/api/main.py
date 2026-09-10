@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     app.state.fewshot_store.close()
 
 
-app = FastAPI(title="Institutional GraphRAG API", lifespan=lifespan)
+app = FastAPI(title="aRAGnia API", lifespan=lifespan)
 
 app.mount("/pdfs", StaticFiles(directory=CORPUS_PATH), name="pdfs")
 app.add_middleware(

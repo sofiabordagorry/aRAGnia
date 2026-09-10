@@ -51,9 +51,9 @@ El cluster no tiene SSH key configurada para GitHub, hay que usar un Personal Ac
 **En el cluster**:
 ```bash
 cd ~
-git clone https://github.com/sofiabordagorry/institutional-graphrag.git
+git clone https://github.com/sofiabordagorry/aragnia.git
 # Cuando pida password, pegar el PAT (no la contrasena de GitHub)
-cd institutional-graphrag
+cd aragnia
 ```
 
 Para no tener que ingresarlo cada vez:
@@ -68,21 +68,21 @@ git config --global credential.helper 'store --file ~/.git-credentials'
 Los PDFs del corpus y los archivos de tablas deben estar en `data/corpus/` y `data/tables/`. Desde tu maquina local:
 
 ```bash
-rsync -arvz -e "ssh -p 10022" data/corpus/ tu_usuario@cluster.uy:~/institutional-graphrag/data/corpus/
-rsync -arvz -e "ssh -p 10022" data/tables/ tu_usuario@cluster.uy:~/institutional-graphrag/data/tables/
-scp -P 10022 backend/.env tu_usuario@cluster.uy:~/institutional-graphrag/backend/.env
+rsync -arvz -e "ssh -p 10022" data/corpus/ tu_usuario@cluster.uy:~/aragnia/data/corpus/
+rsync -arvz -e "ssh -p 10022" data/tables/ tu_usuario@cluster.uy:~/aragnia/data/tables/
+scp -P 10022 backend/.env tu_usuario@cluster.uy:~/aragnia/backend/.env
 ```
 
 En windows:
 
 ```bash
-scp -P 10022 -r data/corpus/* tu_usuario@cluster.uy:~/institutional-graphrag/data/corpus/
+scp -P 10022 -r data/corpus/* tu_usuario@cluster.uy:~/aragnia/data/corpus/
 ```
 
 Tambien crear la carpeta `logs/` que SLURM necesita para escribir los logs:
 ```bash
 # En el cluster:
-mkdir -p ~/institutional-graphrag/logs
+mkdir -p ~/aragnia/logs
 ```
 
 ---
@@ -167,7 +167,7 @@ pip install --only-binary :all: psycopg2-binary neo4j qdrant-client
 pip install python-dotenv requests
 
 # 13. Instalar el paquete local en editable sin deps
-pip install -e ~/institutional-graphrag/backend --no-deps
+pip install -e ~/aragnia/backend --no-deps
 ```
 
 Verificar que todo importa:
@@ -217,7 +217,7 @@ python -c "from huggingface_hub import whoami; print(whoami())"
 Desde la raiz del repositorio en el cluster:
 
 ```bash
-cd ~/institutional-graphrag
+cd ~/aragnia
 sbatch backend/scripts/cluster/submit.sh
 ```
 
@@ -245,7 +245,7 @@ El job usa `--partition=besteffort --qos=besteffort_gpu --gres=gpu:a40:1` (ver [
 squeue -u $USER
 
 # Seguir el log en vivo
-tail -f ~/institutional-graphrag/logs/pipeline_<JOBID>.log
+tail -f ~/aragnia/logs/pipeline_<JOBID>.log
 
 # Cancelar
 scancel <JOBID>
@@ -306,7 +306,7 @@ Anthropic, así que el nodo de cómputo necesita:
 ### Enviar el job
 
 ```bash
-cd ~/institutional-graphrag
+cd ~/aragnia
 sbatch backend/scripts/cluster/submit_generation.sh
 ```
 
@@ -345,7 +345,7 @@ Singularity permite importar contenedores de Docker Hub directamente. Debes hace
 srun -p normal -c 1 --time=00:30:00 --ntasks=1 --mem=4G --pty bash -l
 
 # 2. Descargar la imagen estable de Neo4j v5, de qdrant y de ollama
-cd ~/institutional-graphrag
+cd ~/aragnia
 singularity pull --name neo4j.simg docker://neo4j:5
 
 singularity pull --name qdrant.simg docker://qdrant/qdrant:latest
@@ -359,7 +359,7 @@ exit
 
 `submit_retrieval.sh` le pasa el `ground_truth_kg.json` a `load_graph.py` como argumento, no hay que editar nada.
 ```bash
-cd ~/institutional-graphrag
+cd ~/aragnia
 
 conda activate graphrag
 
@@ -369,13 +369,13 @@ sbatch backend/scripts/cluster/submit_retrieval.sh
 ```bash
 # Para ver los logs
 # log de evaluación del retrieval:
-cat ~/institutional-graphrag/logs/ret_eval_5546514.log
+cat ~/aragnia/logs/ret_eval_5546514.log
 # log de neo4j:
-cat ~/institutional-graphrag/logs/neo4j_db.log
+cat ~/aragnia/logs/neo4j_db.log
 # log de qdrant:
-cat ~/institutional-graphrag/logs/qdrant_db.log
+cat ~/aragnia/logs/qdrant_db.log
 # log de ollama:
-cat ~/institutional-graphrag/logs/ollama_db.log
+cat ~/aragnia/logs/ollama_db.log
 ```
 
 
@@ -450,7 +450,7 @@ Durante el setup hubo que hacer los siguientes cambios al repo (ya commiteados e
 
 | Error | Causa | Solucion |
 |---|---|---|
-| `/var/spool/logs/pipeline_XXX.log: Permission denied` | `#SBATCH --output=logs/...` es relativo a donde arranca el script (`/var/spool/...`) | Crear `~/institutional-graphrag/logs/` antes de `sbatch` (SLURM lo resuelve relativo a `SLURM_SUBMIT_DIR`) |
+| `/var/spool/logs/pipeline_XXX.log: Permission denied` | `#SBATCH --output=logs/...` es relativo a donde arranca el script (`/var/spool/...`) | Crear `~/aragnia/logs/` antes de `sbatch` (SLURM lo resuelve relativo a `SLURM_SUBMIT_DIR`) |
 | `conda: command not found` en el job | SLURM no hereda shell init | Hacer `source $HOME/miniconda3/etc/profile.d/conda.sh` explicitamente |
 | `REPO_ROOT=/var/spool` | SLURM copia el script a `/var/spool/` | Usar `$SLURM_SUBMIT_DIR` en vez de `BASH_SOURCE` |
 | `FileExistsError` en symlinks al relanzar | Cleanup trap copio symlinks rotos al home | Helper `_ensure_symlink` con `is_symlink()` check |

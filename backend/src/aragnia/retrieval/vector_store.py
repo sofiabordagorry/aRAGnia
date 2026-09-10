@@ -25,7 +25,7 @@ class VectorStore:
 
     def __init__(
         self,
-        collection_name: str = "institutional_docs",
+        collection_name: str = "aragnia_docs",
         embedding_dim: int = 384,
     ):
         """

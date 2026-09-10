@@ -1,4 +1,4 @@
-"""Institutional GraphRAG - Pipeline incremental de procesamiento de documentos y GraphRAG."""
+"""aRAGnia - Pipeline incremental de procesamiento de documentos y GraphRAG."""
 
 __version__ = "0.2.0"
 

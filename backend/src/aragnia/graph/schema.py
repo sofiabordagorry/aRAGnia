@@ -1,5 +1,5 @@
 """
-Esquema de Grafo para Institutional GraphRAG.
+Esquema de Grafo para aRAGnia.
 """
 
 from __future__ import annotations
