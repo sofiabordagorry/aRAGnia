@@ -1,70 +1,223 @@
-import math, subprocess, os, sys
-sys.path.insert(0,'.'); import alpha_lib
+"""Genera las piezas del logo Aragnia.
+
+Uso:
+    python3 build.py                     todas las piezas, versión marrón
+    python3 build.py --claro             todas, versión clara (para fondos oscuros)
+    python3 build.py barra --claro       solo una pieza
+    python3 build.py horizontal icono    varias piezas
+
+Requiere macOS: usa qlmanage para rasterizar el SVG.
+"""
+
+import argparse
+import math
+import os
+import subprocess
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import alpha_lib
 from arana import spider
-DARK,THREAD,NODE,BLUE="#6B3A18","#C08050","#A2602C","#0B5F88"
-SP = spider()
 
-def bicho(cx, cy, width):
-    s = width/700.0
-    return f'<g transform="translate({cx-500*s:.1f},{cy-465*s:.1f}) scale({s:.4f})">{SP}</g>'
+# --- paletas ---------------------------------------------------------------
 
-FF = ('<style>@font-face{font-family:"SFR";src:url("file:///System/Library/Fonts/SFNSRounded.ttf");}'
-      '@font-face{font-family:"SFCR";src:url("file:///System/Library/Fonts/SFCompactRounded.ttf");}</style>')
-FAM = "SFCR"
-def wrap(S,body,bg):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{S}" height="{S}" viewBox="0 0 {S} {S}">'
-            f'{FF}<rect width="{S}" height="{S}" fill="{bg}"/>{body}</svg>')
+PALETA = {
+    "marron": dict(texto="#6B3A18", hilo="#C08050", nodo="#A2602C", destacado="#0B5F88"),
+    "claro": dict(texto="#FFFFFF", hilo="#E0B48A", nodo="#E0B48A", destacado="#BAE6FD"),
+}
 
-def txt(x,y,size,anchor,ls=2):
-    return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-family="{FAM}, Arial Rounded MT Bold, sans-serif" '
-            f'font-weight="900" style="font-variation-settings:\'wght\' 900" font-size="{size}" fill="{DARK}" '
-            f'letter-spacing="{ls}"><tspan>a</tspan><tspan>RAG</tspan><tspan>nia</tspan></text>')
+FUENTE = (
+    '<style>@font-face{font-family:"SFCR";'
+    'src:url("file:///System/Library/Fonts/SFCompactRounded.ttf");}</style>'
+)
 
-def mesh(cx, cy, rings, angs, nr, hl, sw, hide_normal=False, closed=False, sag=0.90):
-    def pt(a,r): return (cx+r*math.cos(math.radians(a)), cy+r*math.sin(math.radians(a)))
-    step = 360.0/len(angs)
-    p=[f'<line x1="{cx}" y1="{cy}" x2="{pt(a,rings[-1])[0]:.1f}" y2="{pt(a,rings[-1])[1]:.1f}"/>' for a in angs]
-    for r in rings:
-        d=[]
-        rng = range(len(angs)) if closed else range(len(angs)-1)
-        for i in rng:
-            a1=angs[i]; a2=angs[(i+1)%len(angs)]
-            mid = a1+step/2 if closed else (a1+a2)/2
-            x1,y1=pt(a1,r); x2,y2=pt(a2,r); qx,qy=pt(mid, r*sag)
-            d.append(f'M {x1:.1f} {y1:.1f} Q {qx:.1f} {qy:.1f} {x2:.1f} {y2:.1f}')
-        p.append(f'<path d="{" ".join(d)}"/>')
-    n=""
-    for i,r in enumerate(rings):
-        for j,a in enumerate(angs):
-            x,y=pt(a,r); big=(i,j) in hl
-            if not big and hide_normal: continue
-            n+=f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{nr*2.1 if big else nr:.1f}" fill="{BLUE if big else NODE}"/>'
-    return f'<g fill="none" stroke="{THREAD}" stroke-width="{sw}" stroke-linecap="round">{"".join(p)}</g><g>{n}</g>'
+ARANA = spider()
 
-A12=[i*30 for i in range(12)]; HL={(3,1),(2,4),(3,6),(2,10)}
-FAN=[18+i*(144/8) for i in range(9)]
+# --- primitivas ------------------------------------------------------------
 
-def horizontal():
-    S=1700; CY=850; R=250; mx=520
-    return S, mesh(mx,CY,[R*.40,R*.60,R*.80,R],A12,12,HL,6,closed=True)+bicho(mx,CY-20,385)+txt(mx+R+18,CY+62,180,"start")
-def vertical():
-    S=1200
-    return S, mesh(600,490,[130,215,300,372],FAN,11,{(3,1),(2,4),(3,6),(1,7)},6,closed=False,sag=0.86)+bicho(600,305,600)+txt(600,1055,170,"middle")
-def icono():
-    S=1000; C=500; R=430
-    return S, mesh(C,C,[R*.40,R*.60,R*.80,R],A12,17,HL,9,closed=True)+bicho(C,C-35,620)
-def favicon():
-    S=1000; C=500; R=470; A8=[i*45 for i in range(8)]
-    return S, mesh(C,C,[R*.66,R],A8,24,{(1,1),(0,4),(1,6)},30,hide_normal=True,closed=True)+bicho(C,C-10,800)
 
-JOBS=(("aragnia-horizontal",horizontal,2400),("aragnia-logo",vertical,2400),
-      ("aragnia-icono",icono,1600),("aragnia-favicon",favicon,1024))
-for name,fn,size in JOBS:
-    for bg,suf in (("#FFFFFF","_w"),("#000000","_b"),("none","")):
-        S,body=fn(); open(f"{name}{suf}.svg","w").write(wrap(S,body,bg))
-    for suf in ("_w","_b"):
-        f=f"{name}{suf}.svg.png"
-        if os.path.exists(f): os.remove(f)
-        subprocess.run(["qlmanage","-t","-s",str(size),"-o",".",f"{name}{suf}.svg"],capture_output=True)
-    alpha_lib.compose(f"{name}_w.svg.png",f"{name}_b.svg.png",f"{name}.png")
-    print(name, alpha_lib.crop(f"{name}.png",16), os.path.getsize(f"{name}.svg"),"bytes svg")
+def bicho(cx, cy, ancho):
+    """Coloca la araña centrada en (cx, cy) con el ancho dado."""
+    s = ancho / 700.0
+    return f'<g transform="translate({cx - 500 * s:.1f},{cy - 465 * s:.1f}) scale({s:.4f})">{ARANA}</g>'
+
+
+def texto(x, y, tam, anchor, col, espaciado=2):
+    return (
+        f'<text x="{x}" y="{y}" text-anchor="{anchor}" '
+        f'font-family="SFCR, Arial Rounded MT Bold, sans-serif" font-weight="900" '
+        f"style=\"font-variation-settings:'wght' 900\" font-size=\"{tam}\" "
+        f'fill="{col}" letter-spacing="{espaciado}">'
+        f"<tspan>a</tspan><tspan>RAG</tspan><tspan>nia</tspan></text>"
+    )
+
+
+def tela(cx, cy, radios, angulos, r_nodo, destacados, grosor, p, cerrada=False,
+         panza=0.90, solo_destacados=False):
+    """Dibuja la telaraña. Los nodos destacados van al doble de tamaño y en otro color."""
+
+    def punto(a, r):
+        return (cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)))
+
+    paso = 360.0 / len(angulos)
+    hilos = [
+        f'<line x1="{cx}" y1="{cy}" x2="{punto(a, radios[-1])[0]:.1f}" '
+        f'y2="{punto(a, radios[-1])[1]:.1f}"/>'
+        for a in angulos
+    ]
+    for r in radios:
+        tramos = []
+        indices = range(len(angulos)) if cerrada else range(len(angulos) - 1)
+        for i in indices:
+            a1 = angulos[i]
+            a2 = angulos[(i + 1) % len(angulos)]
+            # al cerrar el círculo, el punto de control avanza medio paso desde a1:
+            # promediar a1 y a2 daría el lado opuesto de la tela
+            medio = a1 + paso / 2 if cerrada else (a1 + a2) / 2
+            x1, y1 = punto(a1, r)
+            x2, y2 = punto(a2, r)
+            qx, qy = punto(medio, r * panza)
+            tramos.append(f"M {x1:.1f} {y1:.1f} Q {qx:.1f} {qy:.1f} {x2:.1f} {y2:.1f}")
+        hilos.append(f'<path d="{" ".join(tramos)}"/>')
+
+    nodos = ""
+    for i, r in enumerate(radios):
+        for j, a in enumerate(angulos):
+            grande = (i, j) in destacados
+            if not grande and solo_destacados:
+                continue
+            x, y = punto(a, r)
+            radio = r_nodo * 2.1 if grande else r_nodo
+            col = p["destacado"] if grande else p["nodo"]
+            nodos += f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{radio:.1f}" fill="{col}"/>'
+
+    return (
+        f'<g fill="none" stroke="{p["hilo"]}" stroke-width="{grosor}" '
+        f'stroke-linecap="round">{"".join(hilos)}</g><g>{nodos}</g>'
+    )
+
+
+def envolver(lado, cuerpo, fondo):
+    # la fuente solo se declara si la pieza lleva texto: así el SVG del ícono
+    # y del favicon queda autocontenido y se ve igual fuera de macOS
+    fuente = FUENTE if "<text" in cuerpo else ""
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{lado}" height="{lado}" '
+        f'viewBox="0 0 {lado} {lado}">{fuente}'
+        f'<rect width="{lado}" height="{lado}" fill="{fondo}"/>{cuerpo}</svg>'
+    )
+
+
+# --- piezas ----------------------------------------------------------------
+
+A12 = [i * 30 for i in range(12)]
+A8 = [i * 45 for i in range(8)]
+ABANICO = [18 + i * (144 / 8) for i in range(9)]
+DESTACADOS = {(3, 1), (2, 4), (3, 6), (2, 10)}
+
+
+def horizontal(p):
+    lado, cy, r, cx = 1700, 850, 250, 520
+    cuerpo = (
+        tela(cx, cy, [r * 0.40, r * 0.60, r * 0.80, r], A12, 12, DESTACADOS, 6, p, cerrada=True)
+        + bicho(cx, cy - 20, 385)
+        + texto(cx + r + 18, cy + 62, 180, "start", p["texto"])
+    )
+    return lado, cuerpo
+
+
+def vertical(p):
+    cuerpo = (
+        tela(600, 490, [130, 215, 300, 372], ABANICO, 11, {(3, 1), (2, 4), (3, 6), (1, 7)},
+             6, p, cerrada=False, panza=0.86)
+        + bicho(600, 305, 600)
+        + texto(600, 1055, 170, "middle", p["texto"])
+    )
+    return 1200, cuerpo
+
+
+def icono(p):
+    c, r = 500, 430
+    cuerpo = (
+        tela(c, c, [r * 0.40, r * 0.60, r * 0.80, r], A12, 17, DESTACADOS, 9, p, cerrada=True)
+        + bicho(c, c - 35, 620)
+    )
+    return 1000, cuerpo
+
+
+def favicon(p):
+    """Versión simplificada: menos anillos e hilos más gruesos, legible a 32 px."""
+    c, r = 500, 470
+    cuerpo = (
+        tela(c, c, [r * 0.66, r], A8, 24, {(1, 1), (0, 4), (1, 6)}, 30, p,
+             cerrada=True, solo_destacados=True)
+        + bicho(c, c - 10, 800)
+    )
+    return 1000, cuerpo
+
+
+def barra(p):
+    """Lockup de la topbar: el texto pesa más que el símbolo para leerse a poca altura."""
+    lado, cy, r, cx = 1700, 850, 175, 330
+    cuerpo = (
+        tela(cx, cy, [r * 0.40, r * 0.60, r * 0.80, r], A12, 9, DESTACADOS, 5, p, cerrada=True)
+        + bicho(cx, cy - 14, 270)
+        + texto(cx + r + 26, cy + 66, 205, "start", p["texto"])
+    )
+    return lado, cuerpo
+
+
+PIEZAS = {
+    "horizontal": (horizontal, 2400),
+    "logo": (vertical, 2400),
+    "icono": (icono, 1600),
+    "favicon": (favicon, 1024),
+    "barra": (barra, 1800),
+}
+
+# --- render ----------------------------------------------------------------
+
+
+def generar(nombre, claro):
+    dibujar, resolucion = PIEZAS[nombre]
+    p = PALETA["claro" if claro else "marron"]
+    salida = f"aragnia-{nombre}" + ("-claro" if claro else "")
+
+    # Se renderiza sobre blanco y sobre negro; comparando ambos se recupera
+    # el alfa real, porque qlmanage siempre rasteriza con fondo opaco.
+    for fondo, sufijo in (("#FFFFFF", "_w"), ("#000000", "_b"), ("none", "")):
+        lado, cuerpo = dibujar(p)
+        with open(f"{salida}{sufijo}.svg", "w") as f:
+            f.write(envolver(lado, cuerpo, fondo))
+
+    for sufijo in ("_w", "_b"):
+        png = f"{salida}{sufijo}.svg.png"
+        if os.path.exists(png):
+            os.remove(png)
+        subprocess.run(
+            ["qlmanage", "-t", "-s", str(resolucion), "-o", ".", f"{salida}{sufijo}.svg"],
+            capture_output=True,
+        )
+
+    alpha_lib.compose(f"{salida}_w.svg.png", f"{salida}_b.svg.png", f"{salida}.png")
+    ancho, alto = alpha_lib.crop(f"{salida}.png", 16)
+    print(f"{salida}  {ancho}x{alto}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("piezas", nargs="*", choices=list(PIEZAS) + [], default=None,
+                    help="piezas a generar (por defecto: todas menos barra)")
+    ap.add_argument("--claro", action="store_true",
+                    help="versión clara, para fondos oscuros")
+    args = ap.parse_args()
+
+    piezas = args.piezas or ["horizontal", "logo", "icono", "favicon"]
+    for nombre in piezas:
+        generar(nombre, args.claro)
+
+
+if __name__ == "__main__":
+    main()
