@@ -2,7 +2,7 @@
 
 import pytest
 
-from institutional_graphrag.retrieval import VectorStore
+from aragnia.retrieval import VectorStore
 
 
 @pytest.fixture

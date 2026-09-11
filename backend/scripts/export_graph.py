@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from institutional_graphrag.graph.builder import GraphBuilder
+from aragnia.graph.builder import GraphBuilder
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)

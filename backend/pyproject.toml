@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "institutional-graphrag"
+name = "aragnia"
 version = "0.1.0"
-description = "GraphRAG para proyectos institucionales"
+description = "aRAGnia: GraphRAG para documentación institucional"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [

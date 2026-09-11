@@ -33,7 +33,7 @@ fi
 
 # 2. Instalar el paquete local en modo editable
 echo ""
-echo "[INFO] Instalando paquete local (institutional-graphrag)..."
+echo "[INFO] Instalando paquete local (aragnia)..."
 conda run -n "$ENV_NAME" pip install -e "$REPO_ROOT/backend" --no-deps
 
 echo ""

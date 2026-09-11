@@ -200,7 +200,7 @@ if [ "$BACKEND_ALREADY_RUNNING" = false ]; then
     }
 
     nohup "$PYTHON_VENV" -m uvicorn \
-        institutional_graphrag.api.main:app \
+        aragnia.api.main:app \
         --reload \
         --port 8000 \
         > "$BACKEND_LOG" 2>&1 &

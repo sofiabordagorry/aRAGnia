@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import os
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
 # ajustá este import según dónde tengas realmente execute_cypher_query
 
 

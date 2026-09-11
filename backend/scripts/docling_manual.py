@@ -4,7 +4,7 @@ import sys
 import json
 from pathlib import Path
 
-from institutional_graphrag.ingest.docling_parser import (
+from aragnia.ingest.docling_parser import (
     parse_corpus,
     parse_single_document,
     DEFAULT_DOCLING_DIR,

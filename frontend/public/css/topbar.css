@@ -49,10 +49,10 @@ body {
   object-fit: contain;
 }
 
-.app-logo-text {
-  font-size: clamp(18px, 1.4vw, 26px);
-  font-weight: 950;
-  color: #fff;
+.app-logo {
+  height: clamp(46px, 4.6vw, 72px);
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-link,

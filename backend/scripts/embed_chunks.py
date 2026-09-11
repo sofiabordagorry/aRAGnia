@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from institutional_graphrag.ingest.embedder import E5Embedder
+from aragnia.ingest.embedder import E5Embedder
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 

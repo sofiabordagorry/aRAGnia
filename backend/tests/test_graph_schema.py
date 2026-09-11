@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pydantic import TypeAdapter
 
-from institutional_graphrag.graph.schema import (
+from aragnia.graph.schema import (
     DE_DOCUMENTO,
     ES_DESCRITO_POR,
     EXTRAIDO_DE,

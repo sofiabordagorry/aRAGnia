@@ -41,3 +41,8 @@ Thumbs.db
 
 #Frontend
 node_modules/
+
+# artefactos intermedios del generador de logo
+assets/logo/fuente/aragnia-*.png
+assets/logo/fuente/aragnia-*.svg
+assets/logo/fuente/__pycache__/

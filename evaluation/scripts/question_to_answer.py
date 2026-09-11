@@ -9,7 +9,7 @@ from typing import Any
 
 from fastapi import HTTPException
 
-from institutional_graphrag.api.router_graphrag import QueryRequest, graphrag_query
+from aragnia.api.router_graphrag import QueryRequest, graphrag_query
 
 REPORT_OUTPUT_PATH = (
     Path(__file__).parents[1]

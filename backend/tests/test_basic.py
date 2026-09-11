@@ -3,9 +3,9 @@
 
 def test_import():
     """Verifica que el paquete se puede importar."""
-    import institutional_graphrag
+    import aragnia
 
-    assert institutional_graphrag is not None
+    assert aragnia is not None
 
 
 def test_basic():

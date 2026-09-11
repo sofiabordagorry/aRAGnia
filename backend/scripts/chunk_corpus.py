@@ -8,9 +8,9 @@ from pathlib import Path
 
 from docling_core.types.doc import DoclingDocument
 
-from institutional_graphrag.config import EMBED_MODEL_ID
-from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
-from institutional_graphrag.ingest.table_extractors import convert_tables_to_chunks
+from aragnia.config import EMBED_MODEL_ID
+from aragnia.ingest.chunker import chunk_document, get_native_chunker
+from aragnia.ingest.table_extractors import convert_tables_to_chunks
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 

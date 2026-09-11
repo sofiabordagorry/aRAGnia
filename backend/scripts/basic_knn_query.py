@@ -2,7 +2,7 @@ import json
 import numpy as np
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors
-from institutional_graphrag.ingest.embedder import E5Embedder
+from aragnia.ingest.embedder import E5Embedder
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parents[2] / "data"

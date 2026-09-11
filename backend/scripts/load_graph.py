@@ -4,8 +4,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from institutional_graphrag.graph.builder import GraphBuilder
-from institutional_graphrag.graph.graph_loader import load_graph_json
+from aragnia.graph.builder import GraphBuilder
+from aragnia.graph.graph_loader import load_graph_json
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)

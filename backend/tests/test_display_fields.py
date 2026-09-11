@@ -5,7 +5,7 @@ import pytest
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
 
 env_path = Path(__file__).parents[1] / ".env"
 load_dotenv(env_path)

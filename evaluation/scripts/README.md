@@ -98,7 +98,7 @@ Guía rápida de los scripts en esta carpeta.
   - Compara por **nombre normalizado del tópico** (no por id) para ser robusto a que el GT de tópicos está pendiente de actualización con los valores de los profes.
   - Las corridas son **acumulativas**: cada vez que se prueban nuevas combinaciones se mergean en el reporte (por firma de parámetros), se re-etiquetan según qué parámetros varían y se regeneran las gráficas (poner `FRESH = True` o pasar `--fresh` para empezar de cero).
   - **Configuración**: se edita el bloque de CONSTANTES en MAYÚSCULA al principio del archivo (`CHUNKING_THRESHOLDS`, `COVERAGE_THRESHOLDS`, `CONFIDENCE_THRESHOLDS`, `CHUNK_SIZES`, etc.) y se corre el script sin argumentos. Opcionalmente hay flags que sobrescriben cada lista para una corrida puntual.
-  - Requiere `matplotlib` y que el paquete `institutional_graphrag` esté instalado (mismo entorno que el pipeline). No usa Neo4j.
+  - Requiere `matplotlib` y que el paquete `aragnia` esté instalado (mismo entorno que el pipeline). No usa Neo4j.
   - **Flags** (todos opcionales; los de listas sobrescriben la constante correspondiente):
     - `--chunking-thresholds`: lista (separada por coma) de umbrales de chunking. Default: `CHUNKING_THRESHOLDS`. Ej: `--chunking-thresholds 0.04,0.06,0.08`.
     - `--coverage-thresholds`: lista de coverage final (fracción de chunks). Default: `COVERAGE_THRESHOLDS`. Ej: `--coverage-thresholds 0.05,0.1,0.5`.

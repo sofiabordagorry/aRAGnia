@@ -5,7 +5,7 @@ import logging
 import sys
 from pathlib import Path
 
-from institutional_graphrag.extraction.ie import EntityExtractor, ExtractionResult
+from aragnia.extraction.ie import EntityExtractor, ExtractionResult
 
 sys.path.insert(0, str(Path(__file__).parent))
 

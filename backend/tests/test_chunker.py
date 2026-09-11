@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 from docling_core.types.doc import DoclingDocument
 
-from institutional_graphrag.ingest.chunker import chunk_document, get_native_chunker
+from aragnia.config import CHUNK_MAX_TOKENS
+from aragnia.ingest.chunker import chunk_document, get_native_chunker
 
 # Definir la ruta a los datos procesados por Docling
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -40,7 +41,7 @@ class TestNativeDoclingChunker:
     def test_get_native_chunker_initialization(self):
         """Verifica que el chunker se inicializa con el tokenizer correcto."""
         chunker = get_native_chunker()
-        assert chunker.max_tokens == 512
+        assert chunker.max_tokens == CHUNK_MAX_TOKENS
         assert hasattr(chunker, "tokenizer")
 
     def test_chunk_document_structure(self, sample_doc):

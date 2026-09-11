@@ -46,8 +46,8 @@ sys.path.append(str(BACKEND_DIR))
 
 logger = logging.getLogger(__name__)
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
-from institutional_graphrag.llm.llm_provider import HuggingFaceClient, OllamaClient
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.llm.llm_provider import HuggingFaceClient, OllamaClient
 
 DEFAULT_DATASET = EVAL_DIR / "ground_truth" / "datasetQA_GT.json"
 

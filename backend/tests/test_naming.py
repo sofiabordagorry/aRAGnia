@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 
-from institutional_graphrag.ingest.file_namer import generate_new_filename
+from aragnia.ingest.file_namer import generate_new_filename
 
 # Add project root to sys.path to allow importing from src
 BASE_DIR = Path(__file__).resolve().parents[1]

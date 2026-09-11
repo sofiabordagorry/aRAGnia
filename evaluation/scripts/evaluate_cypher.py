@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from institutional_graphrag.retrieval.graph_retriever import GraphRAGRetriever
+from aragnia.retrieval.graph_retriever import GraphRAGRetriever
 
 REPORT_OUTPUT_PATH = (
     Path(__file__).parents[1]

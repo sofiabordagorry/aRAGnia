@@ -75,7 +75,7 @@ rem =========================================================
 
 echo.
 echo Iniciando backend...
-start "Backend" /D "%~dp0backend" cmd /k ""%PYTHON_VENV%" -m uvicorn institutional_graphrag.api.main:app --reload --port 8000"
+start "Backend" /D "%~dp0backend" cmd /k ""%PYTHON_VENV%" -m uvicorn aragnia.api.main:app --reload --port 8000"
 
 echo Iniciando frontend...
 start "Frontend" /D "%~dp0frontend\public" cmd /k ""%PYTHON_VENV%" -m http.server 5500"
