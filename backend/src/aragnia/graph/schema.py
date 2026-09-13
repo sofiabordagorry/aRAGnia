@@ -583,14 +583,17 @@ RELATIONSHIP_CARDINALITIES: tuple[RelationshipCardinality, ...] = (
     RelationshipCardinality("Grupo", "INICIO_EN", ("Anio",), 1, 1),
     RelationshipCardinality("Proyecto", "PERTENECE_A_AREA", ("Area",), 0, 1),
     RelationshipCardinality("Grupo", "PERTENECE_A_AREA", ("Area",), 0, 1),
-    RelationshipCardinality("Proyecto", "TIENE_TOPICO", ("Topico",), 0, None),
-    RelationshipCardinality("Grupo", "TIENE_TOPICO", ("Topico",), 0, None),
+    RelationshipCardinality("Proyecto", "TIENE_TOPICO", ("Topico",), 1, None),
+    RelationshipCardinality("Grupo", "TIENE_TOPICO", ("Topico",), 1, None),
     RelationshipCardinality("Proyecto", "TITULO_EXTRAIDO_DE", ("Chunk",), 0, None),
     RelationshipCardinality("Grupo", "TITULO_EXTRAIDO_DE", ("Chunk",), 0, None),
     # Un investigador participa al menos de un proyecto o de un grupo: la cardinalidad
     # se cuenta sobre el conjunto de ambos, no sobre cada uno por separado.
     RelationshipCardinality("Investigador", "PARTICIPO_EN", ("Proyecto", "Grupo"), 1, None),
-    RelationshipCardinality("Topico", "PERTENECE_A_SUBCAMPO", ("Subcampo",), 1, 1),
+    # Un nodo Topico se identifica por el nombre del tópico, por lo que puede agrupar
+    # tópicos de OpenAlex con la misma denominación en español, provenientes de
+    # subcampos distintos.
+    RelationshipCardinality("Topico", "PERTENECE_A_SUBCAMPO", ("Subcampo",), 1, None),
     RelationshipCardinality("Documento", "PRIMER_CHUNK", ("Chunk",), 1, 1),
     RelationshipCardinality("Chunk", "DE_DOCUMENTO", ("Documento",), 1, 1),
     RelationshipCardinality("Chunk", "SIGUIENTE_CHUNK", ("Chunk",), 0, 1),
