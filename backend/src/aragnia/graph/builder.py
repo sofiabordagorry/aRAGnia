@@ -10,10 +10,14 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar
 from neo4j import GraphDatabase
 from neo4j.exceptions import AuthError, ServiceUnavailable, SessionExpired
 
+from aragnia.graph.sanity_checks import SANITY_CHECKS, SanityCheck
 from aragnia.graph.schema import (
+    RELATIONSHIP_CARDINALITIES,
     Entity,
     GraphSchema,
     Relationship,
+    RelationshipCardinality,
+    validate_entity,
     validate_relationship_endpoints,
 )
 
@@ -22,6 +26,10 @@ logging.getLogger("neo4j").setLevel(logging.WARNING)
 logger = logging.getLogger("graph_ingest")
 
 T = TypeVar("T")
+
+# Tope de incumplimientos del esquema que se detallan en el reporte de la ingesta.
+# El conteo total se mantiene aparte, en Neo4jStats.
+MAX_REPORTED_ISSUES = 50
 OUTPUT_PATH = Path(__file__).parents[4] / "data" / "entities_relations" / "export_graph.json"
 
 
@@ -34,6 +42,10 @@ class Neo4jStats:
     properties_set: int = 0
     labels_added: int = 0
     labels_removed: int = 0
+
+    schema_violations: int = 0
+    entities_with_violations: int = 0
+    schema_issues: List[Dict[str, str]] = field(default_factory=list)
 
     node_ids: List[str] = field(default_factory=list)
     node_eids: List[str] = field(default_factory=list)
@@ -50,6 +62,24 @@ class Neo4jStats:
         self.labels_removed += counters.labels_removed
 
 
+@dataclass
+class RuleViolation:
+    """Casos del grafo que no cumplen una regla de negocio."""
+
+    check: SanityCheck
+    cases: int
+    examples: List[str]
+
+
+@dataclass
+class CardinalityViolation:
+    """Nodos que no respetan una cardinalidad declarada en el esquema."""
+
+    cardinality: RelationshipCardinality
+    nodes: int
+    examples: List[str]
+
+
 class GraphBuilder:
     """
     Builder de grafo usando Neo4j como backend.
@@ -63,6 +93,7 @@ class GraphBuilder:
         try:
             self.driver = GraphDatabase.driver(uri, auth=(user, password))
             self.batch_size = batch_size
+            self.validation_errors: List[Dict[str, str]] = []
             self._ping(max_attempts=6, sleep_s=2)
             self._create_constraints(max_attempts=5, sleep_s=2)
         except AuthError as exc:
@@ -156,6 +187,24 @@ class GraphBuilder:
 
         entities_by_label: dict[str, list[Entity]] = {}
         for entity in entities:
+            violations = validate_entity(entity)
+            if violations:
+                detail = "; ".join(violations)
+                stats.schema_violations += len(violations)
+                stats.entities_with_violations += 1
+                if len(stats.schema_issues) < MAX_REPORTED_ISSUES:
+                    stats.schema_issues.append(
+                        {
+                            "type": "SchemaViolation",
+                            "message": f"{entity.label}({entity.id}): {detail}",
+                        }
+                    )
+                logger.warning(
+                    "Entidad que no cumple el esquema: %s(%s): %s",
+                    entity.label,
+                    entity.id,
+                    detail,
+                )
             entities_by_label.setdefault(entity.label, []).append(entity)
 
         for label, entities_label in entities_by_label.items():
@@ -658,11 +707,57 @@ class GraphBuilder:
         self,
         entities: Iterable[Entity],
         relationships: Iterable[Tuple[Relationship, Entity, Entity]],
-    ) -> None:
+    ) -> List[Dict[str, str]]:
+        """
+        Construir el grafo y devolver los incumplimientos del esquema detectados.
+
+        Cada incumplimiento tiene la misma forma que el resto de los errores del
+        proceso de ingesta, para poder acumularlos en un único reporte.
+        """
+        self.validation_errors = []
+
         ent_stats = self.upsert_entities(entities, sample_ids=15)
         rel_stats = self.upsert_relationships(relationships, sample_ids=15)
+
+        try:
+            cardinality_violations = self.validate_cardinalities()
+            rule_violations = self.run_sanity_checks()
+        except Exception as exc:
+            # La verificación es posterior a la carga: si falla, el grafo ya está
+            # construido y el proceso no debe interrumpirse por eso.
+            logger.warning("No se pudieron completar las verificaciones: %s", exc)
+            cardinality_violations, rule_violations = [], []
+            self.validation_errors.append(
+                {
+                    "type": "ValidationError",
+                    "message": f"No se pudieron completar las verificaciones: {exc}",
+                }
+            )
         self.export_graph(OUTPUT_PATH)
         self._print_stats(ent_stats, rel_stats)
+        self._print_cardinality_violations(cardinality_violations)
+        self._print_rule_violations(rule_violations)
+
+        return (
+            ent_stats.schema_issues
+            + self.validation_errors
+            + [
+                {
+                    "type": "CardinalityViolation",
+                    "message": f"{violation.cardinality}: {violation.nodes} nodos no la respetan "
+                    f"(ejemplos: {', '.join(violation.examples)})",
+                }
+                for violation in cardinality_violations
+            ]
+            + [
+                {
+                    "type": "RuleViolation",
+                    "message": f"{violation.check.description}: {violation.cases} casos "
+                    f"(ejemplos: {', '.join(violation.examples)})",
+                }
+                for violation in rule_violations
+            ]
+        )
 
     @staticmethod
     def _print_stats(ent_stats: Neo4jStats, rel_stats: Neo4jStats) -> None:
@@ -676,6 +771,10 @@ class GraphBuilder:
             ent_stats.node_ids[:10],
             "sample_node_eids=",
             ent_stats.node_eids[:10],
+            "entidades_que_no_cumplen_el_esquema=",
+            ent_stats.entities_with_violations,
+            "incumplimientos=",
+            ent_stats.schema_violations,
         )
 
         print(
@@ -689,6 +788,142 @@ class GraphBuilder:
             "sample_pairs=",
             rel_stats.rel_pairs[:10],
         )
+
+    @staticmethod
+    def _cardinality_query(cardinality: RelationshipCardinality) -> str:
+        """
+        Armar la consulta que busca los nodos que no respetan una cardinalidad.
+
+        Las etiquetas y los tipos de relación se interpolan porque Cypher no admite
+        parametrizarlos; provienen de las cardinalidades declaradas en el esquema.
+        """
+        target_labels = " OR ".join(f"t:{label}" for label in cardinality.targets)
+
+        conditions = []
+        if cardinality.minimum > 0:
+            conditions.append(f"total < {cardinality.minimum}")
+        if cardinality.maximum is not None:
+            conditions.append(f"total > {cardinality.maximum}")
+
+        return f"""
+        MATCH (n:{cardinality.source})
+        OPTIONAL MATCH (n)-[r:{cardinality.type}]->(t)
+        WHERE {target_labels}
+        WITH n, count(r) AS total
+        WHERE {" OR ".join(conditions)}
+        RETURN count(n) AS nodes, collect(n.id)[0..5] AS examples
+        """
+
+    def validate_cardinalities(self) -> List[CardinalityViolation]:
+        """
+        Verificar que el grafo cargado respete las cardinalidades declaradas en el esquema.
+
+        Devuelve una entrada por cada cardinalidad incumplida, con la cantidad de nodos
+        afectados y algunos identificadores de ejemplo.
+        """
+        violations: List[CardinalityViolation] = []
+
+        with self.driver.session() as session:
+            for cardinality in RELATIONSHIP_CARDINALITIES:
+                if cardinality.is_unrestricted:
+                    continue
+
+                try:
+                    record = session.run(self._cardinality_query(cardinality)).single()
+                except Exception as exc:
+                    logger.warning("No se pudo verificar %s: %s", cardinality, exc)
+                    self.validation_errors.append(
+                        {
+                            "type": "ValidationError",
+                            "message": f"No se pudo verificar la cardinalidad {cardinality}: {exc}",
+                        }
+                    )
+                    continue
+
+                if record is None or not record["nodes"]:
+                    continue
+
+                violation = CardinalityViolation(
+                    cardinality=cardinality,
+                    nodes=record["nodes"],
+                    examples=list(record["examples"]),
+                )
+                violations.append(violation)
+                logger.warning(
+                    "Cardinalidad incumplida en %s: %d nodos (ejemplos: %s)",
+                    cardinality,
+                    violation.nodes,
+                    ", ".join(violation.examples),
+                )
+
+        return violations
+
+    @staticmethod
+    def _print_cardinality_violations(violations: List[CardinalityViolation]) -> None:
+        if not violations:
+            print("CARDINALIDADES: todas las cardinalidades declaradas se cumplen")
+            return
+
+        print("CARDINALIDADES:", len(violations), "incumplidas")
+        for violation in violations:
+            print(
+                f"  {violation.cardinality}: {violation.nodes} nodos",
+                f"(ejemplos: {', '.join(violation.examples)})",
+            )
+
+    def run_sanity_checks(self) -> List[RuleViolation]:
+        """
+        Verificar las reglas de negocio sobre el grafo cargado.
+
+        Devuelve una entrada por cada regla incumplida, con la cantidad de casos y
+        algunos identificadores de ejemplo.
+        """
+        violations: List[RuleViolation] = []
+
+        with self.driver.session() as session:
+            for check in SANITY_CHECKS:
+                try:
+                    record = session.run(check.query).single()
+                except Exception as exc:
+                    logger.warning("No se pudo verificar la regla %s: %s", check.name, exc)
+                    self.validation_errors.append(
+                        {
+                            "type": "ValidationError",
+                            "message": f"No se pudo verificar la regla {check.name}: {exc}",
+                        }
+                    )
+                    continue
+
+                if record is None or not record["count"]:
+                    continue
+
+                violation = RuleViolation(
+                    check=check,
+                    cases=record["count"],
+                    examples=list(record["examples"]),
+                )
+                violations.append(violation)
+                logger.warning(
+                    "Regla incumplida (%s): %d casos (ejemplos: %s)",
+                    check.name,
+                    violation.cases,
+                    ", ".join(violation.examples),
+                )
+
+        return violations
+
+    @staticmethod
+    def _print_rule_violations(violations: List[RuleViolation]) -> None:
+        if not violations:
+            print("REGLAS DE NEGOCIO: todas las reglas se cumplen")
+            return
+
+        print("REGLAS DE NEGOCIO:", len(violations), "incumplidas")
+        for violation in violations:
+            print(
+                f"  {violation.check.description}: {violation.cases} casos",
+                f"(ejemplos: {', '.join(violation.examples)})",
+            )
 
     def export_graph(
         self,

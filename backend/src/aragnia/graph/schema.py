@@ -5,9 +5,9 @@ Esquema de Grafo para aRAGnia.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, get_args, get_origin, get_type_hints
 
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import NotRequired, Required, TypedDict
 
 
 class AnioValue(TypedDict):
@@ -25,17 +25,17 @@ class DocumentoValue(TypedDict):
 class InvestigadorValue(TypedDict):
     nombre: str
     nombre_de_despliegue: str
-    documento: str
-    tipo_documento: str
-    pais_documento: str
-    sexo: str
+    documento: NotRequired[str]
+    tipo_documento: NotRequired[str]
+    pais_documento: NotRequired[str]
+    sexo: NotRequired[str]
 
 
 class FileValue(TypedDict):
     titulo: str
     titulo_de_despliegue: str
-    palabras_clave: List[str]
-    descripcion: str
+    palabras_clave: NotRequired[List[str]]
+    descripcion: NotRequired[str]
 
 
 @dataclass
@@ -413,3 +413,189 @@ def validate_relationship_endpoints(
     )
 
     return source_ok and target_ok
+
+
+# Esquema de las propiedades de cada entidad. El tipo y la obligatoriedad se
+# toman de los TypedDict declarados arriba, que son la especificación del modelo.
+ENTITY_VALUE_SCHEMAS: Dict[str, Any] = {
+    "Proyecto": FileValue,
+    "Grupo": FileValue,
+    "Anio": AnioValue,
+    "Investigador": InvestigadorValue,
+    "Documento": DocumentoValue,
+}
+
+# Entidades cuyo valor es un único dato escalar (se persiste como propiedad "valor").
+SCALAR_VALUE_ENTITIES = ("Topico", "Subcampo", "Area")
+
+# Chunk es una forma abierta: además de las propiedades declaradas conserva la
+# metadata que devuelve el parser de documentos, que varía según el documento.
+CHUNK_PROPERTY_TYPES: Dict[str, Any] = {"texto": str, "paginas": List[int]}
+CHUNK_REQUIRED_PROPERTIES = ("texto",)
+
+
+def _format_type(expected: Any) -> str:
+    origin = get_origin(expected)
+    if origin is Literal:
+        return " | ".join(repr(arg) for arg in get_args(expected))
+    if origin is list:
+        args = get_args(expected)
+        return f"list[{_format_type(args[0])}]" if args else "list"
+    name = getattr(expected, "__name__", None)
+    return str(name) if name is not None else str(expected)
+
+
+def _matches_type(value: Any, expected: Any) -> bool:
+    origin = get_origin(expected)
+    if origin is Literal:
+        return value in get_args(expected)
+    if origin is list:
+        if not isinstance(value, list):
+            return False
+        args = get_args(expected)
+        return all(_matches_type(item, args[0]) for item in value) if args else True
+    if expected is Any:
+        return True
+    if isinstance(expected, type):
+        if expected is int and isinstance(value, bool):
+            return False
+        return isinstance(value, expected)
+    return True
+
+
+def _validate_properties(
+    label: str,
+    value: Any,
+    property_types: Dict[str, Any],
+    required: tuple[str, ...],
+    closed: bool,
+) -> List[str]:
+    if not isinstance(value, dict):
+        return [f"{label}: se esperaba un diccionario de propiedades"]
+
+    violations: List[str] = []
+
+    for prop in sorted(required):
+        if value.get(prop) is None:
+            violations.append(f"{label}.{prop}: falta una propiedad obligatoria")
+
+    for prop, prop_value in value.items():
+        expected = property_types.get(prop)
+        if expected is None:
+            if closed:
+                violations.append(f"{label}.{prop}: propiedad no declarada en el esquema")
+            continue
+        if prop_value is None:
+            continue
+        if not _matches_type(prop_value, expected):
+            violations.append(
+                f"{label}.{prop}: se esperaba {_format_type(expected)} "
+                f"y se recibió {type(prop_value).__name__}"
+            )
+
+    return violations
+
+
+def _resolve_property_types(value_schema: Any) -> tuple[Dict[str, Any], tuple[str, ...]]:
+    """
+    Obtener el tipo de cada propiedad y cuáles son obligatorias.
+
+    No se usa __required_keys__ porque el módulo pospone la evaluación de
+    anotaciones (PEP 563) y en ese caso NotRequired no queda registrado ahí.
+    """
+    property_types: Dict[str, Any] = {}
+    required: List[str] = []
+
+    for prop, hint in get_type_hints(value_schema, include_extras=True).items():
+        origin = get_origin(hint)
+        if origin is NotRequired:
+            property_types[prop] = get_args(hint)[0]
+        elif origin is Required:
+            property_types[prop] = get_args(hint)[0]
+            required.append(prop)
+        else:
+            property_types[prop] = hint
+            required.append(prop)
+
+    return property_types, tuple(required)
+
+
+def validate_entity(entity: Entity) -> List[str]:
+    """
+    Verificar que una entidad cumpla lo declarado en el esquema.
+
+    Devuelve la lista de incumplimientos encontrados, vacía si la entidad cumple.
+    """
+    label = entity.label
+
+    if label in SCALAR_VALUE_ENTITIES:
+        if not isinstance(entity.value, str) or not entity.value.strip():
+            return [f"{label}.valor: se esperaba una cadena no vacía"]
+        return []
+
+    if label == "Chunk":
+        return _validate_properties(
+            label,
+            entity.value,
+            CHUNK_PROPERTY_TYPES,
+            CHUNK_REQUIRED_PROPERTIES,
+            closed=False,
+        )
+
+    value_schema = ENTITY_VALUE_SCHEMAS.get(label)
+    if value_schema is None:
+        return [f"Tipo de entidad desconocido: {label}"]
+
+    property_types, required = _resolve_property_types(value_schema)
+    return _validate_properties(label, entity.value, property_types, required, closed=True)
+
+
+@dataclass(frozen=True)
+class RelationshipCardinality:
+    """
+    Cardinalidad declarada para una relación, contada desde la entidad de origen.
+
+    Un máximo en None representa la cota superior abierta (*) de la notación del esquema.
+    """
+
+    source: str
+    type: str
+    targets: tuple[str, ...]
+    minimum: int
+    maximum: Optional[int] = None
+
+    def __str__(self) -> str:
+        maximum = "*" if self.maximum is None else str(self.maximum)
+        targets = "|".join(self.targets)
+        return f"({self.source})-[:{self.type}]->({targets}) [{self.minimum}..{maximum}]"
+
+    @property
+    def is_unrestricted(self) -> bool:
+        """Indicar si la cardinalidad admite cualquier cantidad de relaciones ([0..*])."""
+        return self.minimum == 0 and self.maximum is None
+
+
+# Cardinalidades del esquema del grafo, transcritas del diagrama de la sección de diseño.
+RELATIONSHIP_CARDINALITIES: tuple[RelationshipCardinality, ...] = (
+    RelationshipCardinality("Proyecto", "ES_DESCRITO_POR", ("Documento",), 1, None),
+    RelationshipCardinality("Grupo", "ES_DESCRITO_POR", ("Documento",), 1, None),
+    RelationshipCardinality("Proyecto", "INICIO_EN", ("Anio",), 1, 1),
+    RelationshipCardinality("Grupo", "INICIO_EN", ("Anio",), 1, 1),
+    RelationshipCardinality("Proyecto", "PERTENECE_A_AREA", ("Area",), 0, 1),
+    RelationshipCardinality("Grupo", "PERTENECE_A_AREA", ("Area",), 0, 1),
+    RelationshipCardinality("Proyecto", "TIENE_TOPICO", ("Topico",), 1, None),
+    RelationshipCardinality("Grupo", "TIENE_TOPICO", ("Topico",), 1, None),
+    RelationshipCardinality("Proyecto", "TITULO_EXTRAIDO_DE", ("Chunk",), 0, None),
+    RelationshipCardinality("Grupo", "TITULO_EXTRAIDO_DE", ("Chunk",), 0, None),
+    # Un investigador participa al menos de un proyecto o de un grupo: la cardinalidad
+    # se cuenta sobre el conjunto de ambos, no sobre cada uno por separado.
+    RelationshipCardinality("Investigador", "PARTICIPO_EN", ("Proyecto", "Grupo"), 1, None),
+    # Un nodo Topico se identifica por el nombre del tópico, por lo que puede agrupar
+    # tópicos de OpenAlex con la misma denominación en español, provenientes de
+    # subcampos distintos.
+    RelationshipCardinality("Topico", "PERTENECE_A_SUBCAMPO", ("Subcampo",), 1, None),
+    RelationshipCardinality("Documento", "PRIMER_CHUNK", ("Chunk",), 1, 1),
+    RelationshipCardinality("Chunk", "DE_DOCUMENTO", ("Documento",), 1, 1),
+    RelationshipCardinality("Chunk", "SIGUIENTE_CHUNK", ("Chunk",), 0, 1),
+    RelationshipCardinality("Chunk", "EXTRAIDO_DE", ("Topico", "Investigador"), 0, None),
+)

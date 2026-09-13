@@ -745,7 +745,8 @@ class IngestService:
                 self.user,
                 self.password,
             )
-            self.builder.ingest(entities=entities, relationships=relationships)
+            schema_issues = self.builder.ingest(entities=entities, relationships=relationships)
+            self.entity_extractor.res.errors.extend(schema_issues)
 
             print("\n" + "=" * 80)
             print("PIPELINE FINALIZADO")
